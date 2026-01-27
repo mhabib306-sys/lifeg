@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Gamification System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+  <div id="app"></div>
+
+  <script>
+    const STORAGE_KEY = 'lifeGamificationData_v3';
+    const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
+
+    const defaultDayData = {
+      prayers: { fajr: '', dhuhr: '', asr: '', maghrib: '', isha: '', quran: 0 },
+      glucose: { avg: '', tir: '', insulin: '', nop: '' },
+      whoop: {
+        sleepHours: '', sleepConsist: '', rhr: '', hrv: '', vo2max: '',
+        steps: '', hrZone13: '', hrZone45: '', recovery: '', strain: '', whoopAge: ''
+      },
+      family: { mom: false, dad: false, jana: false, tia: false, ahmed: false, eman: false },
+      habits: { exercise: 0, reading: 0, meditation: 0, water: '', vitamins: false, brushTeeth: 0 }
+    };
+
+    const DEFAULT_WEIGHTS = {
+      prayer: { onTime: 10, late: 5, quran: 10 },
+      glucose: { optimal: 20, acceptable: 10, tirHigh: 15, tirMid: 8, insulinBase: 5, insulinPenalty: 2, nopYes: 5, nopNo: -3 },
+      family: { mom: 5, dad: 5, jana: 5, tia: 5, ahmed: 5, eman: 5 },
+      habits: { exercise: 8, reading: 5, meditation: 10, water: 3, vitamins: 5, brushTeeth: 5 },
+      whoop: { sleepOptimal: 15, sleepGood: 8, sleepOver: 10, consistHigh: 10, consistMid: 6, consistLow: 3, rhrOptimal: 15, rhrGood: 10, rhrOk: 5, hrvHigh: 10, hrvMid: 6, hrvLow: 3, vo2High: 15, vo2Good: 12, vo2Mid: 8, vo2Low: 4, stepsHigh: 10, stepsMid: 7, stepsLow: 4, hrZone13: 5, hrZone45: 10, recoveryHigh: 10, recoveryMid: 6, recoveryLow: 3 }
+    };
+
+    let WEIGHTS = JSON.parse(localStorage.getItem(WEIGHTS_KEY)) || JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
+
+    function saveWeights() {
+      localStorage.setItem(WEIGHTS_KEY, JSON.stringify(WEIGHTS));
+    }
+
+    function updateWeight(category, field, value) {
+      if (field) {
+        WEIGHTS[category][field] = parseFloat(value) || 0;
+      } else {
+        WEIGHTS[category] = parseFloat(value) || 0;
+      }
+      saveWeights();
+      render();
+    }
+
+    function resetWeights() {
+      WEIGHTS = JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
+      saveWeights();
+      render();
+    }
+
+    // Pre-populated January 2026 data from habits tracking sheet
+    const JANUARY_DATA = {"2026-01-01":{"prayers":{"fajr":"1","dhuhr":"1","asr":"1","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":false,"dad":false,"jana":false,"tia":false,"ahmed":false,"eman":false},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-02":{"prayers":{"fajr":"1","dhuhr":"1","asr":"1","maghrib":"1","isha":"1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":false,"ahmed":false,"eman":false},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-03":{"prayers":{"fajr":"1.1","dhuhr":"1","asr":"1","maghrib":"0.1","isha":"1","quran":0},"family":{"mom":true,"dad":false,"jana":false,"tia":false,"ahmed":false,"eman":false},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-04":{"prayers":{"fajr":"1.2","dhuhr":"0.1","asr":"1","maghrib":"1","isha":"1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":false,"ahmed":false,"eman":false},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-05":{"prayers":{"fajr":"1","dhuhr":"0.1","asr":"0.1","maghrib":"0.1","isha":"1","quran":0},"family":{"mom":false,"dad":false,"jana":false,"tia":false,"ahmed":true,"eman":false},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-06":{"prayers":{"fajr":"1","dhuhr":"0.1","asr":"0.1","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":true,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-07":{"prayers":{"fajr":"1","dhuhr":"0.1","asr":"1","maghrib":"1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":true,"tia":true,"ahmed":true,"eman":false},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-08":{"prayers":{"fajr":"0.1","dhuhr":"1","asr":"1","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":true,"dad":false,"jana":false,"tia":false,"ahmed":true,"eman":false},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-09":{"prayers":{"fajr":"1","dhuhr":"1","asr":"1","maghrib":"1","isha":"1","quran":0},"family":{"mom":true,"dad":false,"jana":false,"tia":false,"ahmed":true,"eman":false},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-10":{"prayers":{"fajr":"0.1","dhuhr":"1","asr":"1","maghrib":"1","isha":"1","quran":0},"family":{"mom":true,"dad":false,"jana":false,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-11":{"prayers":{"fajr":"1","dhuhr":"0.1","asr":"0.1","maghrib":"1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-12":{"prayers":{"fajr":"0.1","dhuhr":"","asr":"0.1","maghrib":"0.1","isha":"1","quran":0},"family":{"mom":false,"dad":true,"jana":false,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-13":{"prayers":{"fajr":"0.1","dhuhr":"","asr":"","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":true,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-14":{"prayers":{"fajr":"1","dhuhr":"0.1","asr":"0.1","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-15":{"prayers":{"fajr":"1","dhuhr":"","asr":"","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-16":{"prayers":{"fajr":"1","dhuhr":"","asr":"","maghrib":"","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-17":{"prayers":{"fajr":"1","dhuhr":"1","asr":"1","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-18":{"prayers":{"fajr":"1","dhuhr":"1","asr":"0.1","maghrib":"1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-19":{"prayers":{"fajr":"1","dhuhr":"","asr":"","maghrib":"1","isha":"0.1","quran":0},"family":{"mom":true,"dad":false,"jana":false,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-20":{"prayers":{"fajr":"1","dhuhr":"","asr":"","maghrib":"","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-21":{"prayers":{"fajr":"0.1","dhuhr":"","asr":"","maghrib":"","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-22":{"prayers":{"fajr":"1","dhuhr":"","asr":"","maghrib":"","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":true,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","cv":"","hypos":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","strength":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}}};
+
+    // Merge pre-populated data with any existing localStorage data
+    let storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    let allData = { ...JANUARY_DATA, ...storedData };
+    // Save merged data
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+
+    let currentDate = new Date().toISOString().split('T')[0];
+    let activeTab = 'track';
+    let weekChart = null;
+    let breakdownChart = null;
+
+    // Bulk entry state - default to January 2026 where we have data
+    let bulkMonth = 0; // January
+    let bulkYear = 2026;
+    let bulkCategory = 'prayers';
+
+    // Personal Bests tracking
+    function getPersonalBests() {
+      const dates = Object.keys(allData).sort();
+      if (dates.length === 0) return null;
+
+      let bests = {
+        highestDayScore: { value: 0, date: null },
+        highestWeekScore: { value: 0, weekStart: null },
+        longestStreak: { value: 0, endDate: null },
+        currentStreak: 0,
+        bestPrayerDay: { value: 0, date: null },
+        bestWhoopDay: { value: 0, date: null },
+        mostQuranPages: { value: 0, date: null },
+        perfectPrayerDays: 0,
+        totalDaysLogged: dates.length
+      };
+
+      // Calculate streaks and daily bests
+      let currentStreakCount = 0;
+      let lastDate = null;
+
+      dates.forEach(date => {
+        const dayData = allData[date];
+        const scores = calculateScores(dayData);
+
+        // Highest day score
+        if (scores.total > bests.highestDayScore.value) {
+          bests.highestDayScore = { value: scores.total, date };
+        }
+
+        // Best prayer day
+        if (scores.prayer > bests.bestPrayerDay.value) {
+          bests.bestPrayerDay = { value: scores.prayer, date };
+        }
+
+        // Best whoop day
+        if (scores.whoop > bests.bestWhoopDay.value) {
+          bests.bestWhoopDay = { value: scores.whoop, date };
+        }
+
+        // Most Quran pages
+        const quranPages = parseInt(dayData.prayers.quran) || 0;
+        if (quranPages > bests.mostQuranPages.value) {
+          bests.mostQuranPages = { value: quranPages, date };
+        }
+
+        // Perfect prayer days (5 on-time prayers)
+        let onTimePrayers = 0;
+        ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(p => {
+          const { onTime } = parsePrayer(dayData.prayers[p]);
+          if (onTime >= 1) onTimePrayers++;
+        });
+        if (onTimePrayers === 5) bests.perfectPrayerDays++;
+
+        // Streak calculation
+        if (lastDate) {
+          const lastD = new Date(lastDate);
+          const currD = new Date(date);
+          const diffDays = Math.round((currD - lastD) / (1000 * 60 * 60 * 24));
+          if (diffDays === 1) {
+            currentStreakCount++;
+          } else {
+            currentStreakCount = 1;
+          }
+        } else {
+          currentStreakCount = 1;
+        }
+
+        if (currentStreakCount > bests.longestStreak.value) {
+          bests.longestStreak = { value: currentStreakCount, endDate: date };
+        }
+
+        lastDate = date;
+      });
+
+      // Check if current streak is active (last entry was today or yesterday)
+      const today = new Date().toISOString().split('T')[0];
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+      if (lastDate === today || lastDate === yesterday) {
+        bests.currentStreak = currentStreakCount;
+      }
+
+      // Weekly scores
+      const weekScores = {};
+      dates.forEach(date => {
+        const d = new Date(date);
+        const weekStart = new Date(d.setDate(d.getDate() - d.getDay())).toISOString().split('T')[0];
+        if (!weekScores[weekStart]) weekScores[weekStart] = 0;
+        weekScores[weekStart] += calculateScores(allData[date]).total;
+      });
+
+      Object.entries(weekScores).forEach(([weekStart, score]) => {
+        if (score > bests.highestWeekScore.value) {
+          bests.highestWeekScore = { value: Math.round(score), weekStart };
+        }
+      });
+
+      return bests;
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+    }
+
+    function getTodayData() {
+      return allData[currentDate] || JSON.parse(JSON.stringify(defaultDayData));
+    }
+
+    function updateData(category, field, value) {
+      const todayData = getTodayData();
+      todayData[category][field] = value;
+      allData[currentDate] = todayData;
+      saveData();
+      render();
+    }
+
+    function parsePrayer(value) {
+      if (!value && value !== 0) return { onTime: 0, late: 0 };
+      const num = parseFloat(value) || 0;
+      const onTime = Math.floor(num);
+      const late = Math.round((num - onTime) * 10);
+      return { onTime, late };
+    }
+
+    function calcPrayerScore(value) {
+      const { onTime, late } = parsePrayer(value);
+      return onTime * WEIGHTS.prayer.onTime + late * WEIGHTS.prayer.late;
+    }
+
+    function calculateScores(data) {
+      // Prayer Score
+      let prayerScore = 0;
+      let totalOnTime = 0, totalLate = 0;
+      ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(p => {
+        const { onTime, late } = parsePrayer(data.prayers[p]);
+        totalOnTime += onTime;
+        totalLate += late;
+        prayerScore += onTime * WEIGHTS.prayer.onTime + late * WEIGHTS.prayer.late;
+      });
+      // Quran pages
+      const quranPages = parseInt(data.prayers.quran) || 0;
+      prayerScore += quranPages * WEIGHTS.prayer.quran;
+
+      // Health/Glucose Score
+      let healthScore = 0;
+      const avg = parseFloat(data.glucose.avg) || 0;
+      const tir = parseFloat(data.glucose.tir) || 0;
+      const insulin = parseFloat(data.glucose.insulin) || 0;
+      const nop = data.glucose.nop;
+
+      // Avg glucose scoring
+      if (data.glucose.avg !== '' && avg >= 70 && avg <= 140) healthScore += WEIGHTS.glucose.optimal;
+      else if (data.glucose.avg !== '' && avg > 140 && avg <= 180) healthScore += WEIGHTS.glucose.acceptable;
+
+      // TIR scoring
+      if (data.glucose.tir !== '' && tir >= 70) healthScore += WEIGHTS.glucose.tirHigh;
+      else if (data.glucose.tir !== '' && tir >= 50) healthScore += WEIGHTS.glucose.tirMid;
+
+      // Insulin scoring: base points up to 40, then penalty for each unit over 40
+      if (data.glucose.insulin !== '' && insulin > 0) {
+        healthScore += WEIGHTS.glucose.insulinBase;
+        if (insulin > 40) {
+          healthScore -= (insulin - 40) * WEIGHTS.glucose.insulinPenalty;
+        }
+      }
+
+      // NoP scoring: points if 1, penalty if 0
+      if (nop !== '' && nop !== null) {
+        if (parseInt(nop) === 1) healthScore += WEIGHTS.glucose.nopYes;
+        else if (parseInt(nop) === 0) healthScore += WEIGHTS.glucose.nopNo;
+      }
+
+      // Whoop Age Score - Based on age-reducing metrics
+      let whoopScore = 0;
+      const w = data.whoop;
+      const ww = WEIGHTS.whoop;
+
+      // Sleep hours: 7-8h optimal
+      const sleepHrs = parseFloat(w.sleepHours) || 0;
+      if (w.sleepHours !== '') {
+        if (sleepHrs >= 7 && sleepHrs <= 8) whoopScore += ww.sleepOptimal;
+        else if (sleepHrs >= 6 && sleepHrs < 7) whoopScore += ww.sleepGood;
+        else if (sleepHrs > 8) whoopScore += ww.sleepOver;
+      }
+
+      // Sleep consistency: higher is better
+      const sleepConsist = parseFloat(w.sleepConsist) || 0;
+      if (w.sleepConsist !== '') {
+        if (sleepConsist >= 80) whoopScore += ww.consistHigh;
+        else if (sleepConsist >= 70) whoopScore += ww.consistMid;
+        else if (sleepConsist >= 60) whoopScore += ww.consistLow;
+      }
+
+      // RHR: lower is better (this is key - +3.1 years if high!)
+      const rhr = parseFloat(w.rhr) || 0;
+      if (w.rhr !== '') {
+        if (rhr <= 60) whoopScore += ww.rhrOptimal;
+        else if (rhr <= 70) whoopScore += ww.rhrGood;
+        else if (rhr <= 80) whoopScore += ww.rhrOk;
+      }
+
+      // HRV: higher is better
+      const hrv = parseFloat(w.hrv) || 0;
+      if (w.hrv !== '') {
+        if (hrv >= 50) whoopScore += ww.hrvHigh;
+        else if (hrv >= 40) whoopScore += ww.hrvMid;
+        else if (hrv >= 30) whoopScore += ww.hrvLow;
+      }
+
+      // VO2 Max: higher is better (+2.6 years if low!)
+      const vo2 = parseFloat(w.vo2max) || 0;
+      if (w.vo2max !== '') {
+        if (vo2 >= 45) whoopScore += ww.vo2High;
+        else if (vo2 >= 40) whoopScore += ww.vo2Good;
+        else if (vo2 >= 35) whoopScore += ww.vo2Mid;
+        else if (vo2 >= 30) whoopScore += ww.vo2Low;
+      }
+
+      // Steps: more is better
+      const steps = parseFloat(w.steps) || 0;
+      if (w.steps !== '') {
+        if (steps >= 10000) whoopScore += ww.stepsHigh;
+        else if (steps >= 8000) whoopScore += ww.stepsMid;
+        else if (steps >= 6000) whoopScore += ww.stepsLow;
+      }
+
+      // HR Zones (daily hours)
+      const hrZone13 = parseFloat(w.hrZone13) || 0;
+      const hrZone45 = parseFloat(w.hrZone45) || 0;
+      if (w.hrZone13 !== '') whoopScore += hrZone13 * ww.hrZone13;
+      if (w.hrZone45 !== '') whoopScore += hrZone45 * ww.hrZone45;
+
+      // Recovery
+      const recovery = parseFloat(w.recovery) || 0;
+      if (w.recovery !== '') {
+        if (recovery >= 66) whoopScore += ww.recoveryHigh;
+        else if (recovery >= 50) whoopScore += ww.recoveryMid;
+        else if (recovery >= 33) whoopScore += ww.recoveryLow;
+      }
+
+      // Family Score - individual weights per member
+      let familyScore = 0;
+      Object.entries(data.family).forEach(([member, checked]) => {
+        if (checked) familyScore += WEIGHTS.family[member] || 0;
+      });
+
+      // Habit Score
+      let habitScore = 0;
+      habitScore += (parseInt(data.habits.exercise) || 0) * WEIGHTS.habits.exercise;
+      habitScore += (parseInt(data.habits.reading) || 0) * WEIGHTS.habits.reading;
+      habitScore += (parseInt(data.habits.meditation) || 0) * WEIGHTS.habits.meditation;
+      habitScore += (parseFloat(data.habits.water) || 0) * WEIGHTS.habits.water;
+      habitScore += data.habits.vitamins ? WEIGHTS.habits.vitamins : 0;
+      habitScore += (parseInt(data.habits.brushTeeth) || 0) * WEIGHTS.habits.brushTeeth;
+
+      return {
+        prayer: prayerScore,
+        prayerOnTime: totalOnTime,
+        prayerLate: totalLate,
+        health: Math.round(healthScore * 10) / 10,
+        whoop: Math.round(whoopScore * 10) / 10,
+        family: familyScore,
+        habit: habitScore,
+        total: Math.round((prayerScore + healthScore + whoopScore + familyScore + habitScore) * 10) / 10
+      };
+    }
+
+    function getLast30DaysData() {
+      const days = [];
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        const dayData = allData[dateStr] || defaultDayData;
+        const dayScores = calculateScores(dayData);
+        days.push({
+          date: dateStr,
+          day: date.getDate(),
+          month: date.toLocaleDateString('en-US', { month: 'short' }),
+          label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          ...dayScores
+        });
+      }
+      return days;
+    }
+
+    function getLast30DaysStats() {
+      let stats = { totalScore: 0, daysLogged: 0, totalOnTimePrayers: 0, totalLatePrayers: 0, totalFamilyCheckins: 0, avgRHR: 0, avgSleep: 0, rhrCount: 0, sleepCount: 0 };
+
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        if (allData[dateStr]) {
+          stats.daysLogged++;
+          const d = allData[dateStr];
+          const dayScores = calculateScores(d);
+          stats.totalScore += dayScores.total;
+          stats.totalOnTimePrayers += dayScores.prayerOnTime;
+          stats.totalLatePrayers += dayScores.prayerLate;
+          stats.totalFamilyCheckins += Object.values(d.family).filter(Boolean).length;
+          if (d.whoop.rhr) { stats.avgRHR += parseFloat(d.whoop.rhr); stats.rhrCount++; }
+          if (d.whoop.sleepHours) { stats.avgSleep += parseFloat(d.whoop.sleepHours); stats.sleepCount++; }
+        }
+      }
+      stats.totalScore = Math.round(stats.totalScore);
+      stats.avgRHR = stats.rhrCount ? Math.round(stats.avgRHR / stats.rhrCount) : 0;
+      stats.avgSleep = stats.sleepCount ? (stats.avgSleep / stats.sleepCount).toFixed(1) : 0;
+      stats.avgDaily = stats.daysLogged ? Math.round(stats.totalScore / stats.daysLogged) : 0;
+      return stats;
+    }
+
+    function createPrayerInput(prayer, label, value) {
+      const { onTime, late } = parsePrayer(value);
+      const pts = calcPrayerScore(value);
+      return `
+        <div class="border-b border-gray-100 pb-3 mb-3 last:border-0 last:pb-0 last:mb-0">
+          <div class="flex justify-between items-center mb-2">
+            <span class="font-medium text-gray-700">${label}</span>
+            <span class="text-sm font-semibold text-blue-600">${pts} pts</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="text" value="${value}" placeholder="X.Y"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-center font-mono text-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              onchange="updateData('prayers', '${prayer}', this.value)">
+            <div class="text-xs text-gray-500 w-24">
+              <div class="flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span> ${onTime} on-time</div>
+              <div class="flex items-center gap-1"><span class="w-2 h-2 bg-amber-500 rounded-full"></span> ${late} late</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function createToggle(label, checked, category, field) {
+      return `
+        <label class="flex items-center justify-between cursor-pointer py-2 px-1 hover:bg-gray-50 rounded">
+          <span class="text-sm font-medium text-gray-700">${label}</span>
+          <div class="relative" onclick="updateData('${category}', '${field}', !${checked})">
+            <div class="w-11 h-6 rounded-full shadow-inner transition" style="background-color: ${checked ? '#22c55e' : '#d1d5db'}"></div>
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition" style="transform: translateX(${checked ? '20px' : '0'})"></div>
+          </div>
+        </label>
+      `;
+    }
+
+    function createNumberInput(label, value, category, field, placeholder, unit, hint = '', tooltip = '') {
+      return `
+        <div class="flex items-center gap-2 py-1 group relative">
+          <label class="text-sm text-gray-600 w-28 flex-shrink-0 flex items-center gap-1">
+            ${label}
+            ${tooltip ? `<span class="cursor-help text-gray-400 hover:text-purple-600">ⓘ</span>` : ''}
+          </label>
+          <input type="number" step="any" value="${value}" placeholder="${placeholder}"
+            class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            onchange="updateData('${category}', '${field}', this.value)">
+          <span class="text-xs text-gray-500 w-16">${unit}</span>
+          ${tooltip ? `<div class="absolute left-0 top-full mt-1 z-50 hidden group-hover:block bg-gray-800 text-white text-xs rounded-lg p-3 w-64 shadow-lg">${tooltip}</div>` : ''}
+        </div>
+        ${hint ? `<div class="text-xs text-gray-400 ml-28 -mt-1 mb-1">${hint}</div>` : ''}
+      `;
+    }
+
+    function createCounter(label, value, category, field, max = 10) {
+      return `
+        <div class="flex items-center justify-between py-2">
+          <span class="text-sm font-medium text-gray-700">${label}</span>
+          <div class="flex items-center gap-2">
+            <button onclick="updateData('${category}', '${field}', Math.max(0, ${value} - 1))"
+              class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center font-bold text-gray-600">−</button>
+            <span class="w-8 text-center font-semibold text-lg">${value}</span>
+            <button onclick="updateData('${category}', '${field}', Math.min(${max}, ${value} + 1))"
+              class="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center font-bold">+</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function createScoreCard(label, score, max, bgClass) {
+      const pct = max ? Math.min((score / max) * 100, 100) : 0;
+      return `
+        <div class="bg-white rounded-xl p-4 shadow-lg">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm text-gray-600">${label}</span>
+            <span class="font-bold text-xl">${score}</span>
+          </div>
+          <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div class="h-full ${bgClass} transition-all duration-500" style="width: ${pct}%"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function createCard(title, icon, colorClass, content, extraHeader = '') {
+      return `
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div class="${colorClass} px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">${icon}</span>
+              <h3 class="text-white font-semibold">${title}</h3>
+            </div>
+            ${extraHeader}
+          </div>
+          <div class="p-4">${content}</div>
+        </div>
+      `;
+    }
+
+    function renderTrackingTab() {
+      const data = getTodayData();
+      const scores = calculateScores(data);
+
+      const prayerHelp = `<span class="text-xs text-blue-100 opacity-80">X.Y = X on-time + Y late</span>`;
+      const prayersContent = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map(p =>
+        createPrayerInput(p, p.charAt(0).toUpperCase() + p.slice(1), data.prayers[p])
+      ).join('') + `
+        <div class="border-t border-blue-200 pt-3 mt-3">
+          <div class="flex justify-between items-center mb-2">
+            <span class="font-medium text-gray-700">📖 Quran Pages</span>
+            <span class="text-sm font-semibold text-blue-600">${(parseInt(data.prayers.quran) || 0) * 10} pts</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="updateData('prayers', 'quran', Math.max(0, ${parseInt(data.prayers.quran) || 0} - 1))"
+              class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center font-bold text-gray-600">−</button>
+            <span class="w-12 text-center font-semibold text-lg">${parseInt(data.prayers.quran) || 0}</span>
+            <button onclick="updateData('prayers', 'quran', ${parseInt(data.prayers.quran) || 0} + 1)"
+              class="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center font-bold">+</button>
+            <span class="text-xs text-gray-500 ml-2">10 pts/page</span>
+          </div>
+        </div>
+      `;
+
+      const glucoseContent = `
+        ${createNumberInput('Avg Glucose', data.glucose.avg, 'glucose', 'avg', '70-140', 'mg/dL', '70-140 optimal, 140-180 acceptable')}
+        ${createNumberInput('TIR %', data.glucose.tir, 'glucose', 'tir', '70+', '%', '≥70% optimal, ≥50% acceptable')}
+        ${createNumberInput('Insulin', data.glucose.insulin, 'glucose', 'insulin', '≤40', 'units', '≤40 = +5pts, >40 = -2pts/unit')}
+        ${createNumberInput('NoP', data.glucose.nop, 'glucose', 'nop', '1', '', '1 = +5pts, 0 = -3pts')}
+      `;
+
+      const whoopHelp = `<span class="text-xs text-purple-100 opacity-80">Hover ⓘ for tips</span>`;
+      const whoopContent = `
+        <div class="text-xs text-purple-600 bg-purple-50 p-2 rounded mb-3 font-medium">
+          🎯 Focus on RHR (<60), VO2 Max (>40), Sleep (7-8h) for biggest age reduction
+        </div>
+        ${createNumberInput('Sleep', data.whoop.sleepHours, 'whoop', 'sleepHours', '7-8', 'hrs', '7-8h optimal', '<b>How to improve:</b><br>• Consistent bedtime/wake time<br>• Cool room (65-68°F)<br>• No screens 1h before bed<br>• Avoid caffeine after 2pm<br>• Limit alcohol')}
+        ${createNumberInput('Consistency', data.whoop.sleepConsist, 'whoop', 'sleepConsist', '≥80', '%', '≥80% optimal', '<b>How to improve:</b><br>• Same bedtime daily (±30min)<br>• Same wake time on weekends<br>• Set phone reminders<br>• Create bedtime routine')}
+        ${createNumberInput('RHR', data.whoop.rhr, 'whoop', 'rhr', '<60', 'bpm', '⚠️ <60 optimal (+3.1 yrs if high!)', '<b>How to lower RHR:</b><br>• Regular cardio exercise<br>• Reduce stress (meditation)<br>• Stay hydrated<br>• Limit caffeine/alcohol<br>• Get quality sleep<br>• Lose excess weight')}
+        ${createNumberInput('HRV', data.whoop.hrv, 'whoop', 'hrv', '≥50', 'ms', '≥50 optimal', '<b>How to increase HRV:</b><br>• Consistent sleep schedule<br>• Regular exercise (not overtraining)<br>• Deep breathing exercises<br>• Cold exposure (cold showers)<br>• Reduce alcohol<br>• Manage stress')}
+        ${createNumberInput('VO2 Max', data.whoop.vo2max, 'whoop', 'vo2max', '≥45', '', '⚠️ ≥45 excellent (+2.6 yrs if low!)', '<b>How to improve VO2 Max:</b><br>• High-intensity intervals (HIIT)<br>• Zone 2 cardio (long, easy runs)<br>• Cycling, swimming, rowing<br>• Gradually increase intensity<br>• Train 3-5x per week')}
+        ${createNumberInput('Steps', data.whoop.steps, 'whoop', 'steps', '≥10k', '', '≥10k optimal', '<b>How to get more steps:</b><br>• Walking meetings<br>• Take stairs<br>• Park farther away<br>• Post-meal walks<br>• Treadmill desk<br>• Set hourly reminders')}
+        ${createNumberInput('Zone 1-3', data.whoop.hrZone13, 'whoop', 'hrZone13', '0.4', 'hrs/day', '~3h/week total', '<b>Zone 1-3 (low-moderate):</b><br>• Walking, easy jogging<br>• Light cycling<br>• Yoga, stretching<br>• Should be able to hold conversation')}
+        ${createNumberInput('Zone 4-5', data.whoop.hrZone45, 'whoop', 'hrZone45', '0.15', 'hrs/day', '~1h/week total', '<b>Zone 4-5 (high intensity):</b><br>• Sprints, intervals<br>• Hill runs<br>• HIIT workouts<br>• Hard to speak during exercise')}
+        ${createNumberInput('Recovery', data.whoop.recovery, 'whoop', 'recovery', '≥66', '%', '≥66% green', '<b>How to improve recovery:</b><br>• Prioritize sleep quality<br>• Hydrate well<br>• Eat nutritious foods<br>• Active recovery days<br>• Manage stress<br>• Avoid overtraining')}
+        ${createNumberInput('Strain', data.whoop.strain, 'whoop', 'strain', '10-14', '/21', 'Match to recovery', '<b>Strain guidance:</b><br>• High recovery → higher strain OK<br>• Low recovery → take it easy<br>• Balance strain across week<br>• Listen to your body')}
+        ${createNumberInput('Whoop Age', data.whoop.whoopAge, 'whoop', 'whoopAge', '38', 'yrs', 'Goal: Reduce!')}
+      `;
+
+      const familyContent = ['mom', 'dad', 'jana', 'tia', 'ahmed', 'eman'].map(p =>
+        createToggle(p.charAt(0).toUpperCase() + p.slice(1), data.family[p], 'family', p)
+      ).join('');
+
+      const habitsContent = `
+        ${createCounter('🏋️ Exercise', data.habits.exercise || 0, 'habits', 'exercise', 5)}
+        ${createCounter('📚 Reading', data.habits.reading || 0, 'habits', 'reading', 5)}
+        ${createCounter('🧘 Meditation', data.habits.meditation || 0, 'habits', 'meditation', 5)}
+        ${createNumberInput('💧 Water', data.habits.water, 'habits', 'water', '2.5', 'L')}
+        <div class="mt-2">${createToggle('💊 Vitamins taken', data.habits.vitamins, 'habits', 'vitamins')}</div>
+        ${createCounter('🦷 Brush Teeth', data.habits.brushTeeth || 0, 'habits', 'brushTeeth', 3)}
+      `;
+
+      const summaryContent = `
+        <div class="space-y-3">
+          <div class="p-3 bg-blue-50 rounded-lg">
+            <div class="flex justify-between items-center">
+              <span class="font-medium">Prayers</span>
+              <span class="font-bold text-blue-600">${scores.prayer} pts</span>
+            </div>
+            <div class="text-xs mt-1">
+              <span class="inline-block bg-green-100 text-green-700 px-2 py-0.5 rounded mr-1">${scores.prayerOnTime} on-time</span>
+              <span class="inline-block bg-amber-100 text-amber-700 px-2 py-0.5 rounded">${scores.prayerLate} late</span>
+            </div>
+          </div>
+          <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+            <span class="font-medium">Whoop Age</span>
+            <span class="font-bold text-purple-600">${data.whoop.whoopAge || '—'} yrs</span>
+          </div>
+          <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+            <span class="font-medium">RHR</span>
+            <span class="font-bold ${parseFloat(data.whoop.rhr) <= 70 ? 'text-green-600' : 'text-red-600'}">${data.whoop.rhr || '—'} bpm</span>
+          </div>
+          <div class="flex justify-between items-center p-3 bg-amber-50 rounded-lg">
+            <span class="font-medium">Family</span>
+            <span class="font-bold text-amber-600">${Object.values(data.family).filter(Boolean).length}/6</span>
+          </div>
+        </div>
+      `;
+
+      return `
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
+          ${createScoreCard('Prayer', scores.prayer, 100, 'bg-blue-500')}
+          ${createScoreCard('Health', scores.health, 60, 'bg-green-500')}
+          ${createScoreCard('Whoop', scores.whoop, 100, 'bg-purple-500')}
+          ${createScoreCard('Family', scores.family, 30, 'bg-amber-500')}
+          ${createScoreCard('Habits', scores.habit, 50, 'bg-slate-500')}
+          <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-4 shadow-lg text-white">
+            <div class="text-sm opacity-90">Total Score</div>
+            <div class="text-3xl font-bold">${scores.total}</div>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          ${createCard('Prayers', '🕌', 'bg-blue-600', prayersContent, prayerHelp)}
+          ${createCard('Glucose (Libre)', '💉', 'bg-green-600', glucoseContent)}
+          ${createCard('Whoop Age Metrics', '⏱️', 'bg-purple-600', whoopContent, whoopHelp)}
+          ${createCard('Family Check-ins', '👨‍👩‍👧‍👦', 'bg-amber-600', familyContent)}
+          ${createCard('Habits', '✨', 'bg-slate-600', habitsContent)}
+          ${createCard("Today's Summary", '📈', 'bg-orange-600', summaryContent)}
+        </div>
+      `;
+    }
+
+    function renderDashboardTab() {
+      const stats = getLast30DaysStats();
+      const last30Data = getLast30DaysData();
+      const bests = getPersonalBests();
+
+      setTimeout(() => {
+        const weekCtx = document.getElementById('weekChart');
+        if (weekCtx) {
+          if (weekChart) weekChart.destroy();
+          weekChart = new Chart(weekCtx, {
+            type: 'bar',
+            data: {
+              labels: last30Data.map(d => d.label),
+              datasets: [{ label: 'Total Score', data: last30Data.map(d => d.total), backgroundColor: '#f97316', borderRadius: 4 }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: { beginAtZero: true },
+                x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: 10 } } }
+              }
+            }
+          });
+        }
+
+        const breakdownCtx = document.getElementById('breakdownChart');
+        if (breakdownCtx) {
+          if (breakdownChart) breakdownChart.destroy();
+          breakdownChart = new Chart(breakdownCtx, {
+            type: 'line',
+            data: {
+              labels: last30Data.map(d => d.label),
+              datasets: [
+                { label: 'Prayer', data: last30Data.map(d => d.prayer), borderColor: '#3b82f6', tension: 0.3, pointRadius: 2 },
+                { label: 'Whoop', data: last30Data.map(d => d.whoop), borderColor: '#a855f7', tension: 0.3, pointRadius: 2 },
+                { label: 'Family', data: last30Data.map(d => d.family), borderColor: '#f59e0b', tension: 0.3, pointRadius: 2 },
+                { label: 'Habit', data: last30Data.map(d => d.habit), borderColor: '#64748b', tension: 0.3, pointRadius: 2 }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'bottom' } },
+              scales: {
+                y: { beginAtZero: true },
+                x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: 10 } } }
+              }
+            }
+          });
+        }
+      }, 100);
+
+      return `
+        <div class="space-y-6">
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="bg-gradient-to-br from-orange-500 to-red-500 rounded-xl p-5 text-white shadow-lg">
+              <div class="text-sm opacity-80">30-Day Score</div>
+              <div class="text-3xl font-bold">${stats.totalScore}</div>
+            </div>
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-5 text-white shadow-lg">
+              <div class="text-sm opacity-80">Days Logged</div>
+              <div class="text-3xl font-bold">${stats.daysLogged}/30</div>
+            </div>
+            <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-5 text-white shadow-lg">
+              <div class="text-sm opacity-80">Avg RHR</div>
+              <div class="text-3xl font-bold">${stats.avgRHR} <span class="text-lg">bpm</span></div>
+            </div>
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-5 text-white shadow-lg">
+              <div class="text-sm opacity-80">Avg Sleep</div>
+              <div class="text-3xl font-bold">${stats.avgSleep} <span class="text-lg">hrs</span></div>
+            </div>
+            <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl p-5 text-white shadow-lg">
+              <div class="text-sm opacity-80">Family Check-ins</div>
+              <div class="text-3xl font-bold">${stats.totalFamilyCheckins}</div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-6 shadow-lg">
+            <h3 class="text-lg font-semibold mb-4">Last 30 Days - Total Score</h3>
+            <div class="h-72"><canvas id="weekChart"></canvas></div>
+          </div>
+
+          <div class="bg-white rounded-xl p-6 shadow-lg">
+            <h3 class="text-lg font-semibold mb-4">Last 30 Days - Score Breakdown by Category</h3>
+            <div class="h-72"><canvas id="breakdownChart"></canvas></div>
+          </div>
+
+          <!-- Personal Bests Section -->
+          ${bests ? `
+          <div class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl p-6 shadow-lg text-white">
+            <h3 class="text-lg font-semibold mb-4">🏆 Personal Bests</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
+                <div class="text-3xl font-bold">${bests.highestDayScore.value}</div>
+                <div class="text-sm opacity-90">Best Day Score</div>
+                <div class="text-xs opacity-75 mt-1">${bests.highestDayScore.date ? new Date(bests.highestDayScore.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</div>
+              </div>
+              <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
+                <div class="text-3xl font-bold">${bests.highestWeekScore.value}</div>
+                <div class="text-sm opacity-90">Best Week Score</div>
+                <div class="text-xs opacity-75 mt-1">${bests.highestWeekScore.weekStart ? 'Week of ' + new Date(bests.highestWeekScore.weekStart).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</div>
+              </div>
+              <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
+                <div class="text-3xl font-bold">${bests.longestStreak.value}</div>
+                <div class="text-sm opacity-90">Longest Streak</div>
+                <div class="text-xs opacity-75 mt-1">${bests.longestStreak.value > 0 ? 'days in a row' : '—'}</div>
+              </div>
+              <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
+                <div class="text-3xl font-bold flex items-center gap-2">${bests.currentStreak} ${bests.currentStreak > 0 ? '🔥' : ''}</div>
+                <div class="text-sm opacity-90">Current Streak</div>
+                <div class="text-xs opacity-75 mt-1">${bests.currentStreak > 0 ? 'Keep it going!' : 'Log today to start!'}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+              <h3 class="text-lg font-semibold mb-4">🎖️ Category Records</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <div>
+                    <div class="font-medium text-blue-800">🕌 Best Prayer Day</div>
+                    <div class="text-xs text-blue-600">${bests.bestPrayerDay.date ? new Date(bests.bestPrayerDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</div>
+                  </div>
+                  <div class="text-2xl font-bold text-blue-600">${bests.bestPrayerDay.value} pts</div>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                  <div>
+                    <div class="font-medium text-purple-800">⏱️ Best Whoop Day</div>
+                    <div class="text-xs text-purple-600">${bests.bestWhoopDay.date ? new Date(bests.bestWhoopDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</div>
+                  </div>
+                  <div class="text-2xl font-bold text-purple-600">${bests.bestWhoopDay.value} pts</div>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                  <div>
+                    <div class="font-medium text-green-800">📖 Most Quran Pages</div>
+                    <div class="text-xs text-green-600">${bests.mostQuranPages.date ? new Date(bests.mostQuranPages.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</div>
+                  </div>
+                  <div class="text-2xl font-bold text-green-600">${bests.mostQuranPages.value} pages</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+              <h3 class="text-lg font-semibold mb-4">📊 Lifetime Stats</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                  <div class="font-medium">Total Days Logged</div>
+                  <div class="text-2xl font-bold text-slate-700">${bests.totalDaysLogged}</div>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <div class="font-medium">Perfect Prayer Days</div>
+                  <div class="text-2xl font-bold text-blue-600">${bests.perfectPrayerDays} 🌟</div>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
+                  <div class="font-medium">Perfect Prayer Rate</div>
+                  <div class="text-2xl font-bold text-amber-600">${bests.totalDaysLogged > 0 ? Math.round((bests.perfectPrayerDays / bests.totalDaysLogged) * 100) : 0}%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          ` : `
+          <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+            <div class="text-4xl mb-4">🎮</div>
+            <h3 class="text-lg font-semibold mb-2">Start Your Journey!</h3>
+            <p class="text-gray-500">Log your first day to start tracking personal bests.</p>
+          </div>
+          `}
+        </div>
+      `;
+    }
+
+    function render() {
+      const app = document.getElementById('app');
+      const dateDisplay = new Date(currentDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+      app.innerHTML = `
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 shadow-lg">
+          <div class="max-w-6xl mx-auto">
+            <h1 class="text-3xl font-bold mb-2">Life Gamification</h1>
+            <p class="text-blue-100">Track habits, health & reduce your biological age</p>
+            <div class="mt-4 flex flex-wrap items-center gap-4">
+              <input type="date" id="dateInput" value="${currentDate}"
+                class="px-4 py-2 rounded-lg bg-white/20 text-white border border-white/30 focus:outline-none">
+              <button onclick="setToday()" class="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30">Today</button>
+              <span class="text-blue-100 text-sm">${dateDisplay}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 mt-4">
+          <div class="flex gap-2 bg-slate-800 p-1 rounded-xl">
+            <button onclick="switchTab('track')" class="flex-1 py-2 px-4 rounded-lg font-medium transition ${activeTab === 'track' ? 'bg-white text-slate-800' : 'text-slate-300 hover:text-white'}">
+              📝 Daily
+            </button>
+            <button onclick="switchTab('bulk')" class="flex-1 py-2 px-4 rounded-lg font-medium transition ${activeTab === 'bulk' ? 'bg-white text-slate-800' : 'text-slate-300 hover:text-white'}">
+              📋 Bulk Entry
+            </button>
+            <button onclick="switchTab('dashboard')" class="flex-1 py-2 px-4 rounded-lg font-medium transition ${activeTab === 'dashboard' ? 'bg-white text-slate-800' : 'text-slate-300 hover:text-white'}">
+              📊 Dashboard
+            </button>
+            <button onclick="switchTab('settings')" class="flex-1 py-2 px-4 rounded-lg font-medium transition ${activeTab === 'settings' ? 'bg-white text-slate-800' : 'text-slate-300 hover:text-white'}">
+              ⚙️ Settings
+            </button>
+          </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto p-4">
+          ${activeTab === 'track' ? renderTrackingTab() : activeTab === 'bulk' ? renderBulkEntryTab() : activeTab === 'dashboard' ? renderDashboardTab() : renderSettingsTab()}
+        </div>
+
+        <div class="text-center text-slate-500 py-6 text-sm">
+          Data saved locally • Muhammad's Life Gamification System
+        </div>
+      `;
+
+      document.getElementById('dateInput').addEventListener('change', (e) => { currentDate = e.target.value; render(); });
+    }
+
+    function switchTab(tab) { activeTab = tab; render(); }
+    function setToday() { currentDate = new Date().toISOString().split('T')[0]; render(); }
+
+    function setBulkMonth(month, year) {
+      bulkMonth = parseInt(month);
+      bulkYear = parseInt(year);
+      render();
+    }
+
+    function setBulkCategory(cat) {
+      bulkCategory = cat;
+      render();
+    }
+
+    function updateBulkData(dateStr, category, field, value) {
+      if (!allData[dateStr]) {
+        allData[dateStr] = JSON.parse(JSON.stringify(defaultDayData));
+      }
+      if (category === 'family') {
+        allData[dateStr][category][field] = value === '1' || value === true;
+      } else {
+        allData[dateStr][category][field] = value;
+      }
+      saveData();
+    }
+
+    function getDaysInMonth(month, year) {
+      return new Date(year, month + 1, 0).getDate();
+    }
+
+    function renderBulkEntryTab() {
+      const daysInMonth = getDaysInMonth(bulkMonth, bulkYear);
+      const monthName = new Date(bulkYear, bulkMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+      const categories = {
+        prayers: { label: '🕌 Prayers', fields: ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'quran'], headers: ['F', 'D', 'A', 'M', 'I', 'Q'] },
+        family: { label: '👨‍👩‍👧‍👦 Family', fields: ['mom', 'dad', 'jana', 'tia', 'ahmed', 'eman'], headers: ['Mom', 'Dad', 'Jana', 'Tia', 'Ahmed', 'Eman'] },
+        habits: { label: '✨ Habits', fields: ['exercise', 'reading', 'meditation', 'water', 'vitamins', 'brushTeeth'], headers: ['🏋️', '📚', '🧘', '💧', '💊', '🦷'] },
+        glucose: { label: '💉 Glucose', fields: ['avg', 'tir', 'insulin', 'nop'], headers: ['Avg', 'TIR', 'Insulin', 'NoP'] },
+        whoop: { label: '⏱️ Whoop', fields: ['sleepHours', 'rhr', 'hrv', 'vo2max', 'steps', 'recovery'], headers: ['Sleep', 'RHR', 'HRV', 'VO2', 'Steps', 'Rec'] }
+      };
+
+      const cat = categories[bulkCategory];
+
+      // Generate month options (2026 and 2027)
+      let monthOptions = '';
+      [2026, 2027].forEach(function(year) {
+        for (let m = 0; m < 12; m++) {
+          const label = new Date(year, m).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+          const selected = m === bulkMonth && year === bulkYear ? 'selected' : '';
+          monthOptions += '<option value="' + m + '-' + year + '" ' + selected + '>' + label + '</option>';
+        }
+      });
+
+      // Build the table rows
+      let tableRows = '';
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = bulkYear + '-' + String(bulkMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+        const dayData = allData[dateStr] || JSON.parse(JSON.stringify(defaultDayData));
+        const dayOfWeek = new Date(bulkYear, bulkMonth, day).toLocaleDateString('en-US', { weekday: 'short' });
+        const isWeekend = [0, 6].includes(new Date(bulkYear, bulkMonth, day).getDay());
+        const isToday = dateStr === new Date().toISOString().split('T')[0];
+        const scores = calculateScores(dayData);
+
+        let cells = '';
+        cat.fields.forEach(field => {
+          const value = dayData[bulkCategory][field];
+
+          if (bulkCategory === 'family' || (bulkCategory === 'habits' && field === 'vitamins')) {
+            const checked = value ? 'checked' : '';
+            cells += '<td class="border border-gray-200 px-1 py-1 text-center">' +
+              '<input type="checkbox" ' + checked +
+              ' class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"' +
+              ' onchange="updateBulkData(\'' + dateStr + '\', \'' + bulkCategory + '\', \'' + field + '\', this.checked ? \'1\' : \'\')">' +
+              '</td>';
+          } else if (bulkCategory === 'prayers' && field !== 'quran') {
+            cells += '<td class="border border-gray-200 px-1 py-1">' +
+              '<input type="text" value="' + (value || '') + '" placeholder="X.Y"' +
+              ' class="w-full px-1 py-1 text-center text-sm font-mono border-0 focus:ring-2 focus:ring-blue-500 rounded"' +
+              ' onchange="updateBulkData(\'' + dateStr + '\', \'' + bulkCategory + '\', \'' + field + '\', this.value)">' +
+              '</td>';
+          } else {
+            cells += '<td class="border border-gray-200 px-1 py-1">' +
+              '<input type="number" step="any" value="' + (value || '') + '"' +
+              ' class="w-full px-1 py-1 text-center text-sm border-0 focus:ring-2 focus:ring-blue-500 rounded"' +
+              ' onchange="updateBulkData(\'' + dateStr + '\', \'' + bulkCategory + '\', \'' + field + '\', this.value)">' +
+              '</td>';
+          }
+        });
+
+        const rowClass = (isWeekend ? 'bg-slate-50 ' : '') + (isToday ? 'bg-yellow-50 ' : '') + 'hover:bg-blue-50';
+        const dayCellClass = 'border border-gray-200 px-2 py-1 font-medium text-center sticky left-0 z-10 ' + (isToday ? 'bg-yellow-100' : 'bg-white');
+        const weekdayCellClass = 'border border-gray-200 px-2 py-1 text-xs text-gray-500 text-center sticky left-10 z-10 ' + (isToday ? 'bg-yellow-100' : 'bg-white');
+
+        tableRows += '<tr class="' + rowClass + '">' +
+          '<td class="' + dayCellClass + '">' + day + '</td>' +
+          '<td class="' + weekdayCellClass + '">' + dayOfWeek + '</td>' +
+          cells +
+          '<td class="border border-gray-200 px-2 py-1 text-center font-semibold text-blue-600">' + scores.total + '</td>' +
+          '</tr>';
+      }
+
+      // Category buttons
+      let catButtons = '';
+      Object.entries(categories).forEach(function([key, val]) {
+        const btnClass = bulkCategory === key ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700';
+        catButtons += '<button onclick="setBulkCategory(\'' + key + '\')" class="px-3 py-2 rounded-lg text-sm font-medium transition ' + btnClass + '">' + val.label + '</button>';
+      });
+
+      // Header cells
+      let headerCells = '';
+      cat.headers.forEach(function(h) {
+        headerCells += '<th class="border border-blue-500 px-3 py-3 font-medium">' + h + '</th>';
+      });
+
+      // Calculate summary stats
+      let totalScore = 0, daysWithData = 0;
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = bulkYear + '-' + String(bulkMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+        if (allData[dateStr]) {
+          daysWithData++;
+          totalScore += calculateScores(allData[dateStr]).total;
+        }
+      }
+      const avgScore = daysWithData > 0 ? Math.round(totalScore / daysWithData) : 0;
+      const completionRate = Math.round((daysWithData / daysInMonth) * 100);
+
+      const prayerHint = bulkCategory === 'prayers' ? '<span class="ml-2 text-blue-600">• Use X.Y format: e.g., 1 = on-time, 0.1 = late, 1.2 = 1 on-time + 2 late</span>' : '';
+      const familyHint = bulkCategory === 'family' ? '<span class="ml-2 text-blue-600">• Check box if you connected with that person</span>' : '';
+
+      return '<div class="space-y-4">' +
+        '<div class="bg-white rounded-xl p-4 shadow-lg">' +
+          '<div class="flex flex-wrap items-center gap-4">' +
+            '<div>' +
+              '<label class="text-sm text-gray-600 block mb-1">Month</label>' +
+              '<select onchange="const [m,y] = this.value.split(\'-\'); setBulkMonth(m, y)" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">' +
+                monthOptions +
+              '</select>' +
+            '</div>' +
+            '<div>' +
+              '<label class="text-sm text-gray-600 block mb-1">Category</label>' +
+              '<div class="flex gap-1 flex-wrap">' + catButtons + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="bg-blue-50 rounded-lg p-3 text-sm text-blue-800">' +
+          '<strong>' + monthName + '</strong> - ' + cat.label + prayerHint + familyHint +
+        '</div>' +
+        '<div class="bg-white rounded-xl shadow-lg overflow-hidden">' +
+          '<div class="overflow-x-auto">' +
+            '<table class="w-full text-sm">' +
+              '<thead>' +
+                '<tr class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">' +
+                  '<th class="border border-blue-500 px-2 py-3 sticky left-0 bg-blue-600 z-20">Day</th>' +
+                  '<th class="border border-blue-500 px-2 py-3 sticky left-10 bg-blue-600 z-20"></th>' +
+                  headerCells +
+                  '<th class="border border-blue-500 px-3 py-3 font-medium">Score</th>' +
+                '</tr>' +
+              '</thead>' +
+              '<tbody>' + tableRows + '</tbody>' +
+            '</table>' +
+          '</div>' +
+        '</div>' +
+        '<div class="bg-white rounded-xl p-4 shadow-lg">' +
+          '<h3 class="font-semibold mb-3">' + monthName + ' Summary</h3>' +
+          '<div class="grid grid-cols-2 md:grid-cols-4 gap-4">' +
+            '<div class="bg-blue-50 rounded-lg p-3 text-center">' +
+              '<div class="text-2xl font-bold text-blue-600">' + daysWithData + '</div>' +
+              '<div class="text-xs text-gray-600">Days Logged</div>' +
+            '</div>' +
+            '<div class="bg-green-50 rounded-lg p-3 text-center">' +
+              '<div class="text-2xl font-bold text-green-600">' + totalScore + '</div>' +
+              '<div class="text-xs text-gray-600">Total Score</div>' +
+            '</div>' +
+            '<div class="bg-purple-50 rounded-lg p-3 text-center">' +
+              '<div class="text-2xl font-bold text-purple-600">' + avgScore + '</div>' +
+              '<div class="text-xs text-gray-600">Avg Daily Score</div>' +
+            '</div>' +
+            '<div class="bg-amber-50 rounded-lg p-3 text-center">' +
+              '<div class="text-2xl font-bold text-amber-600">' + completionRate + '%</div>' +
+              '<div class="text-xs text-gray-600">Completion Rate</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function createWeightInput(label, value, category, field = null) {
+      return `
+        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+          <span class="text-sm text-gray-700">${label}</span>
+          <input type="number" step="1" value="${value}"
+            class="w-20 px-2 py-1 border border-gray-300 rounded text-center text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            onchange="updateWeight('${category}', ${field ? `'${field}'` : 'null'}, this.value)">
+        </div>
+      `;
+    }
+
+    function renderSettingsTab() {
+      return `
+        <div class="space-y-6">
+          <div class="bg-white rounded-xl p-6 shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-semibold">⚙️ Scoring Weights</h3>
+              <button onclick="resetWeights()" class="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 text-sm font-medium">
+                Reset to Defaults
+              </button>
+            </div>
+            <p class="text-sm text-gray-500 mb-6">Adjust the point values for each activity. Changes apply immediately.</p>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <!-- Prayer Weights -->
+              <div class="bg-blue-50 rounded-lg p-4">
+                <h4 class="font-semibold text-blue-800 mb-3">🕌 Prayer</h4>
+                ${createWeightInput('On-time prayer', WEIGHTS.prayer.onTime, 'prayer', 'onTime')}
+                ${createWeightInput('Late prayer', WEIGHTS.prayer.late, 'prayer', 'late')}
+                ${createWeightInput('Quran (per page)', WEIGHTS.prayer.quran, 'prayer', 'quran')}
+              </div>
+
+              <!-- Family Weights -->
+              <div class="bg-amber-50 rounded-lg p-4">
+                <h4 class="font-semibold text-amber-800 mb-3">👨‍👩‍👧‍👦 Family</h4>
+                ${createWeightInput('👩 Mom', WEIGHTS.family.mom, 'family', 'mom')}
+                ${createWeightInput('👨 Dad', WEIGHTS.family.dad, 'family', 'dad')}
+                ${createWeightInput('👧 Jana', WEIGHTS.family.jana, 'family', 'jana')}
+                ${createWeightInput('👶 Tia', WEIGHTS.family.tia, 'family', 'tia')}
+                ${createWeightInput('👦 Ahmed', WEIGHTS.family.ahmed, 'family', 'ahmed')}
+                ${createWeightInput('👩‍🦱 Eman', WEIGHTS.family.eman, 'family', 'eman')}
+              </div>
+
+              <!-- Habits Weights -->
+              <div class="bg-slate-50 rounded-lg p-4">
+                <h4 class="font-semibold text-slate-800 mb-3">✨ Habits</h4>
+                ${createWeightInput('🏋️ Exercise', WEIGHTS.habits.exercise, 'habits', 'exercise')}
+                ${createWeightInput('📚 Reading', WEIGHTS.habits.reading, 'habits', 'reading')}
+                ${createWeightInput('🧘 Meditation', WEIGHTS.habits.meditation, 'habits', 'meditation')}
+                ${createWeightInput('💧 Water (per L)', WEIGHTS.habits.water, 'habits', 'water')}
+                ${createWeightInput('💊 Vitamins', WEIGHTS.habits.vitamins, 'habits', 'vitamins')}
+                ${createWeightInput('🦷 Brush Teeth', WEIGHTS.habits.brushTeeth, 'habits', 'brushTeeth')}
+              </div>
+
+              <!-- Glucose Weights -->
+              <div class="bg-green-50 rounded-lg p-4">
+                <h4 class="font-semibold text-green-800 mb-3">💉 Glucose</h4>
+                ${createWeightInput('Optimal (70-140)', WEIGHTS.glucose.optimal, 'glucose', 'optimal')}
+                ${createWeightInput('Acceptable (140-180)', WEIGHTS.glucose.acceptable, 'glucose', 'acceptable')}
+                ${createWeightInput('TIR ≥70%', WEIGHTS.glucose.tirHigh, 'glucose', 'tirHigh')}
+                ${createWeightInput('TIR 50-70%', WEIGHTS.glucose.tirMid, 'glucose', 'tirMid')}
+                ${createWeightInput('Insulin (base pts)', WEIGHTS.glucose.insulinBase, 'glucose', 'insulinBase')}
+                ${createWeightInput('Insulin >40 penalty', WEIGHTS.glucose.insulinPenalty, 'glucose', 'insulinPenalty')}
+                ${createWeightInput('NoP = 1 (bonus)', WEIGHTS.glucose.nopYes, 'glucose', 'nopYes')}
+                ${createWeightInput('NoP = 0 (penalty)', WEIGHTS.glucose.nopNo, 'glucose', 'nopNo')}
+              </div>
+
+              <!-- Whoop Weights -->
+              <div class="bg-purple-50 rounded-lg p-4 lg:col-span-2">
+                <h4 class="font-semibold text-purple-800 mb-3">⏱️ Whoop Age Metrics</h4>
+                <div class="grid md:grid-cols-2 gap-x-6">
+                  <div>
+                    <div class="text-xs text-purple-600 font-medium mb-2">Sleep</div>
+                    ${createWeightInput('Sleep 7-8h (optimal)', WEIGHTS.whoop.sleepOptimal, 'whoop', 'sleepOptimal')}
+                    ${createWeightInput('Sleep 6-7h', WEIGHTS.whoop.sleepGood, 'whoop', 'sleepGood')}
+                    ${createWeightInput('Sleep >8h', WEIGHTS.whoop.sleepOver, 'whoop', 'sleepOver')}
+                    ${createWeightInput('Consistency ≥80%', WEIGHTS.whoop.consistHigh, 'whoop', 'consistHigh')}
+                    ${createWeightInput('Consistency 70-80%', WEIGHTS.whoop.consistMid, 'whoop', 'consistMid')}
+                    ${createWeightInput('Consistency 60-70%', WEIGHTS.whoop.consistLow, 'whoop', 'consistLow')}
+                  </div>
+                  <div>
+                    <div class="text-xs text-purple-600 font-medium mb-2">Heart</div>
+                    ${createWeightInput('RHR ≤60 bpm', WEIGHTS.whoop.rhrOptimal, 'whoop', 'rhrOptimal')}
+                    ${createWeightInput('RHR 61-70 bpm', WEIGHTS.whoop.rhrGood, 'whoop', 'rhrGood')}
+                    ${createWeightInput('RHR 71-80 bpm', WEIGHTS.whoop.rhrOk, 'whoop', 'rhrOk')}
+                    ${createWeightInput('HRV ≥50ms', WEIGHTS.whoop.hrvHigh, 'whoop', 'hrvHigh')}
+                    ${createWeightInput('HRV 40-50ms', WEIGHTS.whoop.hrvMid, 'whoop', 'hrvMid')}
+                    ${createWeightInput('HRV 30-40ms', WEIGHTS.whoop.hrvLow, 'whoop', 'hrvLow')}
+                  </div>
+                  <div>
+                    <div class="text-xs text-purple-600 font-medium mb-2 mt-3">Fitness</div>
+                    ${createWeightInput('VO2 ≥45', WEIGHTS.whoop.vo2High, 'whoop', 'vo2High')}
+                    ${createWeightInput('VO2 40-45', WEIGHTS.whoop.vo2Good, 'whoop', 'vo2Good')}
+                    ${createWeightInput('VO2 35-40', WEIGHTS.whoop.vo2Mid, 'whoop', 'vo2Mid')}
+                    ${createWeightInput('VO2 30-35', WEIGHTS.whoop.vo2Low, 'whoop', 'vo2Low')}
+                    ${createWeightInput('Steps ≥10k', WEIGHTS.whoop.stepsHigh, 'whoop', 'stepsHigh')}
+                    ${createWeightInput('Steps 8-10k', WEIGHTS.whoop.stepsMid, 'whoop', 'stepsMid')}
+                    ${createWeightInput('Steps 6-8k', WEIGHTS.whoop.stepsLow, 'whoop', 'stepsLow')}
+                  </div>
+                  <div>
+                    <div class="text-xs text-purple-600 font-medium mb-2 mt-3">Activity</div>
+                    ${createWeightInput('HR Zone 1-3 (per hr)', WEIGHTS.whoop.hrZone13, 'whoop', 'hrZone13')}
+                    ${createWeightInput('HR Zone 4-5 (per hr)', WEIGHTS.whoop.hrZone45, 'whoop', 'hrZone45')}
+                    ${createWeightInput('Recovery ≥66%', WEIGHTS.whoop.recoveryHigh, 'whoop', 'recoveryHigh')}
+                    ${createWeightInput('Recovery 50-66%', WEIGHTS.whoop.recoveryMid, 'whoop', 'recoveryMid')}
+                    ${createWeightInput('Recovery 33-50%', WEIGHTS.whoop.recoveryLow, 'whoop', 'recoveryLow')}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-6 shadow-lg">
+            <h3 class="text-lg font-semibold mb-4">💾 Data Management</h3>
+            <div class="flex flex-wrap gap-3">
+              <button onclick="exportData()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm font-medium">
+                Export All Data
+              </button>
+              <label class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm font-medium cursor-pointer">
+                Import Data
+                <input type="file" accept=".json" class="hidden" onchange="importData(event)">
+              </label>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function exportData() {
+      const exportObj = {
+        data: allData,
+        weights: WEIGHTS,
+        exportDate: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'life-gamification-backup-' + new Date().toISOString().split('T')[0] + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported.data) {
+            allData = imported.data;
+            saveData();
+          }
+          if (imported.weights) {
+            WEIGHTS = imported.weights;
+            saveWeights();
+          }
+          alert('Data imported successfully!');
+          render();
+        } catch (err) {
+          alert('Error importing data: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    render();
+  </script>
+</body>
+</html>
