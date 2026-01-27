@@ -570,7 +570,9 @@
       `;
     }
 
-    function createNumberInput(label, value, category, field, placeholder, unit, hint = '', tooltip = '') {
+    function createNumberInput(label, value, category, field, placeholder, unit, hint = '', tooltip = '', tooltipPos = 'center') {
+      // tooltipPos: 'left', 'center', 'right' to control horizontal alignment
+      const posClass = tooltipPos === 'left' ? 'left-0' : tooltipPos === 'right' ? 'right-0' : 'left-1/2 -translate-x-1/2';
       return `
         <div class="flex-1 text-center group relative">
           <input type="number" step="any" value="${value}" placeholder="${placeholder}"
@@ -581,7 +583,7 @@
             ${tooltip ? `<span class="cursor-help text-charcoal/30 hover:text-coral">ⓘ</span>` : ''}
           </div>
           <div class="text-xs text-charcoal/40">${unit}${hint ? ` · ${hint}` : ''}</div>
-          ${tooltip ? `<div class="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-50 hidden group-hover:block bg-charcoal text-white text-xs rounded p-3 w-48 shadow-lg text-left">${tooltip}</div>` : ''}
+          ${tooltip ? `<div class="absolute ${posClass} top-full mt-1 z-50 hidden group-hover:block bg-charcoal text-white text-xs rounded p-3 w-48 shadow-lg text-left">${tooltip}</div>` : ''}
         </div>
       `;
     }
@@ -679,9 +681,9 @@
       const whoopHelp = `<span class="text-xs text-charcoal/50">Hover ⓘ for tips</span>`;
       const whoopContent = `
         <div class="grid grid-cols-3 gap-3">
-          ${createNumberInput('Sleep Perf', data.whoop.sleepPerf, 'whoop', 'sleepPerf', '≥90', '%', '≥90%', '<b>How to improve:</b><br>• Consistent bedtime/wake time<br>• Cool room (65-68°F)<br>• No screens 1h before bed')}
-          ${createNumberInput('Recovery', data.whoop.recovery, 'whoop', 'recovery', '≥66', '%', '≥66%', '<b>How to improve recovery:</b><br>• Prioritize sleep quality<br>• Hydrate well<br>• Eat nutritious foods')}
-          ${createNumberInput('Strain', data.whoop.strain, 'whoop', 'strain', '10-14', '/21', 'match', '<b>Recovery-matched:</b><br>• Green (≥66%) → 14+ strain<br>• Yellow (33-65%) → 10-14 strain<br>• Red (<33%) → rest')}
+          ${createNumberInput('Sleep Perf', data.whoop.sleepPerf, 'whoop', 'sleepPerf', '≥90', '%', '≥90%', '<b>How to improve:</b><br>• Consistent bedtime/wake time<br>• Cool room (65-68°F)<br>• No screens 1h before bed', 'left')}
+          ${createNumberInput('Recovery', data.whoop.recovery, 'whoop', 'recovery', '≥66', '%', '≥66%', '<b>How to improve recovery:</b><br>• Prioritize sleep quality<br>• Hydrate well<br>• Eat nutritious foods', 'center')}
+          ${createNumberInput('Strain', data.whoop.strain, 'whoop', 'strain', '10-14', '/21', 'match', '<b>Recovery-matched:</b><br>• Green (≥66%) → 14+ strain<br>• Yellow (33-65%) → 10-14 strain<br>• Red (<33%) → rest', 'right')}
         </div>
       `;
 
@@ -1078,12 +1080,21 @@
       const daysInMonth = getDaysInMonth(bulkMonth, bulkYear);
       const monthName = new Date(bulkYear, bulkMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
+      // Category colors matching Daily tab
+      const categoryColors = {
+        prayers: '#4A90A4',  // teal
+        glucose: '#6B8E5A', // green
+        whoop: '#7C6B8E',   // purple
+        family: '#C4943D',  // amber
+        habits: '#6B7280'   // slate
+      };
+
       const categories = {
         prayers: { label: '🕌 Prayers', fields: ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'quran'], headers: ['F', 'D', 'A', 'M', 'I', 'Q'] },
-        family: { label: '👨‍👩‍👧‍👦 Family', fields: ['mom', 'dad', 'jana', 'tia', 'ahmed', 'eman'], headers: ['Mom', 'Dad', 'Jana', 'Tia', 'Ahmed', 'Eman'] },
-        habits: { label: '✨ Habits', fields: ['exercise', 'reading', 'meditation', 'water', 'vitamins', 'brushTeeth', 'nop'], headers: ['🏋️', '📚', '🧘', '💧', '💊', '🦷', '💤'] },
         glucose: { label: '💉 Glucose', fields: ['avg', 'tir', 'insulin'], headers: ['Avg', 'TIR', 'Insulin'] },
-        whoop: { label: '⏱️ Whoop', fields: ['sleepHours', 'rhr', 'hrv', 'vo2max', 'steps', 'recovery'], headers: ['Sleep', 'RHR', 'HRV', 'VO2', 'Steps', 'Rec'] }
+        whoop: { label: '⏱️ Whoop', fields: ['sleepPerf', 'recovery', 'strain'], headers: ['Sleep%', 'Rec', 'Strain'] },
+        family: { label: '👨‍👩‍👧‍👦 Family', fields: ['mom', 'dad', 'jana', 'tia', 'ahmed', 'eman'], headers: ['Mom', 'Dad', 'Jana', 'Tia', 'Ahmed', 'Eman'] },
+        habits: { label: '✨ Habits', fields: ['exercise', 'reading', 'meditation', 'water', 'vitamins', 'brushTeeth', 'nop'], headers: ['🏋️', '📚', '🧘', '💧', '💊', '🦷', '💤'] }
       };
 
       const cat = categories[bulkCategory];
@@ -1114,49 +1125,54 @@
 
           if (bulkCategory === 'family' || (bulkCategory === 'habits' && field === 'vitamins')) {
             const checked = value ? 'checked' : '';
-            cells += '<td class="border border-gray-200 px-1 py-1 text-center">' +
+            cells += '<td class="border border-softborder px-1 py-1 text-center">' +
               '<input type="checkbox" ' + checked +
-              ' class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"' +
+              ' class="w-5 h-5 rounded border-softborder text-coral focus:ring-coral cursor-pointer"' +
               ' onchange="updateBulkData(\'' + dateStr + '\', \'' + bulkCategory + '\', \'' + field + '\', this.checked ? \'1\' : \'\')">' +
               '</td>';
           } else if (bulkCategory === 'prayers' && field !== 'quran') {
-            cells += '<td class="border border-gray-200 px-1 py-1">' +
+            cells += '<td class="border border-softborder px-1 py-1">' +
               '<input type="text" value="' + (value || '') + '" placeholder="X.Y"' +
-              ' class="w-full px-1 py-1 text-center text-sm font-mono border-0 focus:ring-2 focus:ring-blue-500 rounded"' +
+              ' class="w-full px-1 py-1 text-center text-sm font-mono border-0 focus:ring-2 focus:ring-coral rounded bg-white"' +
               ' onchange="updateBulkData(\'' + dateStr + '\', \'' + bulkCategory + '\', \'' + field + '\', this.value)">' +
               '</td>';
           } else {
-            cells += '<td class="border border-gray-200 px-1 py-1">' +
+            cells += '<td class="border border-softborder px-1 py-1">' +
               '<input type="number" step="any" value="' + (value || '') + '"' +
-              ' class="w-full px-1 py-1 text-center text-sm border-0 focus:ring-2 focus:ring-blue-500 rounded"' +
+              ' class="w-full px-1 py-1 text-center text-sm border-0 focus:ring-2 focus:ring-coral rounded bg-white"' +
               ' onchange="updateBulkData(\'' + dateStr + '\', \'' + bulkCategory + '\', \'' + field + '\', this.value)">' +
               '</td>';
           }
         });
 
-        const rowClass = (isWeekend ? 'bg-slate-50 ' : '') + (isToday ? 'bg-yellow-50 ' : '') + 'hover:bg-blue-50';
-        const dayCellClass = 'border border-gray-200 px-2 py-1 font-medium text-center sticky left-0 z-10 ' + (isToday ? 'bg-yellow-100' : 'bg-white');
-        const weekdayCellClass = 'border border-gray-200 px-2 py-1 text-xs text-gray-500 text-center sticky left-10 z-10 ' + (isToday ? 'bg-yellow-100' : 'bg-white');
+        const rowClass = (isWeekend ? 'bg-warmgray/50 ' : '') + (isToday ? 'bg-coral/10 ' : '') + 'hover:bg-warmgray';
+        const dayCellClass = 'border border-softborder px-2 py-1 font-medium text-center text-charcoal sticky left-0 z-10 ' + (isToday ? 'bg-coral/20' : 'bg-white');
+        const weekdayCellClass = 'border border-softborder px-2 py-1 text-xs text-charcoal/50 text-center sticky left-10 z-10 ' + (isToday ? 'bg-coral/20' : 'bg-white');
 
         tableRows += '<tr class="' + rowClass + '">' +
           '<td class="' + dayCellClass + '">' + day + '</td>' +
           '<td class="' + weekdayCellClass + '">' + dayOfWeek + '</td>' +
           cells +
-          '<td id="score-' + dateStr + '" class="border border-gray-200 px-2 py-1 text-center font-semibold text-blue-600">' + fmt(scores.total) + '</td>' +
+          '<td id="score-' + dateStr + '" class="border border-softborder px-2 py-1 text-center font-semibold text-coral">' + fmt(scores.total) + '</td>' +
           '</tr>';
       }
 
-      // Category buttons
+      // Category buttons with section colors
       let catButtons = '';
       Object.entries(categories).forEach(function([key, val]) {
-        const btnClass = bulkCategory === key ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700';
-        catButtons += '<button onclick="setBulkCategory(\'' + key + '\')" class="px-3 py-2 rounded-lg text-sm font-medium transition ' + btnClass + '">' + val.label + '</button>';
+        const color = categoryColors[key];
+        const btnClass = bulkCategory === key
+          ? 'text-white'
+          : 'bg-warmgray hover:bg-softborder text-charcoal';
+        const btnStyle = bulkCategory === key ? 'background-color: ' + color : '';
+        catButtons += '<button onclick="setBulkCategory(\'' + key + '\')" class="px-3 py-2 rounded-lg text-sm font-medium transition ' + btnClass + '" style="' + btnStyle + '">' + val.label + '</button>';
       });
 
-      // Header cells
+      // Header cells with category color
+      const catColor = categoryColors[bulkCategory];
       let headerCells = '';
       cat.headers.forEach(function(h) {
-        headerCells += '<th class="border border-blue-500 px-3 py-3 font-medium">' + h + '</th>';
+        headerCells += '<th class="border px-3 py-3 font-medium" style="border-color: ' + catColor + '">' + h + '</th>';
       });
 
       // Calculate summary stats
@@ -1171,60 +1187,73 @@
       const avgScore = daysWithData > 0 ? Math.round(totalScore / daysWithData) : 0;
       const completionRate = Math.round((daysWithData / daysInMonth) * 100);
 
-      const prayerHint = bulkCategory === 'prayers' ? '<span class="ml-2 text-blue-600">• Use X.Y format: e.g., 1 = on-time, 0.1 = late, 1.2 = 1 on-time + 2 late</span>' : '';
-      const familyHint = bulkCategory === 'family' ? '<span class="ml-2 text-blue-600">• Check box if you connected with that person</span>' : '';
+      const prayerHint = bulkCategory === 'prayers' ? '<span class="ml-2 text-charcoal/70">• Use X.Y format: e.g., 1 = on-time, 0.1 = late, 1.2 = 1 on-time + 2 late</span>' : '';
+      const familyHint = bulkCategory === 'family' ? '<span class="ml-2 text-charcoal/70">• Check box if you connected with that person</span>' : '';
 
       return '<div class="space-y-4">' +
-        '<div class="bg-white rounded-xl p-4 shadow-lg">' +
-          '<div class="flex flex-wrap items-center gap-4">' +
-            '<div>' +
-              '<label class="text-sm text-gray-600 block mb-1">Month</label>' +
-              '<select onchange="const [m,y] = this.value.split(\'-\'); setBulkMonth(m, y)" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">' +
-                monthOptions +
-              '</select>' +
-            '</div>' +
-            '<div>' +
-              '<label class="text-sm text-gray-600 block mb-1">Category</label>' +
-              '<div class="flex gap-1 flex-wrap">' + catButtons + '</div>' +
+        // Controls card
+        '<div class="sb-card rounded-lg overflow-hidden">' +
+          '<div class="px-5 py-3 bg-warmgray" style="border-bottom: 3px solid #E5533D">' +
+            '<h3 class="font-semibold text-charcoal">📅 Bulk Entry</h3>' +
+          '</div>' +
+          '<div class="p-5 bg-white">' +
+            '<div class="flex flex-wrap items-center gap-4">' +
+              '<div>' +
+                '<label class="text-sm text-charcoal/60 block mb-1">Month</label>' +
+                '<select onchange="const [m,y] = this.value.split(\'-\'); setBulkMonth(m, y)" class="px-3 py-2 border border-softborder rounded-lg focus:ring-2 focus:ring-coral outline-none bg-white text-charcoal">' +
+                  monthOptions +
+                '</select>' +
+              '</div>' +
+              '<div>' +
+                '<label class="text-sm text-charcoal/60 block mb-1">Category</label>' +
+                '<div class="flex gap-1 flex-wrap">' + catButtons + '</div>' +
+              '</div>' +
             '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="bg-blue-50 rounded-lg p-3 text-sm text-blue-800">' +
-          '<strong>' + monthName + '</strong> - ' + cat.label + prayerHint + familyHint +
+        // Info hint
+        '<div class="rounded-lg p-3 text-sm" style="background-color: ' + catColor + '15; border-left: 3px solid ' + catColor + '">' +
+          '<strong class="text-charcoal">' + monthName + '</strong> <span class="text-charcoal/70">' + cat.label + '</span>' + prayerHint + familyHint +
         '</div>' +
-        '<div class="bg-white rounded-xl shadow-lg overflow-hidden">' +
+        // Data table
+        '<div class="sb-card rounded-lg overflow-hidden">' +
           '<div class="overflow-x-auto">' +
             '<table class="w-full text-sm">' +
               '<thead>' +
-                '<tr class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">' +
-                  '<th class="border border-blue-500 px-2 py-3 sticky left-0 bg-blue-600 z-20">Day</th>' +
-                  '<th class="border border-blue-500 px-2 py-3 sticky left-10 bg-blue-600 z-20"></th>' +
+                '<tr class="text-white" style="background-color: ' + catColor + '">' +
+                  '<th class="border px-2 py-3 sticky left-0 z-20" style="border-color: ' + catColor + '; background-color: ' + catColor + '">Day</th>' +
+                  '<th class="border px-2 py-3 sticky left-10 z-20" style="border-color: ' + catColor + '; background-color: ' + catColor + '"></th>' +
                   headerCells +
-                  '<th class="border border-blue-500 px-3 py-3 font-medium">Score</th>' +
+                  '<th class="border px-3 py-3 font-medium" style="border-color: ' + catColor + '">Score</th>' +
                 '</tr>' +
               '</thead>' +
               '<tbody>' + tableRows + '</tbody>' +
             '</table>' +
           '</div>' +
         '</div>' +
-        '<div class="bg-white rounded-xl p-4 shadow-lg">' +
-          '<h3 class="font-semibold mb-3">' + monthName + ' Summary</h3>' +
-          '<div class="grid grid-cols-2 md:grid-cols-4 gap-4">' +
-            '<div class="bg-blue-50 rounded-lg p-3 text-center">' +
-              '<div id="bulk-days-logged" class="text-2xl font-bold text-blue-600">' + fmt(daysWithData) + '</div>' +
-              '<div class="text-xs text-gray-600">Days Logged</div>' +
-            '</div>' +
-            '<div class="bg-green-50 rounded-lg p-3 text-center">' +
-              '<div id="bulk-total-score" class="text-2xl font-bold text-green-600">' + fmt(totalScore) + '</div>' +
-              '<div class="text-xs text-gray-600">Total Score</div>' +
-            '</div>' +
-            '<div class="bg-purple-50 rounded-lg p-3 text-center">' +
-              '<div id="bulk-avg-score" class="text-2xl font-bold text-purple-600">' + fmt(avgScore) + '</div>' +
-              '<div class="text-xs text-gray-600">Avg Daily Score</div>' +
-            '</div>' +
-            '<div class="bg-amber-50 rounded-lg p-3 text-center">' +
-              '<div id="bulk-completion" class="text-2xl font-bold text-amber-600">' + completionRate + '%</div>' +
-              '<div class="text-xs text-gray-600">Completion Rate</div>' +
+        // Summary card
+        '<div class="sb-card rounded-lg overflow-hidden">' +
+          '<div class="px-5 py-3 bg-warmgray" style="border-bottom: 3px solid #E5533D">' +
+            '<h3 class="font-semibold text-charcoal">📊 ' + monthName + ' Summary</h3>' +
+          '</div>' +
+          '<div class="p-5 bg-white">' +
+            '<div class="grid grid-cols-2 md:grid-cols-4 gap-4">' +
+              '<div class="bg-warmgray rounded-lg p-3 text-center">' +
+                '<div id="bulk-days-logged" class="text-2xl font-bold text-charcoal">' + fmt(daysWithData) + '</div>' +
+                '<div class="text-xs text-charcoal/60">Days Logged</div>' +
+              '</div>' +
+              '<div class="bg-warmgray rounded-lg p-3 text-center">' +
+                '<div id="bulk-total-score" class="text-2xl font-bold text-coral">' + fmt(totalScore) + '</div>' +
+                '<div class="text-xs text-charcoal/60">Total Score</div>' +
+              '</div>' +
+              '<div class="bg-warmgray rounded-lg p-3 text-center">' +
+                '<div id="bulk-avg-score" class="text-2xl font-bold text-charcoal">' + fmt(avgScore) + '</div>' +
+                '<div class="text-xs text-charcoal/60">Avg Daily Score</div>' +
+              '</div>' +
+              '<div class="bg-warmgray rounded-lg p-3 text-center">' +
+                '<div id="bulk-completion" class="text-2xl font-bold text-charcoal">' + completionRate + '%</div>' +
+                '<div class="text-xs text-charcoal/60">Completion Rate</div>' +
+              '</div>' +
             '</div>' +
           '</div>' +
         '</div>' +
