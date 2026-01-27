@@ -673,11 +673,13 @@
       `;
     }
 
-    function createCard(title, icon, colorClass, content, extraHeader = '') {
+    function createCard(title, icon, accentColor, content, extraHeader = '') {
+      const accent = accentColor || '#6B7280';
       return `
         <div class="sb-card rounded-lg overflow-hidden">
           <div class="px-5 py-4 border-b border-softborder flex items-center justify-between bg-warmgray">
             <div class="flex items-center gap-2">
+              <div class="w-1 h-6 rounded-full" style="background: ${accent}"></div>
               <span class="text-lg">${icon}</span>
               <h3 class="font-semibold text-charcoal">${title}</h3>
             </div>
@@ -818,12 +820,12 @@
           </div>
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          ${createCard('Prayers', '🕌', '', prayersContent, prayerHelp)}
-          ${createCard('Glucose (Libre)', '💉', '', glucoseContent)}
-          ${createCard('Whoop Age Metrics', '⏱️', '', whoopContent, whoopHelp)}
-          ${createCard('Family Check-ins', '👨‍👩‍👧‍👦', '', familyContent)}
-          ${createCard('Habits', '✨', '', habitsContent)}
-          ${createCard("Today's Summary", '📈', '', summaryContent)}
+          ${createCard('Prayers', '🕌', '#4A90A4', prayersContent, prayerHelp)}
+          ${createCard('Glucose (Libre)', '💉', '#6B8E5A', glucoseContent)}
+          ${createCard('Whoop Age Metrics', '⏱️', '#7C6B8E', whoopContent, whoopHelp)}
+          ${createCard('Family Check-ins', '👨‍👩‍👧‍👦', '#C4943D', familyContent)}
+          ${createCard('Habits', '✨', '#6B7280', habitsContent)}
+          ${createCard("Today's Summary", '📈', '#E5533D', summaryContent)}
         </div>
       `;
     }
