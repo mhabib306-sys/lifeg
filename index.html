@@ -69,7 +69,22 @@
       whoop: { sleepOptimal: 15, sleepGood: 8, sleepOver: 10, consistHigh: 10, consistMid: 6, consistLow: 3, rhrOptimal: 15, rhrGood: 10, rhrOk: 5, hrvHigh: 10, hrvMid: 6, hrvLow: 3, vo2High: 15, vo2Good: 12, vo2Mid: 8, vo2Low: 4, stepsHigh: 10, stepsMid: 7, stepsLow: 4, recoveryHigh: 10, recoveryMid: 6, recoveryLow: 3, strainMatch: 10, strainHigh: 5 }
     };
 
-    let WEIGHTS = JSON.parse(localStorage.getItem(WEIGHTS_KEY)) || JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
+    // Load weights and merge with defaults to ensure new keys are always present
+    function loadWeights() {
+      const saved = JSON.parse(localStorage.getItem(WEIGHTS_KEY));
+      if (!saved) return JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
+      // Deep merge: ensure all default keys exist
+      const merged = JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
+      Object.keys(merged).forEach(category => {
+        if (saved[category]) {
+          Object.keys(merged[category]).forEach(key => {
+            if (saved[category][key] !== undefined) merged[category][key] = saved[category][key];
+          });
+        }
+      });
+      return merged;
+    }
+    let WEIGHTS = loadWeights();
 
     function saveWeights() {
       localStorage.setItem(WEIGHTS_KEY, JSON.stringify(WEIGHTS));
@@ -364,9 +379,9 @@
         else if (recovery >= 33 && recovery < 66 && strain >= 10 && strain < 14) strainMatch = true;
         else if (recovery < 33 && strain < 10) strainMatch = true;
 
-        if (strainMatch) whoopScore += ww.strainMatch;
+        if (strainMatch) whoopScore += (ww.strainMatch || 10);
         // Bonus for high strain on high recovery days
-        if (recovery >= 66 && strain >= 18) whoopScore += ww.strainHigh;
+        if (recovery >= 66 && strain >= 18) whoopScore += (ww.strainHigh || 5);
       }
 
       // Family Score - individual weights per member
