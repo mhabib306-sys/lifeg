@@ -96,8 +96,7 @@
       prayers: { fajr: '', dhuhr: '', asr: '', maghrib: '', isha: '', quran: 0 },
       glucose: { avg: '', tir: '', insulin: '' },
       whoop: {
-        sleepPerf: '', rhr: '', hrv: '', vo2max: '',
-        recovery: '', strain: '', whoopAge: ''
+        sleepPerf: '', recovery: '', strain: '', whoopAge: ''
       },
       family: { mom: false, dad: false, jana: false, tia: false, ahmed: false, eman: false },
       habits: { exercise: 0, reading: 0, meditation: 0, water: '', vitamins: false, brushTeeth: 0, nop: '' }
@@ -118,12 +117,9 @@
       // HABITS (max 15): distributed across daily habits
       habits: { exercise: 3, reading: 2, meditation: 2, water: 1, vitamins: 2, brushTeeth: 1, nopYes: 2, nopNo: -2 },
 
-      // WHOOP (max 27): key metrics weighted by health impact
+      // WHOOP (max 14): Sleep Perf + Recovery + Strain
       whoop: {
         sleepPerfHigh: 7, sleepPerfMid: 4, sleepPerfLow: 2,
-        rhrOptimal: 5, rhrGood: 3, rhrOk: 1,
-        hrvHigh: 3, hrvMid: 2, hrvLow: 1,
-        vo2High: 5, vo2Good: 3, vo2Mid: 2, vo2Low: 1,
         recoveryHigh: 2, recoveryMid: 1, recoveryLow: 0,
         strainMatch: 3, strainHigh: 2
       }
@@ -151,10 +147,10 @@
     const DEFAULT_MAX_SCORES = {
       prayer: 35,    // 5 prayers on-time (25) + 2 quran pages (10)
       diabetes: 25,  // avg 105 (10) + TIR 100% (10) + insulin ≤40 (5)
-      whoop: 27,     // all optimal: sleepPerf(7)+rhr(5)+hrv(3)+vo2(5)+recovery(2)+strain(5)
+      whoop: 14,     // sleepPerf(7)+recovery(2)+strain(5)
       family: 6,     // all 6 family members checked
       habits: 16,    // exercise(3)+reading(2)+meditation(2)+water 2.5L(2.5)+vitamins(2)+brush 2x(2)+nop(2)
-      total: 109     // sum of all maxes
+      total: 96      // sum of all maxes
     };
     const MAX_SCORES_KEY = 'lifeGamificationMaxScores';
 
@@ -443,31 +439,6 @@
         else if (sleepPerf >= 50) whoopScore += ww.sleepPerfLow;
       }
 
-      // RHR: lower is better (this is key - +3.1 years if high!)
-      const rhr = parseFloat(w.rhr) || 0;
-      if (w.rhr !== '') {
-        if (rhr <= 60) whoopScore += ww.rhrOptimal;
-        else if (rhr <= 70) whoopScore += ww.rhrGood;
-        else if (rhr <= 80) whoopScore += ww.rhrOk;
-      }
-
-      // HRV: higher is better
-      const hrv = parseFloat(w.hrv) || 0;
-      if (w.hrv !== '') {
-        if (hrv >= 50) whoopScore += ww.hrvHigh;
-        else if (hrv >= 40) whoopScore += ww.hrvMid;
-        else if (hrv >= 30) whoopScore += ww.hrvLow;
-      }
-
-      // VO2 Max: higher is better (+2.6 years if low!)
-      const vo2 = parseFloat(w.vo2max) || 0;
-      if (w.vo2max !== '') {
-        if (vo2 >= 45) whoopScore += ww.vo2High;
-        else if (vo2 >= 40) whoopScore += ww.vo2Good;
-        else if (vo2 >= 35) whoopScore += ww.vo2Mid;
-        else if (vo2 >= 30) whoopScore += ww.vo2Low;
-      }
-
       // Recovery
       const recovery = parseFloat(w.recovery) || 0;
       if (w.recovery !== '') {
@@ -707,16 +678,8 @@
 
       const whoopHelp = `<span class="text-xs text-charcoal/50">Hover ⓘ for tips</span>`;
       const whoopContent = `
-        <div class="text-xs text-charcoal/70 bg-warmgray p-2 rounded mb-4 text-center">
-          🎯 Focus on Sleep Perf (≥90%), RHR (<60), VO2 Max (≥45)
-        </div>
-        <div class="grid grid-cols-3 gap-3 mb-3">
-          ${createNumberInput('Sleep Perf', data.whoop.sleepPerf, 'whoop', 'sleepPerf', '≥90', '%', '≥90%', '<b>How to improve:</b><br>• Consistent bedtime/wake time<br>• Cool room (65-68°F)<br>• No screens 1h before bed')}
-          ${createNumberInput('RHR', data.whoop.rhr, 'whoop', 'rhr', '<60', 'bpm', '⚠️<60', '<b>How to lower RHR:</b><br>• Regular cardio exercise<br>• Reduce stress (meditation)<br>• Stay hydrated')}
-          ${createNumberInput('HRV', data.whoop.hrv, 'whoop', 'hrv', '≥50', 'ms', '≥50', '<b>How to increase HRV:</b><br>• Consistent sleep schedule<br>• Deep breathing exercises<br>• Cold exposure')}
-        </div>
         <div class="grid grid-cols-3 gap-3">
-          ${createNumberInput('VO2', data.whoop.vo2max, 'whoop', 'vo2max', '≥45', '', '⚠️≥45', '<b>How to improve VO2 Max:</b><br>• High-intensity intervals (HIIT)<br>• Zone 2 cardio (long, easy runs)')}
+          ${createNumberInput('Sleep Perf', data.whoop.sleepPerf, 'whoop', 'sleepPerf', '≥90', '%', '≥90%', '<b>How to improve:</b><br>• Consistent bedtime/wake time<br>• Cool room (65-68°F)<br>• No screens 1h before bed')}
           ${createNumberInput('Recovery', data.whoop.recovery, 'whoop', 'recovery', '≥66', '%', '≥66%', '<b>How to improve recovery:</b><br>• Prioritize sleep quality<br>• Hydrate well<br>• Eat nutritious foods')}
           ${createNumberInput('Strain', data.whoop.strain, 'whoop', 'strain', '10-14', '/21', 'match', '<b>Recovery-matched:</b><br>• Green (≥66%) → 14+ strain<br>• Yellow (33-65%) → 10-14 strain<br>• Red (<33%) → rest')}
         </div>
@@ -774,10 +737,6 @@
               <span class="inline-block bg-green-100 text-green-700 px-2 py-0.5 rounded mr-1">${scores.prayerOnTime} on-time</span>
               <span class="inline-block bg-amber-100 text-amber-700 px-2 py-0.5 rounded">${scores.prayerLate} late</span>
             </div>
-          </div>
-          <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-            <span class="font-medium">RHR</span>
-            <span class="font-bold ${parseFloat(data.whoop.rhr) <= 60 ? 'text-green-600' : 'text-red-600'}">${data.whoop.rhr || '—'} bpm</span>
           </div>
           <div class="flex justify-between items-center p-3 bg-amber-50 rounded-lg">
             <span class="font-medium">Family</span>
@@ -1315,40 +1274,18 @@
               </div>
 
               <!-- 3. Whoop Weights -->
-              <div class="bg-warmgray rounded-lg p-4 border border-softborder lg:col-span-2 lg:row-span-2">
-                <h4 class="sb-section-title text-charcoal/70 mb-3">⏱️ Whoop Age Metrics</h4>
-                <div class="grid md:grid-cols-2 gap-x-6">
-                  <div>
-                    <div class="text-xs text-coral font-medium mb-2">Sleep Performance</div>
-                    ${createWeightInput('Sleep Perf ≥90%', WEIGHTS.whoop.sleepPerfHigh, 'whoop', 'sleepPerfHigh')}
-                    ${createWeightInput('Sleep Perf 70-90%', WEIGHTS.whoop.sleepPerfMid, 'whoop', 'sleepPerfMid')}
-                    ${createWeightInput('Sleep Perf 50-70%', WEIGHTS.whoop.sleepPerfLow, 'whoop', 'sleepPerfLow')}
-                  </div>
-                  <div>
-                    <div class="text-xs text-coral font-medium mb-2">Heart</div>
-                    ${createWeightInput('RHR ≤60 bpm', WEIGHTS.whoop.rhrOptimal, 'whoop', 'rhrOptimal')}
-                    ${createWeightInput('RHR 61-70 bpm', WEIGHTS.whoop.rhrGood, 'whoop', 'rhrGood')}
-                    ${createWeightInput('RHR 71-80 bpm', WEIGHTS.whoop.rhrOk, 'whoop', 'rhrOk')}
-                    ${createWeightInput('HRV ≥50ms', WEIGHTS.whoop.hrvHigh, 'whoop', 'hrvHigh')}
-                    ${createWeightInput('HRV 40-50ms', WEIGHTS.whoop.hrvMid, 'whoop', 'hrvMid')}
-                    ${createWeightInput('HRV 30-40ms', WEIGHTS.whoop.hrvLow, 'whoop', 'hrvLow')}
-                  </div>
-                  <div>
-                    <div class="text-xs text-coral font-medium mb-2 mt-3">Fitness (VO2 Max)</div>
-                    ${createWeightInput('VO2 ≥45', WEIGHTS.whoop.vo2High, 'whoop', 'vo2High')}
-                    ${createWeightInput('VO2 40-45', WEIGHTS.whoop.vo2Good, 'whoop', 'vo2Good')}
-                    ${createWeightInput('VO2 35-40', WEIGHTS.whoop.vo2Mid, 'whoop', 'vo2Mid')}
-                    ${createWeightInput('VO2 30-35', WEIGHTS.whoop.vo2Low, 'whoop', 'vo2Low')}
-                  </div>
-                  <div>
-                    <div class="text-xs text-coral font-medium mb-2 mt-3">Recovery & Strain</div>
-                    ${createWeightInput('Recovery ≥66%', WEIGHTS.whoop.recoveryHigh, 'whoop', 'recoveryHigh')}
-                    ${createWeightInput('Recovery 50-66%', WEIGHTS.whoop.recoveryMid, 'whoop', 'recoveryMid')}
-                    ${createWeightInput('Recovery 33-50%', WEIGHTS.whoop.recoveryLow, 'whoop', 'recoveryLow')}
-                    ${createWeightInput('Strain matches recovery', WEIGHTS.whoop.strainMatch, 'whoop', 'strainMatch')}
-                    ${createWeightInput('High strain on green day', WEIGHTS.whoop.strainHigh, 'whoop', 'strainHigh')}
-                  </div>
-                </div>
+              <div class="bg-warmgray rounded-lg p-4 border border-softborder">
+                <h4 class="sb-section-title text-charcoal/70 mb-3">⏱️ Whoop</h4>
+                <div class="text-xs text-coral font-medium mb-2">Sleep Performance</div>
+                ${createWeightInput('Sleep Perf ≥90%', WEIGHTS.whoop.sleepPerfHigh, 'whoop', 'sleepPerfHigh')}
+                ${createWeightInput('Sleep Perf 70-90%', WEIGHTS.whoop.sleepPerfMid, 'whoop', 'sleepPerfMid')}
+                ${createWeightInput('Sleep Perf 50-70%', WEIGHTS.whoop.sleepPerfLow, 'whoop', 'sleepPerfLow')}
+                <div class="text-xs text-coral font-medium mb-2 mt-3">Recovery & Strain</div>
+                ${createWeightInput('Recovery ≥66%', WEIGHTS.whoop.recoveryHigh, 'whoop', 'recoveryHigh')}
+                ${createWeightInput('Recovery 50-66%', WEIGHTS.whoop.recoveryMid, 'whoop', 'recoveryMid')}
+                ${createWeightInput('Recovery 33-50%', WEIGHTS.whoop.recoveryLow, 'whoop', 'recoveryLow')}
+                ${createWeightInput('Strain matches recovery', WEIGHTS.whoop.strainMatch, 'whoop', 'strainMatch')}
+                ${createWeightInput('High strain on green day', WEIGHTS.whoop.strainHigh, 'whoop', 'strainHigh')}
               </div>
 
               <!-- 4. Family Weights -->
