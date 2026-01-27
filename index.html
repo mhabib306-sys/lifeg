@@ -63,7 +63,7 @@
 
     const DEFAULT_WEIGHTS = {
       prayer: { onTime: 10, late: 5, quran: 10 },
-      glucose: { optimal: 20, acceptable: 10, tirHigh: 15, tirMid: 8, insulinBase: 5, insulinPenalty: 2 },
+      glucose: { avgMax: 20, tirPerPoint: 0.3, insulinBase: 5, insulinPenalty: -2 },
       family: { mom: 5, dad: 5, jana: 5, tia: 5, ahmed: 5, eman: 5 },
       habits: { exercise: 8, reading: 5, meditation: 10, water: 3, vitamins: 5, brushTeeth: 5, nopYes: 5, nopNo: -3 },
       whoop: { sleepOptimal: 15, sleepGood: 8, sleepOver: 10, consistHigh: 10, consistMid: 6, consistLow: 3, rhrOptimal: 15, rhrGood: 10, rhrOk: 5, hrvHigh: 10, hrvMid: 6, hrvLow: 3, vo2High: 15, vo2Good: 12, vo2Mid: 8, vo2Low: 4, stepsHigh: 10, stepsMid: 7, stepsLow: 4, recoveryHigh: 10, recoveryMid: 6, recoveryLow: 3, strainMatch: 10, strainHigh: 5 }
@@ -299,13 +299,31 @@
       const tir = parseFloat(data.glucose.tir) || 0;
       const insulin = parseFloat(data.glucose.insulin) || 0;
 
-      // Avg glucose scoring
-      if (data.glucose.avg !== '' && avg >= 70 && avg <= 140) diabetesScore += WEIGHTS.glucose.optimal;
-      else if (data.glucose.avg !== '' && avg > 140 && avg <= 180) diabetesScore += WEIGHTS.glucose.acceptable;
+      // Avg glucose scoring - progressive: closer to 105 (midpoint of 70-140) = more points
+      // Scale: 105 = max points, decreases as you move away from 105
+      if (data.glucose.avg !== '') {
+        const target = 105; // ideal midpoint
+        const maxPts = WEIGHTS.glucose.avgMax || 20;
+        if (avg >= 70 && avg <= 140) {
+          // Perfect range: scale from target (full points) to edges (half points)
+          const distFromTarget = Math.abs(avg - target);
+          const maxDist = 35; // distance from 105 to 70 or 140
+          diabetesScore += maxPts * (1 - (distFromTarget / maxDist) * 0.5);
+        } else if (avg > 140 && avg <= 180) {
+          // Acceptable range: scale down from edge
+          const ptsAt140 = maxPts * 0.5;
+          const penalty = (avg - 140) * (ptsAt140 / 40); // lose all by 180
+          diabetesScore += Math.max(0, ptsAt140 - penalty);
+        }
+        // Below 70 or above 180 = 0 points
+      }
 
-      // TIR scoring
-      if (data.glucose.tir !== '' && tir >= 70) diabetesScore += WEIGHTS.glucose.tirHigh;
-      else if (data.glucose.tir !== '' && tir >= 50) diabetesScore += WEIGHTS.glucose.tirMid;
+      // TIR scoring - progressive: each % point matters
+      // Scale: 0.3 pts per % (so 70% = 21 pts, 100% = 30 pts)
+      if (data.glucose.tir !== '' && tir > 0) {
+        const ptsPerPercent = WEIGHTS.glucose.tirPerPoint || 0.3;
+        diabetesScore += tir * ptsPerPercent;
+      }
 
       // Insulin scoring: base points if ≤40, flat penalty if >40
       if (data.glucose.insulin !== '' && insulin > 0) {
@@ -593,8 +611,8 @@
       `;
 
       const glucoseContent = `
-        ${createNumberInput('Avg Glucose', data.glucose.avg, 'glucose', 'avg', '70-140', 'mg/dL', '70-140 optimal, 140-180 acceptable')}
-        ${createNumberInput('TIR %', data.glucose.tir, 'glucose', 'tir', '70+', '%', '≥70% optimal, ≥50% acceptable')}
+        ${createNumberInput('Avg Glucose', data.glucose.avg, 'glucose', 'avg', '105', 'mg/dL', '105 = 20pts, 70/140 = 10pts, 180 = 0pts')}
+        ${createNumberInput('TIR %', data.glucose.tir, 'glucose', 'tir', '70+', '%', '0.3 pts per %, e.g. 70% = 21pts')}
         ${createNumberInput('Insulin', data.glucose.insulin, 'glucose', 'insulin', '≤40', 'units', '≤40 = +5pts, >40 = -2pts')}
       `;
 
@@ -1176,11 +1194,9 @@
               <!-- Diabetes Weights -->
               <div class="bg-green-50 rounded-lg p-4">
                 <h4 class="font-semibold text-green-800 mb-3">💉 Diabetes</h4>
-                ${createWeightInput('Optimal (70-140)', WEIGHTS.glucose.optimal, 'glucose', 'optimal')}
-                ${createWeightInput('Acceptable (140-180)', WEIGHTS.glucose.acceptable, 'glucose', 'acceptable')}
-                ${createWeightInput('TIR ≥70%', WEIGHTS.glucose.tirHigh, 'glucose', 'tirHigh')}
-                ${createWeightInput('TIR 50-70%', WEIGHTS.glucose.tirMid, 'glucose', 'tirMid')}
-                ${createWeightInput('Insulin (base pts)', WEIGHTS.glucose.insulinBase, 'glucose', 'insulinBase')}
+                ${createWeightInput('Avg Glucose max pts (at 105)', WEIGHTS.glucose.avgMax, 'glucose', 'avgMax')}
+                ${createWeightInput('TIR pts per %', WEIGHTS.glucose.tirPerPoint, 'glucose', 'tirPerPoint')}
+                ${createWeightInput('Insulin ≤40 bonus', WEIGHTS.glucose.insulinBase, 'glucose', 'insulinBase')}
                 ${createWeightInput('Insulin >40 penalty', WEIGHTS.glucose.insulinPenalty, 'glucose', 'insulinPenalty')}
               </div>
 
