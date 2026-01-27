@@ -66,7 +66,7 @@
       glucose: { optimal: 20, acceptable: 10, tirHigh: 15, tirMid: 8, insulinBase: 5, insulinPenalty: 2, nopYes: 5, nopNo: -3 },
       family: { mom: 5, dad: 5, jana: 5, tia: 5, ahmed: 5, eman: 5 },
       habits: { exercise: 8, reading: 5, meditation: 10, water: 3, vitamins: 5, brushTeeth: 5 },
-      whoop: { sleepOptimal: 15, sleepGood: 8, sleepOver: 10, consistHigh: 10, consistMid: 6, consistLow: 3, rhrOptimal: 15, rhrGood: 10, rhrOk: 5, hrvHigh: 10, hrvMid: 6, hrvLow: 3, vo2High: 15, vo2Good: 12, vo2Mid: 8, vo2Low: 4, stepsHigh: 10, stepsMid: 7, stepsLow: 4, recoveryHigh: 10, recoveryMid: 6, recoveryLow: 3 }
+      whoop: { sleepOptimal: 15, sleepGood: 8, sleepOver: 10, consistHigh: 10, consistMid: 6, consistLow: 3, rhrOptimal: 15, rhrGood: 10, rhrOk: 5, hrvHigh: 10, hrvMid: 6, hrvLow: 3, vo2High: 15, vo2Good: 12, vo2Mid: 8, vo2Low: 4, stepsHigh: 10, stepsMid: 7, stepsLow: 4, recoveryHigh: 10, recoveryMid: 6, recoveryLow: 3, strainMatch: 10, strainHigh: 5 }
     };
 
     let WEIGHTS = JSON.parse(localStorage.getItem(WEIGHTS_KEY)) || JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
@@ -353,6 +353,22 @@
         else if (recovery >= 33) whoopScore += ww.recoveryLow;
       }
 
+      // Strain - recovery-matched scoring
+      // High recovery (≥66%) → reward high strain (14-21)
+      // Medium recovery (33-65%) → reward moderate strain (10-14)
+      // Low recovery (<33%) → reward rest/light strain (0-10)
+      const strain = parseFloat(w.strain) || 0;
+      if (w.strain !== '' && w.recovery !== '') {
+        let strainMatch = false;
+        if (recovery >= 66 && strain >= 14) strainMatch = true;
+        else if (recovery >= 33 && recovery < 66 && strain >= 10 && strain < 14) strainMatch = true;
+        else if (recovery < 33 && strain < 10) strainMatch = true;
+
+        if (strainMatch) whoopScore += ww.strainMatch;
+        // Bonus for high strain on high recovery days
+        if (recovery >= 66 && strain >= 18) whoopScore += ww.strainHigh;
+      }
+
       // Family Score - individual weights per member
       let familyScore = 0;
       Object.entries(data.family).forEach(([member, checked]) => {
@@ -564,7 +580,7 @@
         ${createNumberInput('VO2 Max', data.whoop.vo2max, 'whoop', 'vo2max', '≥45', '', '⚠️ ≥45 excellent (+2.6 yrs if low!)', '<b>How to improve VO2 Max:</b><br>• High-intensity intervals (HIIT)<br>• Zone 2 cardio (long, easy runs)<br>• Cycling, swimming, rowing<br>• Gradually increase intensity<br>• Train 3-5x per week')}
         ${createNumberInput('Steps', data.whoop.steps, 'whoop', 'steps', '≥10k', '', '≥10k optimal', '<b>How to get more steps:</b><br>• Walking meetings<br>• Take stairs<br>• Park farther away<br>• Post-meal walks<br>• Treadmill desk<br>• Set hourly reminders')}
         ${createNumberInput('Recovery', data.whoop.recovery, 'whoop', 'recovery', '≥66', '%', '≥66% green', '<b>How to improve recovery:</b><br>• Prioritize sleep quality<br>• Hydrate well<br>• Eat nutritious foods<br>• Active recovery days<br>• Manage stress<br>• Avoid overtraining')}
-        ${createNumberInput('Strain', data.whoop.strain, 'whoop', 'strain', '10-14', '/21', 'Match to recovery', '<b>Strain guidance:</b><br>• High recovery → higher strain OK<br>• Low recovery → take it easy<br>• Balance strain across week<br>• Listen to your body')}
+        ${createNumberInput('Strain', data.whoop.strain, 'whoop', 'strain', '10-14', '/21', 'Match to recovery for pts', '<b>Recovery-matched scoring:</b><br>• Green (≥66%) → aim for 14+ strain<br>• Yellow (33-65%) → aim for 10-14 strain<br>• Red (<33%) → rest, strain <10<br>• Bonus pts for 18+ on green days!')}
         ${createNumberInput('Whoop Age', data.whoop.whoopAge, 'whoop', 'whoopAge', '38', 'yrs', 'Goal: Reduce!')}
       `;
 
@@ -1170,10 +1186,12 @@
                     ${createWeightInput('Steps 6-8k', WEIGHTS.whoop.stepsLow, 'whoop', 'stepsLow')}
                   </div>
                   <div>
-                    <div class="text-xs text-purple-600 font-medium mb-2 mt-3">Recovery</div>
+                    <div class="text-xs text-purple-600 font-medium mb-2 mt-3">Recovery & Strain</div>
                     ${createWeightInput('Recovery ≥66%', WEIGHTS.whoop.recoveryHigh, 'whoop', 'recoveryHigh')}
                     ${createWeightInput('Recovery 50-66%', WEIGHTS.whoop.recoveryMid, 'whoop', 'recoveryMid')}
                     ${createWeightInput('Recovery 33-50%', WEIGHTS.whoop.recoveryLow, 'whoop', 'recoveryLow')}
+                    ${createWeightInput('Strain matches recovery', WEIGHTS.whoop.strainMatch, 'whoop', 'strainMatch')}
+                    ${createWeightInput('High strain on green day', WEIGHTS.whoop.strainHigh, 'whoop', 'strainHigh')}
                   </div>
                 </div>
               </div>
