@@ -91,6 +91,14 @@
       render();
     }
 
+    // Format numbers with commas for 4+ digits
+    function fmt(num) {
+      if (num === null || num === undefined || num === '') return '—';
+      const n = typeof num === 'string' ? parseFloat(num) : num;
+      if (isNaN(n)) return '—';
+      return n.toLocaleString('en-US');
+    }
+
     // Pre-populated January 2026 data from habits tracking sheet
     const JANUARY_DATA = {"2026-01-01":{"prayers":{"fajr":"1","dhuhr":"1","asr":"1","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":false,"dad":false,"jana":false,"tia":false,"ahmed":false,"eman":false},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-02":{"prayers":{"fajr":"1","dhuhr":"1","asr":"1","maghrib":"1","isha":"1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":false,"ahmed":false,"eman":false},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-03":{"prayers":{"fajr":"1.1","dhuhr":"1","asr":"1","maghrib":"0.1","isha":"1","quran":0},"family":{"mom":true,"dad":false,"jana":false,"tia":false,"ahmed":false,"eman":false},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-04":{"prayers":{"fajr":"1.2","dhuhr":"0.1","asr":"1","maghrib":"1","isha":"1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":false,"ahmed":false,"eman":false},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-05":{"prayers":{"fajr":"1","dhuhr":"0.1","asr":"0.1","maghrib":"0.1","isha":"1","quran":0},"family":{"mom":false,"dad":false,"jana":false,"tia":false,"ahmed":true,"eman":false},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-06":{"prayers":{"fajr":"1","dhuhr":"0.1","asr":"0.1","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":true,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-07":{"prayers":{"fajr":"1","dhuhr":"0.1","asr":"1","maghrib":"1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":true,"tia":true,"ahmed":true,"eman":false},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-08":{"prayers":{"fajr":"0.1","dhuhr":"1","asr":"1","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":true,"dad":false,"jana":false,"tia":false,"ahmed":true,"eman":false},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-09":{"prayers":{"fajr":"1","dhuhr":"1","asr":"1","maghrib":"1","isha":"1","quran":0},"family":{"mom":true,"dad":false,"jana":false,"tia":false,"ahmed":true,"eman":false},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-10":{"prayers":{"fajr":"0.1","dhuhr":"1","asr":"1","maghrib":"1","isha":"1","quran":0},"family":{"mom":true,"dad":false,"jana":false,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-11":{"prayers":{"fajr":"1","dhuhr":"0.1","asr":"0.1","maghrib":"1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-12":{"prayers":{"fajr":"0.1","dhuhr":"","asr":"0.1","maghrib":"0.1","isha":"1","quran":0},"family":{"mom":false,"dad":true,"jana":false,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-13":{"prayers":{"fajr":"0.1","dhuhr":"","asr":"","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":true,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-14":{"prayers":{"fajr":"1","dhuhr":"0.1","asr":"0.1","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-15":{"prayers":{"fajr":"1","dhuhr":"","asr":"","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-16":{"prayers":{"fajr":"1","dhuhr":"","asr":"","maghrib":"","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-17":{"prayers":{"fajr":"1","dhuhr":"1","asr":"1","maghrib":"0.1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-18":{"prayers":{"fajr":"1","dhuhr":"1","asr":"0.1","maghrib":"1","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-19":{"prayers":{"fajr":"1","dhuhr":"","asr":"","maghrib":"1","isha":"0.1","quran":0},"family":{"mom":true,"dad":false,"jana":false,"tia":false,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-20":{"prayers":{"fajr":"1","dhuhr":"","asr":"","maghrib":"","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-21":{"prayers":{"fajr":"0.1","dhuhr":"","asr":"","maghrib":"","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":false,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}},"2026-01-22":{"prayers":{"fajr":"1","dhuhr":"","asr":"","maghrib":"","isha":"0.1","quran":0},"family":{"mom":true,"dad":true,"jana":true,"tia":true,"ahmed":true,"eman":true},"glucose":{"avg":"","tir":"","insulin":"","nop":""},"whoop":{"sleepHours":"","sleepConsist":"","rhr":"","hrv":"","vo2max":"","steps":"","hrZone13":"","hrZone45":"","recovery":"","strain":"","whoopAge":""},"habits":{"exercise":0,"reading":0,"meditation":0,"water":"","vitamins":false,"brushTeeth":0}}};
 
@@ -495,7 +503,7 @@
         <div class="bg-white rounded-xl p-4 shadow-lg">
           <div class="flex justify-between items-center mb-2">
             <span class="text-sm text-gray-600">${label}</span>
-            <span class="font-bold text-xl">${score}</span>
+            <span class="font-bold text-xl">${fmt(score)}</span>
           </div>
           <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
             <div class="h-full ${bgClass} transition-all duration-500" style="width: ${pct}%"></div>
@@ -617,7 +625,7 @@
           ${createScoreCard('Habits', scores.habit, 50, 'bg-slate-500')}
           <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-4 shadow-lg text-white">
             <div class="text-sm opacity-90">Total Score</div>
-            <div class="text-3xl font-bold">${scores.total}</div>
+            <div class="text-3xl font-bold">${fmt(scores.total)}</div>
           </div>
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -690,7 +698,7 @@
           <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div class="bg-gradient-to-br from-orange-500 to-red-500 rounded-xl p-5 text-white shadow-lg">
               <div class="text-sm opacity-80">30-Day Score</div>
-              <div class="text-3xl font-bold">${stats.totalScore}</div>
+              <div class="text-3xl font-bold">${fmt(stats.totalScore)}</div>
             </div>
             <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-5 text-white shadow-lg">
               <div class="text-sm opacity-80">Days Logged</div>
@@ -698,7 +706,7 @@
             </div>
             <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-5 text-white shadow-lg">
               <div class="text-sm opacity-80">Avg RHR</div>
-              <div class="text-3xl font-bold">${stats.avgRHR} <span class="text-lg">bpm</span></div>
+              <div class="text-3xl font-bold">${fmt(stats.avgRHR)} <span class="text-lg">bpm</span></div>
             </div>
             <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-5 text-white shadow-lg">
               <div class="text-sm opacity-80">Avg Sleep</div>
@@ -706,7 +714,7 @@
             </div>
             <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl p-5 text-white shadow-lg">
               <div class="text-sm opacity-80">Family Check-ins</div>
-              <div class="text-3xl font-bold">${stats.totalFamilyCheckins}</div>
+              <div class="text-3xl font-bold">${fmt(stats.totalFamilyCheckins)}</div>
             </div>
           </div>
 
@@ -726,22 +734,22 @@
             <h3 class="text-lg font-semibold mb-4">🏆 Personal Bests</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
-                <div class="text-3xl font-bold">${bests.highestDayScore.value}</div>
+                <div class="text-3xl font-bold">${fmt(bests.highestDayScore.value)}</div>
                 <div class="text-sm opacity-90">Best Day Score</div>
                 <div class="text-xs opacity-75 mt-1">${bests.highestDayScore.date ? new Date(bests.highestDayScore.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</div>
               </div>
               <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
-                <div class="text-3xl font-bold">${bests.highestWeekScore.value}</div>
+                <div class="text-3xl font-bold">${fmt(bests.highestWeekScore.value)}</div>
                 <div class="text-sm opacity-90">Best Week Score</div>
                 <div class="text-xs opacity-75 mt-1">${bests.highestWeekScore.weekStart ? 'Week of ' + new Date(bests.highestWeekScore.weekStart).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</div>
               </div>
               <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
-                <div class="text-3xl font-bold">${bests.longestStreak.value}</div>
+                <div class="text-3xl font-bold">${fmt(bests.longestStreak.value)}</div>
                 <div class="text-sm opacity-90">Longest Streak</div>
                 <div class="text-xs opacity-75 mt-1">${bests.longestStreak.value > 0 ? 'days in a row' : '—'}</div>
               </div>
               <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
-                <div class="text-3xl font-bold flex items-center gap-2">${bests.currentStreak} ${bests.currentStreak > 0 ? '🔥' : ''}</div>
+                <div class="text-3xl font-bold flex items-center gap-2">${fmt(bests.currentStreak)} ${bests.currentStreak > 0 ? '🔥' : ''}</div>
                 <div class="text-sm opacity-90">Current Streak</div>
                 <div class="text-xs opacity-75 mt-1">${bests.currentStreak > 0 ? 'Keep it going!' : 'Log today to start!'}</div>
               </div>
@@ -757,21 +765,21 @@
                     <div class="font-medium text-blue-800">🕌 Best Prayer Day</div>
                     <div class="text-xs text-blue-600">${bests.bestPrayerDay.date ? new Date(bests.bestPrayerDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</div>
                   </div>
-                  <div class="text-2xl font-bold text-blue-600">${bests.bestPrayerDay.value} pts</div>
+                  <div class="text-2xl font-bold text-blue-600">${fmt(bests.bestPrayerDay.value)} pts</div>
                 </div>
                 <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
                   <div>
                     <div class="font-medium text-purple-800">⏱️ Best Whoop Day</div>
                     <div class="text-xs text-purple-600">${bests.bestWhoopDay.date ? new Date(bests.bestWhoopDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</div>
                   </div>
-                  <div class="text-2xl font-bold text-purple-600">${bests.bestWhoopDay.value} pts</div>
+                  <div class="text-2xl font-bold text-purple-600">${fmt(bests.bestWhoopDay.value)} pts</div>
                 </div>
                 <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                   <div>
                     <div class="font-medium text-green-800">📖 Most Quran Pages</div>
                     <div class="text-xs text-green-600">${bests.mostQuranPages.date ? new Date(bests.mostQuranPages.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</div>
                   </div>
-                  <div class="text-2xl font-bold text-green-600">${bests.mostQuranPages.value} pages</div>
+                  <div class="text-2xl font-bold text-green-600">${fmt(bests.mostQuranPages.value)} pages</div>
                 </div>
               </div>
             </div>
@@ -781,11 +789,11 @@
               <div class="space-y-4">
                 <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                   <div class="font-medium">Total Days Logged</div>
-                  <div class="text-2xl font-bold text-slate-700">${bests.totalDaysLogged}</div>
+                  <div class="text-2xl font-bold text-slate-700">${fmt(bests.totalDaysLogged)}</div>
                 </div>
                 <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                   <div class="font-medium">Perfect Prayer Days</div>
-                  <div class="text-2xl font-bold text-blue-600">${bests.perfectPrayerDays} 🌟</div>
+                  <div class="text-2xl font-bold text-blue-600">${fmt(bests.perfectPrayerDays)} 🌟</div>
                 </div>
                 <div class="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
                   <div class="font-medium">Perfect Prayer Rate</div>
@@ -880,7 +888,7 @@
       const scoreCell = document.getElementById('score-' + dateStr);
       if (scoreCell) {
         const newScore = calculateScores(allData[dateStr]).total;
-        scoreCell.textContent = newScore;
+        scoreCell.textContent = fmt(newScore);
       }
       // Update summary stats
       updateBulkSummary();
@@ -903,9 +911,9 @@
       const totalEl = document.getElementById('bulk-total-score');
       const avgEl = document.getElementById('bulk-avg-score');
       const compEl = document.getElementById('bulk-completion');
-      if (daysEl) daysEl.textContent = daysWithData;
-      if (totalEl) totalEl.textContent = totalScore;
-      if (avgEl) avgEl.textContent = avgScore;
+      if (daysEl) daysEl.textContent = fmt(daysWithData);
+      if (totalEl) totalEl.textContent = fmt(totalScore);
+      if (avgEl) avgEl.textContent = fmt(avgScore);
       if (compEl) compEl.textContent = completionRate + '%';
     }
 
@@ -981,7 +989,7 @@
           '<td class="' + dayCellClass + '">' + day + '</td>' +
           '<td class="' + weekdayCellClass + '">' + dayOfWeek + '</td>' +
           cells +
-          '<td id="score-' + dateStr + '" class="border border-gray-200 px-2 py-1 text-center font-semibold text-blue-600">' + scores.total + '</td>' +
+          '<td id="score-' + dateStr + '" class="border border-gray-200 px-2 py-1 text-center font-semibold text-blue-600">' + fmt(scores.total) + '</td>' +
           '</tr>';
       }
 
@@ -1050,15 +1058,15 @@
           '<h3 class="font-semibold mb-3">' + monthName + ' Summary</h3>' +
           '<div class="grid grid-cols-2 md:grid-cols-4 gap-4">' +
             '<div class="bg-blue-50 rounded-lg p-3 text-center">' +
-              '<div id="bulk-days-logged" class="text-2xl font-bold text-blue-600">' + daysWithData + '</div>' +
+              '<div id="bulk-days-logged" class="text-2xl font-bold text-blue-600">' + fmt(daysWithData) + '</div>' +
               '<div class="text-xs text-gray-600">Days Logged</div>' +
             '</div>' +
             '<div class="bg-green-50 rounded-lg p-3 text-center">' +
-              '<div id="bulk-total-score" class="text-2xl font-bold text-green-600">' + totalScore + '</div>' +
+              '<div id="bulk-total-score" class="text-2xl font-bold text-green-600">' + fmt(totalScore) + '</div>' +
               '<div class="text-xs text-gray-600">Total Score</div>' +
             '</div>' +
             '<div class="bg-purple-50 rounded-lg p-3 text-center">' +
-              '<div id="bulk-avg-score" class="text-2xl font-bold text-purple-600">' + avgScore + '</div>' +
+              '<div id="bulk-avg-score" class="text-2xl font-bold text-purple-600">' + fmt(avgScore) + '</div>' +
               '<div class="text-xs text-gray-600">Avg Daily Score</div>' +
             '</div>' +
             '<div class="bg-amber-50 rounded-lg p-3 text-center">' +
