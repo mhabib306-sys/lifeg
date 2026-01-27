@@ -110,7 +110,7 @@
       prayer: { onTime: 5, late: 2, quran: 5 },
 
       // DIABETES (max 25): avg 10 + tir 10 + insulin 5
-      glucose: { avgMax: 10, tirPerPoint: 0.1, insulinBase: 5, insulinPenalty: -5 },
+      glucose: { avgMax: 10, tirPerPoint: 0.1, insulinBase: 5, insulinPenalty: -5, insulinThreshold: 40 },
 
       // FAMILY (max 5): 6 members, ~1 pt each, cap at 5
       family: { mom: 1, dad: 1, jana: 1, tia: 1, ahmed: 1, eman: 1 },
@@ -420,9 +420,10 @@
         diabetesScore += tir * ptsPerPercent;
       }
 
-      // Insulin scoring: base points if ≤40, flat penalty if >40
+      // Insulin scoring: base points if ≤threshold, flat penalty if >threshold
+      const insulinThreshold = WEIGHTS.glucose.insulinThreshold || 40;
       if (data.glucose.insulin !== '' && insulin > 0) {
-        if (insulin <= 40) {
+        if (insulin <= insulinThreshold) {
           diabetesScore += WEIGHTS.glucose.insulinBase;
         } else {
           diabetesScore += WEIGHTS.glucose.insulinPenalty;
@@ -695,11 +696,12 @@
         </div>
       `;
 
+      const insulinThreshold = WEIGHTS.glucose.insulinThreshold || 40;
       const glucoseContent = `
         <div class="flex gap-3">
           ${createNumberInput('Avg Glucose', data.glucose.avg, 'glucose', 'avg', '105', 'mg/dL', '105=10pts')}
           ${createNumberInput('TIR', data.glucose.tir, 'glucose', 'tir', '70+', '%', '0.1pts/%')}
-          ${createNumberInput('Insulin', data.glucose.insulin, 'glucose', 'insulin', '≤40', 'units', '≤40=+5')}
+          ${createNumberInput('Insulin', data.glucose.insulin, 'glucose', 'insulin', '≤' + insulinThreshold, 'units', '≤' + insulinThreshold + '=+5')}
         </div>
       `;
 
@@ -1294,7 +1296,7 @@
             <p class="text-sm text-charcoal/50 mb-6">Adjust the point values for each activity. Changes apply immediately.</p>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <!-- Prayer Weights -->
+              <!-- 1. Prayer Weights -->
               <div class="bg-warmgray rounded-lg p-4 border border-softborder">
                 <h4 class="sb-section-title text-charcoal/70 mb-3">🕌 Prayer</h4>
                 ${createWeightInput('On-time prayer', WEIGHTS.prayer.onTime, 'prayer', 'onTime')}
@@ -1302,41 +1304,18 @@
                 ${createWeightInput('Quran (per page)', WEIGHTS.prayer.quran, 'prayer', 'quran')}
               </div>
 
-              <!-- Family Weights -->
+              <!-- 2. Diabetes Weights -->
               <div class="bg-warmgray rounded-lg p-4 border border-softborder">
-                <h4 class="sb-section-title text-charcoal/70 mb-3">👨‍👩‍👧‍👦 Family</h4>
-                ${createWeightInput('👩 Mom', WEIGHTS.family.mom, 'family', 'mom')}
-                ${createWeightInput('👨 Dad', WEIGHTS.family.dad, 'family', 'dad')}
-                ${createWeightInput('👧 Jana', WEIGHTS.family.jana, 'family', 'jana')}
-                ${createWeightInput('👶 Tia', WEIGHTS.family.tia, 'family', 'tia')}
-                ${createWeightInput('👦 Ahmed', WEIGHTS.family.ahmed, 'family', 'ahmed')}
-                ${createWeightInput('👩‍🦱 Eman', WEIGHTS.family.eman, 'family', 'eman')}
-              </div>
-
-              <!-- Habits Weights -->
-              <div class="bg-warmgray rounded-lg p-4 border border-softborder">
-                <h4 class="sb-section-title text-charcoal/70 mb-3">✨ Habits</h4>
-                ${createWeightInput('🏋️ Exercise', WEIGHTS.habits.exercise, 'habits', 'exercise')}
-                ${createWeightInput('📚 Reading', WEIGHTS.habits.reading, 'habits', 'reading')}
-                ${createWeightInput('🧘 Meditation', WEIGHTS.habits.meditation, 'habits', 'meditation')}
-                ${createWeightInput('💧 Water (per L)', WEIGHTS.habits.water, 'habits', 'water')}
-                ${createWeightInput('💊 Vitamins', WEIGHTS.habits.vitamins, 'habits', 'vitamins')}
-                ${createWeightInput('🦷 Brush Teeth', WEIGHTS.habits.brushTeeth, 'habits', 'brushTeeth')}
-                ${createWeightInput('💤 NoP = 1 (bonus)', WEIGHTS.habits.nopYes, 'habits', 'nopYes')}
-                ${createWeightInput('💤 NoP = 0 (penalty)', WEIGHTS.habits.nopNo, 'habits', 'nopNo')}
-              </div>
-
-              <!-- Diabetes Weights -->
-              <div class="bg-warmgray rounded-lg p-4 border border-softborder">
-                <h4 class="sb-section-title text-charcoal/70 mb-3">💉 Diabetes</h4>
+                <h4 class="sb-section-title text-charcoal/70 mb-3">💉 Glucose (Libre)</h4>
                 ${createWeightInput('Avg Glucose max pts (at 105)', WEIGHTS.glucose.avgMax, 'glucose', 'avgMax')}
                 ${createWeightInput('TIR pts per %', WEIGHTS.glucose.tirPerPoint, 'glucose', 'tirPerPoint')}
-                ${createWeightInput('Insulin ≤40 bonus', WEIGHTS.glucose.insulinBase, 'glucose', 'insulinBase')}
-                ${createWeightInput('Insulin >40 penalty', WEIGHTS.glucose.insulinPenalty, 'glucose', 'insulinPenalty')}
+                ${createWeightInput('Insulin threshold (units)', WEIGHTS.glucose.insulinThreshold, 'glucose', 'insulinThreshold')}
+                ${createWeightInput('Insulin ≤threshold bonus', WEIGHTS.glucose.insulinBase, 'glucose', 'insulinBase')}
+                ${createWeightInput('Insulin >threshold penalty', WEIGHTS.glucose.insulinPenalty, 'glucose', 'insulinPenalty')}
               </div>
 
-              <!-- Whoop Weights -->
-              <div class="bg-warmgray rounded-lg p-4 border border-softborder lg:col-span-2">
+              <!-- 3. Whoop Weights -->
+              <div class="bg-warmgray rounded-lg p-4 border border-softborder lg:col-span-2 lg:row-span-2">
                 <h4 class="sb-section-title text-charcoal/70 mb-3">⏱️ Whoop Age Metrics</h4>
                 <div class="grid md:grid-cols-2 gap-x-6">
                   <div>
@@ -1370,6 +1349,30 @@
                     ${createWeightInput('High strain on green day', WEIGHTS.whoop.strainHigh, 'whoop', 'strainHigh')}
                   </div>
                 </div>
+              </div>
+
+              <!-- 4. Family Weights -->
+              <div class="bg-warmgray rounded-lg p-4 border border-softborder">
+                <h4 class="sb-section-title text-charcoal/70 mb-3">👨‍👩‍👧‍👦 Family</h4>
+                ${createWeightInput('Mom', WEIGHTS.family.mom, 'family', 'mom')}
+                ${createWeightInput('Dad', WEIGHTS.family.dad, 'family', 'dad')}
+                ${createWeightInput('Jana', WEIGHTS.family.jana, 'family', 'jana')}
+                ${createWeightInput('Tia', WEIGHTS.family.tia, 'family', 'tia')}
+                ${createWeightInput('Ahmed', WEIGHTS.family.ahmed, 'family', 'ahmed')}
+                ${createWeightInput('Eman', WEIGHTS.family.eman, 'family', 'eman')}
+              </div>
+
+              <!-- 5. Habits Weights -->
+              <div class="bg-warmgray rounded-lg p-4 border border-softborder">
+                <h4 class="sb-section-title text-charcoal/70 mb-3">✨ Habits</h4>
+                ${createWeightInput('Exercise', WEIGHTS.habits.exercise, 'habits', 'exercise')}
+                ${createWeightInput('Reading', WEIGHTS.habits.reading, 'habits', 'reading')}
+                ${createWeightInput('Meditation', WEIGHTS.habits.meditation, 'habits', 'meditation')}
+                ${createWeightInput('Water (per L)', WEIGHTS.habits.water, 'habits', 'water')}
+                ${createWeightInput('Vitamins', WEIGHTS.habits.vitamins, 'habits', 'vitamins')}
+                ${createWeightInput('Brush Teeth', WEIGHTS.habits.brushTeeth, 'habits', 'brushTeeth')}
+                ${createWeightInput('NoP = 1 (bonus)', WEIGHTS.habits.nopYes, 'habits', 'nopYes')}
+                ${createWeightInput('NoP = 0 (penalty)', WEIGHTS.habits.nopNo, 'habits', 'nopNo')}
               </div>
             </div>
           </div>
