@@ -307,11 +307,12 @@
       if (data.glucose.tir !== '' && tir >= 70) diabetesScore += WEIGHTS.glucose.tirHigh;
       else if (data.glucose.tir !== '' && tir >= 50) diabetesScore += WEIGHTS.glucose.tirMid;
 
-      // Insulin scoring: base points up to 40, then penalty for each unit over 40
+      // Insulin scoring: base points if ≤40, flat penalty if >40
       if (data.glucose.insulin !== '' && insulin > 0) {
-        diabetesScore += WEIGHTS.glucose.insulinBase;
-        if (insulin > 40) {
-          diabetesScore -= (insulin - 40) * WEIGHTS.glucose.insulinPenalty;
+        if (insulin <= 40) {
+          diabetesScore += WEIGHTS.glucose.insulinBase;
+        } else {
+          diabetesScore += WEIGHTS.glucose.insulinPenalty;
         }
       }
 
@@ -594,7 +595,7 @@
       const glucoseContent = `
         ${createNumberInput('Avg Glucose', data.glucose.avg, 'glucose', 'avg', '70-140', 'mg/dL', '70-140 optimal, 140-180 acceptable')}
         ${createNumberInput('TIR %', data.glucose.tir, 'glucose', 'tir', '70+', '%', '≥70% optimal, ≥50% acceptable')}
-        ${createNumberInput('Insulin', data.glucose.insulin, 'glucose', 'insulin', '≤40', 'units', '≤40 = +5pts, >40 = -2pts/unit')}
+        ${createNumberInput('Insulin', data.glucose.insulin, 'glucose', 'insulin', '≤40', 'units', '≤40 = +5pts, >40 = -2pts')}
       `;
 
       const whoopHelp = `<span class="text-xs text-purple-100 opacity-80">Hover ⓘ for tips</span>`;
