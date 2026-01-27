@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Life Gamification v2.1</title>
+  <title>Life Gamification v2.2</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -52,20 +52,20 @@
 
     const defaultDayData = {
       prayers: { fajr: '', dhuhr: '', asr: '', maghrib: '', isha: '', quran: 0 },
-      glucose: { avg: '', tir: '', insulin: '', nop: '' },
+      glucose: { avg: '', tir: '', insulin: '' },
       whoop: {
         sleepHours: '', sleepConsist: '', rhr: '', hrv: '', vo2max: '',
         steps: '', recovery: '', strain: '', whoopAge: ''
       },
       family: { mom: false, dad: false, jana: false, tia: false, ahmed: false, eman: false },
-      habits: { exercise: 0, reading: 0, meditation: 0, water: '', vitamins: false, brushTeeth: 0 }
+      habits: { exercise: 0, reading: 0, meditation: 0, water: '', vitamins: false, brushTeeth: 0, nop: '' }
     };
 
     const DEFAULT_WEIGHTS = {
       prayer: { onTime: 10, late: 5, quran: 10 },
-      glucose: { optimal: 20, acceptable: 10, tirHigh: 15, tirMid: 8, insulinBase: 5, insulinPenalty: 2, nopYes: 5, nopNo: -3 },
+      glucose: { optimal: 20, acceptable: 10, tirHigh: 15, tirMid: 8, insulinBase: 5, insulinPenalty: 2 },
       family: { mom: 5, dad: 5, jana: 5, tia: 5, ahmed: 5, eman: 5 },
-      habits: { exercise: 8, reading: 5, meditation: 10, water: 3, vitamins: 5, brushTeeth: 5 },
+      habits: { exercise: 8, reading: 5, meditation: 10, water: 3, vitamins: 5, brushTeeth: 5, nopYes: 5, nopNo: -3 },
       whoop: { sleepOptimal: 15, sleepGood: 8, sleepOver: 10, consistHigh: 10, consistMid: 6, consistLow: 3, rhrOptimal: 15, rhrGood: 10, rhrOk: 5, hrvHigh: 10, hrvMid: 6, hrvLow: 3, vo2High: 15, vo2Good: 12, vo2Mid: 8, vo2Low: 4, stepsHigh: 10, stepsMid: 7, stepsLow: 4, recoveryHigh: 10, recoveryMid: 6, recoveryLow: 3, strainMatch: 10, strainHigh: 5 }
     };
 
@@ -120,6 +120,22 @@
     // Merge pre-populated data with any existing localStorage data
     let storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     let allData = { ...JANUARY_DATA, ...storedData };
+
+    // Migration: move NoP from glucose to habits if exists
+    let migrated = false;
+    Object.keys(allData).forEach(date => {
+      const day = allData[date];
+      if (day.glucose && day.glucose.nop !== undefined && day.glucose.nop !== '') {
+        if (!day.habits) day.habits = {};
+        if (day.habits.nop === undefined || day.habits.nop === '') {
+          day.habits.nop = day.glucose.nop;
+          migrated = true;
+        }
+        delete day.glucose.nop;
+      }
+    });
+    if (migrated) console.log('✅ Migrated NoP data from glucose to habits');
+
     // Save merged data
     localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
 
@@ -277,33 +293,26 @@
       const quranPages = parseInt(data.prayers.quran) || 0;
       prayerScore += quranPages * WEIGHTS.prayer.quran;
 
-      // Health/Glucose Score
-      let healthScore = 0;
+      // Diabetes/Glucose Score
+      let diabetesScore = 0;
       const avg = parseFloat(data.glucose.avg) || 0;
       const tir = parseFloat(data.glucose.tir) || 0;
       const insulin = parseFloat(data.glucose.insulin) || 0;
-      const nop = data.glucose.nop;
 
       // Avg glucose scoring
-      if (data.glucose.avg !== '' && avg >= 70 && avg <= 140) healthScore += WEIGHTS.glucose.optimal;
-      else if (data.glucose.avg !== '' && avg > 140 && avg <= 180) healthScore += WEIGHTS.glucose.acceptable;
+      if (data.glucose.avg !== '' && avg >= 70 && avg <= 140) diabetesScore += WEIGHTS.glucose.optimal;
+      else if (data.glucose.avg !== '' && avg > 140 && avg <= 180) diabetesScore += WEIGHTS.glucose.acceptable;
 
       // TIR scoring
-      if (data.glucose.tir !== '' && tir >= 70) healthScore += WEIGHTS.glucose.tirHigh;
-      else if (data.glucose.tir !== '' && tir >= 50) healthScore += WEIGHTS.glucose.tirMid;
+      if (data.glucose.tir !== '' && tir >= 70) diabetesScore += WEIGHTS.glucose.tirHigh;
+      else if (data.glucose.tir !== '' && tir >= 50) diabetesScore += WEIGHTS.glucose.tirMid;
 
       // Insulin scoring: base points up to 40, then penalty for each unit over 40
       if (data.glucose.insulin !== '' && insulin > 0) {
-        healthScore += WEIGHTS.glucose.insulinBase;
+        diabetesScore += WEIGHTS.glucose.insulinBase;
         if (insulin > 40) {
-          healthScore -= (insulin - 40) * WEIGHTS.glucose.insulinPenalty;
+          diabetesScore -= (insulin - 40) * WEIGHTS.glucose.insulinPenalty;
         }
-      }
-
-      // NoP scoring: points if 1, penalty if 0
-      if (nop !== '' && nop !== null) {
-        if (parseInt(nop) === 1) healthScore += WEIGHTS.glucose.nopYes;
-        else if (parseInt(nop) === 0) healthScore += WEIGHTS.glucose.nopNo;
       }
 
       // Whoop Age Score - Based on age-reducing metrics
@@ -398,16 +407,22 @@
       habitScore += (parseFloat(data.habits.water) || 0) * WEIGHTS.habits.water;
       habitScore += data.habits.vitamins ? WEIGHTS.habits.vitamins : 0;
       habitScore += (parseInt(data.habits.brushTeeth) || 0) * WEIGHTS.habits.brushTeeth;
+      // NoP scoring: points if 1, penalty if 0
+      const nop = data.habits.nop;
+      if (nop !== '' && nop !== null && nop !== undefined) {
+        if (parseInt(nop) === 1) habitScore += (WEIGHTS.habits.nopYes || 5);
+        else if (parseInt(nop) === 0) habitScore += (WEIGHTS.habits.nopNo || -3);
+      }
 
       return {
         prayer: prayerScore,
         prayerOnTime: totalOnTime,
         prayerLate: totalLate,
-        health: Math.round(healthScore * 10) / 10,
+        diabetes: Math.round(diabetesScore * 10) / 10,
         whoop: Math.round(whoopScore * 10) / 10,
         family: familyScore,
         habit: habitScore,
-        total: Math.round((prayerScore + healthScore + whoopScore + familyScore + habitScore) * 10) / 10
+        total: Math.round((prayerScore + diabetesScore + whoopScore + familyScore + habitScore) * 10) / 10
       };
     }
 
@@ -580,7 +595,6 @@
         ${createNumberInput('Avg Glucose', data.glucose.avg, 'glucose', 'avg', '70-140', 'mg/dL', '70-140 optimal, 140-180 acceptable')}
         ${createNumberInput('TIR %', data.glucose.tir, 'glucose', 'tir', '70+', '%', '≥70% optimal, ≥50% acceptable')}
         ${createNumberInput('Insulin', data.glucose.insulin, 'glucose', 'insulin', '≤40', 'units', '≤40 = +5pts, >40 = -2pts/unit')}
-        ${createNumberInput('NoP', data.glucose.nop, 'glucose', 'nop', '1', '', '1 = +5pts, 0 = -3pts')}
       `;
 
       const whoopHelp = `<span class="text-xs text-purple-100 opacity-80">Hover ⓘ for tips</span>`;
@@ -610,6 +624,7 @@
         ${createNumberInput('💧 Water', data.habits.water, 'habits', 'water', '2.5', 'L')}
         <div class="mt-2">${createToggle('💊 Vitamins taken', data.habits.vitamins, 'habits', 'vitamins')}</div>
         ${createCounter('🦷 Brush Teeth', data.habits.brushTeeth || 0, 'habits', 'brushTeeth', 3)}
+        ${createNumberInput('💤 NoP', data.habits.nop, 'habits', 'nop', '0-1', '', '1 = +5pts, 0 = -3pts')}
       `;
 
       const summaryContent = `
@@ -642,7 +657,7 @@
       return `
         <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
           ${createScoreCard('Prayer', scores.prayer, 100, 'bg-blue-500')}
-          ${createScoreCard('Health', scores.health, 60, 'bg-green-500')}
+          ${createScoreCard('Diabetes', scores.diabetes, 60, 'bg-green-500')}
           ${createScoreCard('Whoop', scores.whoop, 100, 'bg-purple-500')}
           ${createScoreCard('Family', scores.family, 30, 'bg-amber-500')}
           ${createScoreCard('Habits', scores.habit, 50, 'bg-slate-500')}
@@ -844,7 +859,7 @@
         <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 shadow-lg">
           <div class="max-w-6xl mx-auto">
             <h1 class="text-3xl font-bold mb-2">Life Gamification</h1>
-            <p class="text-blue-100">Track habits, health & reduce your biological age</p>
+            <p class="text-blue-100">Track habits, diabetes & reduce your biological age</p>
             <div class="mt-4 flex flex-wrap items-center gap-4">
               <input type="date" id="dateInput" value="${currentDate}"
                 class="px-4 py-2 rounded-lg bg-white/20 text-white border border-white/30 focus:outline-none">
@@ -951,8 +966,8 @@
       const categories = {
         prayers: { label: '🕌 Prayers', fields: ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'quran'], headers: ['F', 'D', 'A', 'M', 'I', 'Q'] },
         family: { label: '👨‍👩‍👧‍👦 Family', fields: ['mom', 'dad', 'jana', 'tia', 'ahmed', 'eman'], headers: ['Mom', 'Dad', 'Jana', 'Tia', 'Ahmed', 'Eman'] },
-        habits: { label: '✨ Habits', fields: ['exercise', 'reading', 'meditation', 'water', 'vitamins', 'brushTeeth'], headers: ['🏋️', '📚', '🧘', '💧', '💊', '🦷'] },
-        glucose: { label: '💉 Glucose', fields: ['avg', 'tir', 'insulin', 'nop'], headers: ['Avg', 'TIR', 'Insulin', 'NoP'] },
+        habits: { label: '✨ Habits', fields: ['exercise', 'reading', 'meditation', 'water', 'vitamins', 'brushTeeth', 'nop'], headers: ['🏋️', '📚', '🧘', '💧', '💊', '🦷', '💤'] },
+        glucose: { label: '💉 Glucose', fields: ['avg', 'tir', 'insulin'], headers: ['Avg', 'TIR', 'Insulin'] },
         whoop: { label: '⏱️ Whoop', fields: ['sleepHours', 'rhr', 'hrv', 'vo2max', 'steps', 'recovery'], headers: ['Sleep', 'RHR', 'HRV', 'VO2', 'Steps', 'Rec'] }
       };
 
@@ -1153,19 +1168,19 @@
                 ${createWeightInput('💧 Water (per L)', WEIGHTS.habits.water, 'habits', 'water')}
                 ${createWeightInput('💊 Vitamins', WEIGHTS.habits.vitamins, 'habits', 'vitamins')}
                 ${createWeightInput('🦷 Brush Teeth', WEIGHTS.habits.brushTeeth, 'habits', 'brushTeeth')}
+                ${createWeightInput('💤 NoP = 1 (bonus)', WEIGHTS.habits.nopYes, 'habits', 'nopYes')}
+                ${createWeightInput('💤 NoP = 0 (penalty)', WEIGHTS.habits.nopNo, 'habits', 'nopNo')}
               </div>
 
-              <!-- Glucose Weights -->
+              <!-- Diabetes Weights -->
               <div class="bg-green-50 rounded-lg p-4">
-                <h4 class="font-semibold text-green-800 mb-3">💉 Glucose</h4>
+                <h4 class="font-semibold text-green-800 mb-3">💉 Diabetes</h4>
                 ${createWeightInput('Optimal (70-140)', WEIGHTS.glucose.optimal, 'glucose', 'optimal')}
                 ${createWeightInput('Acceptable (140-180)', WEIGHTS.glucose.acceptable, 'glucose', 'acceptable')}
                 ${createWeightInput('TIR ≥70%', WEIGHTS.glucose.tirHigh, 'glucose', 'tirHigh')}
                 ${createWeightInput('TIR 50-70%', WEIGHTS.glucose.tirMid, 'glucose', 'tirMid')}
                 ${createWeightInput('Insulin (base pts)', WEIGHTS.glucose.insulinBase, 'glucose', 'insulinBase')}
                 ${createWeightInput('Insulin >40 penalty', WEIGHTS.glucose.insulinPenalty, 'glucose', 'insulinPenalty')}
-                ${createWeightInput('NoP = 1 (bonus)', WEIGHTS.glucose.nopYes, 'glucose', 'nopYes')}
-                ${createWeightInput('NoP = 0 (penalty)', WEIGHTS.glucose.nopNo, 'glucose', 'nopNo')}
               </div>
 
               <!-- Whoop Weights -->
