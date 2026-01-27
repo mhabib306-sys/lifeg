@@ -872,6 +872,37 @@
         allData[dateStr][category][field] = value;
       }
       saveData();
+      // Update score cell live
+      const scoreCell = document.getElementById('score-' + dateStr);
+      if (scoreCell) {
+        const newScore = calculateScores(allData[dateStr]).total;
+        scoreCell.textContent = newScore;
+      }
+      // Update summary stats
+      updateBulkSummary();
+    }
+
+    function updateBulkSummary() {
+      const daysInMonth = getDaysInMonth(bulkMonth, bulkYear);
+      let totalScore = 0, daysWithData = 0;
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = bulkYear + '-' + String(bulkMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+        if (allData[dateStr]) {
+          daysWithData++;
+          totalScore += calculateScores(allData[dateStr]).total;
+        }
+      }
+      const avgScore = daysWithData > 0 ? Math.round(totalScore / daysWithData) : 0;
+      const completionRate = Math.round((daysWithData / daysInMonth) * 100);
+
+      const daysEl = document.getElementById('bulk-days-logged');
+      const totalEl = document.getElementById('bulk-total-score');
+      const avgEl = document.getElementById('bulk-avg-score');
+      const compEl = document.getElementById('bulk-completion');
+      if (daysEl) daysEl.textContent = daysWithData;
+      if (totalEl) totalEl.textContent = totalScore;
+      if (avgEl) avgEl.textContent = avgScore;
+      if (compEl) compEl.textContent = completionRate + '%';
     }
 
     function getDaysInMonth(month, year) {
@@ -946,7 +977,7 @@
           '<td class="' + dayCellClass + '">' + day + '</td>' +
           '<td class="' + weekdayCellClass + '">' + dayOfWeek + '</td>' +
           cells +
-          '<td class="border border-gray-200 px-2 py-1 text-center font-semibold text-blue-600">' + scores.total + '</td>' +
+          '<td id="score-' + dateStr + '" class="border border-gray-200 px-2 py-1 text-center font-semibold text-blue-600">' + scores.total + '</td>' +
           '</tr>';
       }
 
@@ -1015,19 +1046,19 @@
           '<h3 class="font-semibold mb-3">' + monthName + ' Summary</h3>' +
           '<div class="grid grid-cols-2 md:grid-cols-4 gap-4">' +
             '<div class="bg-blue-50 rounded-lg p-3 text-center">' +
-              '<div class="text-2xl font-bold text-blue-600">' + daysWithData + '</div>' +
+              '<div id="bulk-days-logged" class="text-2xl font-bold text-blue-600">' + daysWithData + '</div>' +
               '<div class="text-xs text-gray-600">Days Logged</div>' +
             '</div>' +
             '<div class="bg-green-50 rounded-lg p-3 text-center">' +
-              '<div class="text-2xl font-bold text-green-600">' + totalScore + '</div>' +
+              '<div id="bulk-total-score" class="text-2xl font-bold text-green-600">' + totalScore + '</div>' +
               '<div class="text-xs text-gray-600">Total Score</div>' +
             '</div>' +
             '<div class="bg-purple-50 rounded-lg p-3 text-center">' +
-              '<div class="text-2xl font-bold text-purple-600">' + avgScore + '</div>' +
+              '<div id="bulk-avg-score" class="text-2xl font-bold text-purple-600">' + avgScore + '</div>' +
               '<div class="text-xs text-gray-600">Avg Daily Score</div>' +
             '</div>' +
             '<div class="bg-amber-50 rounded-lg p-3 text-center">' +
-              '<div class="text-2xl font-bold text-amber-600">' + completionRate + '%</div>' +
+              '<div id="bulk-completion" class="text-2xl font-bold text-amber-600">' + completionRate + '%</div>' +
               '<div class="text-xs text-gray-600">Completion Rate</div>' +
             '</div>' +
           '</div>' +
