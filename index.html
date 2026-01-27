@@ -556,19 +556,17 @@
       const { onTime, late } = parsePrayer(value);
       const pts = calcPrayerScore(value);
       return `
-        <div class="border-b border-gray-100 pb-3 mb-3 last:border-0 last:pb-0 last:mb-0">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-medium text-gray-700">${label}</span>
-            <span class="text-sm font-semibold text-blue-600">${pts} pts</span>
-          </div>
-          <div class="flex items-center gap-2">
+        <div class="border-b border-softborder pb-4 mb-4 last:border-0 last:pb-0 last:mb-0">
+          <div class="flex items-center gap-4">
+            <span class="font-medium text-charcoal w-20">${label}</span>
             <input type="text" value="${value}" placeholder="X.Y"
-              class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-center font-mono text-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              class="w-20 px-3 py-2 border border-softborder rounded text-center font-mono text-lg bg-white"
               onchange="updateData('prayers', '${prayer}', this.value)">
-            <div class="text-xs text-gray-500 w-24">
-              <div class="flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span> ${onTime} on-time</div>
-              <div class="flex items-center gap-1"><span class="w-2 h-2 bg-amber-500 rounded-full"></span> ${late} late</div>
+            <div class="flex items-center gap-3 text-xs text-charcoal/60">
+              <span class="flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span>${onTime} on-time</span>
+              <span class="flex items-center gap-1"><span class="w-2 h-2 bg-amber-500 rounded-full"></span>${late} late</span>
             </div>
+            <span class="ml-auto text-sm font-semibold text-coral">${pts} pts</span>
           </div>
         </div>
       `;
@@ -588,18 +586,17 @@
 
     function createNumberInput(label, value, category, field, placeholder, unit, hint = '', tooltip = '') {
       return `
-        <div class="flex items-center gap-2 py-1.5 group relative">
-          <label class="text-sm text-charcoal/70 w-28 flex-shrink-0 flex items-center gap-1">
+        <div class="flex items-center gap-3 py-2 group relative">
+          <label class="text-sm text-charcoal/80 w-24 flex-shrink-0 flex items-center gap-1">
             ${label}
             ${tooltip ? `<span class="cursor-help text-charcoal/30 hover:text-coral text-xs">ⓘ</span>` : ''}
           </label>
           <input type="number" step="any" value="${value}" placeholder="${placeholder}"
-            class="flex-1 px-3 py-1.5 border border-softborder rounded text-sm bg-white"
+            class="w-24 px-3 py-2 border border-softborder rounded text-sm bg-white"
             onchange="updateData('${category}', '${field}', this.value)">
-          <span class="text-xs text-charcoal/40 w-14">${unit}</span>
+          <span class="text-xs text-charcoal/50 flex-1">${unit}${hint ? ` · ${hint}` : ''}</span>
           ${tooltip ? `<div class="absolute left-0 top-full mt-1 z-50 hidden group-hover:block bg-charcoal text-white text-xs rounded p-3 w-64 shadow-lg">${tooltip}</div>` : ''}
         </div>
-        ${hint ? `<div class="text-xs text-charcoal/40 ml-28 -mt-0.5 mb-1">${hint}</div>` : ''}
       `;
     }
 
@@ -687,19 +684,19 @@
         ${createNumberInput('Insulin', data.glucose.insulin, 'glucose', 'insulin', '≤40', 'units', '≤40 = +5pts, >40 = -5pts')}
       `;
 
-      const whoopHelp = `<span class="text-xs text-purple-100 opacity-80">Hover ⓘ for tips</span>`;
+      const whoopHelp = `<span class="text-xs text-charcoal/50">Hover ⓘ for tips</span>`;
       const whoopContent = `
-        <div class="text-xs text-purple-600 bg-purple-50 p-2 rounded mb-3 font-medium">
-          🎯 Focus on RHR (<60), VO2 Max (>40), Sleep (7-8h) for biggest age reduction
+        <div class="text-xs text-charcoal/70 bg-warmgray p-3 rounded mb-4">
+          🎯 Focus on RHR (<60), VO2 Max (>45), Sleep (7-8h) for biggest age reduction
         </div>
         ${createNumberInput('Sleep', data.whoop.sleepHours, 'whoop', 'sleepHours', '7-8', 'hrs', '7-8h optimal', '<b>How to improve:</b><br>• Consistent bedtime/wake time<br>• Cool room (65-68°F)<br>• No screens 1h before bed<br>• Avoid caffeine after 2pm<br>• Limit alcohol')}
         ${createNumberInput('Consistency', data.whoop.sleepConsist, 'whoop', 'sleepConsist', '≥80', '%', '≥80% optimal', '<b>How to improve:</b><br>• Same bedtime daily (±30min)<br>• Same wake time on weekends<br>• Set phone reminders<br>• Create bedtime routine')}
-        ${createNumberInput('RHR', data.whoop.rhr, 'whoop', 'rhr', '<60', 'bpm', '⚠️ <60 optimal (+3.1 yrs if high!)', '<b>How to lower RHR:</b><br>• Regular cardio exercise<br>• Reduce stress (meditation)<br>• Stay hydrated<br>• Limit caffeine/alcohol<br>• Get quality sleep<br>• Lose excess weight')}
+        ${createNumberInput('RHR', data.whoop.rhr, 'whoop', 'rhr', '<60', 'bpm', '⚠️ <60 optimal', '<b>How to lower RHR:</b><br>• Regular cardio exercise<br>• Reduce stress (meditation)<br>• Stay hydrated<br>• Limit caffeine/alcohol<br>• Get quality sleep<br>• Lose excess weight')}
         ${createNumberInput('HRV', data.whoop.hrv, 'whoop', 'hrv', '≥50', 'ms', '≥50 optimal', '<b>How to increase HRV:</b><br>• Consistent sleep schedule<br>• Regular exercise (not overtraining)<br>• Deep breathing exercises<br>• Cold exposure (cold showers)<br>• Reduce alcohol<br>• Manage stress')}
-        ${createNumberInput('VO2 Max', data.whoop.vo2max, 'whoop', 'vo2max', '≥45', '', '⚠️ ≥45 excellent (+2.6 yrs if low!)', '<b>How to improve VO2 Max:</b><br>• High-intensity intervals (HIIT)<br>• Zone 2 cardio (long, easy runs)<br>• Cycling, swimming, rowing<br>• Gradually increase intensity<br>• Train 3-5x per week')}
+        ${createNumberInput('VO2 Max', data.whoop.vo2max, 'whoop', 'vo2max', '≥45', '', '⚠️ ≥45 excellent', '<b>How to improve VO2 Max:</b><br>• High-intensity intervals (HIIT)<br>• Zone 2 cardio (long, easy runs)<br>• Cycling, swimming, rowing<br>• Gradually increase intensity<br>• Train 3-5x per week')}
         ${createNumberInput('Steps', data.whoop.steps, 'whoop', 'steps', '≥10k', '', '≥10k optimal', '<b>How to get more steps:</b><br>• Walking meetings<br>• Take stairs<br>• Park farther away<br>• Post-meal walks<br>• Treadmill desk<br>• Set hourly reminders')}
         ${createNumberInput('Recovery', data.whoop.recovery, 'whoop', 'recovery', '≥66', '%', '≥66% green', '<b>How to improve recovery:</b><br>• Prioritize sleep quality<br>• Hydrate well<br>• Eat nutritious foods<br>• Active recovery days<br>• Manage stress<br>• Avoid overtraining')}
-        ${createNumberInput('Strain', data.whoop.strain, 'whoop', 'strain', '10-14', '/21', 'Match to recovery for pts', '<b>Recovery-matched scoring:</b><br>• Green (≥66%) → aim for 14+ strain<br>• Yellow (33-65%) → aim for 10-14 strain<br>• Red (<33%) → rest, strain <10<br>• Bonus pts for 18+ on green days!')}
+        ${createNumberInput('Strain', data.whoop.strain, 'whoop', 'strain', '10-14', '/21', 'Match to recovery', '<b>Recovery-matched scoring:</b><br>• Green (≥66%) → aim for 14+ strain<br>• Yellow (33-65%) → aim for 10-14 strain<br>• Red (<33%) → rest, strain <10<br>• Bonus pts for 18+ on green days!')}
         ${createNumberInput('Whoop Age', data.whoop.whoopAge, 'whoop', 'whoopAge', '38', 'yrs', 'Goal: Reduce!')}
       `;
 
