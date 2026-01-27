@@ -3,15 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Life Gamification v2.2</title>
+  <title>Life Gamification v3.0</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%234F46E5'/><stop offset='100%25' stop-color='%239333EA'/></linearGradient></defs><circle cx='50' cy='50' r='45' fill='url(%23g)'/><text x='50' y='68' font-size='55' text-anchor='middle' fill='white'>🎮</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='12' fill='%23E5533D'/><text x='50' y='72' font-size='60' font-weight='bold' text-anchor='middle' fill='white' font-family='system-ui'>L</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#F7F6F4',
+            warmgray: '#EFEDE8',
+            charcoal: '#1a1a1a',
+            coral: '#E5533D',
+            coralDark: '#C4432F',
+            softborder: '#E5E3DE'
+          },
+          fontFamily: {
+            sans: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    body { font-feature-settings: 'kern' 1, 'liga' 1; }
+    .sb-card { background: #EFEDE8; border: 1px solid #E5E3DE; }
+    .sb-btn { background: #1a1a1a; color: white; transition: all 0.15s ease; }
+    .sb-btn:hover { background: #333; }
+    .sb-link { color: #E5533D; text-decoration: underline; text-underline-offset: 2px; }
+    .sb-link:hover { color: #C4432F; }
+    .sb-section-title {
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+    input[type="number"], input[type="text"] {
+      background: white;
+      border: 1px solid #E5E3DE;
+    }
+    input[type="number"]:focus, input[type="text"]:focus {
+      border-color: #E5533D;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(229, 83, 61, 0.1);
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+<body class="min-h-screen bg-cream text-charcoal">
   <div id="app"></div>
 
   <script>
@@ -534,11 +576,11 @@
 
     function createToggle(label, checked, category, field) {
       return `
-        <label class="flex items-center justify-between cursor-pointer py-2 px-1 hover:bg-gray-50 rounded">
-          <span class="text-sm font-medium text-gray-700">${label}</span>
+        <label class="flex items-center justify-between cursor-pointer py-2 px-1 hover:bg-warmgray rounded transition">
+          <span class="text-sm text-charcoal">${label}</span>
           <div class="relative" onclick="updateData('${category}', '${field}', !${checked})">
-            <div class="w-11 h-6 rounded-full shadow-inner transition" style="background-color: ${checked ? '#22c55e' : '#d1d5db'}"></div>
-            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition" style="transform: translateX(${checked ? '20px' : '0'})"></div>
+            <div class="w-10 h-5 rounded-full transition" style="background-color: ${checked ? '#E5533D' : '#d1d5db'}"></div>
+            <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition" style="transform: translateX(${checked ? '20px' : '0'})"></div>
           </div>
         </label>
       `;
@@ -546,46 +588,55 @@
 
     function createNumberInput(label, value, category, field, placeholder, unit, hint = '', tooltip = '') {
       return `
-        <div class="flex items-center gap-2 py-1 group relative">
-          <label class="text-sm text-gray-600 w-28 flex-shrink-0 flex items-center gap-1">
+        <div class="flex items-center gap-2 py-1.5 group relative">
+          <label class="text-sm text-charcoal/70 w-28 flex-shrink-0 flex items-center gap-1">
             ${label}
-            ${tooltip ? `<span class="cursor-help text-gray-400 hover:text-purple-600">ⓘ</span>` : ''}
+            ${tooltip ? `<span class="cursor-help text-charcoal/30 hover:text-coral text-xs">ⓘ</span>` : ''}
           </label>
           <input type="number" step="any" value="${value}" placeholder="${placeholder}"
-            class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            class="flex-1 px-3 py-1.5 border border-softborder rounded text-sm bg-white"
             onchange="updateData('${category}', '${field}', this.value)">
-          <span class="text-xs text-gray-500 w-16">${unit}</span>
-          ${tooltip ? `<div class="absolute left-0 top-full mt-1 z-50 hidden group-hover:block bg-gray-800 text-white text-xs rounded-lg p-3 w-64 shadow-lg">${tooltip}</div>` : ''}
+          <span class="text-xs text-charcoal/40 w-14">${unit}</span>
+          ${tooltip ? `<div class="absolute left-0 top-full mt-1 z-50 hidden group-hover:block bg-charcoal text-white text-xs rounded p-3 w-64 shadow-lg">${tooltip}</div>` : ''}
         </div>
-        ${hint ? `<div class="text-xs text-gray-400 ml-28 -mt-1 mb-1">${hint}</div>` : ''}
+        ${hint ? `<div class="text-xs text-charcoal/40 ml-28 -mt-0.5 mb-1">${hint}</div>` : ''}
       `;
     }
 
     function createCounter(label, value, category, field, max = 10) {
       return `
         <div class="flex items-center justify-between py-2">
-          <span class="text-sm font-medium text-gray-700">${label}</span>
+          <span class="text-sm text-charcoal">${label}</span>
           <div class="flex items-center gap-2">
             <button onclick="updateData('${category}', '${field}', Math.max(0, ${value} - 1))"
-              class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center font-bold text-gray-600">−</button>
-            <span class="w-8 text-center font-semibold text-lg">${value}</span>
+              class="w-7 h-7 rounded-full bg-warmgray hover:bg-softborder flex items-center justify-center font-bold text-charcoal/60 transition">−</button>
+            <span class="w-8 text-center font-semibold text-lg text-charcoal">${value}</span>
             <button onclick="updateData('${category}', '${field}', Math.min(${max}, ${value} + 1))"
-              class="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center font-bold">+</button>
+              class="w-7 h-7 rounded-full bg-coral hover:bg-coralDark text-white flex items-center justify-center font-bold transition">+</button>
           </div>
         </div>
       `;
     }
 
-    function createScoreCard(label, score, max, bgClass) {
+    function createScoreCard(label, score, max, colorClass) {
       const pct = max ? Math.min((score / max) * 100, 100) : 0;
+      // Map old color classes to SimpleBits-style accent colors
+      const accentMap = {
+        'bg-blue-500': '#4A90A4',
+        'bg-green-500': '#6B8E5A',
+        'bg-purple-500': '#7C6B8E',
+        'bg-amber-500': '#C4943D',
+        'bg-slate-500': '#6B7280'
+      };
+      const accent = accentMap[colorClass] || '#E5533D';
       return `
-        <div class="bg-white rounded-xl p-4 shadow-lg">
+        <div class="sb-card rounded-lg p-4">
           <div class="flex justify-between items-center mb-2">
-            <span class="text-sm text-gray-600">${label}</span>
-            <span class="font-bold text-xl">${fmt(score)}</span>
+            <span class="sb-section-title text-charcoal/60">${label}</span>
+            <span class="font-bold text-2xl text-charcoal">${fmt(score)}</span>
           </div>
-          <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div class="h-full ${bgClass} transition-all duration-500" style="width: ${pct}%"></div>
+          <div class="h-1.5 bg-charcoal/10 rounded-full overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background: ${accent}"></div>
           </div>
         </div>
       `;
@@ -593,15 +644,15 @@
 
     function createCard(title, icon, colorClass, content, extraHeader = '') {
       return `
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div class="${colorClass} px-4 py-3 flex items-center justify-between">
+        <div class="sb-card rounded-lg overflow-hidden">
+          <div class="px-5 py-4 border-b border-softborder flex items-center justify-between bg-warmgray">
             <div class="flex items-center gap-2">
-              <span class="text-xl">${icon}</span>
-              <h3 class="text-white font-semibold">${title}</h3>
+              <span class="text-lg">${icon}</span>
+              <h3 class="font-semibold text-charcoal">${title}</h3>
             </div>
-            ${extraHeader}
+            ${extraHeader ? `<span class="text-charcoal/50 text-xs">${extraHeader}</span>` : ''}
           </div>
-          <div class="p-4">${content}</div>
+          <div class="p-5 bg-white">${content}</div>
         </div>
       `;
     }
@@ -694,24 +745,24 @@
       `;
 
       return `
-        <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
           ${createScoreCard('Prayer', scores.prayer, 30, 'bg-blue-500')}
           ${createScoreCard('Diabetes', scores.diabetes, 25, 'bg-green-500')}
           ${createScoreCard('Whoop', scores.whoop, 25, 'bg-purple-500')}
           ${createScoreCard('Family', scores.family, 5, 'bg-amber-500')}
           ${createScoreCard('Habits', scores.habit, 15, 'bg-slate-500')}
-          <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-4 shadow-lg text-white">
-            <div class="text-sm opacity-90">Total Score</div>
-            <div class="text-3xl font-bold">${fmt(scores.total)}</div>
+          <div class="sb-card rounded-lg p-4 bg-coral text-white">
+            <div class="sb-section-title text-white/80">Total</div>
+            <div class="text-3xl font-bold mt-1">${fmt(scores.total)}</div>
           </div>
         </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          ${createCard('Prayers', '🕌', 'bg-blue-600', prayersContent, prayerHelp)}
-          ${createCard('Glucose (Libre)', '💉', 'bg-green-600', glucoseContent)}
-          ${createCard('Whoop Age Metrics', '⏱️', 'bg-purple-600', whoopContent, whoopHelp)}
-          ${createCard('Family Check-ins', '👨‍👩‍👧‍👦', 'bg-amber-600', familyContent)}
-          ${createCard('Habits', '✨', 'bg-slate-600', habitsContent)}
-          ${createCard("Today's Summary", '📈', 'bg-orange-600', summaryContent)}
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          ${createCard('Prayers', '🕌', '', prayersContent, prayerHelp)}
+          ${createCard('Glucose (Libre)', '💉', '', glucoseContent)}
+          ${createCard('Whoop Age Metrics', '⏱️', '', whoopContent, whoopHelp)}
+          ${createCard('Family Check-ins', '👨‍👩‍👧‍👦', '', familyContent)}
+          ${createCard('Habits', '✨', '', habitsContent)}
+          ${createCard("Today's Summary", '📈', '', summaryContent)}
         </div>
       `;
     }
@@ -729,7 +780,7 @@
             type: 'bar',
             data: {
               labels: last30Data.map(d => d.label),
-              datasets: [{ label: 'Total Score', data: last30Data.map(d => d.total), backgroundColor: '#f97316', borderRadius: 4 }]
+              datasets: [{ label: 'Total Score', data: last30Data.map(d => d.total), backgroundColor: '#E5533D', borderRadius: 4 }]
             },
             options: {
               responsive: true,
@@ -751,10 +802,10 @@
             data: {
               labels: last30Data.map(d => d.label),
               datasets: [
-                { label: 'Prayer', data: last30Data.map(d => d.prayer), borderColor: '#3b82f6', tension: 0.3, pointRadius: 2 },
-                { label: 'Whoop', data: last30Data.map(d => d.whoop), borderColor: '#a855f7', tension: 0.3, pointRadius: 2 },
-                { label: 'Family', data: last30Data.map(d => d.family), borderColor: '#f59e0b', tension: 0.3, pointRadius: 2 },
-                { label: 'Habit', data: last30Data.map(d => d.habit), borderColor: '#64748b', tension: 0.3, pointRadius: 2 }
+                { label: 'Prayer', data: last30Data.map(d => d.prayer), borderColor: '#4A90A4', tension: 0.3, pointRadius: 2 },
+                { label: 'Whoop', data: last30Data.map(d => d.whoop), borderColor: '#7C6B8E', tension: 0.3, pointRadius: 2 },
+                { label: 'Family', data: last30Data.map(d => d.family), borderColor: '#C4943D', tension: 0.3, pointRadius: 2 },
+                { label: 'Habit', data: last30Data.map(d => d.habit), borderColor: '#6B7280', tension: 0.3, pointRadius: 2 }
               ]
             },
             options: {
@@ -771,119 +822,119 @@
       }, 100);
 
       return `
-        <div class="space-y-6">
+        <div class="space-y-8">
           <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div class="bg-gradient-to-br from-orange-500 to-red-500 rounded-xl p-5 text-white shadow-lg">
-              <div class="text-sm opacity-80">30-Day Score</div>
-              <div class="text-3xl font-bold">${fmt(stats.totalScore)}</div>
+            <div class="sb-card rounded-lg p-5 bg-coral text-white">
+              <div class="sb-section-title text-white/70">30-Day Score</div>
+              <div class="text-3xl font-bold mt-1">${fmt(stats.totalScore)}</div>
             </div>
-            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-5 text-white shadow-lg">
-              <div class="text-sm opacity-80">Days Logged</div>
-              <div class="text-3xl font-bold">${stats.daysLogged}/30</div>
+            <div class="sb-card rounded-lg p-5">
+              <div class="sb-section-title text-charcoal/50">Days Logged</div>
+              <div class="text-3xl font-bold mt-1 text-charcoal">${stats.daysLogged}/30</div>
             </div>
-            <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-5 text-white shadow-lg">
-              <div class="text-sm opacity-80">Avg RHR</div>
-              <div class="text-3xl font-bold">${fmt(stats.avgRHR)} <span class="text-lg">bpm</span></div>
+            <div class="sb-card rounded-lg p-5">
+              <div class="sb-section-title text-charcoal/50">Avg RHR</div>
+              <div class="text-3xl font-bold mt-1 text-charcoal">${fmt(stats.avgRHR)} <span class="text-base font-normal text-charcoal/50">bpm</span></div>
             </div>
-            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-5 text-white shadow-lg">
-              <div class="text-sm opacity-80">Avg Sleep</div>
-              <div class="text-3xl font-bold">${stats.avgSleep} <span class="text-lg">hrs</span></div>
+            <div class="sb-card rounded-lg p-5">
+              <div class="sb-section-title text-charcoal/50">Avg Sleep</div>
+              <div class="text-3xl font-bold mt-1 text-charcoal">${stats.avgSleep} <span class="text-base font-normal text-charcoal/50">hrs</span></div>
             </div>
-            <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl p-5 text-white shadow-lg">
-              <div class="text-sm opacity-80">Family Check-ins</div>
-              <div class="text-3xl font-bold">${fmt(stats.totalFamilyCheckins)}</div>
+            <div class="sb-card rounded-lg p-5">
+              <div class="sb-section-title text-charcoal/50">Family Check-ins</div>
+              <div class="text-3xl font-bold mt-1 text-charcoal">${fmt(stats.totalFamilyCheckins)}</div>
             </div>
           </div>
 
-          <div class="bg-white rounded-xl p-6 shadow-lg">
-            <h3 class="text-lg font-semibold mb-4">Last 30 Days - Total Score</h3>
+          <div class="sb-card rounded-lg p-6 bg-white">
+            <h3 class="font-semibold text-charcoal mb-4">Last 30 Days <span class="text-coral">→</span></h3>
             <div class="h-72"><canvas id="weekChart"></canvas></div>
           </div>
 
-          <div class="bg-white rounded-xl p-6 shadow-lg">
-            <h3 class="text-lg font-semibold mb-4">Last 30 Days - Score Breakdown by Category</h3>
+          <div class="sb-card rounded-lg p-6 bg-white">
+            <h3 class="font-semibold text-charcoal mb-4">Score Breakdown <span class="text-coral">→</span></h3>
             <div class="h-72"><canvas id="breakdownChart"></canvas></div>
           </div>
 
           <!-- Personal Bests Section -->
           ${bests ? `
-          <div class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl p-6 shadow-lg text-white">
-            <h3 class="text-lg font-semibold mb-4">🏆 Personal Bests</h3>
+          <div class="sb-card rounded-lg p-6 bg-warmgray border-2 border-coral/20">
+            <h3 class="font-semibold text-charcoal mb-4">Personal Bests <span class="text-coral">→</span></h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
-                <div class="text-3xl font-bold">${fmt(bests.highestDayScore.value)}</div>
-                <div class="text-sm opacity-90">Best Day Score</div>
-                <div class="text-xs opacity-75 mt-1">${bests.highestDayScore.date ? new Date(bests.highestDayScore.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</div>
+              <div class="bg-white rounded-lg p-4 border border-softborder">
+                <div class="text-3xl font-bold text-coral">${fmt(bests.highestDayScore.value)}</div>
+                <div class="text-sm text-charcoal/70 mt-1">Best Day Score</div>
+                <div class="text-xs text-charcoal/40 mt-1">${bests.highestDayScore.date ? new Date(bests.highestDayScore.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</div>
               </div>
-              <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
-                <div class="text-3xl font-bold">${fmt(bests.highestWeekScore.value)}</div>
-                <div class="text-sm opacity-90">Best Week Score</div>
-                <div class="text-xs opacity-75 mt-1">${bests.highestWeekScore.weekStart ? 'Week of ' + new Date(bests.highestWeekScore.weekStart).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</div>
+              <div class="bg-white rounded-lg p-4 border border-softborder">
+                <div class="text-3xl font-bold text-coral">${fmt(bests.highestWeekScore.value)}</div>
+                <div class="text-sm text-charcoal/70 mt-1">Best Week Score</div>
+                <div class="text-xs text-charcoal/40 mt-1">${bests.highestWeekScore.weekStart ? 'Week of ' + new Date(bests.highestWeekScore.weekStart).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</div>
               </div>
-              <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
-                <div class="text-3xl font-bold">${fmt(bests.longestStreak.value)}</div>
-                <div class="text-sm opacity-90">Longest Streak</div>
-                <div class="text-xs opacity-75 mt-1">${bests.longestStreak.value > 0 ? 'days in a row' : '—'}</div>
+              <div class="bg-white rounded-lg p-4 border border-softborder">
+                <div class="text-3xl font-bold text-coral">${fmt(bests.longestStreak.value)}</div>
+                <div class="text-sm text-charcoal/70 mt-1">Longest Streak</div>
+                <div class="text-xs text-charcoal/40 mt-1">${bests.longestStreak.value > 0 ? 'days in a row' : '—'}</div>
               </div>
-              <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
-                <div class="text-3xl font-bold flex items-center gap-2">${fmt(bests.currentStreak)} ${bests.currentStreak > 0 ? '🔥' : ''}</div>
-                <div class="text-sm opacity-90">Current Streak</div>
-                <div class="text-xs opacity-75 mt-1">${bests.currentStreak > 0 ? 'Keep it going!' : 'Log today to start!'}</div>
+              <div class="bg-white rounded-lg p-4 border border-softborder">
+                <div class="text-3xl font-bold text-coral flex items-center gap-2">${fmt(bests.currentStreak)} ${bests.currentStreak > 0 ? '🔥' : ''}</div>
+                <div class="text-sm text-charcoal/70 mt-1">Current Streak</div>
+                <div class="text-xs text-charcoal/40 mt-1">${bests.currentStreak > 0 ? 'Keep it going!' : 'Log today to start!'}</div>
               </div>
             </div>
           </div>
 
           <div class="grid md:grid-cols-2 gap-6">
-            <div class="bg-white rounded-xl p-6 shadow-lg">
-              <h3 class="text-lg font-semibold mb-4">🎖️ Category Records</h3>
-              <div class="space-y-4">
-                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+            <div class="sb-card rounded-lg p-6 bg-white">
+              <h3 class="font-semibold text-charcoal mb-4">Category Records <span class="text-coral">→</span></h3>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
                   <div>
-                    <div class="font-medium text-blue-800">🕌 Best Prayer Day</div>
-                    <div class="text-xs text-blue-600">${bests.bestPrayerDay.date ? new Date(bests.bestPrayerDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</div>
+                    <div class="text-sm font-medium text-charcoal">🕌 Best Prayer Day</div>
+                    <div class="text-xs text-charcoal/50">${bests.bestPrayerDay.date ? new Date(bests.bestPrayerDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</div>
                   </div>
-                  <div class="text-2xl font-bold text-blue-600">${fmt(bests.bestPrayerDay.value)} pts</div>
+                  <div class="text-xl font-bold text-coral">${fmt(bests.bestPrayerDay.value)} pts</div>
                 </div>
-                <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
                   <div>
-                    <div class="font-medium text-purple-800">⏱️ Best Whoop Day</div>
-                    <div class="text-xs text-purple-600">${bests.bestWhoopDay.date ? new Date(bests.bestWhoopDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</div>
+                    <div class="text-sm font-medium text-charcoal">⏱️ Best Whoop Day</div>
+                    <div class="text-xs text-charcoal/50">${bests.bestWhoopDay.date ? new Date(bests.bestWhoopDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</div>
                   </div>
-                  <div class="text-2xl font-bold text-purple-600">${fmt(bests.bestWhoopDay.value)} pts</div>
+                  <div class="text-xl font-bold text-coral">${fmt(bests.bestWhoopDay.value)} pts</div>
                 </div>
-                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
                   <div>
-                    <div class="font-medium text-green-800">📖 Most Quran Pages</div>
-                    <div class="text-xs text-green-600">${bests.mostQuranPages.date ? new Date(bests.mostQuranPages.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</div>
+                    <div class="text-sm font-medium text-charcoal">📖 Most Quran Pages</div>
+                    <div class="text-xs text-charcoal/50">${bests.mostQuranPages.date ? new Date(bests.mostQuranPages.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</div>
                   </div>
-                  <div class="text-2xl font-bold text-green-600">${fmt(bests.mostQuranPages.value)} pages</div>
+                  <div class="text-xl font-bold text-coral">${fmt(bests.mostQuranPages.value)} pages</div>
                 </div>
               </div>
             </div>
 
-            <div class="bg-white rounded-xl p-6 shadow-lg">
-              <h3 class="text-lg font-semibold mb-4">📊 Lifetime Stats</h3>
-              <div class="space-y-4">
-                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <div class="font-medium">Total Days Logged</div>
-                  <div class="text-2xl font-bold text-slate-700">${fmt(bests.totalDaysLogged)}</div>
+            <div class="sb-card rounded-lg p-6 bg-white">
+              <h3 class="font-semibold text-charcoal mb-4">Lifetime Stats <span class="text-coral">→</span></h3>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
+                  <div class="text-sm font-medium text-charcoal">Total Days Logged</div>
+                  <div class="text-xl font-bold text-charcoal">${fmt(bests.totalDaysLogged)}</div>
                 </div>
-                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                  <div class="font-medium">Perfect Prayer Days</div>
-                  <div class="text-2xl font-bold text-blue-600">${fmt(bests.perfectPrayerDays)} 🌟</div>
+                <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
+                  <div class="text-sm font-medium text-charcoal">Perfect Prayer Days</div>
+                  <div class="text-xl font-bold text-coral">${fmt(bests.perfectPrayerDays)} 🌟</div>
                 </div>
-                <div class="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
-                  <div class="font-medium">Perfect Prayer Rate</div>
-                  <div class="text-2xl font-bold text-amber-600">${bests.totalDaysLogged > 0 ? Math.round((bests.perfectPrayerDays / bests.totalDaysLogged) * 100) : 0}%</div>
+                <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
+                  <div class="text-sm font-medium text-charcoal">Perfect Prayer Rate</div>
+                  <div class="text-xl font-bold text-coral">${bests.totalDaysLogged > 0 ? Math.round((bests.perfectPrayerDays / bests.totalDaysLogged) * 100) : 0}%</div>
                 </div>
               </div>
             </div>
           </div>
           ` : `
-          <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+          <div class="sb-card rounded-lg p-8 bg-white text-center">
             <div class="text-4xl mb-4">🎮</div>
-            <h3 class="text-lg font-semibold mb-2">Start Your Journey!</h3>
-            <p class="text-gray-500">Log your first day to start tracking personal bests.</p>
+            <h3 class="font-semibold text-charcoal mb-2">Start Your Journey!</h3>
+            <p class="text-charcoal/50 text-sm">Log your first day to start tracking personal bests.</p>
           </div>
           `}
         </div>
@@ -895,43 +946,49 @@
       const dateDisplay = new Date(currentDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
       app.innerHTML = `
-        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 shadow-lg">
-          <div class="max-w-6xl mx-auto">
-            <h1 class="text-3xl font-bold mb-2">Life Gamification</h1>
-            <p class="text-blue-100">Track habits, diabetes & reduce your biological age</p>
-            <div class="mt-4 flex flex-wrap items-center gap-4">
-              <input type="date" id="dateInput" value="${currentDate}"
-                class="px-4 py-2 rounded-lg bg-white/20 text-white border border-white/30 focus:outline-none">
-              <button onclick="setToday()" class="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30">Today</button>
-              <span class="text-blue-100 text-sm">${dateDisplay}</span>
+        <header class="border-b border-softborder bg-cream">
+          <div class="max-w-5xl mx-auto px-6 py-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h1 class="text-2xl font-bold tracking-tight text-charcoal">Life Gamification</h1>
+                <p class="text-sm text-charcoal/60 mt-1">Track habits, diabetes <span class="text-coral">+</span> reduce your biological age</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <input type="date" id="dateInput" value="${currentDate}"
+                  class="px-3 py-2 rounded-lg text-sm border border-softborder bg-white focus:border-coral focus:outline-none">
+                <button onclick="setToday()" class="sb-btn px-4 py-2 rounded-lg text-sm font-medium">Today</button>
+              </div>
+            </div>
+            <p class="text-charcoal/50 text-sm mt-2">${dateDisplay}</p>
+          </div>
+        </header>
+
+        <nav class="border-b border-softborder bg-warmgray">
+          <div class="max-w-5xl mx-auto px-6">
+            <div class="flex gap-1">
+              <button onclick="switchTab('track')" class="py-3 px-5 text-sm font-medium transition border-b-2 ${activeTab === 'track' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal'}">
+                Daily
+              </button>
+              <button onclick="switchTab('bulk')" class="py-3 px-5 text-sm font-medium transition border-b-2 ${activeTab === 'bulk' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal'}">
+                Bulk Entry
+              </button>
+              <button onclick="switchTab('dashboard')" class="py-3 px-5 text-sm font-medium transition border-b-2 ${activeTab === 'dashboard' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal'}">
+                Dashboard
+              </button>
+              <button onclick="switchTab('settings')" class="py-3 px-5 text-sm font-medium transition border-b-2 ${activeTab === 'settings' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal'}">
+                Settings
+              </button>
             </div>
           </div>
-        </div>
+        </nav>
 
-        <div class="max-w-6xl mx-auto px-4 mt-4">
-          <div class="flex gap-2 bg-slate-800 p-1 rounded-xl">
-            <button onclick="switchTab('track')" class="flex-1 py-2 px-4 rounded-lg font-medium transition ${activeTab === 'track' ? 'bg-white text-slate-800' : 'text-slate-300 hover:text-white'}">
-              📝 Daily
-            </button>
-            <button onclick="switchTab('bulk')" class="flex-1 py-2 px-4 rounded-lg font-medium transition ${activeTab === 'bulk' ? 'bg-white text-slate-800' : 'text-slate-300 hover:text-white'}">
-              📋 Bulk Entry
-            </button>
-            <button onclick="switchTab('dashboard')" class="flex-1 py-2 px-4 rounded-lg font-medium transition ${activeTab === 'dashboard' ? 'bg-white text-slate-800' : 'text-slate-300 hover:text-white'}">
-              📊 Dashboard
-            </button>
-            <button onclick="switchTab('settings')" class="flex-1 py-2 px-4 rounded-lg font-medium transition ${activeTab === 'settings' ? 'bg-white text-slate-800' : 'text-slate-300 hover:text-white'}">
-              ⚙️ Settings
-            </button>
-          </div>
-        </div>
-
-        <div class="max-w-6xl mx-auto p-4">
+        <main class="max-w-5xl mx-auto px-6 py-8">
           ${activeTab === 'track' ? renderTrackingTab() : activeTab === 'bulk' ? renderBulkEntryTab() : activeTab === 'dashboard' ? renderDashboardTab() : renderSettingsTab()}
-        </div>
+        </main>
 
-        <div class="text-center text-slate-500 py-6 text-sm">
-          Data saved locally • Muhammad's Life Gamification System
-        </div>
+        <footer class="border-t border-softborder py-8 mt-12">
+          <p class="text-center text-charcoal/40 text-sm">Data saved locally <span class="text-coral">•</span> Muhammad's Life Gamification System</p>
+        </footer>
       `;
 
       document.getElementById('dateInput').addEventListener('change', (e) => { currentDate = e.target.value; render(); });
@@ -1168,28 +1225,28 @@
 
     function renderSettingsTab() {
       return `
-        <div class="space-y-6">
-          <div class="bg-white rounded-xl p-6 shadow-lg">
+        <div class="space-y-8">
+          <div class="sb-card rounded-lg p-6 bg-white">
             <div class="flex justify-between items-center mb-4">
-              <h3 class="text-lg font-semibold">⚙️ Scoring Weights</h3>
-              <button onclick="resetWeights()" class="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 text-sm font-medium">
+              <h3 class="font-semibold text-charcoal">Scoring Weights <span class="text-coral">→</span></h3>
+              <button onclick="resetWeights()" class="px-4 py-2 bg-coral/10 text-coral rounded text-sm font-medium hover:bg-coral/20 transition">
                 Reset to Defaults
               </button>
             </div>
-            <p class="text-sm text-gray-500 mb-6">Adjust the point values for each activity. Changes apply immediately.</p>
+            <p class="text-sm text-charcoal/50 mb-6">Adjust the point values for each activity. Changes apply immediately.</p>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <!-- Prayer Weights -->
-              <div class="bg-blue-50 rounded-lg p-4">
-                <h4 class="font-semibold text-blue-800 mb-3">🕌 Prayer</h4>
+              <div class="bg-warmgray rounded-lg p-4 border border-softborder">
+                <h4 class="sb-section-title text-charcoal/70 mb-3">🕌 Prayer</h4>
                 ${createWeightInput('On-time prayer', WEIGHTS.prayer.onTime, 'prayer', 'onTime')}
                 ${createWeightInput('Late prayer', WEIGHTS.prayer.late, 'prayer', 'late')}
                 ${createWeightInput('Quran (per page)', WEIGHTS.prayer.quran, 'prayer', 'quran')}
               </div>
 
               <!-- Family Weights -->
-              <div class="bg-amber-50 rounded-lg p-4">
-                <h4 class="font-semibold text-amber-800 mb-3">👨‍👩‍👧‍👦 Family</h4>
+              <div class="bg-warmgray rounded-lg p-4 border border-softborder">
+                <h4 class="sb-section-title text-charcoal/70 mb-3">👨‍👩‍👧‍👦 Family</h4>
                 ${createWeightInput('👩 Mom', WEIGHTS.family.mom, 'family', 'mom')}
                 ${createWeightInput('👨 Dad', WEIGHTS.family.dad, 'family', 'dad')}
                 ${createWeightInput('👧 Jana', WEIGHTS.family.jana, 'family', 'jana')}
@@ -1199,8 +1256,8 @@
               </div>
 
               <!-- Habits Weights -->
-              <div class="bg-slate-50 rounded-lg p-4">
-                <h4 class="font-semibold text-slate-800 mb-3">✨ Habits</h4>
+              <div class="bg-warmgray rounded-lg p-4 border border-softborder">
+                <h4 class="sb-section-title text-charcoal/70 mb-3">✨ Habits</h4>
                 ${createWeightInput('🏋️ Exercise', WEIGHTS.habits.exercise, 'habits', 'exercise')}
                 ${createWeightInput('📚 Reading', WEIGHTS.habits.reading, 'habits', 'reading')}
                 ${createWeightInput('🧘 Meditation', WEIGHTS.habits.meditation, 'habits', 'meditation')}
@@ -1212,8 +1269,8 @@
               </div>
 
               <!-- Diabetes Weights -->
-              <div class="bg-green-50 rounded-lg p-4">
-                <h4 class="font-semibold text-green-800 mb-3">💉 Diabetes</h4>
+              <div class="bg-warmgray rounded-lg p-4 border border-softborder">
+                <h4 class="sb-section-title text-charcoal/70 mb-3">💉 Diabetes</h4>
                 ${createWeightInput('Avg Glucose max pts (at 105)', WEIGHTS.glucose.avgMax, 'glucose', 'avgMax')}
                 ${createWeightInput('TIR pts per %', WEIGHTS.glucose.tirPerPoint, 'glucose', 'tirPerPoint')}
                 ${createWeightInput('Insulin ≤40 bonus', WEIGHTS.glucose.insulinBase, 'glucose', 'insulinBase')}
@@ -1221,11 +1278,11 @@
               </div>
 
               <!-- Whoop Weights -->
-              <div class="bg-purple-50 rounded-lg p-4 lg:col-span-2">
-                <h4 class="font-semibold text-purple-800 mb-3">⏱️ Whoop Age Metrics</h4>
+              <div class="bg-warmgray rounded-lg p-4 border border-softborder lg:col-span-2">
+                <h4 class="sb-section-title text-charcoal/70 mb-3">⏱️ Whoop Age Metrics</h4>
                 <div class="grid md:grid-cols-2 gap-x-6">
                   <div>
-                    <div class="text-xs text-purple-600 font-medium mb-2">Sleep</div>
+                    <div class="text-xs text-coral font-medium mb-2">Sleep</div>
                     ${createWeightInput('Sleep 7-8h (optimal)', WEIGHTS.whoop.sleepOptimal, 'whoop', 'sleepOptimal')}
                     ${createWeightInput('Sleep 6-7h', WEIGHTS.whoop.sleepGood, 'whoop', 'sleepGood')}
                     ${createWeightInput('Sleep >8h', WEIGHTS.whoop.sleepOver, 'whoop', 'sleepOver')}
@@ -1234,7 +1291,7 @@
                     ${createWeightInput('Consistency 60-70%', WEIGHTS.whoop.consistLow, 'whoop', 'consistLow')}
                   </div>
                   <div>
-                    <div class="text-xs text-purple-600 font-medium mb-2">Heart</div>
+                    <div class="text-xs text-coral font-medium mb-2">Heart</div>
                     ${createWeightInput('RHR ≤60 bpm', WEIGHTS.whoop.rhrOptimal, 'whoop', 'rhrOptimal')}
                     ${createWeightInput('RHR 61-70 bpm', WEIGHTS.whoop.rhrGood, 'whoop', 'rhrGood')}
                     ${createWeightInput('RHR 71-80 bpm', WEIGHTS.whoop.rhrOk, 'whoop', 'rhrOk')}
@@ -1243,7 +1300,7 @@
                     ${createWeightInput('HRV 30-40ms', WEIGHTS.whoop.hrvLow, 'whoop', 'hrvLow')}
                   </div>
                   <div>
-                    <div class="text-xs text-purple-600 font-medium mb-2 mt-3">Fitness</div>
+                    <div class="text-xs text-coral font-medium mb-2 mt-3">Fitness</div>
                     ${createWeightInput('VO2 ≥45', WEIGHTS.whoop.vo2High, 'whoop', 'vo2High')}
                     ${createWeightInput('VO2 40-45', WEIGHTS.whoop.vo2Good, 'whoop', 'vo2Good')}
                     ${createWeightInput('VO2 35-40', WEIGHTS.whoop.vo2Mid, 'whoop', 'vo2Mid')}
@@ -1253,7 +1310,7 @@
                     ${createWeightInput('Steps 6-8k', WEIGHTS.whoop.stepsLow, 'whoop', 'stepsLow')}
                   </div>
                   <div>
-                    <div class="text-xs text-purple-600 font-medium mb-2 mt-3">Recovery & Strain</div>
+                    <div class="text-xs text-coral font-medium mb-2 mt-3">Recovery & Strain</div>
                     ${createWeightInput('Recovery ≥66%', WEIGHTS.whoop.recoveryHigh, 'whoop', 'recoveryHigh')}
                     ${createWeightInput('Recovery 50-66%', WEIGHTS.whoop.recoveryMid, 'whoop', 'recoveryMid')}
                     ${createWeightInput('Recovery 33-50%', WEIGHTS.whoop.recoveryLow, 'whoop', 'recoveryLow')}
@@ -1265,22 +1322,22 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-xl p-6 shadow-lg">
-            <h3 class="text-lg font-semibold mb-4">💾 Data Management</h3>
+          <div class="sb-card rounded-lg p-6 bg-white">
+            <h3 class="font-semibold text-charcoal mb-4">Data Management <span class="text-coral">→</span></h3>
             <div class="flex flex-wrap gap-3">
-              <button onclick="exportData()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm font-medium">
-                📥 Export All Data
+              <button onclick="exportData()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+                Export All Data
               </button>
-              <label class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm font-medium cursor-pointer">
-                📤 Import Data
+              <label class="sb-btn px-4 py-2 rounded text-sm font-medium cursor-pointer">
+                Import Data
                 <input type="file" accept=".json" class="hidden" onchange="importData(event)">
               </label>
-              <button onclick="copyDataForSync()" class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 text-sm font-medium">
-                ☁️ Copy Data for Claude Sync
+              <button onclick="copyDataForSync()" class="px-4 py-2 bg-coral text-white rounded text-sm font-medium hover:bg-coralDark transition">
+                Copy Data for Claude Sync
               </button>
             </div>
-            <p class="text-xs text-gray-500 mt-3">
-              💡 Use "Copy Data for Claude Sync" then paste in chat - I'll update your GitHub backup automatically.
+            <p class="text-xs text-charcoal/40 mt-3">
+              Use "Copy Data for Claude Sync" then paste in chat <span class="text-coral">→</span> I'll update your GitHub backup automatically.
             </p>
           </div>
         </div>
