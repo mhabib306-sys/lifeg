@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-28T08:57:16.766Z",
+  "lastUpdated": "2026-01-28T08:57:19.304Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1089,7 +1089,7 @@
       },
       "family": {
         "mom": true,
-        "dad": false,
+        "dad": true,
         "jana": true,
         "tia": false,
         "ahmed": true,
