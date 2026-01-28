@@ -1,1 +1,1389 @@
-{}
+{
+  "lastUpdated": "2026-01-28T08:48:01.230Z",
+  "data": {
+    "2026-01-01": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "1",
+        "asr": "1",
+        "maghrib": "0.1",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": false,
+        "dad": false,
+        "jana": false,
+        "tia": false,
+        "ahmed": false,
+        "eman": false
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": "1",
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-02": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "1",
+        "asr": "1",
+        "maghrib": "1",
+        "isha": "1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": false,
+        "tia": false,
+        "ahmed": false,
+        "eman": false
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": "1",
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-03": {
+      "prayers": {
+        "fajr": "1.1",
+        "dhuhr": "1",
+        "asr": "1",
+        "maghrib": "0.1",
+        "isha": "1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": false,
+        "jana": false,
+        "tia": false,
+        "ahmed": false,
+        "eman": false
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": "1",
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-04": {
+      "prayers": {
+        "fajr": "1.2",
+        "dhuhr": "0.1",
+        "asr": "1",
+        "maghrib": "1",
+        "isha": "1",
+        "quran": "1"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": false,
+        "tia": false,
+        "ahmed": false,
+        "eman": false
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-05": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0.1",
+        "asr": "0.1",
+        "maghrib": "0.1",
+        "isha": "1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": false,
+        "dad": false,
+        "jana": false,
+        "tia": false,
+        "ahmed": true,
+        "eman": false
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-06": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0.1",
+        "asr": "0.1",
+        "maghrib": "0.1",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": true,
+        "tia": true,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-07": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0.1",
+        "asr": "1",
+        "maghrib": "1",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": true,
+        "tia": true,
+        "ahmed": true,
+        "eman": false
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-08": {
+      "prayers": {
+        "fajr": "0.1",
+        "dhuhr": "1",
+        "asr": "1",
+        "maghrib": "0.1",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": false,
+        "jana": false,
+        "tia": false,
+        "ahmed": true,
+        "eman": false
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-09": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "1",
+        "asr": "1",
+        "maghrib": "1",
+        "isha": "1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": false,
+        "jana": false,
+        "tia": false,
+        "ahmed": true,
+        "eman": false
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-10": {
+      "prayers": {
+        "fajr": "0.1",
+        "dhuhr": "1",
+        "asr": "1",
+        "maghrib": "1",
+        "isha": "1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": false,
+        "jana": false,
+        "tia": false,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-11": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0.1",
+        "asr": "0.1",
+        "maghrib": "1",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": false,
+        "tia": false,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-12": {
+      "prayers": {
+        "fajr": "0.1",
+        "dhuhr": "0",
+        "asr": "0.1",
+        "maghrib": "0.1",
+        "isha": "1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": false,
+        "dad": true,
+        "jana": false,
+        "tia": false,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-13": {
+      "prayers": {
+        "fajr": "0.1",
+        "dhuhr": "0",
+        "asr": "0",
+        "maghrib": "0.1",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": true,
+        "tia": false,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-14": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0.1",
+        "asr": "0.1",
+        "maghrib": "0.1",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": false,
+        "tia": true,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-15": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0",
+        "asr": "0",
+        "maghrib": "0.1",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": false,
+        "tia": false,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-16": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0",
+        "asr": "0",
+        "maghrib": "0",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": false,
+        "tia": true,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-17": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "1",
+        "asr": "1",
+        "maghrib": "0.1",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": false,
+        "tia": true,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-18": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "1",
+        "asr": "0.1",
+        "maghrib": "1",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": false,
+        "tia": false,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-19": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0",
+        "asr": "0",
+        "maghrib": "1",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": false,
+        "jana": false,
+        "tia": false,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-20": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0",
+        "asr": "0",
+        "maghrib": "0",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": false,
+        "tia": true,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-21": {
+      "prayers": {
+        "fajr": "0.1",
+        "dhuhr": "0",
+        "asr": "0",
+        "maghrib": "0",
+        "isha": "0.1",
+        "quran": "4"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": false,
+        "tia": true,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-22": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0",
+        "asr": "0",
+        "maghrib": "0",
+        "isha": "0.1",
+        "quran": "0"
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": true,
+        "tia": true,
+        "ahmed": true,
+        "eman": true
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-27": {
+      "prayers": {
+        "fajr": "0",
+        "dhuhr": "0",
+        "asr": "0",
+        "maghrib": "1",
+        "isha": "1",
+        "quran": ""
+      },
+      "glucose": {
+        "avg": "160",
+        "tir": "39",
+        "cv": "",
+        "hypos": "",
+        "insulin": "42"
+      },
+      "whoop": {
+        "sleepHours": "5.5",
+        "sleepConsist": "94",
+        "rhr": "90",
+        "hrv": "10",
+        "vo2max": "30",
+        "steps": "2212",
+        "hrZone13": "0",
+        "hrZone45": "0",
+        "strength": "",
+        "recovery": "68",
+        "strain": "4",
+        "whoopAge": "47.4"
+      },
+      "family": {
+        "mom": true,
+        "dad": false,
+        "jana": true,
+        "tia": false,
+        "ahmed": true,
+        "eman": false
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 1,
+        "meditation": 0,
+        "water": "0.8",
+        "vitamins": true,
+        "brushTeeth": 0,
+        "nop": "1"
+      }
+    },
+    "2026-01-23": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0",
+        "asr": "0",
+        "maghrib": "0",
+        "isha": "0",
+        "quran": "0"
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": true,
+        "tia": false,
+        "ahmed": true,
+        "eman": true
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-24": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0",
+        "asr": "0",
+        "maghrib": "0",
+        "isha": "0",
+        "quran": "0"
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": false,
+        "tia": false,
+        "ahmed": true,
+        "eman": false
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-25": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0",
+        "asr": "0",
+        "maghrib": "0",
+        "isha": "0",
+        "quran": "0"
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "family": {
+        "mom": true,
+        "dad": true,
+        "jana": false,
+        "tia": false,
+        "ahmed": true,
+        "eman": true
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-26": {
+      "prayers": {
+        "fajr": "1",
+        "dhuhr": "0",
+        "asr": "0",
+        "maghrib": "0",
+        "isha": "0",
+        "quran": "0"
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "cv": "",
+        "hypos": "",
+        "insulin": "",
+        "nop": ""
+      },
+      "whoop": {
+        "sleepHours": "",
+        "sleepConsist": "",
+        "rhr": "",
+        "hrv": "",
+        "vo2max": "",
+        "steps": "",
+        "hrZone13": "",
+        "hrZone45": "",
+        "strength": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "family": {
+        "mom": true,
+        "dad": false,
+        "jana": true,
+        "tia": true,
+        "ahmed": true,
+        "eman": false
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0
+      }
+    },
+    "2026-01-28": {
+      "prayers": {
+        "fajr": "",
+        "dhuhr": "",
+        "asr": "",
+        "maghrib": "",
+        "isha": "",
+        "quran": 0
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "insulin": ""
+      },
+      "whoop": {
+        "sleepPerf": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "family": {
+        "mom": false,
+        "dad": false,
+        "jana": false,
+        "tia": false,
+        "ahmed": false,
+        "eman": false
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0,
+        "nop": ""
+      }
+    }
+  },
+  "weights": {
+    "prayer": {
+      "onTime": 10,
+      "late": 5,
+      "quran": 10
+    },
+    "glucose": {
+      "avgMax": 10,
+      "tirPerPoint": 0.1,
+      "insulinBase": 20,
+      "insulinPenalty": 10,
+      "insulinThreshold": 40
+    },
+    "family": {
+      "mom": 5,
+      "dad": 5,
+      "jana": 5,
+      "tia": 5,
+      "ahmed": 5,
+      "eman": 5
+    },
+    "habits": {
+      "exercise": 8,
+      "reading": 5,
+      "meditation": 10,
+      "water": 3,
+      "vitamins": 5,
+      "brushTeeth": 5,
+      "nopYes": 5,
+      "nopNo": -3
+    },
+    "whoop": {
+      "sleepPerfHigh": 7,
+      "sleepPerfMid": 4,
+      "sleepPerfLow": 2,
+      "recoveryHigh": 10,
+      "recoveryMid": 6,
+      "recoveryLow": 3,
+      "strainMatch": 10,
+      "strainHigh": 5
+    }
+  },
+  "maxScores": {
+    "prayer": 35,
+    "diabetes": 25,
+    "whoop": 14,
+    "family": 6,
+    "habits": 16,
+    "total": 96
+  }
+}
