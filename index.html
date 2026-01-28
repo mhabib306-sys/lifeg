@@ -59,19 +59,178 @@
   <script>
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
+    const GITHUB_TOKEN_KEY = 'lifeGamificationGithubToken';
     const DATA_URL = 'data.json';
+
+    // GitHub repo config
+    const GITHUB_OWNER = 'mhabib306-sys';
+    const GITHUB_REPO = 'lifeg';
+    const GITHUB_FILE_PATH = 'data.json';
+
+    // Sync status
+    let syncStatus = 'idle'; // 'idle', 'syncing', 'success', 'error'
+    let lastSyncTime = null;
+    let syncDebounceTimer = null;
+
+    // Get stored GitHub token
+    function getGithubToken() {
+      return localStorage.getItem(GITHUB_TOKEN_KEY) || '';
+    }
+
+    // Save GitHub token
+    function setGithubToken(token) {
+      localStorage.setItem(GITHUB_TOKEN_KEY, token);
+      render();
+    }
+
+    // Update sync status in UI
+    function updateSyncStatus(status, message = '') {
+      syncStatus = status;
+      const indicator = document.getElementById('sync-indicator');
+      if (indicator) {
+        const colors = {
+          idle: 'bg-charcoal/30',
+          syncing: 'bg-amber-400 animate-pulse',
+          success: 'bg-green-500',
+          error: 'bg-red-500'
+        };
+        const icons = {
+          idle: '☁️',
+          syncing: '🔄',
+          success: '✓',
+          error: '✗'
+        };
+        indicator.className = `w-2 h-2 rounded-full ${colors[status]}`;
+        indicator.title = message || status;
+      }
+      if (status === 'success') {
+        lastSyncTime = new Date();
+        setTimeout(() => {
+          if (syncStatus === 'success') updateSyncStatus('idle');
+        }, 3000);
+      }
+    }
+
+    // Save data to GitHub
+    async function saveToGithub() {
+      const token = getGithubToken();
+      if (!token) {
+        console.log('⚠️ No GitHub token configured');
+        return false;
+      }
+
+      updateSyncStatus('syncing', 'Saving to GitHub...');
+
+      try {
+        // Get current file SHA (needed for updates)
+        const getResponse = await fetch(
+          `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`,
+          { headers: { 'Authorization': `token ${token}` } }
+        );
+
+        let sha = null;
+        if (getResponse.ok) {
+          const fileData = await getResponse.json();
+          sha = fileData.sha;
+        }
+
+        // Prepare data payload
+        const payload = {
+          lastUpdated: new Date().toISOString(),
+          data: allData,
+          weights: WEIGHTS,
+          maxScores: MAX_SCORES
+        };
+
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+
+        // Update file via GitHub API
+        const updateResponse = await fetch(
+          `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: `Auto-save: ${new Date().toLocaleString()}`,
+              content: content,
+              sha: sha
+            })
+          }
+        );
+
+        if (updateResponse.ok) {
+          updateSyncStatus('success', 'Saved to GitHub');
+          console.log('✅ Saved to GitHub');
+          return true;
+        } else {
+          const error = await updateResponse.json();
+          throw new Error(error.message || 'Failed to save');
+        }
+      } catch (e) {
+        updateSyncStatus('error', `Sync failed: ${e.message}`);
+        console.error('❌ GitHub save failed:', e);
+        return false;
+      }
+    }
+
+    // Debounced save (waits 2 seconds after last change)
+    function debouncedSaveToGithub() {
+      if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
+      syncDebounceTimer = setTimeout(() => {
+        saveToGithub();
+      }, 2000);
+    }
 
     // Load cloud data on startup
     async function loadCloudData() {
+      const token = getGithubToken();
+
       try {
+        // Try GitHub API first if token exists
+        if (token) {
+          const response = await fetch(
+            `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`,
+            { headers: { 'Authorization': `token ${token}` } }
+          );
+
+          if (response.ok) {
+            const fileData = await response.json();
+            const cloudData = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
+
+            if (cloudData.data) {
+              // Merge cloud data with local
+              const localData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+              Object.keys(cloudData.data).forEach(date => {
+                if (!localData[date]) {
+                  localData[date] = cloudData.data[date];
+                }
+              });
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
+              allData = localData;
+            }
+            if (cloudData.weights) {
+              WEIGHTS = cloudData.weights;
+              localStorage.setItem(WEIGHTS_KEY, JSON.stringify(WEIGHTS));
+            }
+            if (cloudData.maxScores) {
+              MAX_SCORES = cloudData.maxScores;
+              localStorage.setItem('maxScores', JSON.stringify(MAX_SCORES));
+            }
+            console.log('✅ Loaded from GitHub');
+            updateSyncStatus('success', 'Loaded from GitHub');
+            return;
+          }
+        }
+
+        // Fallback to static file fetch
         const response = await fetch(DATA_URL + '?t=' + Date.now());
         if (response.ok) {
           const cloudData = await response.json();
           const localData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-          const cloudLastUpdated = new Date(cloudData.lastUpdated || 0).getTime();
-          const localLastUpdated = parseInt(localStorage.getItem('lastUpdated') || '0');
 
-          // Merge: use most recent version for each date
           if (cloudData.data) {
             Object.keys(cloudData.data).forEach(date => {
               if (!localData[date]) {
@@ -81,11 +240,11 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
             allData = localData;
           }
-          if (cloudData.weights && cloudLastUpdated > localLastUpdated) {
+          if (cloudData.weights) {
             WEIGHTS = cloudData.weights;
             localStorage.setItem(WEIGHTS_KEY, JSON.stringify(WEIGHTS));
           }
-          console.log('✅ Cloud data synced');
+          console.log('✅ Cloud data synced (static file)');
         }
       } catch (e) {
         console.log('📴 Offline mode - using local data');
@@ -176,18 +335,21 @@
         WEIGHTS[category] = parseFloat(value) || 0;
       }
       saveWeights();
+      debouncedSaveToGithub(); // Auto-save to GitHub
       render();
     }
 
     function resetWeights() {
       WEIGHTS = JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
       saveWeights();
+      debouncedSaveToGithub(); // Auto-save to GitHub
       render();
     }
 
     function updateMaxScore(category, value) {
       MAX_SCORES[category] = parseFloat(value) || 0;
       saveMaxScores();
+      debouncedSaveToGithub(); // Auto-save to GitHub
       render();
     }
 
@@ -354,6 +516,7 @@
       todayData[category][field] = value;
       allData[currentDate] = todayData;
       saveData();
+      debouncedSaveToGithub(); // Auto-save to GitHub
       render();
     }
 
@@ -975,6 +1138,10 @@
                 </div>
               </div>
               <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-warmgray border border-softborder" title="Cloud sync status">
+                  <div id="sync-indicator" class="w-2 h-2 rounded-full ${getGithubToken() ? 'bg-green-500' : 'bg-charcoal/30'}"></div>
+                  <span class="text-xs text-charcoal/50">${getGithubToken() ? 'Synced' : 'Local'}</span>
+                </div>
                 <input type="date" id="dateInput" value="${currentDate}"
                   class="px-3 py-2 rounded-lg text-sm border border-softborder bg-white focus:border-coral focus:outline-none">
                 <button onclick="setToday()" class="sb-btn px-4 py-2 rounded-lg text-sm font-medium">Today</button>
@@ -1008,7 +1175,7 @@
         </main>
 
         <footer class="border-t border-softborder py-8 mt-12">
-          <p class="text-center text-charcoal/40 text-sm">Data saved locally <span class="text-coral">•</span> Muhammad's Life Gamification System</p>
+          <p class="text-center text-charcoal/40 text-sm">${getGithubToken() ? 'Data synced to GitHub' : 'Data saved locally'} <span class="text-coral">•</span> Muhammad's Life Gamification System</p>
         </footer>
       `;
 
@@ -1039,6 +1206,7 @@
         allData[dateStr][category][field] = value;
       }
       saveData();
+      debouncedSaveToGithub(); // Auto-save to GitHub
       // Update score cell live
       const scoreCell = document.getElementById('score-' + dateStr);
       if (scoreCell) {
@@ -1399,6 +1567,40 @@
           </div>
 
           <div class="sb-card rounded-lg p-6 bg-white">
+            <h3 class="font-semibold text-charcoal mb-4">Cloud Sync <span class="text-coral">→</span></h3>
+            <p class="text-sm text-charcoal/50 mb-4">Enable automatic sync to GitHub. Your data will be saved to the cloud on every change.</p>
+
+            <div class="mb-4">
+              <label class="text-sm text-charcoal/70 block mb-2">GitHub Personal Access Token</label>
+              <div class="flex gap-2">
+                <input type="password" id="github-token-input" value="${getGithubToken()}"
+                  placeholder="ghp_xxxx or github_pat_xxxx"
+                  class="flex-1 px-3 py-2 border border-softborder rounded text-sm bg-white focus:border-coral focus:outline-none">
+                <button onclick="setGithubToken(document.getElementById('github-token-input').value)"
+                  class="sb-btn px-4 py-2 rounded text-sm font-medium">
+                  Save Token
+                </button>
+              </div>
+              <p class="text-xs text-charcoal/40 mt-2">
+                Token needs <code class="bg-warmgray px-1 rounded">repo</code> scope. Create at
+                <a href="https://github.com/settings/tokens" target="_blank" class="sb-link">github.com/settings/tokens</a>
+              </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
+              <button onclick="saveToGithub()" class="px-4 py-2 bg-coral text-white rounded text-sm font-medium hover:bg-coralDark transition ${getGithubToken() ? '' : 'opacity-50 cursor-not-allowed'}" ${getGithubToken() ? '' : 'disabled'}>
+                Sync Now
+              </button>
+              <button onclick="loadCloudData().then(() => render())" class="px-4 py-2 bg-warmgray text-charcoal rounded text-sm font-medium hover:bg-softborder transition">
+                Pull from Cloud
+              </button>
+              <span class="flex items-center text-xs text-charcoal/50">
+                ${getGithubToken() ? '<span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span> Connected' : '<span class="w-2 h-2 rounded-full bg-charcoal/30 mr-2"></span> Not connected'}
+              </span>
+            </div>
+          </div>
+
+          <div class="sb-card rounded-lg p-6 bg-white">
             <h3 class="font-semibold text-charcoal mb-4">Data Management <span class="text-coral">→</span></h3>
             <div class="flex flex-wrap gap-3">
               <button onclick="exportData()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
@@ -1408,12 +1610,9 @@
                 Import Data
                 <input type="file" accept=".json" class="hidden" onchange="importData(event)">
               </label>
-              <button onclick="copyDataForSync()" class="px-4 py-2 bg-coral text-white rounded text-sm font-medium hover:bg-coralDark transition">
-                Copy Data for Claude Sync
-              </button>
             </div>
             <p class="text-xs text-charcoal/40 mt-3">
-              Use "Copy Data for Claude Sync" then paste in chat <span class="text-coral">→</span> I'll update your GitHub backup automatically.
+              Export creates a local backup JSON file. Import merges data from a backup file.
             </p>
           </div>
         </div>
@@ -1435,30 +1634,6 @@
       URL.revokeObjectURL(url);
     }
 
-    // Generate data.json content for Claude to push to GitHub
-    function getDataForCloudSync() {
-      return JSON.stringify({
-        data: allData,
-        weights: WEIGHTS,
-        lastUpdated: new Date().toISOString()
-      }, null, 2);
-    }
-
-    function copyDataForSync() {
-      const data = getDataForCloudSync();
-      navigator.clipboard.writeText(data).then(() => {
-        alert('✅ Data copied! Paste this in your chat with Claude and ask me to sync it to GitHub.');
-      }).catch(() => {
-        // Fallback for older browsers
-        const textarea = document.createElement('textarea');
-        textarea.value = data;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert('✅ Data copied! Paste this in your chat with Claude and ask me to sync it to GitHub.');
-      });
-    }
 
     function importData(event) {
       const file = event.target.files[0];
