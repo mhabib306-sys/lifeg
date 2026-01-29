@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-29T13:51:21.030Z",
+  "lastUpdated": "2026-01-29T13:51:25.134Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1246,11 +1246,11 @@
         "whoopAge": ""
       },
       "family": {
-        "mom": false,
+        "mom": true,
         "dad": false,
         "jana": false,
         "tia": false,
-        "ahmed": false,
+        "ahmed": true,
         "eman": false
       },
       "habits": {
