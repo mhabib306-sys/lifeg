@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-31T12:14:22.738Z",
+  "lastUpdated": "2026-01-31T12:14:28.626Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1317,16 +1317,16 @@
       },
       "whoop": {
         "sleepPerf": "47",
-        "recovery": "",
+        "recovery": "25",
         "strain": "",
         "whoopAge": ""
       },
       "family": {
-        "mom": false,
+        "mom": true,
         "dad": false,
         "jana": false,
         "tia": false,
-        "ahmed": false,
+        "ahmed": true,
         "eman": false
       },
       "habits": {
