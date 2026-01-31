@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-30T17:32:05.871Z",
+  "lastUpdated": "2026-01-31T12:13:34.596Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1294,6 +1294,44 @@
       "habits": {
         "exercise": 0,
         "reading": 1,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0,
+        "nop": ""
+      }
+    },
+    "2026-01-31": {
+      "prayers": {
+        "fajr": "0.1",
+        "dhuhr": "",
+        "asr": "",
+        "maghrib": "",
+        "isha": "",
+        "quran": 0
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "insulin": ""
+      },
+      "whoop": {
+        "sleepPerf": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "family": {
+        "mom": false,
+        "dad": false,
+        "jana": false,
+        "tia": false,
+        "ahmed": false,
+        "eman": false
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
         "meditation": 0,
         "water": "",
         "vitamins": false,
