@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T17:19:40.803Z",
+  "lastUpdated": "2026-02-01T17:33:14.024Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1563,5 +1563,48 @@
     "family": 6,
     "habits": 16,
     "total": 96
-  }
+  },
+  "tasks": [
+    {
+      "id": "task_1769967191520_ysymax68m",
+      "title": "Task",
+      "notes": "note",
+      "status": "inbox",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "dueDate": "2026-02-01",
+      "createdAt": "2026-02-01T17:33:11.520Z",
+      "updatedAt": "2026-02-01T17:33:11.520Z"
+    }
+  ],
+  "taskCategories": [
+    {
+      "id": "personal",
+      "name": "Personal",
+      "color": "#4A90A4"
+    },
+    {
+      "id": "work",
+      "name": "Work",
+      "color": "#6B8E5A"
+    },
+    {
+      "id": "health",
+      "name": "Health",
+      "color": "#E5533D"
+    },
+    {
+      "id": "family",
+      "name": "Family",
+      "color": "#C4943D"
+    },
+    {
+      "id": "learning",
+      "name": "Learning",
+      "color": "#7C6B8E"
+    }
+  ],
+  "customPerspectives": []
 }
