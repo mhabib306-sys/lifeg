@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T20:11:58.050Z",
+  "lastUpdated": "2026-02-01T20:12:09.876Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1570,15 +1570,15 @@
       "title": "Task",
       "notes": "note",
       "status": "inbox",
-      "completed": true,
-      "completedAt": "2026-02-01T20:11:56.036Z",
+      "completed": false,
+      "completedAt": null,
       "categoryId": "personal",
       "labels": [
         "urgent"
       ],
       "dueDate": "2026-02-01",
       "createdAt": "2026-02-01T17:33:11.520Z",
-      "updatedAt": "2026-02-01T20:11:56.036Z",
+      "updatedAt": "2026-02-01T20:12:07.472Z",
       "order": 2000
     },
     {
