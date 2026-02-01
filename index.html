@@ -1144,6 +1144,7 @@
     let activeLabelFilter = savedViewState.activeLabelFilter || null;
     let activePersonFilter = savedViewState.activePersonFilter || null;
     let editingTaskId = null;
+    let inlineEditingTaskId = null; // For inline title editing
     let newTaskContext = { categoryId: null, labelId: null, personId: null, status: 'inbox' }; // Context for new task
     let showTaskModal = false;
     let showPerspectiveModal = false;
@@ -1153,6 +1154,47 @@
     let editingCategoryId = null;
     let editingLabelId = null;
     let editingPersonId = null;
+
+    // Inline task title editing
+    function startInlineEdit(taskId) {
+      inlineEditingTaskId = taskId;
+      render();
+      // Focus the input after render
+      setTimeout(() => {
+        const input = document.getElementById('inline-edit-input');
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      }, 10);
+    }
+
+    function saveInlineEdit(taskId) {
+      const input = document.getElementById('inline-edit-input');
+      if (input) {
+        const newTitle = input.value.trim();
+        if (newTitle) {
+          updateTask(taskId, { title: newTitle });
+        }
+      }
+      inlineEditingTaskId = null;
+      render();
+    }
+
+    function cancelInlineEdit() {
+      inlineEditingTaskId = null;
+      render();
+    }
+
+    function handleInlineEditKeydown(event, taskId) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        saveInlineEdit(taskId);
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        cancelInlineEdit();
+      }
+    }
 
     // Switch to category view
     function showCategoryTasks(categoryId) {
@@ -2669,10 +2711,11 @@
       const today = new Date().toISOString().split('T')[0];
       const isOverdue = task.dueDate && task.dueDate < today && !task.completed;
       const hasMetadata = category || labels.length > 0 || (showDueDate && task.dueDate) || task.deferDate || (task.repeat && task.repeat.type !== 'none') || task.notes;
+      const isInlineEditing = inlineEditingTaskId === task.id;
 
       return `
         <div class="task-item group relative"
-          draggable="true"
+          draggable="${isInlineEditing ? 'false' : 'true'}"
           ondragstart="handleDragStart(event, '${task.id}')"
           ondragend="handleDragEnd(event)"
           ondragover="handleDragOver(event, '${task.id}')"
@@ -2684,7 +2727,15 @@
               ${task.completed ? '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>' : ''}
             </button>
             <div class="flex-1 min-w-0">
-              <span class="text-[15px] ${task.completed ? 'line-through text-charcoal/40' : 'text-charcoal'} leading-snug transition">${task.title}</span>
+              ${isInlineEditing ? `
+                <input type="text" id="inline-edit-input" value="${task.title.replace(/"/g, '&quot;')}"
+                  onkeydown="handleInlineEditKeydown(event, '${task.id}')"
+                  onblur="saveInlineEdit('${task.id}')"
+                  class="w-full text-[15px] text-charcoal bg-white border border-coral rounded px-2 py-0.5 outline-none focus:ring-2 focus:ring-coral/20">
+              ` : `
+                <span ondblclick="event.stopPropagation(); startInlineEdit('${task.id}')"
+                  class="text-[15px] ${task.completed ? 'line-through text-charcoal/40' : 'text-charcoal'} leading-snug transition cursor-text">${task.title}</span>
+              `}
               ${hasMetadata ? `
                 <div class="flex items-center gap-2 mt-1 flex-wrap text-[12px]">
                   ${category ? `<span onclick="event.stopPropagation(); showCategoryTasks('${category.id}')" class="tag-pill px-2 py-0.5 rounded-full cursor-pointer border border-charcoal/15 text-charcoal/50 hover:text-charcoal/70">${category.name}</span>` : ''}
