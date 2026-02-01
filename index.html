@@ -257,6 +257,54 @@
       transform: translateY(0);
     }
 
+    /* Drag and drop - Things 3 style */
+    .task-item {
+      cursor: grab;
+    }
+    .task-item:active {
+      cursor: grabbing;
+    }
+    .task-item.dragging {
+      opacity: 0.5;
+      transform: scale(1.02);
+      box-shadow: var(--shadow-lg);
+      background: var(--bg-card);
+      z-index: 100;
+    }
+    .task-item.drag-over {
+      border-top: 2px solid var(--accent);
+      margin-top: -2px;
+    }
+    .task-item.drag-over-bottom {
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: -2px;
+    }
+    .drag-ghost {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1000;
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      opacity: 0.9;
+      transform: rotate(2deg);
+    }
+    .drag-handle {
+      cursor: grab;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      color: var(--text-muted);
+    }
+    .task-item:hover .drag-handle {
+      opacity: 0.5;
+    }
+    .drag-handle:hover {
+      opacity: 1 !important;
+    }
+    .task-list.is-dragging .task-item:not(.dragging) {
+      transition: transform 0.2s ease;
+    }
+
     /* Modal animations */
     .modal-overlay {
       animation: fadeIn 0.2s ease-out;
@@ -794,13 +842,24 @@
       { id: 'blocked', name: 'Blocked', color: '#6B7280' }
     ];
 
+    // Things 3 style SVG icons
+    const THINGS3_ICONS = {
+      inbox: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h4l2 4h6l2-4h4M5 6h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>`,
+      today: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>`,
+      upcoming: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>`,
+      anytime: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="4" rx="1"/><rect x="4" y="10" width="16" height="4" rx="1"/><rect x="4" y="16" width="16" height="4" rx="1"/></svg>`,
+      someday: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0v10l-8 4m8-14l-8 4m0 10V11m0 10l-8-4V7m8 4l-8-4"/></svg>`,
+      logbook: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`
+    };
+
     // Default perspectives (built-in)
     const BUILTIN_PERSPECTIVES = [
-      { id: 'inbox', name: 'Inbox', icon: '📥', filter: { status: 'inbox' }, builtin: true },
-      { id: 'today', name: 'Today', icon: '⭐', filter: { status: 'today' }, builtin: true },
-      { id: 'anytime', name: 'Anytime', icon: '📋', filter: { status: 'anytime' }, builtin: true },
-      { id: 'someday', name: 'Someday', icon: '💭', filter: { status: 'someday' }, builtin: true },
-      { id: 'completed', name: 'Completed', icon: '✓', filter: { completed: true }, builtin: true }
+      { id: 'inbox', name: 'Inbox', icon: THINGS3_ICONS.inbox, filter: { status: 'inbox' }, builtin: true },
+      { id: 'today', name: 'Today', icon: THINGS3_ICONS.today, filter: { status: 'today' }, builtin: true },
+      { id: 'upcoming', name: 'Upcoming', icon: THINGS3_ICONS.upcoming, filter: { upcoming: true }, builtin: true },
+      { id: 'anytime', name: 'Anytime', icon: THINGS3_ICONS.anytime, filter: { status: 'anytime' }, builtin: true },
+      { id: 'someday', name: 'Someday', icon: THINGS3_ICONS.someday, filter: { status: 'someday' }, builtin: true },
+      { id: 'logbook', name: 'Logbook', icon: THINGS3_ICONS.logbook, filter: { completed: true }, builtin: true }
     ];
 
     // Load tasks data
@@ -813,6 +872,7 @@
     let activeCategoryFilter = null;
     let activeLabelFilter = null;
     let editingTaskId = null;
+    let newTaskContext = { categoryId: null, labelId: null, status: 'inbox' }; // Context for new task
     let showTaskModal = false;
     let showPerspectiveModal = false;
     let showCategoryModal = false;
@@ -833,6 +893,25 @@
       activeFilterType = 'label';
       activeLabelFilter = labelId;
       activeCategoryFilter = null;
+      render();
+    }
+
+    // Open new task modal with context
+    function openNewTaskModal() {
+      editingTaskId = null;
+      // Set context based on current view
+      if (activeFilterType === 'category' && activeCategoryFilter) {
+        newTaskContext = { categoryId: activeCategoryFilter, labelId: null, status: 'inbox' };
+      } else if (activeFilterType === 'label' && activeLabelFilter) {
+        newTaskContext = { categoryId: null, labelId: activeLabelFilter, status: 'inbox' };
+      } else if (activeFilterType === 'perspective') {
+        // Set status based on perspective (except for special ones)
+        const statusMap = { inbox: 'inbox', today: 'today', anytime: 'anytime', someday: 'someday' };
+        newTaskContext = { categoryId: null, labelId: null, status: statusMap[activePerspective] || 'inbox' };
+      } else {
+        newTaskContext = { categoryId: null, labelId: null, status: 'inbox' };
+      }
+      showTaskModal = true;
       render();
     }
 
@@ -911,7 +990,9 @@
       taskLabels = taskLabels.filter(l => l.id !== labelId);
       // Remove label from tasks that use it
       tasksData.forEach(task => {
-        task.labels = task.labels.filter(l => l !== labelId);
+        if (task.labels) {
+          task.labels = task.labels.filter(l => l !== labelId);
+        }
       });
       saveTasksData();
     }
@@ -968,6 +1049,146 @@
       render();
     }
 
+    // Drag and drop state
+    let draggedTaskId = null;
+    let dragOverTaskId = null;
+    let dragPosition = null; // 'top' or 'bottom'
+
+    function handleDragStart(e, taskId) {
+      draggedTaskId = taskId;
+      e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', taskId);
+
+      // Add is-dragging class to task list
+      const taskList = e.target.closest('.task-list');
+      if (taskList) taskList.classList.add('is-dragging');
+    }
+
+    function handleDragEnd(e) {
+      e.target.classList.remove('dragging');
+
+      // Remove all drag indicators
+      document.querySelectorAll('.drag-over, .drag-over-bottom').forEach(el => {
+        el.classList.remove('drag-over', 'drag-over-bottom');
+      });
+
+      const taskList = document.querySelector('.task-list.is-dragging');
+      if (taskList) taskList.classList.remove('is-dragging');
+
+      // Perform reorder if valid
+      if (draggedTaskId && dragOverTaskId && draggedTaskId !== dragOverTaskId) {
+        reorderTasks(draggedTaskId, dragOverTaskId, dragPosition);
+      }
+
+      draggedTaskId = null;
+      dragOverTaskId = null;
+      dragPosition = null;
+    }
+
+    function handleDragOver(e, taskId) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+
+      if (taskId === draggedTaskId) return;
+
+      const rect = e.target.closest('.task-item').getBoundingClientRect();
+      const midpoint = rect.top + rect.height / 2;
+      const position = e.clientY < midpoint ? 'top' : 'bottom';
+
+      // Remove previous indicators
+      document.querySelectorAll('.drag-over, .drag-over-bottom').forEach(el => {
+        el.classList.remove('drag-over', 'drag-over-bottom');
+      });
+
+      // Add indicator to current target
+      const taskItem = e.target.closest('.task-item');
+      if (position === 'top') {
+        taskItem.classList.add('drag-over');
+      } else {
+        taskItem.classList.add('drag-over-bottom');
+      }
+
+      dragOverTaskId = taskId;
+      dragPosition = position;
+    }
+
+    function handleDragLeave(e) {
+      // Only remove if leaving the task item entirely
+      if (!e.target.closest('.task-item')?.contains(e.relatedTarget)) {
+        e.target.closest('.task-item')?.classList.remove('drag-over', 'drag-over-bottom');
+      }
+    }
+
+    function handleDrop(e, taskId) {
+      e.preventDefault();
+      // Reorder is handled in dragEnd
+    }
+
+    function reorderTasks(draggedId, targetId, position) {
+      const draggedTask = tasksData.find(t => t.id === draggedId);
+      const targetTask = tasksData.find(t => t.id === targetId);
+      if (!draggedTask || !targetTask) return;
+
+      // Get all tasks in current view
+      const filteredTasks = getCurrentFilteredTasks();
+      const taskIds = filteredTasks.map(t => t.id);
+
+      // Find indices
+      const draggedIndex = taskIds.indexOf(draggedId);
+      const targetIndex = taskIds.indexOf(targetId);
+      if (draggedIndex === -1 || targetIndex === -1) return;
+
+      // Calculate new order values
+      let newOrder;
+      if (position === 'top') {
+        const prevTask = targetIndex > 0 ? filteredTasks[targetIndex - 1] : null;
+        const prevOrder = prevTask?.order ?? targetTask.order - 1000;
+        newOrder = (prevOrder + targetTask.order) / 2;
+      } else {
+        const nextTask = targetIndex < filteredTasks.length - 1 ? filteredTasks[targetIndex + 1] : null;
+        const nextOrder = nextTask?.order ?? targetTask.order + 1000;
+        newOrder = (targetTask.order + nextOrder) / 2;
+      }
+
+      // Update dragged task order
+      draggedTask.order = newOrder;
+      draggedTask.updatedAt = new Date().toISOString();
+
+      // Normalize orders if they get too close (rebalance)
+      normalizeTaskOrders();
+
+      saveTasksData();
+      render();
+    }
+
+    function normalizeTaskOrders() {
+      // Group tasks by status and rebalance order values
+      const statuses = ['inbox', 'today', 'anytime', 'someday'];
+      statuses.forEach(status => {
+        const statusTasks = tasksData
+          .filter(t => t.status === status && !t.completed)
+          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+        statusTasks.forEach((task, index) => {
+          task.order = (index + 1) * 1000;
+        });
+      });
+    }
+
+    // Initialize task orders if not set
+    function initializeTaskOrders() {
+      let needsSave = false;
+      tasksData.forEach((task, index) => {
+        if (task.order === undefined) {
+          task.order = (index + 1) * 1000;
+          needsSave = true;
+        }
+      });
+      if (needsSave) saveTasksData();
+    }
+    initializeTaskOrders();
+
     function getFilteredTasks(perspectiveId) {
       const allPerspectives = [...BUILTIN_PERSPECTIVES, ...customPerspectives];
       const perspective = allPerspectives.find(p => p.id === perspectiveId);
@@ -976,23 +1197,53 @@
       const today = new Date().toISOString().split('T')[0];
 
       return tasksData.filter(task => {
-        // Completed perspective shows all completed tasks
+        // Logbook (completed) shows all completed tasks
         if (perspective.filter.completed) {
           return task.completed;
         }
-        // Other perspectives show only non-completed tasks matching the filter
+        // Other perspectives show only non-completed tasks
         if (task.completed) return false;
 
-        // Special handling for Today: show tasks with status 'today' OR due today OR overdue
+        // Things 3 logic for Today:
+        // - Tasks explicitly marked as 'today'
+        // - Tasks with today's due date
+        // - Overdue tasks (due date in the past)
         if (perspectiveId === 'today') {
           const isDueToday = task.dueDate === today;
           const isOverdue = task.dueDate && task.dueDate < today;
           return task.status === 'today' || isDueToday || isOverdue;
         }
 
+        // Upcoming: Tasks with future due dates (not today, not overdue)
+        // Shows tasks from Anytime or Someday that have scheduled due dates
+        if (perspectiveId === 'upcoming') {
+          if (!task.dueDate) return false;
+          return task.dueDate > today;
+        }
+
+        // Anytime: Tasks available to do anytime (no specific schedule)
+        // Excludes tasks that are in Today or have a future due date
+        if (perspectiveId === 'anytime') {
+          if (task.status !== 'anytime') return false;
+          // If it has a due date in the future, it shows in Upcoming instead
+          if (task.dueDate && task.dueDate > today) return false;
+          return true;
+        }
+
+        // Someday: Tasks for later consideration
+        if (perspectiveId === 'someday') {
+          return task.status === 'someday';
+        }
+
+        // Inbox: Unprocessed tasks
+        if (perspectiveId === 'inbox') {
+          return task.status === 'inbox';
+        }
+
+        // Custom perspectives
         if (perspective.filter.status && task.status !== perspective.filter.status) return false;
         if (perspective.filter.categoryId && task.categoryId !== perspective.filter.categoryId) return false;
-        if (perspective.filter.hasLabel && !task.labels.some(l => l === perspective.filter.hasLabel)) return false;
+        if (perspective.filter.hasLabel && !(task.labels || []).some(l => l === perspective.filter.hasLabel)) return false;
         if (perspective.filter.hasDueDate && !task.dueDate) return false;
         if (perspective.filter.dueSoon) {
           if (!task.dueDate) return false;
@@ -1003,12 +1254,17 @@
         }
         return true;
       }).sort((a, b) => {
-        // Sort by due date first (overdue/today at top), then by creation date
+        // Sort by manual order first if available
+        if (a.order !== undefined && b.order !== undefined) {
+          return a.order - b.order;
+        }
+        // Then by due date
         if (a.dueDate && !b.dueDate) return -1;
         if (!a.dueDate && b.dueDate) return 1;
         if (a.dueDate && b.dueDate && a.dueDate !== b.dueDate) {
           return new Date(a.dueDate) - new Date(b.dueDate);
         }
+        // Inbox shows newest first
         if (perspectiveId === 'inbox') return new Date(b.createdAt) - new Date(a.createdAt);
         return new Date(a.createdAt) - new Date(b.createdAt);
       });
@@ -2472,7 +2728,7 @@
                 <h2 class="text-lg font-semibold text-charcoal">${viewInfo.name}</h2>
                 <span class="text-sm text-charcoal/50">${filteredTasks.length} task${filteredTasks.length !== 1 ? 's' : ''}</span>
               </div>
-              <button onclick="showTaskModal=true; editingTaskId=null; render()"
+              <button onclick="openNewTaskModal()"
                 class="sb-btn add-task-btn px-4 py-2 rounded text-sm font-medium flex items-center gap-1">
                 <span>+</span> Add Task
               </button>
@@ -2481,41 +2737,50 @@
             <div class="bg-white min-h-[400px] task-list">
               ${filteredTasks.length === 0 ? `
                 <div class="empty-state flex flex-col items-center justify-center py-16 text-charcoal/40">
-                  <span class="text-4xl mb-3">${viewInfo.icon}</span>
-                  <p class="text-sm">No tasks in ${currentPerspective.name}</p>
+                  <div class="w-12 h-12 mb-3 flex items-center justify-center">${viewInfo.icon}</div>
+                  <p class="text-sm">No tasks in ${viewInfo.name}</p>
                   ${activePerspective === 'inbox' ? '<p class="text-xs mt-1">Add a task to get started!</p>' : ''}
                 </div>
               ` : `
-                <div class="divide-y divide-softborder/50">
+                <div class="task-list divide-y divide-softborder/50">
                   ${filteredTasks.map(task => {
                     const category = getCategoryById(task.categoryId);
                     const labels = (task.labels || []).map(lid => getLabelById(lid)).filter(Boolean);
                     const today = new Date().toISOString().split('T')[0];
                     const isOverdue = task.dueDate && task.dueDate < today && !task.completed;
                     return `
-                      <div class="task-item px-5 py-3 flex items-start gap-3 group">
-                        <button onclick="toggleTaskComplete('${task.id}')"
+                      <div class="task-item px-5 py-3 flex items-start gap-3 group"
+                        draggable="true"
+                        ondragstart="handleDragStart(event, '${task.id}')"
+                        ondragend="handleDragEnd(event)"
+                        ondragover="handleDragOver(event, '${task.id}')"
+                        ondragleave="handleDragLeave(event)"
+                        ondrop="handleDrop(event, '${task.id}')">
+                        <div class="drag-handle flex items-center mr-1" title="Drag to reorder">
+                          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                        </div>
+                        <button onclick="event.stopPropagation(); toggleTaskComplete('${task.id}')"
                           class="task-checkbox mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center ${task.completed ? 'completed bg-coral border-coral text-white' : 'border-charcoal/30'}">
                           ${task.completed ? '<span class="text-xs">✓</span>' : ''}
                         </button>
                         <div class="flex-1 min-w-0">
                           <div class="flex items-center gap-2 flex-wrap">
                             <span class="${task.completed ? 'line-through text-charcoal/40' : 'text-charcoal'} font-medium transition">${task.title}</span>
-                            ${category ? `<span onclick="showCategoryTasks('${category.id}')" class="tag-pill px-2 py-0.5 text-xs rounded-full text-white cursor-pointer" style="background-color: ${category.color}">${category.name}</span>` : ''}
-                            ${labels.map(l => `<span onclick="showLabelTasks('${l.id}')" class="tag-pill px-1.5 py-0.5 text-xs rounded border cursor-pointer" style="border-color: ${l.color}; color: ${l.color}">${l.name}</span>`).join('')}
+                            ${category ? `<span onclick="event.stopPropagation(); showCategoryTasks('${category.id}')" class="tag-pill px-2 py-0.5 text-xs rounded-full text-white cursor-pointer" style="background-color: ${category.color}">${category.name}</span>` : ''}
+                            ${labels.map(l => `<span onclick="event.stopPropagation(); showLabelTasks('${l.id}')" class="tag-pill px-1.5 py-0.5 text-xs rounded border cursor-pointer" style="border-color: ${l.color}; color: ${l.color}">${l.name}</span>`).join('')}
                           </div>
                           ${task.notes ? `<p class="text-sm text-charcoal/50 mt-1 truncate">${task.notes}</p>` : ''}
                           ${task.dueDate ? `<p class="text-xs mt-1.5 ${isOverdue ? 'text-red-500 font-medium' : 'text-charcoal/40'}">${isOverdue ? '⚠️ Overdue: ' : '📅 '}${new Date(task.dueDate).toLocaleDateString()}</p>` : ''}
                         </div>
-                        <div class="flex items-center gap-1">
+                        <div class="flex items-center gap-1" onclick="event.stopPropagation()">
                           ${!task.completed ? `
                             <select onchange="moveTaskTo('${task.id}', this.value); this.value=''"
                               class="move-dropdown text-xs px-2 py-1 border border-softborder rounded bg-white text-charcoal/70 cursor-pointer">
                               <option value="">Move to...</option>
-                              <option value="inbox">📥 Inbox</option>
-                              <option value="today">⭐ Today</option>
-                              <option value="anytime">📋 Anytime</option>
-                              <option value="someday">💭 Someday</option>
+                              <option value="inbox">Inbox</option>
+                              <option value="today">Today</option>
+                              <option value="anytime">Anytime</option>
+                              <option value="someday">Someday</option>
                             </select>
                           ` : ''}
                           <button onclick="editingTaskId='${task.id}'; showTaskModal=true; render()"
@@ -2558,10 +2823,10 @@
                 <div>
                   <label class="text-sm text-charcoal/70 block mb-1">When</label>
                   <select id="task-status" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
-                    <option value="inbox" ${editingTask?.status === 'inbox' ? 'selected' : ''}>📥 Inbox</option>
-                    <option value="today" ${editingTask?.status === 'today' ? 'selected' : ''}>⭐ Today</option>
-                    <option value="anytime" ${editingTask?.status === 'anytime' ? 'selected' : ''}>📋 Anytime</option>
-                    <option value="someday" ${editingTask?.status === 'someday' ? 'selected' : ''}>💭 Someday</option>
+                    <option value="inbox" ${(editingTask?.status || newTaskContext.status) === 'inbox' ? 'selected' : ''}>Inbox</option>
+                    <option value="today" ${(editingTask?.status || newTaskContext.status) === 'today' ? 'selected' : ''}>Today</option>
+                    <option value="anytime" ${(editingTask?.status || newTaskContext.status) === 'anytime' ? 'selected' : ''}>Anytime</option>
+                    <option value="someday" ${(editingTask?.status || newTaskContext.status) === 'someday' ? 'selected' : ''}>Someday</option>
                   </select>
                 </div>
                 <div>
@@ -2569,7 +2834,7 @@
                   <select id="task-category" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
                     <option value="">None</option>
                     ${taskCategories.map(cat => `
-                      <option value="${cat.id}" ${editingTask?.categoryId === cat.id ? 'selected' : ''}>${cat.name}</option>
+                      <option value="${cat.id}" ${(editingTask?.categoryId || newTaskContext.categoryId) === cat.id ? 'selected' : ''}>${cat.name}</option>
                     `).join('')}
                   </select>
                 </div>
@@ -2583,9 +2848,9 @@
                 <label class="text-sm text-charcoal/70 block mb-1">Labels</label>
                 <div class="flex flex-wrap gap-2" id="task-labels-container">
                   ${taskLabels.map(label => {
-                    const isSelected = editingTask?.labels?.includes(label.id);
+                    const isSelected = editingTask?.labels?.includes(label.id) || (!editingTask && newTaskContext.labelId === label.id);
                     return `
-                      <label class="flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition ${isSelected ? 'bg-warmgray' : 'hover:bg-warmgray/50'}" style="border-color: ${label.color}">
+                      <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition ${isSelected ? 'bg-warmgray' : 'hover:bg-warmgray/50'}" style="border-color: ${label.color}">
                         <input type="checkbox" value="${label.id}" ${isSelected ? 'checked' : ''} class="task-label-checkbox rounded" style="accent-color: ${label.color}">
                         <span class="text-sm" style="color: ${label.color}">${label.name}</span>
                       </label>
