@@ -67,23 +67,23 @@
       --text-primary: #1D1D1F;
       --text-secondary: #6E6E73;
       --text-muted: #86868B;
-      --accent: #007AFF;
-      --accent-dark: #0056CC;
-      --accent-light: rgba(0, 122, 255, 0.1);
-      --accent-hover: rgba(0, 122, 255, 0.06);
-      --border: #D2D2D7;
-      --border-light: #E8E8ED;
+      --accent: #4A90D9;
+      --accent-dark: #3A7BC8;
+      --accent-light: rgba(74, 144, 217, 0.12);
+      --accent-hover: rgba(74, 144, 217, 0.06);
+      --border: #E5E5EA;
+      --border-light: #F2F2F7;
       --success: #34C759;
-      --btn-bg: #007AFF;
-      --btn-hover: #0056CC;
+      --btn-bg: #4A90D9;
+      --btn-hover: #3A7BC8;
       --sidebar-bg: #F5F5F7;
-      --sidebar-active: rgba(0, 122, 255, 0.1);
+      --sidebar-active: rgba(74, 144, 217, 0.12);
       --modal-bg: #FFFFFF;
       --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
       --border-radius: 10px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
-      --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+      --shadow-lg: 0 12px 32px rgba(0,0,0,0.1);
     }
 
     body {
@@ -134,6 +134,32 @@
       border-color: var(--accent);
       outline: none;
       box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    /* Toggle switch */
+    .toggle-switch {
+      cursor: pointer;
+    }
+    .toggle-on {
+      background-color: var(--accent);
+    }
+    .toggle-off {
+      background-color: #d1d5db;
+    }
+    .toggle-switch:hover .toggle-on {
+      background-color: var(--accent-dark);
+    }
+    .toggle-switch:hover .toggle-off {
+      background-color: #c0c4cc;
+    }
+
+    /* Checkbox styling */
+    input[type="checkbox"] {
+      accent-color: var(--accent);
+    }
+    input[type="checkbox"]:focus {
+      outline: 2px solid var(--accent-light);
+      outline-offset: 2px;
     }
 
     /* Things 3 inspired micro-interactions */
@@ -387,6 +413,24 @@
       document.documentElement.setAttribute('data-theme', theme);
     }
     applyStoredTheme();
+
+    // Get current accent color from theme
+    function getAccentColor() {
+      return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+    }
+
+    // Get theme colors object
+    function getThemeColors() {
+      const style = getComputedStyle(document.documentElement);
+      return {
+        accent: style.getPropertyValue('--accent').trim(),
+        accentDark: style.getPropertyValue('--accent-dark').trim(),
+        accentLight: style.getPropertyValue('--accent-light').trim(),
+        bgPrimary: style.getPropertyValue('--bg-primary').trim(),
+        bgSecondary: style.getPropertyValue('--bg-secondary').trim(),
+        textPrimary: style.getPropertyValue('--text-primary').trim()
+      };
+    }
 
     // Update sync status in UI
     function updateSyncStatus(status, message = '') {
@@ -1365,8 +1409,8 @@
       return `
         <label class="flex items-center justify-between cursor-pointer py-2 px-1 hover:bg-warmgray rounded transition">
           <span class="text-sm text-charcoal">${label}</span>
-          <div class="relative" onclick="updateData('${category}', '${field}', !${checked})">
-            <div class="w-10 h-5 rounded-full transition" style="background-color: ${checked ? '#E5533D' : '#d1d5db'}"></div>
+          <div class="relative toggle-switch" onclick="updateData('${category}', '${field}', !${checked})">
+            <div class="w-10 h-5 rounded-full transition ${checked ? 'toggle-on' : 'toggle-off'}"></div>
             <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition" style="transform: translateX(${checked ? '20px' : '0'})"></div>
           </div>
         </label>
@@ -1408,7 +1452,7 @@
 
     function createScoreCard(label, score, max, colorClass) {
       const pct = max ? Math.min((score / max) * 100, 100) : 0;
-      // Map old color classes to SimpleBits-style accent colors
+      // Map old color classes to muted category colors (work with both themes)
       const accentMap = {
         'bg-blue-500': '#4A90A4',
         'bg-green-500': '#6B8E5A',
@@ -1416,7 +1460,7 @@
         'bg-amber-500': '#C4943D',
         'bg-slate-500': '#6B7280'
       };
-      const accent = accentMap[colorClass] || '#E5533D';
+      const accent = accentMap[colorClass] || getAccentColor();
       const pctDisplay = Math.round(pct);
       return `
         <div class="sb-card rounded-lg p-4">
@@ -1574,7 +1618,7 @@
           ${createCard('Whoop Age Metrics', '⏱️', '#7C6B8E', whoopContent, whoopHelp)}
           ${createCard('Family Check-ins', '👨‍👩‍👧‍👦', '#C4943D', familyContent)}
           ${createCard('Habits', '✨', '#6B7280', habitsContent)}
-          ${createCard("Today's Summary", '📈', '#E5533D', summaryContent)}
+          ${createCard("Today's Summary", '📈', getAccentColor(), summaryContent)}
         </div>
       `;
     }
@@ -1592,7 +1636,7 @@
             type: 'bar',
             data: {
               labels: last30Data.map(d => d.label),
-              datasets: [{ label: 'Total Score', data: last30Data.map(d => d.total), backgroundColor: '#E5533D', borderRadius: 4 }]
+              datasets: [{ label: 'Total Score', data: last30Data.map(d => d.total), backgroundColor: getAccentColor(), borderRadius: 4 }]
             },
             options: {
               responsive: true,
@@ -1758,16 +1802,16 @@
       const dateDisplay = new Date(currentDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
       app.innerHTML = `
-        <header class="border-b border-softborder bg-cream">
+        <header class="border-b border-softborder" style="background: var(--bg-primary);">
           <div class="max-w-5xl mx-auto px-6 py-6">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-4">
-                <svg class="w-12 h-12" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="10" y="10" width="80" height="80" rx="12" fill="#1a1a1a"/>
-                  <rect x="24" y="20" width="22" height="22" rx="4" fill="#F7F6F4"/>
-                  <rect x="24" y="46" width="22" height="22" rx="4" fill="#F7F6F4"/>
-                  <rect x="50" y="46" width="22" height="22" rx="4" fill="#E5533D"/>
-                  <rect x="24" y="72" width="22" height="10" rx="3" fill="#F7F6F4" opacity="0.5"/>
+                <svg class="w-12 h-12 app-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="10" y="10" width="80" height="80" rx="12" style="fill: var(--text-primary)"/>
+                  <rect x="24" y="20" width="22" height="22" rx="4" style="fill: var(--bg-primary)"/>
+                  <rect x="24" y="46" width="22" height="22" rx="4" style="fill: var(--bg-primary)"/>
+                  <rect x="50" y="46" width="22" height="22" rx="4" style="fill: var(--accent)"/>
+                  <rect x="24" y="72" width="22" height="10" rx="3" style="fill: var(--bg-primary); opacity: 0.5"/>
                 </svg>
                 <div>
                   <h1 class="text-2xl font-bold tracking-tight text-charcoal">Life Gamification</h1>
@@ -2001,7 +2045,7 @@
       return '<div class="space-y-4">' +
         // Controls card
         '<div class="sb-card rounded-lg overflow-hidden">' +
-          '<div class="px-5 py-3 bg-warmgray" style="border-bottom: 3px solid #E5533D">' +
+          '<div class="px-5 py-3 bg-warmgray" style="border-bottom: 3px solid ' + getAccentColor() + '">' +
             '<h3 class="font-semibold text-charcoal">📅 Bulk Entry</h3>' +
           '</div>' +
           '<div class="p-5 bg-white">' +
@@ -2041,7 +2085,7 @@
         '</div>' +
         // Summary card
         '<div class="sb-card rounded-lg overflow-hidden">' +
-          '<div class="px-5 py-3 bg-warmgray" style="border-bottom: 3px solid #E5533D">' +
+          '<div class="px-5 py-3 bg-warmgray" style="border-bottom: 3px solid ' + getAccentColor() + '">' +
             '<h3 class="font-semibold text-charcoal">📊 ' + monthName + ' Summary</h3>' +
           '</div>' +
           '<div class="p-5 bg-white">' +
@@ -2228,7 +2272,7 @@
                     ` : `
                       <div class="w-6 h-6 rounded-full bg-[#FFFFFF] border border-gray-300" title="Background"></div>
                       <div class="w-6 h-6 rounded-full bg-[#F5F5F7] border border-gray-300" title="Card"></div>
-                      <div class="w-6 h-6 rounded-full bg-[#007AFF]" title="Accent"></div>
+                      <div class="w-6 h-6 rounded-full bg-[#4A90D9]" title="Accent"></div>
                       <div class="w-6 h-6 rounded-full bg-[#1D1D1F]" title="Text"></div>
                     `}
                   </div>
