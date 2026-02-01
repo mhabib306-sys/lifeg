@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T22:00:15.760Z",
+  "lastUpdated": "2026-02-01T22:00:31.689Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1702,14 +1702,14 @@
       "status": "inbox",
       "completed": false,
       "completedAt": null,
-      "categoryId": null,
+      "categoryId": "family",
       "labels": [],
       "people": [],
       "deferDate": null,
-      "dueDate": null,
+      "dueDate": "2026-02-14",
       "repeat": null,
       "createdAt": "2026-02-01T22:00:13.352Z",
-      "updatedAt": "2026-02-01T22:00:13.352Z"
+      "updatedAt": "2026-02-01T22:00:29.282Z"
     }
   ],
   "taskCategories": [
