@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T23:12:28.816Z",
+  "lastUpdated": "2026-02-01T23:12:33.722Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1717,7 +1717,7 @@
     },
     {
       "id": "task_1769987546598_2phz0gy20",
-      "title": "Sent Omar Metwally to review the next steps in issuing passport for Jana and Tia",
+      "title": "Send Omar Metwally to review the next steps in issuing passport for Jana and Tia",
       "notes": "",
       "status": "inbox",
       "completed": false,
@@ -1729,7 +1729,7 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T23:12:26.598Z",
-      "updatedAt": "2026-02-01T23:12:26.598Z"
+      "updatedAt": "2026-02-01T23:12:31.285Z"
     }
   ],
   "taskCategories": [
