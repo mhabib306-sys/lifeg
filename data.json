@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T23:05:56.354Z",
+  "lastUpdated": "2026-02-01T23:06:10.951Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1853,7 +1853,7 @@
       "id": "task_1769986708273_8h0ih9rn2",
       "title": "testing a task in a cat that should appear in anytime",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
       "categoryId": "work",
@@ -1863,7 +1863,7 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T22:58:28.273Z",
-      "updatedAt": "2026-02-01T22:58:42.750Z"
+      "updatedAt": "2026-02-01T23:06:08.719Z"
     }
   ],
   "taskCategories": [
