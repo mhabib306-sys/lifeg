@@ -14,15 +14,15 @@
       theme: {
         extend: {
           colors: {
-            cream: '#F7F6F4',
-            warmgray: '#EFEDE8',
-            charcoal: '#1a1a1a',
-            coral: '#E5533D',
-            coralDark: '#C4432F',
-            softborder: '#E5E3DE'
+            cream: 'var(--bg-primary)',
+            warmgray: 'var(--bg-secondary)',
+            charcoal: 'var(--text-primary)',
+            coral: 'var(--accent)',
+            coralDark: 'var(--accent-dark)',
+            softborder: 'var(--border)'
           },
           fontFamily: {
-            sans: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+            sans: ['var(--font-family)'],
           }
         }
       }
@@ -30,38 +30,110 @@
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <style>
-    body { font-feature-settings: 'kern' 1, 'liga' 1; }
-    .sb-card { background: #EFEDE8; border: 1px solid #E5E3DE; }
+    /* Theme: SimpleBits (default) */
+    :root, [data-theme="simplebits"] {
+      --bg-primary: #F7F6F4;
+      --bg-secondary: #EFEDE8;
+      --bg-card: #EFEDE8;
+      --bg-input: #FFFFFF;
+      --text-primary: #1a1a1a;
+      --text-secondary: #666666;
+      --text-muted: #999999;
+      --accent: #E5533D;
+      --accent-dark: #C4432F;
+      --accent-light: rgba(229, 83, 61, 0.1);
+      --accent-hover: rgba(229, 83, 61, 0.08);
+      --border: #E5E3DE;
+      --border-light: #F0EEE9;
+      --success: #22C55E;
+      --btn-bg: #1a1a1a;
+      --btn-hover: #333333;
+      --sidebar-bg: #EFEDE8;
+      --sidebar-active: rgba(229, 83, 61, 0.12);
+      --modal-bg: #FFFFFF;
+      --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --border-radius: 8px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    /* Theme: Things 3 */
+    [data-theme="things3"] {
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F5F5F7;
+      --bg-card: #FFFFFF;
+      --bg-input: #FFFFFF;
+      --text-primary: #1D1D1F;
+      --text-secondary: #6E6E73;
+      --text-muted: #86868B;
+      --accent: #007AFF;
+      --accent-dark: #0056CC;
+      --accent-light: rgba(0, 122, 255, 0.1);
+      --accent-hover: rgba(0, 122, 255, 0.06);
+      --border: #D2D2D7;
+      --border-light: #E8E8ED;
+      --success: #34C759;
+      --btn-bg: #007AFF;
+      --btn-hover: #0056CC;
+      --sidebar-bg: #F5F5F7;
+      --sidebar-active: rgba(0, 122, 255, 0.1);
+      --modal-bg: #FFFFFF;
+      --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      --border-radius: 10px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+    }
+
+    body {
+      font-feature-settings: 'kern' 1, 'liga' 1;
+      font-family: var(--font-family);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    .sb-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
     .sb-btn {
-      background: #1a1a1a;
+      background: var(--btn-bg);
       color: white;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: var(--border-radius);
     }
     .sb-btn:hover {
-      background: #333;
+      background: var(--btn-hover);
       transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      box-shadow: var(--shadow-md);
     }
     .sb-btn:active {
       transform: translateY(0);
       box-shadow: none;
     }
-    .sb-link { color: #E5533D; text-decoration: underline; text-underline-offset: 2px; }
-    .sb-link:hover { color: #C4432F; }
+    .sb-link { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+    .sb-link:hover { color: var(--accent-dark); }
     .sb-section-title {
       font-weight: 700;
       letter-spacing: 0.05em;
       text-transform: uppercase;
       font-size: 0.75rem;
+      color: var(--text-secondary);
     }
-    input[type="number"], input[type="text"] {
-      background: white;
-      border: 1px solid #E5E3DE;
+    input[type="number"], input[type="text"], textarea, select {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--border-radius) - 2px);
+      color: var(--text-primary);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    input[type="number"]:focus, input[type="text"]:focus {
-      border-color: #E5533D;
+    input[type="number"]:focus, input[type="text"]:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
       outline: none;
-      box-shadow: 0 0 0 2px rgba(229, 83, 61, 0.1);
+      box-shadow: 0 0 0 3px var(--accent-light);
     }
 
     /* Things 3 inspired micro-interactions */
@@ -72,11 +144,11 @@
       border-left: 3px solid transparent;
     }
     .task-item:hover {
-      background: rgba(239, 237, 232, 0.7);
-      border-left-color: #E5533D;
+      background: var(--accent-hover);
+      border-left-color: var(--accent);
     }
     .task-item:active {
-      background: rgba(239, 237, 232, 0.9);
+      background: var(--accent-light);
     }
 
     /* Checkbox interactions */
@@ -86,13 +158,15 @@
     }
     .task-checkbox:hover {
       transform: scale(1.15);
-      border-color: #E5533D !important;
+      border-color: var(--accent) !important;
     }
     .task-checkbox:active {
       transform: scale(0.95);
     }
     .task-checkbox.completed {
       animation: checkPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      background: var(--accent) !important;
+      border-color: var(--accent) !important;
     }
     @keyframes checkPop {
       0% { transform: scale(1); }
@@ -103,19 +177,19 @@
     /* Sidebar item interactions */
     .sidebar-item {
       transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 6px;
+      border-radius: calc(var(--border-radius) - 2px);
       margin: 2px 4px;
     }
     .sidebar-item:hover {
-      background: rgba(229, 83, 61, 0.08);
+      background: var(--accent-hover);
       transform: translateX(2px);
     }
     .sidebar-item:active {
       transform: translateX(0);
-      background: rgba(229, 83, 61, 0.15);
+      background: var(--accent-light);
     }
     .sidebar-item.active {
-      background: rgba(229, 83, 61, 0.12);
+      background: var(--sidebar-active);
     }
 
     /* Category/Label pill interactions */
@@ -184,8 +258,8 @@
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .task-input:focus {
-      border-color: #E5533D;
-      box-shadow: 0 0 0 3px rgba(229, 83, 61, 0.1);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-light);
       transform: scale(1.01);
     }
 
@@ -258,14 +332,21 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-cream text-charcoal">
+<body class="min-h-screen" style="background: var(--bg-primary); color: var(--text-primary);">
   <div id="app"></div>
 
   <script>
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
     const GITHUB_TOKEN_KEY = 'lifeGamificationGithubToken';
+    const THEME_KEY = 'lifeGamificationTheme';
     const DATA_URL = 'data.json';
+
+    // Available themes
+    const THEMES = {
+      simplebits: { name: 'SimpleBits', description: 'Warm cream tones with coral accents' },
+      things3: { name: 'Things 3', description: 'Clean white with blue accents' }
+    };
 
     // GitHub repo config
     const GITHUB_OWNER = 'mhabib306-sys';
@@ -287,6 +368,25 @@
       localStorage.setItem(GITHUB_TOKEN_KEY, token);
       render();
     }
+
+    // Get stored theme
+    function getTheme() {
+      return localStorage.getItem(THEME_KEY) || 'simplebits';
+    }
+
+    // Set theme
+    function setTheme(themeName) {
+      localStorage.setItem(THEME_KEY, themeName);
+      document.documentElement.setAttribute('data-theme', themeName);
+      render();
+    }
+
+    // Apply theme on load
+    function applyStoredTheme() {
+      const theme = getTheme();
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    applyStoredTheme();
 
     // Update sync status in UI
     function updateSyncStatus(status, message = '') {
@@ -2103,6 +2203,37 @@
                 <div class="text-xs font-medium text-coral">Total</div>
                 <div class="text-xs text-charcoal/40">sum of all</div>
               </div>
+            </div>
+          </div>
+
+          <div class="sb-card rounded-lg p-6 bg-white">
+            <h3 class="font-semibold text-charcoal mb-4">Theme <span class="text-coral">→</span></h3>
+            <p class="text-sm text-charcoal/50 mb-4">Choose your preferred visual style. Changes apply immediately.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${Object.entries(THEMES).map(([key, theme]) => `
+                <button onclick="setTheme('${key}')"
+                  class="p-4 rounded-lg border-2 text-left transition-all ${getTheme() === key ? 'border-coral bg-coral/5' : 'border-softborder hover:border-coral/50'}">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="font-semibold text-charcoal">${theme.name}</span>
+                    ${getTheme() === key ? '<span class="text-xs bg-coral text-white px-2 py-0.5 rounded-full">Active</span>' : ''}
+                  </div>
+                  <p class="text-sm text-charcoal/50">${theme.description}</p>
+                  <div class="flex gap-2 mt-3">
+                    ${key === 'simplebits' ? `
+                      <div class="w-6 h-6 rounded-full bg-[#F7F6F4] border border-gray-300" title="Background"></div>
+                      <div class="w-6 h-6 rounded-full bg-[#EFEDE8] border border-gray-300" title="Card"></div>
+                      <div class="w-6 h-6 rounded-full bg-[#E5533D]" title="Accent"></div>
+                      <div class="w-6 h-6 rounded-full bg-[#1a1a1a]" title="Text"></div>
+                    ` : `
+                      <div class="w-6 h-6 rounded-full bg-[#FFFFFF] border border-gray-300" title="Background"></div>
+                      <div class="w-6 h-6 rounded-full bg-[#F5F5F7] border border-gray-300" title="Card"></div>
+                      <div class="w-6 h-6 rounded-full bg-[#007AFF]" title="Accent"></div>
+                      <div class="w-6 h-6 rounded-full bg-[#1D1D1F]" title="Text"></div>
+                    `}
+                  </div>
+                </button>
+              `).join('')}
             </div>
           </div>
 
