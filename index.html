@@ -1393,11 +1393,10 @@
     }
 
     // ============ PEOPLE CRUD ============
-    function createPerson(name, color) {
+    function createPerson(name) {
       const person = {
         id: 'person_' + Date.now(),
-        name: name,
-        color: color || '#6B7280'
+        name: name
       };
       taskPeople.push(person);
       saveTasksData();
@@ -1570,7 +1569,6 @@
               <input type="text" id="inline-person-name" placeholder="Person name"
                 class="flex-1 px-2 py-1.5 text-sm border border-softborder rounded focus:border-coral focus:outline-none"
                 onkeydown="if(event.key==='Enter'){event.preventDefault();addInlinePerson();}">
-              <input type="color" id="inline-person-color" value="#6B7280" class="w-8 h-8 rounded cursor-pointer border-0">
               <button onclick="addInlinePerson()" class="px-3 py-1.5 text-sm bg-coral text-white rounded hover:bg-coralDark">Add</button>
               <button onclick="toggleInlinePersonInput()" class="px-2 py-1.5 text-sm text-charcoal/50 hover:text-charcoal">&times;</button>
             </div>
@@ -1584,9 +1582,8 @@
 
     function addInlinePerson() {
       const name = document.getElementById('inline-person-name')?.value?.trim();
-      const color = document.getElementById('inline-person-color')?.value || '#6B7280';
       if (name) {
-        const newPerson = createPerson(name, color);
+        const newPerson = createPerson(name);
         showInlinePersonInput = false;
         // Re-render the people section and pre-select the new person
         const peopleContainer = document.getElementById('task-people-container');
@@ -1599,9 +1596,9 @@
           peopleContainer.innerHTML = taskPeople.map(person => {
             const isSelected = selectedPeople.includes(person.id);
             return `
-              <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition ${isSelected ? 'bg-warmgray' : 'hover:bg-warmgray/50'}" style="border-color: ${person.color}">
-                <input type="checkbox" value="${person.id}" ${isSelected ? 'checked' : ''} class="task-person-checkbox rounded" style="accent-color: ${person.color}">
-                <span class="text-sm" style="color: ${person.color}">${person.name}</span>
+              <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border border-charcoal/20 cursor-pointer transition ${isSelected ? 'bg-warmgray border-charcoal/40' : 'hover:bg-warmgray/50'}">
+                <input type="checkbox" value="${person.id}" ${isSelected ? 'checked' : ''} class="task-person-checkbox rounded">
+                <span class="text-sm text-charcoal/70">${person.name}</span>
               </label>
             `;
           }).join('') + `
@@ -2092,6 +2089,31 @@
       customPerspectives = customPerspectives.filter(p => p.id !== perspectiveId);
       if (activePerspective === perspectiveId) activePerspective = 'inbox';
       saveTasksData();
+    }
+
+    let editingPerspectiveId = null;
+
+    function editCustomPerspective(perspectiveId) {
+      editingPerspectiveId = perspectiveId;
+      showPerspectiveModal = true;
+      render();
+      // Pre-fill the form after render
+      setTimeout(() => {
+        const p = customPerspectives.find(cp => cp.id === perspectiveId);
+        if (p) {
+          document.getElementById('perspective-name').value = p.name;
+          document.getElementById('perspective-icon').value = p.icon;
+          if (p.filter.categoryId) document.getElementById('perspective-category').value = p.filter.categoryId;
+          if (p.filter.status) document.getElementById('perspective-status').value = p.filter.status;
+          if (p.filter.hasDueDate) document.getElementById('perspective-due').checked = true;
+          if (p.filter.labelIds) {
+            p.filter.labelIds.forEach(lid => {
+              const cb = document.querySelector(`.perspective-tag-checkbox[value="${lid}"]`);
+              if (cb) cb.checked = true;
+            });
+          }
+        }
+      }, 10);
     }
 
     function getCategoryById(categoryId) {
@@ -3551,6 +3573,7 @@
               ${BUILTIN_PERSPECTIVES.map(p => `
                 <button onclick="showPerspectiveTasks('${p.id}')"
                   class="sidebar-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg ${isPerspectiveActive(p.id) ? 'active' : ''}">
+                  <span class="w-4 flex-shrink-0"></span>
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="color: ${p.color}">${p.icon}</span>
                   <span class="flex-1 text-[14px] ${isPerspectiveActive(p.id) ? 'font-medium text-charcoal' : 'text-charcoal/80'}">${p.name}</span>
                   <span class="count-badge w-6 text-right text-[13px] font-medium text-charcoal/40">${taskCounts[p.id] || ''}</span>
@@ -3570,7 +3593,7 @@
             <div class="bg-white py-2 px-2">
               ${customPerspectives.length > 0 ? customPerspectives.map(p => `
                 <button onclick="showPerspectiveTasks('${p.id}')"
-                  class="sidebar-item draggable-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg ${isPerspectiveActive(p.id) ? 'active' : ''}"
+                  class="sidebar-item draggable-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg group relative ${isPerspectiveActive(p.id) ? 'active' : ''}"
                   draggable="true"
                   ondragstart="handleDragStart(event, '${p.id}', 'perspective')"
                   ondragend="handleDragEnd(event)"
@@ -3578,9 +3601,11 @@
                   ondragleave="handleDragLeave(event)"
                   ondrop="handleDrop(event, '${p.id}', 'perspective')">
                   <span class="drag-handle w-4 text-charcoal/30 flex-shrink-0">⋮⋮</span>
-                  <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-lg" style="color: var(--accent)">${p.icon}</span>
+                  <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-lg text-charcoal/50">${p.icon}</span>
                   <span class="flex-1 text-[14px] ${isPerspectiveActive(p.id) ? 'font-medium text-charcoal' : 'text-charcoal/80'}">${p.name}</span>
-                  <span class="count-badge w-6 text-right text-[13px] font-medium text-charcoal/40">${taskCounts[p.id] || ''}</span>
+                  <span class="w-6 text-right text-[13px] font-medium group-hover:opacity-0 transition-opacity text-charcoal/40">${taskCounts[p.id] || ''}</span>
+                  <span onclick="event.stopPropagation(); editCustomPerspective('${p.id}')"
+                    class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/30 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-charcoal/5">Edit</span>
                 </button>
               `).join('') : `
                 <div class="px-3 py-4 text-center text-charcoal/40 text-[13px]">
@@ -3634,7 +3659,6 @@
               ${taskLabels.map(label => `
                 <button onclick="showLabelTasks('${label.id}')"
                   class="sidebar-item draggable-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg group relative ${isLabelActive(label.id) ? 'active' : ''}"
-                  style="${isLabelActive(label.id) ? `background: ${label.color}08` : ''}"
                   draggable="true"
                   ondragstart="handleDragStart(event, '${label.id}', 'label')"
                   ondragend="handleDragEnd(event)"
@@ -3643,10 +3667,10 @@
                   ondrop="handleDrop(event, '${label.id}', 'label')">
                   <span class="drag-handle w-4 text-charcoal/30 flex-shrink-0">⋮⋮</span>
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0">
-                    <span class="w-2 h-2 rounded-full" style="background-color: ${label.color}"></span>
+                    <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${label.color}"></span>
                   </span>
                   <span class="flex-1 text-[14px] ${isLabelActive(label.id) ? 'font-medium text-charcoal' : 'text-charcoal/80'}">${label.name}</span>
-                  <span class="w-6 text-right text-[13px] font-medium group-hover:opacity-0 transition-opacity ${isLabelActive(label.id) ? '' : 'text-charcoal/40'}" ${isLabelActive(label.id) ? `style="color: ${label.color}"` : ''}>${labelCounts[label.id] || ''}</span>
+                  <span class="w-6 text-right text-[13px] font-medium group-hover:opacity-0 transition-opacity text-charcoal/40">${labelCounts[label.id] || ''}</span>
                   <span onclick="event.stopPropagation(); editingLabelId='${label.id}'; showLabelModal=true; render()"
                     class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/30 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-charcoal/5">Edit</span>
                 </button>
@@ -3669,7 +3693,6 @@
               ${taskPeople.map(person => `
                 <button onclick="showPersonTasks('${person.id}')"
                   class="sidebar-item draggable-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg group relative ${isPersonActive(person.id) ? 'active' : ''}"
-                  style="${isPersonActive(person.id) ? `background: ${person.color}08` : ''}"
                   draggable="true"
                   ondragstart="handleDragStart(event, '${person.id}', 'person')"
                   ondragend="handleDragEnd(event)"
@@ -3677,11 +3700,11 @@
                   ondragleave="handleDragLeave(event)"
                   ondrop="handleDrop(event, '${person.id}', 'person')">
                   <span class="drag-handle w-4 text-charcoal/30 flex-shrink-0">⋮⋮</span>
-                  <span class="w-6 h-6 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-4 h-4" style="color: ${person.color}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-charcoal/50">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   </span>
                   <span class="flex-1 text-[14px] ${isPersonActive(person.id) ? 'font-medium text-charcoal' : 'text-charcoal/80'}">${person.name}</span>
-                  <span class="w-6 text-right text-[13px] font-medium group-hover:opacity-0 transition-opacity ${isPersonActive(person.id) ? '' : 'text-charcoal/40'}" ${isPersonActive(person.id) ? `style="color: ${person.color}"` : ''}>${peopleCounts[person.id] || ''}</span>
+                  <span class="w-6 text-right text-[13px] font-medium group-hover:opacity-0 transition-opacity text-charcoal/40">${peopleCounts[person.id] || ''}</span>
                   <span onclick="event.stopPropagation(); editingPersonId='${person.id}'; showPersonModal=true; render()"
                     class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/30 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-charcoal/5">Edit</span>
                 </button>
@@ -3699,7 +3722,6 @@
               <div class="flex items-center gap-3">
                 <span class="text-xl" ${viewInfo.color ? `style="color: ${viewInfo.color}"` : ''}>${viewInfo.icon}</span>
                 <h2 class="text-lg font-semibold text-charcoal">${viewInfo.name}</h2>
-                <span class="text-sm text-charcoal/50">${filteredTasks.length} task${filteredTasks.length !== 1 ? 's' : ''}</span>
               </div>
               <button onclick="openNewTaskModal()"
                 class="sb-btn add-task-btn w-9 h-9 rounded-full flex items-center justify-center" title="Add Task">
@@ -3874,9 +3896,9 @@
                   ${taskPeople.map(person => {
                     const isSelected = editingTask?.people?.includes(person.id) || (!editingTask && newTaskContext.personId === person.id);
                     return `
-                      <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition ${isSelected ? 'bg-warmgray' : 'hover:bg-warmgray/50'}" style="border-color: ${person.color}">
-                        <input type="checkbox" value="${person.id}" ${isSelected ? 'checked' : ''} class="task-person-checkbox rounded" style="accent-color: ${person.color}">
-                        <span class="text-sm" style="color: ${person.color}">${person.name}</span>
+                      <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border border-charcoal/20 cursor-pointer transition ${isSelected ? 'bg-warmgray border-charcoal/40' : 'hover:bg-warmgray/50'}">
+                        <input type="checkbox" value="${person.id}" ${isSelected ? 'checked' : ''} class="task-person-checkbox rounded">
+                        <span class="text-sm text-charcoal/70">${person.name}</span>
                       </label>
                     `;
                   }).join('')}
@@ -3900,12 +3922,13 @@
       ` : '';
 
       // Perspective Modal
+      const editingPerspective = editingPerspectiveId ? customPerspectives.find(p => p.id === editingPerspectiveId) : null;
       const perspectiveModalHtml = showPerspectiveModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showPerspectiveModal=false; render()}">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showPerspectiveModal=false; editingPerspectiveId=null; render()}">
           <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-md mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
-              <h3 class="font-semibold text-charcoal">New Perspective</h3>
-              <button onclick="showPerspectiveModal=false; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+              <h3 class="font-semibold text-charcoal">${editingPerspective ? 'Edit Custom View' : 'New Custom View'}</h3>
+              <button onclick="showPerspectiveModal=false; editingPerspectiveId=null; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
             </div>
             <div class="p-6 space-y-4">
               <div>
@@ -3952,12 +3975,18 @@
                 <label for="perspective-due" class="text-sm text-charcoal/70">Only show tasks with due dates</label>
               </div>
             </div>
-            <div class="px-6 py-4 border-t border-softborder flex justify-end gap-3">
-              <button onclick="showPerspectiveModal=false; render()"
-                class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
-              <button onclick="savePerspectiveFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
-                Create Perspective
-              </button>
+            <div class="px-6 py-4 border-t border-softborder flex justify-between">
+              ${editingPerspective ? `
+                <button onclick="if(confirm('Delete this custom view?')){deletePerspective('${editingPerspective.id}'); showPerspectiveModal=false; editingPerspectiveId=null; render();}"
+                  class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
+              ` : '<div></div>'}
+              <div class="flex gap-3">
+                <button onclick="showPerspectiveModal=false; editingPerspectiveId=null; render()"
+                  class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
+                <button onclick="savePerspectiveFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+                  ${editingPerspective ? 'Save' : 'Create'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -4052,11 +4081,6 @@
                   placeholder="e.g., John Doe"
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
               </div>
-              <div>
-                <label class="text-sm text-charcoal/70 block mb-1">Color</label>
-                <input type="color" id="person-color" value="${editingPerson?.color || '#6B7280'}"
-                  class="w-full h-10 rounded border border-softborder cursor-pointer">
-              </div>
             </div>
             <div class="px-6 py-4 border-t border-softborder flex justify-between">
               ${editingPerson ? `
@@ -4132,12 +4156,11 @@
         alert('Please enter a name');
         return;
       }
-      const color = document.getElementById('person-color').value;
 
       if (editingPersonId) {
-        updatePerson(editingPersonId, { name, color });
+        updatePerson(editingPersonId, { name });
       } else {
-        createPerson(name, color);
+        createPerson(name);
       }
       showPersonModal = false;
       editingPersonId = null;
@@ -4225,9 +4248,20 @@
         filter.hasDueDate = true;
       }
 
-      createPerspective(name, icon, filter);
+      if (editingPerspectiveId) {
+        // Update existing perspective
+        const idx = customPerspectives.findIndex(p => p.id === editingPerspectiveId);
+        if (idx !== -1) {
+          customPerspectives[idx] = { ...customPerspectives[idx], name, icon, filter };
+          saveTasksData();
+        }
+        activePerspective = editingPerspectiveId;
+      } else {
+        createPerspective(name, icon, filter);
+        activePerspective = customPerspectives[customPerspectives.length - 1].id;
+      }
       showPerspectiveModal = false;
-      activePerspective = customPerspectives[customPerspectives.length - 1].id;
+      editingPerspectiveId = null;
       render();
     }
 
