@@ -142,6 +142,7 @@
           maxScores: MAX_SCORES,
           tasks: tasksData,
           taskCategories: taskCategories,
+          taskLabels: taskLabels,
           customPerspectives: customPerspectives
         };
 
@@ -229,6 +230,10 @@
             if (cloudData.taskCategories) {
               taskCategories = cloudData.taskCategories;
               localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(taskCategories));
+            }
+            if (cloudData.taskLabels) {
+              taskLabels = cloudData.taskLabels;
+              localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(taskLabels));
             }
             if (cloudData.customPerspectives) {
               customPerspectives = cloudData.customPerspectives;
@@ -421,6 +426,7 @@
     const TASKS_KEY = 'lifeGamificationTasks';
     const PERSPECTIVES_KEY = 'lifeGamificationPerspectives';
     const TASK_CATEGORIES_KEY = 'lifeGamificationTaskCategories';
+    const TASK_LABELS_KEY = 'lifeGamificationTaskLabels';
 
     // Default categories
     const DEFAULT_TASK_CATEGORIES = [
@@ -429,6 +435,14 @@
       { id: 'health', name: 'Health', color: '#E5533D' },
       { id: 'family', name: 'Family', color: '#C4943D' },
       { id: 'learning', name: 'Learning', color: '#7C6B8E' }
+    ];
+
+    // Default labels
+    const DEFAULT_TASK_LABELS = [
+      { id: 'urgent', name: 'Urgent', color: '#DC2626' },
+      { id: 'quick', name: 'Quick Win', color: '#16A34A' },
+      { id: 'waiting', name: 'Waiting', color: '#CA8A04' },
+      { id: 'blocked', name: 'Blocked', color: '#6B7280' }
     ];
 
     // Default perspectives (built-in)
@@ -443,11 +457,16 @@
     // Load tasks data
     let tasksData = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
     let taskCategories = JSON.parse(localStorage.getItem(TASK_CATEGORIES_KEY) || 'null') || DEFAULT_TASK_CATEGORIES;
+    let taskLabels = JSON.parse(localStorage.getItem(TASK_LABELS_KEY) || 'null') || DEFAULT_TASK_LABELS;
     let customPerspectives = JSON.parse(localStorage.getItem(PERSPECTIVES_KEY) || '[]');
     let activePerspective = 'inbox';
     let editingTaskId = null;
     let showTaskModal = false;
     let showPerspectiveModal = false;
+    let showCategoryModal = false;
+    let showLabelModal = false;
+    let editingCategoryId = null;
+    let editingLabelId = null;
 
     // Task helper functions
     function generateTaskId() {
@@ -457,8 +476,71 @@
     function saveTasksData() {
       localStorage.setItem(TASKS_KEY, JSON.stringify(tasksData));
       localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(taskCategories));
+      localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(taskLabels));
       localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(customPerspectives));
       debouncedSaveToGithub();
+    }
+
+    // Category CRUD
+    function createCategory(name, color) {
+      const category = {
+        id: 'cat_' + Date.now(),
+        name: name,
+        color: color || '#6B7280'
+      };
+      taskCategories.push(category);
+      saveTasksData();
+      return category;
+    }
+
+    function updateCategory(categoryId, updates) {
+      const idx = taskCategories.findIndex(c => c.id === categoryId);
+      if (idx !== -1) {
+        taskCategories[idx] = { ...taskCategories[idx], ...updates };
+        saveTasksData();
+      }
+    }
+
+    function deleteCategory(categoryId) {
+      taskCategories = taskCategories.filter(c => c.id !== categoryId);
+      // Remove category from tasks that use it
+      tasksData.forEach(task => {
+        if (task.categoryId === categoryId) task.categoryId = null;
+      });
+      saveTasksData();
+    }
+
+    // Label CRUD
+    function createLabel(name, color) {
+      const label = {
+        id: 'label_' + Date.now(),
+        name: name,
+        color: color || '#6B7280'
+      };
+      taskLabels.push(label);
+      saveTasksData();
+      return label;
+    }
+
+    function updateLabel(labelId, updates) {
+      const idx = taskLabels.findIndex(l => l.id === labelId);
+      if (idx !== -1) {
+        taskLabels[idx] = { ...taskLabels[idx], ...updates };
+        saveTasksData();
+      }
+    }
+
+    function deleteLabel(labelId) {
+      taskLabels = taskLabels.filter(l => l.id !== labelId);
+      // Remove label from tasks that use it
+      tasksData.forEach(task => {
+        task.labels = task.labels.filter(l => l !== labelId);
+      });
+      saveTasksData();
+    }
+
+    function getLabelById(labelId) {
+      return taskLabels.find(l => l.id === labelId);
     }
 
     function createTask(title, options = {}) {
@@ -514,6 +596,8 @@
       const perspective = allPerspectives.find(p => p.id === perspectiveId);
       if (!perspective) return [];
 
+      const today = new Date().toISOString().split('T')[0];
+
       return tasksData.filter(task => {
         // Completed perspective shows all completed tasks
         if (perspective.filter.completed) {
@@ -522,9 +606,16 @@
         // Other perspectives show only non-completed tasks matching the filter
         if (task.completed) return false;
 
+        // Special handling for Today: show tasks with status 'today' OR due today OR overdue
+        if (perspectiveId === 'today') {
+          const isDueToday = task.dueDate === today;
+          const isOverdue = task.dueDate && task.dueDate < today;
+          return task.status === 'today' || isDueToday || isOverdue;
+        }
+
         if (perspective.filter.status && task.status !== perspective.filter.status) return false;
         if (perspective.filter.categoryId && task.categoryId !== perspective.filter.categoryId) return false;
-        if (perspective.filter.hasLabel && !task.labels.includes(perspective.filter.hasLabel)) return false;
+        if (perspective.filter.hasLabel && !task.labels.some(l => l === perspective.filter.hasLabel)) return false;
         if (perspective.filter.hasDueDate && !task.dueDate) return false;
         if (perspective.filter.dueSoon) {
           if (!task.dueDate) return false;
@@ -535,7 +626,12 @@
         }
         return true;
       }).sort((a, b) => {
-        // Sort by creation date, newest first for inbox, oldest first for others
+        // Sort by due date first (overdue/today at top), then by creation date
+        if (a.dueDate && !b.dueDate) return -1;
+        if (!a.dueDate && b.dueDate) return 1;
+        if (a.dueDate && b.dueDate && a.dueDate !== b.dueDate) {
+          return new Date(a.dueDate) - new Date(b.dueDate);
+        }
         if (perspectiveId === 'inbox') return new Date(b.createdAt) - new Date(a.createdAt);
         return new Date(a.createdAt) - new Date(b.createdAt);
       });
@@ -1842,14 +1938,39 @@
 
           <!-- Categories -->
           <div class="sb-card rounded-lg overflow-hidden mt-4">
-            <div class="px-4 py-3 bg-warmgray border-b border-softborder">
+            <div class="px-4 py-3 bg-warmgray border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal text-sm">Categories</h3>
+              <button onclick="editingCategoryId=null; showCategoryModal=true; render()" class="text-coral text-xs hover:underline">+ Add</button>
             </div>
-            <div class="bg-white p-3 space-y-1">
+            <div class="bg-white p-2 space-y-0.5">
               ${taskCategories.map(cat => `
-                <div class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-warmgray">
-                  <span class="w-3 h-3 rounded-full" style="background-color: ${cat.color}"></span>
-                  <span class="text-sm text-charcoal/70">${cat.name}</span>
+                <div class="flex items-center justify-between px-2 py-1.5 rounded hover:bg-warmgray group">
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full" style="background-color: ${cat.color}"></span>
+                    <span class="text-sm text-charcoal/70">${cat.name}</span>
+                  </div>
+                  <button onclick="editingCategoryId='${cat.id}'; showCategoryModal=true; render()"
+                    class="text-xs text-charcoal/30 hover:text-charcoal opacity-0 group-hover:opacity-100">Edit</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Labels -->
+          <div class="sb-card rounded-lg overflow-hidden mt-4">
+            <div class="px-4 py-3 bg-warmgray border-b border-softborder flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal text-sm">Labels</h3>
+              <button onclick="editingLabelId=null; showLabelModal=true; render()" class="text-coral text-xs hover:underline">+ Add</button>
+            </div>
+            <div class="bg-white p-2 space-y-0.5">
+              ${taskLabels.map(label => `
+                <div class="flex items-center justify-between px-2 py-1.5 rounded hover:bg-warmgray group">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded" style="background-color: ${label.color}"></span>
+                    <span class="text-sm text-charcoal/70">${label.name}</span>
+                  </div>
+                  <button onclick="editingLabelId='${label.id}'; showLabelModal=true; render()"
+                    class="text-xs text-charcoal/30 hover:text-charcoal opacity-0 group-hover:opacity-100">Edit</button>
                 </div>
               `).join('')}
             </div>
@@ -1884,6 +2005,9 @@
                 <div class="divide-y divide-softborder">
                   ${filteredTasks.map(task => {
                     const category = getCategoryById(task.categoryId);
+                    const labels = (task.labels || []).map(lid => getLabelById(lid)).filter(Boolean);
+                    const today = new Date().toISOString().split('T')[0];
+                    const isOverdue = task.dueDate && task.dueDate < today && !task.completed;
                     return `
                       <div class="px-5 py-3 flex items-start gap-3 hover:bg-warmgray/50 transition group">
                         <button onclick="toggleTaskComplete('${task.id}')"
@@ -1891,12 +2015,13 @@
                           ${task.completed ? '<span class="text-xs">✓</span>' : ''}
                         </button>
                         <div class="flex-1 min-w-0">
-                          <div class="flex items-center gap-2">
+                          <div class="flex items-center gap-2 flex-wrap">
                             <span class="${task.completed ? 'line-through text-charcoal/40' : 'text-charcoal'} font-medium">${task.title}</span>
                             ${category ? `<span class="px-2 py-0.5 text-xs rounded-full text-white" style="background-color: ${category.color}">${category.name}</span>` : ''}
+                            ${labels.map(l => `<span class="px-1.5 py-0.5 text-xs rounded border" style="border-color: ${l.color}; color: ${l.color}">${l.name}</span>`).join('')}
                           </div>
                           ${task.notes ? `<p class="text-sm text-charcoal/50 mt-0.5 truncate">${task.notes}</p>` : ''}
-                          ${task.dueDate ? `<p class="text-xs text-charcoal/40 mt-1">📅 ${new Date(task.dueDate).toLocaleDateString()}</p>` : ''}
+                          ${task.dueDate ? `<p class="text-xs mt-1 ${isOverdue ? 'text-red-500 font-medium' : 'text-charcoal/40'}">${isOverdue ? '⚠️ Overdue: ' : '📅 '}${new Date(task.dueDate).toLocaleDateString()}</p>` : ''}
                         </div>
                         <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
                           ${!task.completed ? `
@@ -1970,6 +2095,20 @@
                 <input type="date" id="task-due" value="${editingTask?.dueDate || ''}"
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
               </div>
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Labels</label>
+                <div class="flex flex-wrap gap-2" id="task-labels-container">
+                  ${taskLabels.map(label => {
+                    const isSelected = editingTask?.labels?.includes(label.id);
+                    return `
+                      <label class="flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition ${isSelected ? 'bg-warmgray' : 'hover:bg-warmgray/50'}" style="border-color: ${label.color}">
+                        <input type="checkbox" value="${label.id}" ${isSelected ? 'checked' : ''} class="task-label-checkbox rounded" style="accent-color: ${label.color}">
+                        <span class="text-sm" style="color: ${label.color}">${label.name}</span>
+                      </label>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
             </div>
             <div class="px-6 py-4 border-t border-softborder flex justify-end gap-3">
               <button onclick="showTaskModal=false; editingTaskId=null; render()"
@@ -2034,6 +2173,84 @@
         </div>
       ` : '';
 
+      // Category Modal
+      const editingCategory = editingCategoryId ? taskCategories.find(c => c.id === editingCategoryId) : null;
+      const categoryModalHtml = showCategoryModal ? `
+        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showCategoryModal=false; editingCategoryId=null; render()}">
+          <div class="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+            <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal">${editingCategory ? 'Edit Category' : 'New Category'}</h3>
+              <button onclick="showCategoryModal=false; editingCategoryId=null; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Name</label>
+                <input type="text" id="category-name" value="${editingCategory?.name || ''}"
+                  placeholder="e.g., Projects"
+                  class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              </div>
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Color</label>
+                <input type="color" id="category-color" value="${editingCategory?.color || '#6B7280'}"
+                  class="w-full h-10 rounded border border-softborder cursor-pointer">
+              </div>
+            </div>
+            <div class="px-6 py-4 border-t border-softborder flex justify-between">
+              ${editingCategory ? `
+                <button onclick="if(confirm('Delete this category?')){deleteCategory('${editingCategory.id}'); showCategoryModal=false; editingCategoryId=null; render();}"
+                  class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
+              ` : '<div></div>'}
+              <div class="flex gap-3">
+                <button onclick="showCategoryModal=false; editingCategoryId=null; render()"
+                  class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
+                <button onclick="saveCategoryFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+                  ${editingCategory ? 'Save' : 'Create'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ` : '';
+
+      // Label Modal
+      const editingLabel = editingLabelId ? taskLabels.find(l => l.id === editingLabelId) : null;
+      const labelModalHtml = showLabelModal ? `
+        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}">
+          <div class="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+            <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal">${editingLabel ? 'Edit Label' : 'New Label'}</h3>
+              <button onclick="showLabelModal=false; editingLabelId=null; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Name</label>
+                <input type="text" id="label-name" value="${editingLabel?.name || ''}"
+                  placeholder="e.g., Important"
+                  class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              </div>
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Color</label>
+                <input type="color" id="label-color" value="${editingLabel?.color || '#6B7280'}"
+                  class="w-full h-10 rounded border border-softborder cursor-pointer">
+              </div>
+            </div>
+            <div class="px-6 py-4 border-t border-softborder flex justify-between">
+              ${editingLabel ? `
+                <button onclick="if(confirm('Delete this label?')){deleteLabel('${editingLabel.id}'); showLabelModal=false; editingLabelId=null; render();}"
+                  class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
+              ` : '<div></div>'}
+              <div class="flex gap-3">
+                <button onclick="showLabelModal=false; editingLabelId=null; render()"
+                  class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
+                <button onclick="saveLabelFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+                  ${editingLabel ? 'Save' : 'Create'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ` : '';
+
       return `
         <div class="flex gap-6">
           ${sidebarHtml}
@@ -2041,7 +2258,47 @@
         </div>
         ${taskModalHtml}
         ${perspectiveModalHtml}
+        ${categoryModalHtml}
+        ${labelModalHtml}
       `;
+    }
+
+    // Save category from modal
+    function saveCategoryFromModal() {
+      const name = document.getElementById('category-name').value.trim();
+      if (!name) {
+        alert('Please enter a category name');
+        return;
+      }
+      const color = document.getElementById('category-color').value;
+
+      if (editingCategoryId) {
+        updateCategory(editingCategoryId, { name, color });
+      } else {
+        createCategory(name, color);
+      }
+      showCategoryModal = false;
+      editingCategoryId = null;
+      render();
+    }
+
+    // Save label from modal
+    function saveLabelFromModal() {
+      const name = document.getElementById('label-name').value.trim();
+      if (!name) {
+        alert('Please enter a label name');
+        return;
+      }
+      const color = document.getElementById('label-color').value;
+
+      if (editingLabelId) {
+        updateLabel(editingLabelId, { name, color });
+      } else {
+        createLabel(name, color);
+      }
+      showLabelModal = false;
+      editingLabelId = null;
+      render();
     }
 
     // Save task from modal
@@ -2052,12 +2309,17 @@
         return;
       }
 
+      // Get selected labels
+      const labelCheckboxes = document.querySelectorAll('.task-label-checkbox:checked');
+      const selectedLabels = Array.from(labelCheckboxes).map(cb => cb.value);
+
       const taskData = {
         title: title,
         notes: document.getElementById('task-notes').value.trim(),
         status: document.getElementById('task-status').value,
         categoryId: document.getElementById('task-category').value || null,
-        dueDate: document.getElementById('task-due').value || null
+        dueDate: document.getElementById('task-due').value || null,
+        labels: selectedLabels
       };
 
       if (editingTaskId) {
@@ -2104,6 +2366,7 @@
         weights: WEIGHTS,
         tasks: tasksData,
         taskCategories: taskCategories,
+        taskLabels: taskLabels,
         customPerspectives: customPerspectives,
         lastUpdated: new Date().toISOString()
       };
@@ -2139,6 +2402,10 @@
           if (imported.taskCategories) {
             taskCategories = imported.taskCategories;
             localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(taskCategories));
+          }
+          if (imported.taskLabels) {
+            taskLabels = imported.taskLabels;
+            localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(taskLabels));
           }
           if (imported.customPerspectives) {
             customPerspectives = imported.customPerspectives;
