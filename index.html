@@ -1106,6 +1106,8 @@
 
     // Things 3 exact SVG icons (filled style matching the app)
     const THINGS3_ICONS = {
+      // Home - house icon for homepage
+      home: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`,
       // Inbox - filled blue tray
       inbox: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5v-3h3.56c.69 1.19 1.97 2 3.44 2s2.75-.81 3.44-2H19v3zm0-5h-4.99c0 1.1-.9 2-2.01 2s-2-.9-2-2H5V5h14v9z"/></svg>`,
       // Today - filled gold star
@@ -1128,6 +1130,7 @@
 
     // Default perspectives with exact Things 3 colors
     const BUILTIN_PERSPECTIVES = [
+      { id: 'home', name: 'Home', icon: THINGS3_ICONS.home, color: '#F97316', filter: { home: true }, builtin: true },
       { id: 'inbox', name: 'Inbox', icon: THINGS3_ICONS.inbox, color: '#5598FE', filter: { status: 'inbox' }, builtin: true },
       { id: 'today', name: 'Today', icon: THINGS3_ICONS.today, color: '#FFCA28', filter: { status: 'today' }, builtin: true },
       { id: 'upcoming', name: 'Upcoming', icon: THINGS3_ICONS.upcoming, color: '#EF5350', filter: { upcoming: true }, builtin: true },
@@ -1143,7 +1146,7 @@
     let taskLabels = JSON.parse(localStorage.getItem(TASK_LABELS_KEY) || 'null') || DEFAULT_TASK_LABELS;
     let taskPeople = JSON.parse(localStorage.getItem(TASK_PEOPLE_KEY) || 'null') || DEFAULT_TASK_PEOPLE;
     let customPerspectives = JSON.parse(localStorage.getItem(PERSPECTIVES_KEY) || '[]');
-    let activePerspective = savedViewState.activePerspective || 'inbox';
+    let activePerspective = savedViewState.activePerspective || 'home';
     let activeFilterType = savedViewState.activeFilterType || 'perspective';
     let activeCategoryFilter = savedViewState.activeCategoryFilter || null;
     let activeLabelFilter = savedViewState.activeLabelFilter || null;
@@ -3733,7 +3736,7 @@
               </button>
             </div>
 
-            ${activePerspective !== 'upcoming' ? `
+            ${activePerspective !== 'upcoming' && activePerspective !== 'home' ? `
             <!-- Quick Add Input -->
             <div class="px-4 py-3 border-t border-charcoal/[0.06]">
               <div class="flex items-center gap-3">
@@ -3751,7 +3754,91 @@
             ` : ''}
 
             <div class="min-h-[400px] task-list">
-              ${filteredTasks.length === 0 ? `
+              ${activePerspective === 'home' ? (() => {
+                // Home view: Today tasks + Next tasks + mini stats
+                const today = new Date().toISOString().split('T')[0];
+                const todayTasks = tasksData.filter(t => {
+                  if (t.completed) return false;
+                  const isDueToday = t.dueDate === today;
+                  const isOverdue = t.dueDate && t.dueDate < today;
+                  return t.status === 'today' || isDueToday || isOverdue;
+                }).sort((a, b) => {
+                  // Due dates first, then by date
+                  if (a.dueDate && !b.dueDate) return -1;
+                  if (!a.dueDate && b.dueDate) return 1;
+                  if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
+                  return 0;
+                });
+                const nextTasks = tasksData.filter(t => {
+                  if (t.completed) return false;
+                  if (t.status !== 'anytime') return false;
+                  if (t.dueDate) return false;
+                  if (t.deferDate && t.deferDate > today) return false;
+                  return true;
+                });
+                const completedToday = tasksData.filter(t => t.completed && t.completedAt && t.completedAt.startsWith(today)).length;
+                const totalActive = tasksData.filter(t => !t.completed).length;
+                const inboxCount = tasksData.filter(t => !t.completed && t.status === 'inbox' && !t.categoryId).length;
+
+                return `
+                <!-- Home Dashboard -->
+                <div class="p-5 space-y-6">
+                  <!-- Mini Stats -->
+                  <div class="grid grid-cols-4 gap-4">
+                    <div class="bg-warmgray/30 rounded-lg p-4 text-center">
+                      <div class="text-2xl font-bold text-charcoal">${todayTasks.length}</div>
+                      <div class="text-xs text-charcoal/50 mt-1">Due Today</div>
+                    </div>
+                    <div class="bg-warmgray/30 rounded-lg p-4 text-center">
+                      <div class="text-2xl font-bold text-charcoal">${nextTasks.length}</div>
+                      <div class="text-xs text-charcoal/50 mt-1">Available</div>
+                    </div>
+                    <div class="bg-warmgray/30 rounded-lg p-4 text-center">
+                      <div class="text-2xl font-bold text-green-600">${completedToday}</div>
+                      <div class="text-xs text-charcoal/50 mt-1">Done Today</div>
+                    </div>
+                    <div class="bg-warmgray/30 rounded-lg p-4 text-center">
+                      <div class="text-2xl font-bold ${inboxCount > 0 ? 'text-blue-500' : 'text-charcoal'}">${inboxCount}</div>
+                      <div class="text-xs text-charcoal/50 mt-1">In Inbox</div>
+                    </div>
+                  </div>
+
+                  <!-- Today Section -->
+                  <div>
+                    <div class="flex items-center gap-2 mb-3">
+                      <span class="text-[#FFCA28]">${THINGS3_ICONS.today}</span>
+                      <h3 class="text-sm font-semibold text-charcoal uppercase tracking-wider">Today</h3>
+                      <span class="text-xs text-charcoal/40">${todayTasks.length}</span>
+                    </div>
+                    ${todayTasks.length === 0 ? `
+                      <div class="py-8 text-center text-charcoal/30 text-sm">No tasks due today</div>
+                    ` : `
+                      <div class="bg-white rounded-lg border border-charcoal/[0.06] divide-y divide-charcoal/[0.06]">
+                        ${todayTasks.slice(0, 5).map(task => renderTaskItem(task, false)).join('')}
+                        ${todayTasks.length > 5 ? `<div class="px-4 py-2 text-center"><button onclick="showPerspectiveTasks('today')" class="text-sm text-[#147EFB] hover:underline">View all ${todayTasks.length} tasks →</button></div>` : ''}
+                      </div>
+                    `}
+                  </div>
+
+                  <!-- Next Section -->
+                  <div>
+                    <div class="flex items-center gap-2 mb-3">
+                      <span class="text-[#8B5CF6]">${THINGS3_ICONS.next}</span>
+                      <h3 class="text-sm font-semibold text-charcoal uppercase tracking-wider">Available Next</h3>
+                      <span class="text-xs text-charcoal/40">${nextTasks.length}</span>
+                    </div>
+                    ${nextTasks.length === 0 ? `
+                      <div class="py-8 text-center text-charcoal/30 text-sm">No available tasks without deadlines</div>
+                    ` : `
+                      <div class="bg-white rounded-lg border border-charcoal/[0.06] divide-y divide-charcoal/[0.06]">
+                        ${nextTasks.slice(0, 5).map(task => renderTaskItem(task, false)).join('')}
+                        ${nextTasks.length > 5 ? `<div class="px-4 py-2 text-center"><button onclick="showPerspectiveTasks('next')" class="text-sm text-[#147EFB] hover:underline">View all ${nextTasks.length} tasks →</button></div>` : ''}
+                      </div>
+                    `}
+                  </div>
+                </div>
+              `;
+              })() : (filteredTasks.length === 0 ? `
                 <div class="empty-state flex flex-col items-center justify-center py-20 text-charcoal/30">
                   <div class="w-16 h-16 mb-4 flex items-center justify-center opacity-50">${viewInfo.icon}</div>
                   <p class="text-[15px] font-medium">No tasks in ${viewInfo.name}</p>
@@ -3790,7 +3877,7 @@
                 <div class="task-list divide-y divide-charcoal/[0.06]">
                   ${filteredTasks.map(task => renderTaskItem(task)).join('')}
                 </div>
-              `))}
+              `)))}
             </div>
           </div>
         </div>
