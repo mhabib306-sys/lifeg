@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T23:12:33.722Z",
+  "lastUpdated": "2026-02-01T23:12:46.971Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1762,6 +1762,11 @@
       "id": "cat_1769983795940",
       "name": "Nancy",
       "color": "#6b7280"
+    },
+    {
+      "id": "cat_1769987564631",
+      "name": "Jana & Tia",
+      "color": "#478054"
     }
   ],
   "taskLabels": [
