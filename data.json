@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T22:09:27.299Z",
+  "lastUpdated": "2026-02-01T22:09:39.558Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1837,8 +1837,8 @@
   "taskCategories": [
     {
       "id": "personal",
-      "name": "Personal",
-      "color": "#4A90A4"
+      "name": "Self",
+      "color": "#4a90a4"
     },
     {
       "id": "work",
