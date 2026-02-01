@@ -1994,6 +1994,35 @@
       });
     }
 
+    // Group tasks by completion date (for Logbook view)
+    function groupTasksByCompletionDate(tasks) {
+      const groups = {};
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      tasks.forEach(task => {
+        if (!task.completedAt) return;
+        const date = task.completedAt.split('T')[0];
+        if (!groups[date]) {
+          groups[date] = [];
+        }
+        groups[date].push(task);
+      });
+
+      // Sort dates descending (most recent first) and return as array of { date, label, tasks }
+      return Object.keys(groups).sort().reverse().map(date => {
+        const d = new Date(date + 'T00:00:00');
+        const diffDays = Math.floor((today - d) / (1000 * 60 * 60 * 24));
+        let label;
+        if (diffDays === 0) label = 'Today';
+        else if (diffDays === 1) label = 'Yesterday';
+        else if (diffDays < 7) label = d.toLocaleDateString('en-US', { weekday: 'long' });
+        else label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+        return { date, label, tasks: groups[date] };
+      });
+    }
+
     // Get tasks by category
     function getTasksByCategory(categoryId) {
       const today = new Date().toISOString().split('T')[0];
@@ -2903,6 +2932,7 @@
                   <span class="text-xs text-charcoal/50">${getGithubToken() ? 'Synced' : 'Local'}</span>
                 </div>
                 <input type="date" id="dateInput" value="${currentDate}"
+                  onclick="this.showPicker()"
                   class="px-3 py-2 rounded-lg text-sm border border-softborder bg-white focus:border-coral focus:outline-none">
                 <button onclick="setToday()" class="sb-btn px-4 py-2 rounded-lg text-sm font-medium">Today</button>
               </div>
@@ -3594,7 +3624,13 @@
             <div class="py-1.5 px-1.5">
               ${taskCategories.map(cat => `
                 <button onclick="showCategoryTasks('${cat.id}')"
-                  class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isCategoryActive(cat.id) ? 'active' : ''}">
+                  class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isCategoryActive(cat.id) ? 'active' : ''}"
+                  draggable="true"
+                  ondragstart="handleDragStart(event, '${cat.id}', 'category')"
+                  ondragend="handleDragEnd(event)"
+                  ondragover="handleDragOver(event)"
+                  ondragleave="handleDragLeave(event)"
+                  ondrop="handleDrop(event, '${cat.id}', 'category')">
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-charcoal/40">${THINGS3_ICONS.area}</span>
                   <span class="flex-1 text-[14px] ${isCategoryActive(cat.id) ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${cat.name}</span>
                   <span class="w-6 text-right text-[13px] group-hover:opacity-0 transition-opacity text-charcoal/35">${categoryCounts[cat.id] || ''}</span>
@@ -3616,7 +3652,13 @@
             <div class="py-1.5 px-1.5">
               ${taskLabels.map(label => `
                 <button onclick="showLabelTasks('${label.id}')"
-                  class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isLabelActive(label.id) ? 'active' : ''}">
+                  class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isLabelActive(label.id) ? 'active' : ''}"
+                  draggable="true"
+                  ondragstart="handleDragStart(event, '${label.id}', 'label')"
+                  ondragend="handleDragEnd(event)"
+                  ondragover="handleDragOver(event)"
+                  ondragleave="handleDragLeave(event)"
+                  ondrop="handleDrop(event, '${label.id}', 'label')">
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0">
                     <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${label.color}"></span>
                   </span>
@@ -3640,7 +3682,13 @@
             <div class="py-1.5 px-1.5">
               ${taskPeople.map(person => `
                 <button onclick="showPersonTasks('${person.id}')"
-                  class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isPersonActive(person.id) ? 'active' : ''}">
+                  class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isPersonActive(person.id) ? 'active' : ''}"
+                  draggable="true"
+                  ondragstart="handleDragStart(event, '${person.id}', 'person')"
+                  ondragend="handleDragEnd(event)"
+                  ondragover="handleDragOver(event)"
+                  ondragleave="handleDragLeave(event)"
+                  ondrop="handleDrop(event, '${person.id}', 'person')">
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-charcoal/40">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   </span>
@@ -3708,12 +3756,26 @@
                     </div>
                   `).join('')}
                 </div>
+              ` : (activePerspective === 'logbook' ? `
+                <!-- Logbook view grouped by completion date -->
+                <div class="task-list">
+                  ${groupTasksByCompletionDate(filteredTasks).map(group => `
+                    <div class="date-group">
+                      <div class="px-5 py-2.5 bg-charcoal/[0.02] border-t border-charcoal/[0.06] sticky top-0">
+                        <span class="text-[13px] font-semibold text-charcoal/60">${group.label}</span>
+                      </div>
+                      <div class="divide-y divide-charcoal/[0.06]">
+                        ${group.tasks.map(task => renderTaskItem(task, false)).join('')}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
               ` : `
                 <!-- Regular task list -->
                 <div class="task-list divide-y divide-charcoal/[0.06]">
                   ${filteredTasks.map(task => renderTaskItem(task)).join('')}
                 </div>
-              `)}
+              `))}
             </div>
           </div>
         </div>
@@ -3722,7 +3784,7 @@
       // Task Modal
       const editingTask = editingTaskId ? tasksData.find(t => t.id === editingTaskId) : null;
       const taskModalHtml = showTaskModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showTaskModal=false; editingTaskId=null; render()}">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showTaskModal=false; editingTaskId=null; render()}" onkeydown="if(event.key==='Escape'){showTaskModal=false; editingTaskId=null; render();}">
           <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-lg mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">${editingTask ? 'Edit Task' : 'New Task'}</h3>
@@ -3732,7 +3794,8 @@
               <div>
                 <label class="text-sm text-charcoal/70 block mb-1">Title</label>
                 <input type="text" id="task-title" value="${editingTask ? editingTask.title : ''}"
-                  placeholder="What needs to be done?"
+                  placeholder="What needs to be done?" autofocus
+                  onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();saveTaskFromModal();}"
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
               </div>
               <div>
@@ -3764,12 +3827,14 @@
                 <div>
                   <label class="text-sm text-charcoal/70 block mb-1">Defer Until</label>
                   <input type="date" id="task-defer" value="${editingTask?.deferDate || ''}"
+                    onclick="this.showPicker()"
                     class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-sm">
                   <p class="text-[11px] text-charcoal/40 mt-1">Task hidden until this date</p>
                 </div>
                 <div>
                   <label class="text-sm text-charcoal/70 block mb-1">Due Date</label>
                   <input type="date" id="task-due" value="${editingTask?.dueDate || ''}"
+                    onclick="this.showPicker()"
                     class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-sm">
                   <p class="text-[11px] text-charcoal/40 mt-1">Deadline for completion</p>
                 </div>
@@ -3865,7 +3930,7 @@
       // Perspective Modal
       const editingPerspective = editingPerspectiveId ? customPerspectives.find(p => p.id === editingPerspectiveId) : null;
       const perspectiveModalHtml = showPerspectiveModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showPerspectiveModal=false; editingPerspectiveId=null; render()}">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showPerspectiveModal=false; editingPerspectiveId=null; render()}" onkeydown="if(event.key==='Escape'){showPerspectiveModal=false; editingPerspectiveId=null; render();}">
           <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-md mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">${editingPerspective ? 'Edit Custom View' : 'New Custom View'}</h3>
@@ -3874,7 +3939,8 @@
             <div class="p-6 space-y-4">
               <div>
                 <label class="text-sm text-charcoal/70 block mb-1">Name</label>
-                <input type="text" id="perspective-name" placeholder="e.g., Work Projects"
+                <input type="text" id="perspective-name" placeholder="e.g., Work Projects" autofocus
+                  onkeydown="if(event.key==='Enter'){event.preventDefault();savePerspectiveFromModal();}"
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
               </div>
               <div>
@@ -3936,7 +4002,7 @@
       // Category Modal
       const editingCategory = editingCategoryId ? taskCategories.find(c => c.id === editingCategoryId) : null;
       const categoryModalHtml = showCategoryModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showCategoryModal=false; editingCategoryId=null; render()}">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showCategoryModal=false; editingCategoryId=null; render()}" onkeydown="if(event.key==='Escape'){showCategoryModal=false; editingCategoryId=null; render();}">
           <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">${editingCategory ? 'Edit Area' : 'New Area'}</h3>
@@ -3946,7 +4012,8 @@
               <div>
                 <label class="text-sm text-charcoal/70 block mb-1">Name</label>
                 <input type="text" id="category-name" value="${editingCategory?.name || ''}"
-                  placeholder="e.g., Work, Personal, Health"
+                  placeholder="e.g., Work, Personal, Health" autofocus
+                  onkeydown="if(event.key==='Enter'){event.preventDefault();saveCategoryFromModal();}"
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
               </div>
             </div>
@@ -3970,7 +4037,7 @@
       // Tag Modal (formerly Label)
       const editingLabel = editingLabelId ? taskLabels.find(l => l.id === editingLabelId) : null;
       const labelModalHtml = showLabelModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}" onkeydown="if(event.key==='Escape'){showLabelModal=false; editingLabelId=null; render();}">
           <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">${editingLabel ? 'Edit Tag' : 'New Tag'}</h3>
@@ -3980,7 +4047,8 @@
               <div>
                 <label class="text-sm text-charcoal/70 block mb-1">Name</label>
                 <input type="text" id="label-name" value="${editingLabel?.name || ''}"
-                  placeholder="e.g., Important"
+                  placeholder="e.g., Important" autofocus
+                  onkeydown="if(event.key==='Enter'){event.preventDefault();saveLabelFromModal();}"
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
               </div>
               <div>
@@ -4009,7 +4077,7 @@
       // Person Modal
       const editingPerson = editingPersonId ? taskPeople.find(p => p.id === editingPersonId) : null;
       const personModalHtml = showPersonModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}" onkeydown="if(event.key==='Escape'){showPersonModal=false; editingPersonId=null; render();}">
           <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">${editingPerson ? 'Edit Person' : 'New Person'}</h3>
@@ -4019,7 +4087,8 @@
               <div>
                 <label class="text-sm text-charcoal/70 block mb-1">Name</label>
                 <input type="text" id="person-name" value="${editingPerson?.name || ''}"
-                  placeholder="e.g., John Doe"
+                  placeholder="e.g., John Doe" autofocus
+                  onkeydown="if(event.key==='Enter'){event.preventDefault();savePersonFromModal();}"
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
               </div>
             </div>
