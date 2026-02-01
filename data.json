@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T17:42:11.386Z",
+  "lastUpdated": "2026-02-01T17:45:19.967Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1573,10 +1573,12 @@
       "completed": false,
       "completedAt": null,
       "categoryId": "personal",
-      "labels": [],
+      "labels": [
+        "urgent"
+      ],
       "dueDate": "2026-02-01",
       "createdAt": "2026-02-01T17:33:11.520Z",
-      "updatedAt": "2026-02-01T17:42:09.365Z"
+      "updatedAt": "2026-02-01T17:45:17.946Z"
     }
   ],
   "taskCategories": [
@@ -1604,6 +1606,28 @@
       "id": "learning",
       "name": "Learning",
       "color": "#7C6B8E"
+    }
+  ],
+  "taskLabels": [
+    {
+      "id": "urgent",
+      "name": "Urgent",
+      "color": "#DC2626"
+    },
+    {
+      "id": "quick",
+      "name": "Quick Win",
+      "color": "#16A34A"
+    },
+    {
+      "id": "waiting",
+      "name": "Waiting",
+      "color": "#CA8A04"
+    },
+    {
+      "id": "blocked",
+      "name": "Blocked",
+      "color": "#6B7280"
     }
   ],
   "customPerspectives": []
