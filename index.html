@@ -1344,6 +1344,28 @@
       });
     }
 
+    // Get the unit label for repeat type
+    function getRepeatUnitLabel(type) {
+      const units = { daily: 'day(s)', weekly: 'week(s)', monthly: 'month(s)', yearly: 'year(s)' };
+      return units[type] || 'day(s)';
+    }
+
+    // Update repeat UI when type changes
+    function updateRepeatUI(type) {
+      const details = document.getElementById('repeat-details');
+      const fromContainer = document.getElementById('repeat-from-container');
+      const unitLabel = document.getElementById('repeat-unit-label');
+
+      if (type === 'none') {
+        details.style.display = 'none';
+        fromContainer.style.display = 'none';
+      } else {
+        details.style.display = 'flex';
+        fromContainer.style.display = 'block';
+        unitLabel.textContent = getRepeatUnitLabel(type);
+      }
+    }
+
     function moveTaskTo(taskId, status) {
       updateTask(taskId, { status: status });
       render();
@@ -3081,10 +3103,10 @@
             </div>
           </div>
 
-          <!-- Labels -->
+          <!-- Tags -->
           <div class="sb-card rounded-xl overflow-hidden shadow-sm">
             <div class="px-4 py-3 border-b border-softborder/50 flex items-center justify-between">
-              <h3 class="font-semibold text-charcoal text-[13px] tracking-wide">Labels</h3>
+              <h3 class="font-semibold text-charcoal text-[13px] tracking-wide">Tags</h3>
               <button onclick="editingLabelId=null; showLabelModal=true; render()" class="text-charcoal/30 hover:text-charcoal transition p-1.5 -mr-1 rounded-lg hover:bg-charcoal/5">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
               </button>
@@ -3171,8 +3193,8 @@
                           <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
                               <span class="text-[15px] ${task.completed ? 'line-through text-charcoal/40' : 'text-charcoal'} font-medium transition">${task.title}</span>
-                              ${category ? `<span onclick="event.stopPropagation(); showCategoryTasks('${category.id}')" class="tag-pill px-2 py-0.5 text-[11px] font-medium rounded-full text-white cursor-pointer shadow-sm" style="background-color: ${category.color}">${category.name}</span>` : ''}
-                              ${labels.map(l => `<span onclick="event.stopPropagation(); showLabelTasks('${l.id}')" class="tag-pill px-1.5 py-0.5 text-[11px] font-medium rounded cursor-pointer" style="background: ${l.color}15; color: ${l.color}">${l.name}</span>`).join('')}
+                              ${category ? `<span onclick="event.stopPropagation(); showCategoryTasks('${category.id}')" class="tag-pill px-3 py-0.5 text-[12px] rounded-full cursor-pointer border border-charcoal/20 text-charcoal/50 bg-transparent hover:border-charcoal/40 hover:text-charcoal/70">${category.name}</span>` : ''}
+                              ${labels.map(l => `<span onclick="event.stopPropagation(); showLabelTasks('${l.id}')" class="tag-pill px-3 py-0.5 text-[12px] rounded-full cursor-pointer border border-charcoal/20 text-charcoal/50 bg-transparent hover:border-charcoal/40 hover:text-charcoal/70">${l.name}</span>`).join('')}
                             </div>
                             ${task.notes ? `<p class="text-[13px] text-charcoal/50 mt-1 truncate">${task.notes}</p>` : ''}
                             <div class="flex items-center gap-3 mt-1.5 flex-wrap">
@@ -3276,7 +3298,7 @@
                 <div class="grid grid-cols-3 gap-3">
                   <div>
                     <select id="task-repeat-type" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-sm bg-white"
-                      onchange="document.getElementById('repeat-details').style.display = this.value === 'none' ? 'none' : 'flex'">
+                      onchange="updateRepeatUI(this.value)">
                       <option value="none" ${!editingTask?.repeat || editingTask?.repeat?.type === 'none' ? 'selected' : ''}>No repeat</option>
                       <option value="daily" ${editingTask?.repeat?.type === 'daily' ? 'selected' : ''}>Daily</option>
                       <option value="weekly" ${editingTask?.repeat?.type === 'weekly' ? 'selected' : ''}>Weekly</option>
@@ -3288,7 +3310,7 @@
                     <span class="text-sm text-charcoal/60">every</span>
                     <input type="number" id="task-repeat-interval" min="1" value="${editingTask?.repeat?.interval || 1}"
                       class="w-16 px-2 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-sm text-center bg-white">
-                    <span class="text-sm text-charcoal/60" id="repeat-unit-label">${editingTask?.repeat?.type === 'daily' ? 'day(s)' : editingTask?.repeat?.type === 'weekly' ? 'week(s)' : editingTask?.repeat?.type === 'monthly' ? 'month(s)' : 'year(s)'}</span>
+                    <span class="text-sm text-charcoal/60" id="repeat-unit-label">${getRepeatUnitLabel(editingTask?.repeat?.type)}</span>
                   </div>
                 </div>
                 <div id="repeat-from-container" class="${editingTask?.repeat && editingTask?.repeat?.type !== 'none' ? 'block' : 'hidden'} mt-3 pt-3 border-t border-softborder/50">
@@ -3307,7 +3329,7 @@
               </div>
 
               <div>
-                <label class="text-sm text-charcoal/70 block mb-1">Labels</label>
+                <label class="text-sm text-charcoal/70 block mb-1">Tags</label>
                 <div class="flex flex-wrap gap-2" id="task-labels-container">
                   ${taskLabels.map(label => {
                     const isSelected = editingTask?.labels?.includes(label.id) || (!editingTask && newTaskContext.labelId === label.id);
@@ -3423,13 +3445,13 @@
         </div>
       ` : '';
 
-      // Label Modal
+      // Tag Modal (formerly Label)
       const editingLabel = editingLabelId ? taskLabels.find(l => l.id === editingLabelId) : null;
       const labelModalHtml = showLabelModal ? `
         <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}">
           <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
-              <h3 class="font-semibold text-charcoal">${editingLabel ? 'Edit Label' : 'New Label'}</h3>
+              <h3 class="font-semibold text-charcoal">${editingLabel ? 'Edit Tag' : 'New Tag'}</h3>
               <button onclick="showLabelModal=false; editingLabelId=null; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
             </div>
             <div class="p-6 space-y-4">
@@ -3447,7 +3469,7 @@
             </div>
             <div class="px-6 py-4 border-t border-softborder flex justify-between">
               ${editingLabel ? `
-                <button onclick="if(confirm('Delete this label?')){deleteLabel('${editingLabel.id}'); showLabelModal=false; editingLabelId=null; render();}"
+                <button onclick="if(confirm('Delete this tag?')){deleteLabel('${editingLabel.id}'); showLabelModal=false; editingLabelId=null; render();}"
                   class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
               ` : '<div></div>'}
               <div class="flex gap-3">
