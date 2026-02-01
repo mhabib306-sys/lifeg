@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T22:09:39.558Z",
+  "lastUpdated": "2026-02-01T22:09:50.268Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1842,8 +1842,8 @@
     },
     {
       "id": "work",
-      "name": "Work",
-      "color": "#6B8E5A"
+      "name": "Breadfast",
+      "color": "#ea39b2"
     },
     {
       "id": "health",
