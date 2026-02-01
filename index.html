@@ -240,27 +240,40 @@
       100% { transform: scale(1); }
     }
 
-    /* Sidebar item interactions */
+    /* Sidebar item interactions - Things 3 style */
     .sidebar-item {
-      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.12s ease-out;
       margin: 1px 0;
+      border-radius: 6px;
     }
     .sidebar-item:hover {
-      background: var(--accent-hover);
+      background: var(--sidebar-hover, rgba(0, 0, 0, 0.04));
     }
     .sidebar-item:active {
-      background: var(--accent-light);
-      transform: scale(0.995);
+      background: var(--sidebar-active);
+      transform: scale(0.98);
     }
     .sidebar-item.active {
       background: var(--sidebar-active);
+      font-weight: 500;
     }
     .sidebar-item .action-btn {
       opacity: 0;
-      transition: opacity 0.15s ease;
+      transition: opacity 0.12s ease;
     }
     .sidebar-item:hover .action-btn {
       opacity: 1;
+    }
+
+    /* Things 3 theme specific sidebar hover */
+    [data-theme="things3"] .sidebar-item:hover {
+      background: rgba(0, 0, 0, 0.04);
+    }
+    [data-theme="things3"] .sidebar-item.active {
+      background: rgba(0, 0, 0, 0.06);
+    }
+    [data-theme="things3"] .sidebar-item:active {
+      background: rgba(0, 0, 0, 0.08);
     }
 
     /* Category/Label pill interactions */
@@ -1039,7 +1052,8 @@
         activePerspective,
         activeFilterType,
         activeCategoryFilter,
-        activeLabelFilter
+        activeLabelFilter,
+        activePersonFilter
       }));
     }
 
@@ -1117,7 +1131,7 @@
     let activeFilterType = savedViewState.activeFilterType || 'perspective';
     let activeCategoryFilter = savedViewState.activeCategoryFilter || null;
     let activeLabelFilter = savedViewState.activeLabelFilter || null;
-    let activePersonFilter = null;
+    let activePersonFilter = savedViewState.activePersonFilter || null;
     let editingTaskId = null;
     let newTaskContext = { categoryId: null, labelId: null, personId: null, status: 'inbox' }; // Context for new task
     let showTaskModal = false;
@@ -3423,11 +3437,11 @@
               <div class="flex items-center gap-3">
                 <div class="w-5 h-5 rounded-full border-2 border-dashed border-charcoal/20 flex-shrink-0"></div>
                 <input type="text" id="quick-add-input"
-                  placeholder="Quick add task to Inbox... (press Enter)"
+                  placeholder="Quick add to ${viewInfo.name}... (press Enter)"
                   onkeydown="handleQuickAddKeydown(event, this)"
                   class="flex-1 text-[15px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none focus:ring-0">
                 <button onclick="quickAddTask(document.getElementById('quick-add-input'))"
-                  class="text-charcoal/30 hover:text-coral transition p-1" title="Add to Inbox">
+                  class="text-charcoal/30 hover:text-coral transition p-1" title="Add to ${viewInfo.name}">
                   <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </button>
               </div>
