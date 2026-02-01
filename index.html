@@ -3302,9 +3302,6 @@
         <div class="w-full md:w-64 flex-shrink-0 space-y-3">
           <!-- Perspectives -->
           <div class="sb-card rounded-xl overflow-hidden shadow-sm">
-            <div class="px-4 py-3 border-b border-softborder/50">
-              <h3 class="font-semibold text-charcoal text-[13px] tracking-wide">Perspectives</h3>
-            </div>
             <div class="bg-white py-2 px-2">
               ${BUILTIN_PERSPECTIVES.map(p => `
                 <button onclick="showPerspectiveTasks('${p.id}')"
@@ -3314,27 +3311,30 @@
                   <span class="count-badge w-8 text-right text-[13px] font-medium text-charcoal/40">${taskCounts[p.id] || ''}</span>
                 </button>
               `).join('')}
+            </div>
+          </div>
 
-              ${customPerspectives.length > 0 ? `
-                <div class="px-3 pt-3 pb-1">
-                  <span class="text-[11px] font-semibold text-charcoal/40 uppercase tracking-wider">Custom</span>
-                </div>
-                ${customPerspectives.map(p => `
-                  <button onclick="showPerspectiveTasks('${p.id}')"
-                    class="sidebar-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg ${isPerspectiveActive(p.id) ? 'active' : ''}">
-                    <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-lg" style="color: var(--accent)">${p.icon}</span>
-                    <span class="flex-1 text-[14px] ${isPerspectiveActive(p.id) ? 'font-medium text-charcoal' : 'text-charcoal/80'}">${p.name}</span>
-                    <span class="count-badge w-8 text-right text-[13px] font-medium text-charcoal/40">${taskCounts[p.id] || ''}</span>
-                  </button>
-                `).join('')}
-              ` : ''}
-
-              <div class="pt-2 mt-1 border-t border-softborder/50">
-                <button onclick="showPerspectiveModal=true; render()"
-                  class="w-full py-2 text-charcoal/40 hover:text-charcoal hover:bg-warmgray/50 rounded-lg transition flex items-center justify-center">
-                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>
+          <!-- Custom Perspectives -->
+          <div class="sb-card rounded-xl overflow-hidden shadow-sm">
+            <div class="px-4 py-3 border-b border-softborder/50 flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal text-[13px] tracking-wide">Custom Views</h3>
+              <button onclick="showPerspectiveModal=true; render()" class="text-charcoal/30 hover:text-charcoal transition p-1.5 -mr-1 rounded-lg hover:bg-charcoal/5">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+            </div>
+            <div class="bg-white py-2 px-2">
+              ${customPerspectives.length > 0 ? customPerspectives.map(p => `
+                <button onclick="showPerspectiveTasks('${p.id}')"
+                  class="sidebar-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg ${isPerspectiveActive(p.id) ? 'active' : ''}">
+                  <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-lg" style="color: var(--accent)">${p.icon}</span>
+                  <span class="flex-1 text-[14px] ${isPerspectiveActive(p.id) ? 'font-medium text-charcoal' : 'text-charcoal/80'}">${p.name}</span>
+                  <span class="count-badge w-8 text-right text-[13px] font-medium text-charcoal/40">${taskCounts[p.id] || ''}</span>
                 </button>
-              </div>
+              `).join('') : `
+                <div class="px-3 py-4 text-center text-charcoal/40 text-[13px]">
+                  No custom views yet
+                </div>
+              `}
             </div>
           </div>
 
