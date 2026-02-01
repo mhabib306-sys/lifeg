@@ -253,53 +253,29 @@
 
     /* Sidebar item interactions - Things 3 style */
     .sidebar-item {
-      transition: all 0.12s ease-out;
-      margin: 1px 0;
-      border-radius: 6px;
+      transition: all 0.1s ease-out;
+      border-radius: 8px;
     }
     .sidebar-item:hover {
-      background: var(--sidebar-hover, rgba(0, 0, 0, 0.04));
-    }
-    .sidebar-item:active {
-      background: var(--sidebar-active);
-      transform: scale(0.98);
-    }
-    .sidebar-item.active {
-      background: var(--sidebar-active);
-      font-weight: 500;
-    }
-    .sidebar-item .action-btn {
-      opacity: 0;
-      transition: opacity 0.12s ease;
-    }
-    .sidebar-item:hover .action-btn {
-      opacity: 1;
-    }
-
-    /* Things 3 theme specific sidebar hover */
-    [data-theme="things3"] .sidebar-item:hover {
       background: rgba(0, 0, 0, 0.04);
     }
-    [data-theme="things3"] .sidebar-item.active {
+    .sidebar-item:active {
+      background: rgba(0, 0, 0, 0.06);
+      transform: scale(0.99);
+    }
+    .sidebar-item.active {
       background: rgba(0, 0, 0, 0.06);
     }
-    [data-theme="things3"] .sidebar-item:active {
-      background: rgba(0, 0, 0, 0.08);
-    }
 
-    /* Drag and drop styles */
-    .draggable-item {
-      cursor: grab;
+    /* Nav tab hover */
+    .nav-tab {
+      position: relative;
     }
-    .draggable-item:active {
-      cursor: grabbing;
+    .nav-tab:hover {
+      background: rgba(0, 0, 0, 0.04);
     }
-    .draggable-item.dragging {
-      opacity: 0.5;
-      background: var(--accent-light, rgba(255, 127, 80, 0.1)) !important;
-    }
-    .drag-over {
-      border-top: 2px solid var(--accent, #ff7f50) !important;
+    .nav-tab:active {
+      background: rgba(0, 0, 0, 0.06);
     }
     .drag-handle {
       opacity: 0;
@@ -1144,8 +1120,8 @@
       logbook: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.4-1.4 3.6 3.6 7.6-7.6L19 8l-9 9z"/></svg>`,
       // Trash - gray trash can
       trash: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`,
-      // Area - folder icon
-      area: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>`
+      // Area - Things 3 style stacked cards icon
+      area: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>`
     };
 
     // Default perspectives with exact Things 3 colors
@@ -2935,22 +2911,22 @@
           </div>
         </header>
 
-        <nav class="border-b border-softborder bg-warmgray">
+        <nav class="border-b border-charcoal/10 bg-white/60">
           <div class="${activeTab === 'tasks' ? 'max-w-6xl' : 'max-w-5xl'} mx-auto px-6">
-            <div class="flex gap-1">
-              <button onclick="switchTab('track')" class="py-3 px-5 text-sm font-medium transition-all border-b-2 rounded-t-lg ${activeTab === 'track' ? 'border-coral text-charcoal bg-white/50' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-charcoal/5'}">
+            <div class="flex gap-0">
+              <button onclick="switchTab('track')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 ${activeTab === 'track' ? 'border-[#147EFB] text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 Daily
               </button>
-              <button onclick="switchTab('bulk')" class="py-3 px-5 text-sm font-medium transition-all border-b-2 rounded-t-lg ${activeTab === 'bulk' ? 'border-coral text-charcoal bg-white/50' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-charcoal/5'}">
+              <button onclick="switchTab('bulk')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 ${activeTab === 'bulk' ? 'border-[#147EFB] text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 Bulk Entry
               </button>
-              <button onclick="switchTab('dashboard')" class="py-3 px-5 text-sm font-medium transition-all border-b-2 rounded-t-lg ${activeTab === 'dashboard' ? 'border-coral text-charcoal bg-white/50' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-charcoal/5'}">
+              <button onclick="switchTab('dashboard')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 ${activeTab === 'dashboard' ? 'border-[#147EFB] text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 Dashboard
               </button>
-              <button onclick="switchTab('tasks')" class="py-3 px-5 text-sm font-medium transition-all border-b-2 rounded-t-lg ${activeTab === 'tasks' ? 'border-coral text-charcoal bg-white/50' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-charcoal/5'}">
+              <button onclick="switchTab('tasks')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 ${activeTab === 'tasks' ? 'border-[#147EFB] text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 Tasks
               </button>
-              <button onclick="switchTab('settings')" class="py-3 px-5 text-sm font-medium transition-all border-b-2 rounded-t-lg ${activeTab === 'settings' ? 'border-coral text-charcoal bg-white/50' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-charcoal/5'}">
+              <button onclick="switchTab('settings')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 ${activeTab === 'settings' ? 'border-[#147EFB] text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 Settings
               </button>
             </div>
@@ -3566,49 +3542,41 @@
 
       // Build sidebar
       const sidebarHtml = `
-        <div class="w-full md:w-64 flex-shrink-0 space-y-3">
+        <div class="w-full md:w-64 flex-shrink-0 space-y-2">
           <!-- Perspectives -->
-          <div class="sb-card rounded-xl overflow-hidden shadow-sm">
-            <div class="bg-white py-2 px-2">
+          <div class="bg-white rounded-xl border border-charcoal/[0.06]">
+            <div class="py-1.5 px-1.5">
               ${BUILTIN_PERSPECTIVES.map(p => `
                 <button onclick="showPerspectiveTasks('${p.id}')"
-                  class="sidebar-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg ${isPerspectiveActive(p.id) ? 'active' : ''}">
-                  <span class="w-4 flex-shrink-0"></span>
+                  class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg ${isPerspectiveActive(p.id) ? 'active' : ''}">
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="color: ${p.color}">${p.icon}</span>
-                  <span class="flex-1 text-[14px] ${isPerspectiveActive(p.id) ? 'font-medium text-charcoal' : 'text-charcoal/80'}">${p.name}</span>
-                  <span class="count-badge w-6 text-right text-[13px] font-medium text-charcoal/40">${taskCounts[p.id] || ''}</span>
+                  <span class="flex-1 text-[14px] ${isPerspectiveActive(p.id) ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${p.name}</span>
+                  <span class="count-badge w-6 text-right text-[13px] text-charcoal/35">${taskCounts[p.id] || ''}</span>
                 </button>
               `).join('')}
             </div>
           </div>
 
           <!-- Custom Perspectives -->
-          <div class="sb-card rounded-xl overflow-hidden shadow-sm">
-            <div class="px-4 py-3 border-b border-softborder/50 flex items-center justify-between">
-              <h3 class="font-semibold text-charcoal text-[13px] tracking-wide">Custom Views</h3>
+          <div class="bg-white rounded-xl border border-charcoal/[0.06]">
+            <div class="px-4 py-2.5 border-b border-charcoal/[0.06] flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal/60 text-[12px] uppercase tracking-wider">Custom Views</h3>
               <button onclick="showPerspectiveModal=true; render()" class="text-charcoal/30 hover:text-charcoal transition p-1.5 -mr-1 rounded-lg hover:bg-charcoal/5">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
               </button>
             </div>
-            <div class="bg-white py-2 px-2">
+            <div class="py-1.5 px-1.5">
               ${customPerspectives.length > 0 ? customPerspectives.map(p => `
                 <button onclick="showPerspectiveTasks('${p.id}')"
-                  class="sidebar-item draggable-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg group relative ${isPerspectiveActive(p.id) ? 'active' : ''}"
-                  draggable="true"
-                  ondragstart="handleDragStart(event, '${p.id}', 'perspective')"
-                  ondragend="handleDragEnd(event)"
-                  ondragover="handleDragOver(event)"
-                  ondragleave="handleDragLeave(event)"
-                  ondrop="handleDrop(event, '${p.id}', 'perspective')">
-                  <span class="drag-handle w-4 text-charcoal/30 flex-shrink-0">⋮⋮</span>
-                  <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-lg text-charcoal/50">${p.icon}</span>
-                  <span class="flex-1 text-[14px] ${isPerspectiveActive(p.id) ? 'font-medium text-charcoal' : 'text-charcoal/80'}">${p.name}</span>
-                  <span class="w-6 text-right text-[13px] font-medium group-hover:opacity-0 transition-opacity text-charcoal/40">${taskCounts[p.id] || ''}</span>
+                  class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isPerspectiveActive(p.id) ? 'active' : ''}">
+                  <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-lg text-charcoal/40">${p.icon}</span>
+                  <span class="flex-1 text-[14px] ${isPerspectiveActive(p.id) ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${p.name}</span>
+                  <span class="w-6 text-right text-[13px] group-hover:opacity-0 transition-opacity text-charcoal/35">${taskCounts[p.id] || ''}</span>
                   <span onclick="event.stopPropagation(); editCustomPerspective('${p.id}')"
-                    class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/30 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-charcoal/5">Edit</span>
+                    class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/40 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-black/5">Edit</span>
                 </button>
               `).join('') : `
-                <div class="px-3 py-4 text-center text-charcoal/40 text-[13px]">
+                <div class="px-3 py-4 text-center text-charcoal/30 text-[13px]">
                   No custom views yet
                 </div>
               `}
@@ -3616,97 +3584,70 @@
           </div>
 
           <!-- Areas -->
-          <div class="sb-card rounded-xl overflow-hidden shadow-sm">
-            <div class="px-4 py-3 border-b border-softborder/50 flex items-center justify-between">
-              <h3 class="font-semibold text-charcoal text-[13px] tracking-wide flex items-center gap-2">
-                <span class="w-4 h-4 flex items-center justify-center text-charcoal/60">${THINGS3_ICONS.area}</span>
-                Areas
-              </h3>
+          <div class="bg-white rounded-xl border border-charcoal/[0.06]">
+            <div class="px-4 py-2.5 border-b border-charcoal/[0.06] flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal/60 text-[12px] uppercase tracking-wider">Areas</h3>
               <button onclick="editingCategoryId=null; showCategoryModal=true; render()" class="text-charcoal/30 hover:text-charcoal transition p-1.5 -mr-1 rounded-lg hover:bg-charcoal/5">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
               </button>
             </div>
-            <div class="bg-white py-2 px-2">
+            <div class="py-1.5 px-1.5">
               ${taskCategories.map(cat => `
                 <button onclick="showCategoryTasks('${cat.id}')"
-                  class="sidebar-item draggable-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg group relative ${isCategoryActive(cat.id) ? 'active' : ''}"
-                  draggable="true"
-                  ondragstart="handleDragStart(event, '${cat.id}', 'category')"
-                  ondragend="handleDragEnd(event)"
-                  ondragover="handleDragOver(event)"
-                  ondragleave="handleDragLeave(event)"
-                  ondrop="handleDrop(event, '${cat.id}', 'category')">
-                  <span class="drag-handle w-4 text-charcoal/30 flex-shrink-0">⋮⋮</span>
-                  <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-charcoal/50">${THINGS3_ICONS.area}</span>
-                  <span class="flex-1 text-[14px] ${isCategoryActive(cat.id) ? 'font-medium text-charcoal' : 'text-charcoal/80'}">${cat.name}</span>
-                  <span class="w-6 text-right text-[13px] font-medium group-hover:opacity-0 transition-opacity text-charcoal/40">${categoryCounts[cat.id] || ''}</span>
+                  class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isCategoryActive(cat.id) ? 'active' : ''}">
+                  <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-charcoal/40">${THINGS3_ICONS.area}</span>
+                  <span class="flex-1 text-[14px] ${isCategoryActive(cat.id) ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${cat.name}</span>
+                  <span class="w-6 text-right text-[13px] group-hover:opacity-0 transition-opacity text-charcoal/35">${categoryCounts[cat.id] || ''}</span>
                   <span onclick="event.stopPropagation(); editingCategoryId='${cat.id}'; showCategoryModal=true; render()"
-                    class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/30 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-charcoal/5">Edit</span>
+                    class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/40 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-black/5">Edit</span>
                 </button>
               `).join('')}
             </div>
           </div>
 
           <!-- Tags -->
-          <div class="sb-card rounded-xl overflow-hidden shadow-sm">
-            <div class="px-4 py-3 border-b border-softborder/50 flex items-center justify-between">
-              <h3 class="font-semibold text-charcoal text-[13px] tracking-wide">Tags</h3>
+          <div class="bg-white rounded-xl border border-charcoal/[0.06]">
+            <div class="px-4 py-2.5 border-b border-charcoal/[0.06] flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal/60 text-[12px] uppercase tracking-wider">Tags</h3>
               <button onclick="editingLabelId=null; showLabelModal=true; render()" class="text-charcoal/30 hover:text-charcoal transition p-1.5 -mr-1 rounded-lg hover:bg-charcoal/5">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
               </button>
             </div>
-            <div class="bg-white py-2 px-2">
+            <div class="py-1.5 px-1.5">
               ${taskLabels.map(label => `
                 <button onclick="showLabelTasks('${label.id}')"
-                  class="sidebar-item draggable-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg group relative ${isLabelActive(label.id) ? 'active' : ''}"
-                  draggable="true"
-                  ondragstart="handleDragStart(event, '${label.id}', 'label')"
-                  ondragend="handleDragEnd(event)"
-                  ondragover="handleDragOver(event)"
-                  ondragleave="handleDragLeave(event)"
-                  ondrop="handleDrop(event, '${label.id}', 'label')">
-                  <span class="drag-handle w-4 text-charcoal/30 flex-shrink-0">⋮⋮</span>
+                  class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isLabelActive(label.id) ? 'active' : ''}">
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0">
                     <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${label.color}"></span>
                   </span>
-                  <span class="flex-1 text-[14px] ${isLabelActive(label.id) ? 'font-medium text-charcoal' : 'text-charcoal/80'}">${label.name}</span>
-                  <span class="w-6 text-right text-[13px] font-medium group-hover:opacity-0 transition-opacity text-charcoal/40">${labelCounts[label.id] || ''}</span>
+                  <span class="flex-1 text-[14px] ${isLabelActive(label.id) ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${label.name}</span>
+                  <span class="w-6 text-right text-[13px] group-hover:opacity-0 transition-opacity text-charcoal/35">${labelCounts[label.id] || ''}</span>
                   <span onclick="event.stopPropagation(); editingLabelId='${label.id}'; showLabelModal=true; render()"
-                    class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/30 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-charcoal/5">Edit</span>
+                    class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/40 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-black/5">Edit</span>
                 </button>
               `).join('')}
             </div>
           </div>
 
           <!-- People -->
-          <div class="sb-card rounded-xl overflow-hidden shadow-sm">
-            <div class="px-4 py-3 border-b border-softborder/50 flex items-center justify-between">
-              <h3 class="font-semibold text-charcoal text-[13px] tracking-wide flex items-center gap-2">
-                <svg class="w-4 h-4 text-charcoal/60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                People
-              </h3>
+          <div class="bg-white rounded-xl border border-charcoal/[0.06]">
+            <div class="px-4 py-2.5 border-b border-charcoal/[0.06] flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal/60 text-[12px] uppercase tracking-wider">People</h3>
               <button onclick="editingPersonId=null; showPersonModal=true; render()" class="text-charcoal/30 hover:text-charcoal transition p-1.5 -mr-1 rounded-lg hover:bg-charcoal/5">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
               </button>
             </div>
-            <div class="bg-white py-2 px-2">
+            <div class="py-1.5 px-1.5">
               ${taskPeople.map(person => `
                 <button onclick="showPersonTasks('${person.id}')"
-                  class="sidebar-item draggable-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg group relative ${isPersonActive(person.id) ? 'active' : ''}"
-                  draggable="true"
-                  ondragstart="handleDragStart(event, '${person.id}', 'person')"
-                  ondragend="handleDragEnd(event)"
-                  ondragover="handleDragOver(event)"
-                  ondragleave="handleDragLeave(event)"
-                  ondrop="handleDrop(event, '${person.id}', 'person')">
-                  <span class="drag-handle w-4 text-charcoal/30 flex-shrink-0">⋮⋮</span>
-                  <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-charcoal/50">
+                  class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isPersonActive(person.id) ? 'active' : ''}">
+                  <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-charcoal/40">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   </span>
-                  <span class="flex-1 text-[14px] ${isPersonActive(person.id) ? 'font-medium text-charcoal' : 'text-charcoal/80'}">${person.name}</span>
-                  <span class="w-6 text-right text-[13px] font-medium group-hover:opacity-0 transition-opacity text-charcoal/40">${peopleCounts[person.id] || ''}</span>
+                  <span class="flex-1 text-[14px] ${isPersonActive(person.id) ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${person.name}</span>
+                  <span class="w-6 text-right text-[13px] group-hover:opacity-0 transition-opacity text-charcoal/35">${peopleCounts[person.id] || ''}</span>
                   <span onclick="event.stopPropagation(); editingPersonId='${person.id}'; showPersonModal=true; render()"
-                    class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/30 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-charcoal/5">Edit</span>
+                    class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/40 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-black/5">Edit</span>
                 </button>
               `).join('')}
             </div>
@@ -3717,21 +3658,21 @@
       // Build task list
       const taskListHtml = `
         <div class="flex-1">
-          <div class="sb-card rounded-lg overflow-hidden">
-            <div class="px-5 py-4 bg-warmgray border-b border-softborder flex items-center justify-between">
+          <div class="bg-white rounded-xl shadow-sm border border-charcoal/[0.06]">
+            <div class="px-5 py-4 flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <span class="text-xl" ${viewInfo.color ? `style="color: ${viewInfo.color}"` : ''}>${viewInfo.icon}</span>
-                <h2 class="text-lg font-semibold text-charcoal">${viewInfo.name}</h2>
+                <span class="text-2xl" ${viewInfo.color ? `style="color: ${viewInfo.color}"` : ''}>${viewInfo.icon}</span>
+                <h2 class="text-xl font-semibold text-charcoal">${viewInfo.name}</h2>
               </div>
               <button onclick="openNewTaskModal()"
-                class="sb-btn add-task-btn w-9 h-9 rounded-full flex items-center justify-center" title="Add Task">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                class="w-8 h-8 rounded-full bg-[#147EFB] text-white flex items-center justify-center hover:bg-[#0E6AD8] transition shadow-sm" title="Add Task">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
               </button>
             </div>
 
             ${activePerspective !== 'upcoming' ? `
             <!-- Quick Add Input -->
-            <div class="px-4 py-3 bg-white">
+            <div class="px-4 py-3 border-t border-charcoal/[0.06]">
               <div class="flex items-center gap-3">
                 <div class="w-5 h-5 rounded-full border-2 border-dashed border-charcoal/20 flex-shrink-0"></div>
                 <input type="text" id="quick-add-input"
@@ -3746,22 +3687,22 @@
             </div>
             ` : ''}
 
-            <div class="bg-white min-h-[400px] task-list">
+            <div class="min-h-[400px] task-list">
               ${filteredTasks.length === 0 ? `
-                <div class="empty-state flex flex-col items-center justify-center py-16 text-charcoal/40">
-                  <div class="w-12 h-12 mb-3 flex items-center justify-center">${viewInfo.icon}</div>
-                  <p class="text-sm">No tasks in ${viewInfo.name}</p>
-                  ${activePerspective === 'inbox' ? '<p class="text-xs mt-1">Add a task to get started!</p>' : ''}
+                <div class="empty-state flex flex-col items-center justify-center py-20 text-charcoal/30">
+                  <div class="w-16 h-16 mb-4 flex items-center justify-center opacity-50">${viewInfo.icon}</div>
+                  <p class="text-[15px] font-medium">No tasks in ${viewInfo.name}</p>
+                  ${activePerspective === 'inbox' ? '<p class="text-[13px] mt-1 text-charcoal/25">Add a task to get started</p>' : ''}
                 </div>
               ` : (activePerspective === 'upcoming' ? `
                 <!-- Upcoming view grouped by date -->
                 <div class="task-list">
                   ${groupTasksByDate(filteredTasks).map(group => `
                     <div class="date-group">
-                      <div class="px-4 py-2 bg-warmgray/50 border-b border-softborder/30 sticky top-0">
-                        <span class="text-[13px] font-semibold text-charcoal/70">${group.label}</span>
+                      <div class="px-5 py-2.5 bg-charcoal/[0.02] border-t border-charcoal/[0.06] sticky top-0">
+                        <span class="text-[13px] font-semibold text-charcoal/60">${group.label}</span>
                       </div>
-                      <div class="divide-y divide-softborder/50">
+                      <div class="divide-y divide-charcoal/[0.06]">
                         ${group.tasks.map(task => renderTaskItem(task, false)).join('')}
                       </div>
                     </div>
@@ -3769,7 +3710,7 @@
                 </div>
               ` : `
                 <!-- Regular task list -->
-                <div class="task-list divide-y divide-softborder/50">
+                <div class="task-list divide-y divide-charcoal/[0.06]">
                   ${filteredTasks.map(task => renderTaskItem(task)).join('')}
                 </div>
               `)}
