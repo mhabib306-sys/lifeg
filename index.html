@@ -62,32 +62,69 @@
       --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
     }
 
-    /* Theme: Things 3 */
+    /* Theme: Things 3 - Exact Match */
     [data-theme="things3"] {
+      /* Backgrounds */
       --bg-primary: #FFFFFF;
-      --bg-secondary: #F7F7F7;
+      --bg-secondary: #F5F5F7;
       --bg-card: #FFFFFF;
       --bg-input: #FFFFFF;
+      --bg-hover: #F5F5F7;
+
+      /* Typography */
       --text-primary: #1D1D1F;
-      --text-secondary: #6E6E73;
-      --text-muted: #8E8E93;
-      --accent: #4A90D9;
-      --accent-dark: #3A7BC8;
-      --accent-light: #EBEBEB;
-      --accent-hover: #F5F5F5;
-      --border: #E5E5E5;
-      --border-light: #F2F2F2;
+      --text-secondary: #86868B;
+      --text-muted: #AEAEB2;
+
+      /* Things 3 Accent Blue */
+      --accent: #147EFB;
+      --accent-dark: #0066DC;
+      --accent-light: rgba(20, 126, 251, 0.08);
+      --accent-hover: rgba(0, 0, 0, 0.03);
+
+      /* Borders */
+      --border: #E5E5EA;
+      --border-light: #F2F2F7;
+
+      /* Status colors */
       --success: #34C759;
-      --btn-bg: #4A90D9;
-      --btn-hover: #3A7BC8;
-      --sidebar-bg: #F7F7F7;
-      --sidebar-active: #EBEBEB;
+      --warning: #FF9500;
+      --danger: #FF3B30;
+
+      /* Things 3 perspective colors */
+      --inbox-color: #147EFB;
+      --today-color: #FFCC00;
+      --upcoming-color: #FF3B30;
+      --anytime-color: #5AC8FA;
+      --someday-color: #C69C6D;
+      --logbook-color: #34C759;
+
+      /* Buttons */
+      --btn-bg: #147EFB;
+      --btn-hover: #0066DC;
+
+      /* Sidebar */
+      --sidebar-bg: #F5F5F7;
+      --sidebar-active: rgba(0, 0, 0, 0.05);
+      --sidebar-hover: rgba(0, 0, 0, 0.03);
+
+      /* Modal */
       --modal-bg: #FFFFFF;
-      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
-      --border-radius: 10px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
-      --shadow-lg: 0 12px 32px rgba(0,0,0,0.1);
+      --modal-overlay: rgba(0, 0, 0, 0.3);
+
+      /* Font */
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif;
+
+      /* Radius - Things 3 uses subtle rounding */
+      --border-radius: 8px;
+      --border-radius-lg: 12px;
+      --border-radius-sm: 6px;
+
+      /* Shadows - Things 3 uses very subtle shadows */
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+      --shadow-modal: 0 20px 40px rgba(0,0,0,0.15);
     }
 
     body {
@@ -166,22 +203,21 @@
       outline-offset: 2px;
     }
 
-    /* Things 3 inspired micro-interactions */
+    /* Things 3 exact micro-interactions */
 
-    /* Task item interactions */
+    /* Task item - Things 3 style (no left border, subtle hover) */
     .task-item {
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      border-left: 3px solid transparent;
+      transition: background 0.15s ease;
+      border-left: none;
     }
     .task-item:hover {
       background: var(--accent-hover);
-      border-left-color: var(--accent);
     }
     .task-item:active {
       background: var(--accent-light);
     }
 
-    /* Checkbox interactions */
+    /* Checkbox - Things 3 style (thin circle, smooth animations) */
     .task-checkbox {
       transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       cursor: pointer;
@@ -1135,12 +1171,29 @@
       }, 50);
     }
 
-    // Quick add task - just title, lands in inbox
+    // Quick add task - auto-links to current context (category, label, person, or perspective status)
     function quickAddTask(inputElement) {
       const title = inputElement.value.trim();
       if (!title) return;
 
-      createTask(title, { status: 'inbox' });
+      // Build options based on current context
+      const options = { status: 'inbox' };
+
+      if (activeFilterType === 'category' && activeCategoryFilter) {
+        options.categoryId = activeCategoryFilter;
+      } else if (activeFilterType === 'label' && activeLabelFilter) {
+        options.labels = [activeLabelFilter];
+      } else if (activeFilterType === 'person' && activePersonFilter) {
+        options.people = [activePersonFilter];
+      } else if (activeFilterType === 'perspective' && activePerspective) {
+        // Set status based on perspective
+        const statusMap = { inbox: 'inbox', today: 'today', anytime: 'anytime', someday: 'someday' };
+        if (statusMap[activePerspective]) {
+          options.status = statusMap[activePerspective];
+        }
+      }
+
+      createTask(title, options);
       inputElement.value = '';
       render();
 
@@ -1294,6 +1347,120 @@
       activeLabelFilter = null;
       saveViewState();
       render();
+    }
+
+    // Inline Tag creation in modal
+    let showInlineTagInput = false;
+    let showInlinePersonInput = false;
+
+    function toggleInlineTagInput() {
+      showInlineTagInput = !showInlineTagInput;
+      const container = document.getElementById('inline-tag-form');
+      if (container) {
+        if (showInlineTagInput) {
+          container.innerHTML = `
+            <div class="flex items-center gap-2 mt-2 p-2 bg-warmgray/30 rounded-lg">
+              <input type="text" id="inline-tag-name" placeholder="Tag name"
+                class="flex-1 px-2 py-1.5 text-sm border border-softborder rounded focus:border-coral focus:outline-none"
+                onkeydown="if(event.key==='Enter'){event.preventDefault();addInlineTag();}">
+              <input type="color" id="inline-tag-color" value="#6B7280" class="w-8 h-8 rounded cursor-pointer border-0">
+              <button onclick="addInlineTag()" class="px-3 py-1.5 text-sm bg-coral text-white rounded hover:bg-coralDark">Add</button>
+              <button onclick="toggleInlineTagInput()" class="px-2 py-1.5 text-sm text-charcoal/50 hover:text-charcoal">&times;</button>
+            </div>
+          `;
+          setTimeout(() => document.getElementById('inline-tag-name')?.focus(), 50);
+        } else {
+          container.innerHTML = '';
+        }
+      }
+    }
+
+    function addInlineTag() {
+      const name = document.getElementById('inline-tag-name')?.value?.trim();
+      const color = document.getElementById('inline-tag-color')?.value || '#6B7280';
+      if (name) {
+        const newTag = createLabel(name, color);
+        showInlineTagInput = false;
+        // Re-render the tags section and pre-select the new tag
+        const labelsContainer = document.getElementById('task-labels-container');
+        if (labelsContainer) {
+          // Get currently selected tags
+          const selectedTags = Array.from(document.querySelectorAll('.task-label-checkbox:checked')).map(cb => cb.value);
+          selectedTags.push(newTag.id); // Add the new tag as selected
+
+          // Re-render tags
+          labelsContainer.innerHTML = taskLabels.map(label => {
+            const isSelected = selectedTags.includes(label.id);
+            return `
+              <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition ${isSelected ? 'bg-warmgray' : 'hover:bg-warmgray/50'}" style="border-color: ${label.color}">
+                <input type="checkbox" value="${label.id}" ${isSelected ? 'checked' : ''} class="task-label-checkbox rounded" style="accent-color: ${label.color}">
+                <span class="text-sm" style="color: ${label.color}">${label.name}</span>
+              </label>
+            `;
+          }).join('') + `
+            <button onclick="toggleInlineTagInput()" class="flex items-center gap-1 px-2 py-1 text-sm text-charcoal/50 hover:text-charcoal hover:bg-warmgray/50 rounded border border-dashed border-charcoal/20">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              New
+            </button>
+          `;
+        }
+        document.getElementById('inline-tag-form').innerHTML = '';
+      }
+    }
+
+    function toggleInlinePersonInput() {
+      showInlinePersonInput = !showInlinePersonInput;
+      const container = document.getElementById('inline-person-form');
+      if (container) {
+        if (showInlinePersonInput) {
+          container.innerHTML = `
+            <div class="flex items-center gap-2 mt-2 p-2 bg-warmgray/30 rounded-lg">
+              <input type="text" id="inline-person-name" placeholder="Person name"
+                class="flex-1 px-2 py-1.5 text-sm border border-softborder rounded focus:border-coral focus:outline-none"
+                onkeydown="if(event.key==='Enter'){event.preventDefault();addInlinePerson();}">
+              <input type="color" id="inline-person-color" value="#6B7280" class="w-8 h-8 rounded cursor-pointer border-0">
+              <button onclick="addInlinePerson()" class="px-3 py-1.5 text-sm bg-coral text-white rounded hover:bg-coralDark">Add</button>
+              <button onclick="toggleInlinePersonInput()" class="px-2 py-1.5 text-sm text-charcoal/50 hover:text-charcoal">&times;</button>
+            </div>
+          `;
+          setTimeout(() => document.getElementById('inline-person-name')?.focus(), 50);
+        } else {
+          container.innerHTML = '';
+        }
+      }
+    }
+
+    function addInlinePerson() {
+      const name = document.getElementById('inline-person-name')?.value?.trim();
+      const color = document.getElementById('inline-person-color')?.value || '#6B7280';
+      if (name) {
+        const newPerson = createPerson(name, color);
+        showInlinePersonInput = false;
+        // Re-render the people section and pre-select the new person
+        const peopleContainer = document.getElementById('task-people-container');
+        if (peopleContainer) {
+          // Get currently selected people
+          const selectedPeople = Array.from(document.querySelectorAll('.task-person-checkbox:checked')).map(cb => cb.value);
+          selectedPeople.push(newPerson.id); // Add the new person as selected
+
+          // Re-render people
+          peopleContainer.innerHTML = taskPeople.map(person => {
+            const isSelected = selectedPeople.includes(person.id);
+            return `
+              <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition ${isSelected ? 'bg-warmgray' : 'hover:bg-warmgray/50'}" style="border-color: ${person.color}">
+                <input type="checkbox" value="${person.id}" ${isSelected ? 'checked' : ''} class="task-person-checkbox rounded" style="accent-color: ${person.color}">
+                <span class="text-sm" style="color: ${person.color}">${person.name}</span>
+              </label>
+            `;
+          }).join('') + `
+            <button onclick="toggleInlinePersonInput()" class="flex items-center gap-1 px-2 py-1 text-sm text-charcoal/50 hover:text-charcoal hover:bg-warmgray/50 rounded border border-dashed border-charcoal/20">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              New
+            </button>
+          `;
+        }
+        document.getElementById('inline-person-form').innerHTML = '';
+      }
     }
 
     function createTask(title, options = {}) {
@@ -3443,7 +3610,12 @@
                       </label>
                     `;
                   }).join('')}
+                  <button onclick="toggleInlineTagInput()" class="flex items-center gap-1 px-2 py-1 text-sm text-charcoal/50 hover:text-charcoal hover:bg-warmgray/50 rounded border border-dashed border-charcoal/20">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    New
+                  </button>
                 </div>
+                <div id="inline-tag-form"></div>
               </div>
 
               <div>
@@ -3458,7 +3630,12 @@
                       </label>
                     `;
                   }).join('')}
+                  <button onclick="toggleInlinePersonInput()" class="flex items-center gap-1 px-2 py-1 text-sm text-charcoal/50 hover:text-charcoal hover:bg-warmgray/50 rounded border border-dashed border-charcoal/20">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    New
+                  </button>
                 </div>
+                <div id="inline-person-form"></div>
               </div>
             </div>
             <div class="px-6 py-4 border-t border-softborder flex justify-end gap-3">
