@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T09:36:46.361Z",
+  "lastUpdated": "2026-02-01T09:36:49.344Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1294,7 +1294,8 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0
+        "brushTeeth": 0,
+        "nop": "1"
       }
     },
     "2026-01-28": {
