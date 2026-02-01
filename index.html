@@ -139,7 +139,10 @@
           lastUpdated: new Date().toISOString(),
           data: allData,
           weights: WEIGHTS,
-          maxScores: MAX_SCORES
+          maxScores: MAX_SCORES,
+          tasks: tasksData,
+          taskCategories: taskCategories,
+          customPerspectives: customPerspectives
         };
 
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
@@ -218,6 +221,18 @@
             if (cloudData.maxScores) {
               MAX_SCORES = cloudData.maxScores;
               localStorage.setItem('maxScores', JSON.stringify(MAX_SCORES));
+            }
+            if (cloudData.tasks) {
+              tasksData = cloudData.tasks;
+              localStorage.setItem(TASKS_KEY, JSON.stringify(tasksData));
+            }
+            if (cloudData.taskCategories) {
+              taskCategories = cloudData.taskCategories;
+              localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(taskCategories));
+            }
+            if (cloudData.customPerspectives) {
+              customPerspectives = cloudData.customPerspectives;
+              localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(customPerspectives));
             }
             console.log('✅ Loaded from GitHub');
             updateSyncStatus('success', 'Loaded from GitHub');
@@ -401,6 +416,153 @@
     let bulkMonth = 0; // January
     let bulkYear = 2026;
     let bulkCategory = 'prayers';
+
+    // ============ TASKS SYSTEM (Things 3 + OmniFocus style) ============
+    const TASKS_KEY = 'lifeGamificationTasks';
+    const PERSPECTIVES_KEY = 'lifeGamificationPerspectives';
+    const TASK_CATEGORIES_KEY = 'lifeGamificationTaskCategories';
+
+    // Default categories
+    const DEFAULT_TASK_CATEGORIES = [
+      { id: 'personal', name: 'Personal', color: '#4A90A4' },
+      { id: 'work', name: 'Work', color: '#6B8E5A' },
+      { id: 'health', name: 'Health', color: '#E5533D' },
+      { id: 'family', name: 'Family', color: '#C4943D' },
+      { id: 'learning', name: 'Learning', color: '#7C6B8E' }
+    ];
+
+    // Default perspectives (built-in)
+    const BUILTIN_PERSPECTIVES = [
+      { id: 'inbox', name: 'Inbox', icon: '📥', filter: { status: 'inbox' }, builtin: true },
+      { id: 'today', name: 'Today', icon: '⭐', filter: { status: 'today' }, builtin: true },
+      { id: 'anytime', name: 'Anytime', icon: '📋', filter: { status: 'anytime' }, builtin: true },
+      { id: 'someday', name: 'Someday', icon: '💭', filter: { status: 'someday' }, builtin: true },
+      { id: 'completed', name: 'Completed', icon: '✓', filter: { completed: true }, builtin: true }
+    ];
+
+    // Load tasks data
+    let tasksData = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
+    let taskCategories = JSON.parse(localStorage.getItem(TASK_CATEGORIES_KEY) || 'null') || DEFAULT_TASK_CATEGORIES;
+    let customPerspectives = JSON.parse(localStorage.getItem(PERSPECTIVES_KEY) || '[]');
+    let activePerspective = 'inbox';
+    let editingTaskId = null;
+    let showTaskModal = false;
+    let showPerspectiveModal = false;
+
+    // Task helper functions
+    function generateTaskId() {
+      return 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function saveTasksData() {
+      localStorage.setItem(TASKS_KEY, JSON.stringify(tasksData));
+      localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(taskCategories));
+      localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(customPerspectives));
+      debouncedSaveToGithub();
+    }
+
+    function createTask(title, options = {}) {
+      const task = {
+        id: generateTaskId(),
+        title: title,
+        notes: options.notes || '',
+        status: options.status || 'inbox', // inbox, today, anytime, someday
+        completed: false,
+        completedAt: null,
+        categoryId: options.categoryId || null,
+        labels: options.labels || [],
+        dueDate: options.dueDate || null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      tasksData.push(task);
+      saveTasksData();
+      return task;
+    }
+
+    function updateTask(taskId, updates) {
+      const idx = tasksData.findIndex(t => t.id === taskId);
+      if (idx !== -1) {
+        tasksData[idx] = { ...tasksData[idx], ...updates, updatedAt: new Date().toISOString() };
+        saveTasksData();
+      }
+    }
+
+    function deleteTask(taskId) {
+      tasksData = tasksData.filter(t => t.id !== taskId);
+      saveTasksData();
+    }
+
+    function toggleTaskComplete(taskId) {
+      const task = tasksData.find(t => t.id === taskId);
+      if (task) {
+        task.completed = !task.completed;
+        task.completedAt = task.completed ? new Date().toISOString() : null;
+        task.updatedAt = new Date().toISOString();
+        saveTasksData();
+        render();
+      }
+    }
+
+    function moveTaskTo(taskId, status) {
+      updateTask(taskId, { status: status });
+      render();
+    }
+
+    function getFilteredTasks(perspectiveId) {
+      const allPerspectives = [...BUILTIN_PERSPECTIVES, ...customPerspectives];
+      const perspective = allPerspectives.find(p => p.id === perspectiveId);
+      if (!perspective) return [];
+
+      return tasksData.filter(task => {
+        // Completed perspective shows all completed tasks
+        if (perspective.filter.completed) {
+          return task.completed;
+        }
+        // Other perspectives show only non-completed tasks matching the filter
+        if (task.completed) return false;
+
+        if (perspective.filter.status && task.status !== perspective.filter.status) return false;
+        if (perspective.filter.categoryId && task.categoryId !== perspective.filter.categoryId) return false;
+        if (perspective.filter.hasLabel && !task.labels.includes(perspective.filter.hasLabel)) return false;
+        if (perspective.filter.hasDueDate && !task.dueDate) return false;
+        if (perspective.filter.dueSoon) {
+          if (!task.dueDate) return false;
+          const due = new Date(task.dueDate);
+          const now = new Date();
+          const diffDays = (due - now) / (1000 * 60 * 60 * 24);
+          if (diffDays > 7 || diffDays < 0) return false;
+        }
+        return true;
+      }).sort((a, b) => {
+        // Sort by creation date, newest first for inbox, oldest first for others
+        if (perspectiveId === 'inbox') return new Date(b.createdAt) - new Date(a.createdAt);
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
+    }
+
+    function createPerspective(name, icon, filter) {
+      const perspective = {
+        id: 'custom_' + Date.now(),
+        name: name,
+        icon: icon || '📌',
+        filter: filter,
+        builtin: false
+      };
+      customPerspectives.push(perspective);
+      saveTasksData();
+      return perspective;
+    }
+
+    function deletePerspective(perspectiveId) {
+      customPerspectives = customPerspectives.filter(p => p.id !== perspectiveId);
+      if (activePerspective === perspectiveId) activePerspective = 'inbox';
+      saveTasksData();
+    }
+
+    function getCategoryById(categoryId) {
+      return taskCategories.find(c => c.id === categoryId);
+    }
 
     // Personal Bests tracking
     function getPersonalBests() {
@@ -1160,6 +1322,9 @@
               <button onclick="switchTab('dashboard')" class="py-3 px-5 text-sm font-medium transition border-b-2 ${activeTab === 'dashboard' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal'}">
                 Dashboard
               </button>
+              <button onclick="switchTab('tasks')" class="py-3 px-5 text-sm font-medium transition border-b-2 ${activeTab === 'tasks' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal'}">
+                Tasks
+              </button>
               <button onclick="switchTab('settings')" class="py-3 px-5 text-sm font-medium transition border-b-2 ${activeTab === 'settings' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal'}">
                 Settings
               </button>
@@ -1167,8 +1332,8 @@
           </div>
         </nav>
 
-        <main class="max-w-5xl mx-auto px-6 py-8">
-          ${activeTab === 'track' ? renderTrackingTab() : activeTab === 'bulk' ? renderBulkEntryTab() : activeTab === 'dashboard' ? renderDashboardTab() : renderSettingsTab()}
+        <main class="${activeTab === 'tasks' ? 'max-w-6xl' : 'max-w-5xl'} mx-auto px-6 py-8">
+          ${activeTab === 'track' ? renderTrackingTab() : activeTab === 'bulk' ? renderBulkEntryTab() : activeTab === 'dashboard' ? renderDashboardTab() : activeTab === 'tasks' ? renderTasksTab() : renderSettingsTab()}
         </main>
 
         <footer class="border-t border-softborder py-8 mt-12">
@@ -1616,10 +1781,330 @@
       `;
     }
 
+    // ============ TASKS TAB RENDERING ============
+    function renderTasksTab() {
+      const allPerspectives = [...BUILTIN_PERSPECTIVES, ...customPerspectives];
+      const currentPerspective = allPerspectives.find(p => p.id === activePerspective) || BUILTIN_PERSPECTIVES[0];
+      const filteredTasks = getFilteredTasks(activePerspective);
+
+      // Count tasks per perspective
+      const taskCounts = {};
+      BUILTIN_PERSPECTIVES.forEach(p => {
+        taskCounts[p.id] = getFilteredTasks(p.id).length;
+      });
+      customPerspectives.forEach(p => {
+        taskCounts[p.id] = getFilteredTasks(p.id).length;
+      });
+
+      // Build sidebar
+      const sidebarHtml = `
+        <div class="w-64 flex-shrink-0">
+          <div class="sb-card rounded-lg overflow-hidden">
+            <div class="px-4 py-3 bg-warmgray border-b border-softborder">
+              <h3 class="font-semibold text-charcoal text-sm">Perspectives</h3>
+            </div>
+            <div class="bg-white">
+              ${BUILTIN_PERSPECTIVES.map(p => `
+                <button onclick="activePerspective='${p.id}'; render()"
+                  class="w-full px-4 py-2.5 flex items-center justify-between hover:bg-warmgray transition text-left ${activePerspective === p.id ? 'bg-coral/10 border-r-2 border-coral' : ''}">
+                  <span class="flex items-center gap-2">
+                    <span>${p.icon}</span>
+                    <span class="text-sm ${activePerspective === p.id ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${p.name}</span>
+                  </span>
+                  <span class="text-xs ${activePerspective === p.id ? 'text-coral font-medium' : 'text-charcoal/40'}">${taskCounts[p.id] || ''}</span>
+                </button>
+              `).join('')}
+
+              ${customPerspectives.length > 0 ? `
+                <div class="px-4 py-2 border-t border-softborder">
+                  <span class="text-xs font-medium text-charcoal/50 uppercase tracking-wide">Custom</span>
+                </div>
+                ${customPerspectives.map(p => `
+                  <button onclick="activePerspective='${p.id}'; render()"
+                    class="w-full px-4 py-2.5 flex items-center justify-between hover:bg-warmgray transition text-left ${activePerspective === p.id ? 'bg-coral/10 border-r-2 border-coral' : ''}">
+                    <span class="flex items-center gap-2">
+                      <span>${p.icon}</span>
+                      <span class="text-sm ${activePerspective === p.id ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${p.name}</span>
+                    </span>
+                    <span class="text-xs ${activePerspective === p.id ? 'text-coral font-medium' : 'text-charcoal/40'}">${taskCounts[p.id] || ''}</span>
+                  </button>
+                `).join('')}
+              ` : ''}
+
+              <div class="px-4 py-3 border-t border-softborder">
+                <button onclick="showPerspectiveModal=true; render()"
+                  class="w-full px-3 py-2 text-sm text-coral hover:bg-coral/10 rounded transition flex items-center justify-center gap-1">
+                  <span>+</span> New Perspective
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Categories -->
+          <div class="sb-card rounded-lg overflow-hidden mt-4">
+            <div class="px-4 py-3 bg-warmgray border-b border-softborder">
+              <h3 class="font-semibold text-charcoal text-sm">Categories</h3>
+            </div>
+            <div class="bg-white p-3 space-y-1">
+              ${taskCategories.map(cat => `
+                <div class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-warmgray">
+                  <span class="w-3 h-3 rounded-full" style="background-color: ${cat.color}"></span>
+                  <span class="text-sm text-charcoal/70">${cat.name}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Build task list
+      const taskListHtml = `
+        <div class="flex-1">
+          <div class="sb-card rounded-lg overflow-hidden">
+            <div class="px-5 py-4 bg-warmgray border-b border-softborder flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <span class="text-xl">${currentPerspective.icon}</span>
+                <h2 class="text-lg font-semibold text-charcoal">${currentPerspective.name}</h2>
+                <span class="text-sm text-charcoal/50">${filteredTasks.length} task${filteredTasks.length !== 1 ? 's' : ''}</span>
+              </div>
+              <button onclick="showTaskModal=true; editingTaskId=null; render()"
+                class="sb-btn px-4 py-2 rounded text-sm font-medium flex items-center gap-1">
+                <span>+</span> Add Task
+              </button>
+            </div>
+
+            <div class="bg-white min-h-[400px]">
+              ${filteredTasks.length === 0 ? `
+                <div class="flex flex-col items-center justify-center py-16 text-charcoal/40">
+                  <span class="text-4xl mb-3">${currentPerspective.icon}</span>
+                  <p class="text-sm">No tasks in ${currentPerspective.name}</p>
+                  ${activePerspective === 'inbox' ? '<p class="text-xs mt-1">Add a task to get started!</p>' : ''}
+                </div>
+              ` : `
+                <div class="divide-y divide-softborder">
+                  ${filteredTasks.map(task => {
+                    const category = getCategoryById(task.categoryId);
+                    return `
+                      <div class="px-5 py-3 flex items-start gap-3 hover:bg-warmgray/50 transition group">
+                        <button onclick="toggleTaskComplete('${task.id}')"
+                          class="mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center transition ${task.completed ? 'bg-coral border-coral text-white' : 'border-charcoal/30 hover:border-coral'}">
+                          ${task.completed ? '<span class="text-xs">✓</span>' : ''}
+                        </button>
+                        <div class="flex-1 min-w-0">
+                          <div class="flex items-center gap-2">
+                            <span class="${task.completed ? 'line-through text-charcoal/40' : 'text-charcoal'} font-medium">${task.title}</span>
+                            ${category ? `<span class="px-2 py-0.5 text-xs rounded-full text-white" style="background-color: ${category.color}">${category.name}</span>` : ''}
+                          </div>
+                          ${task.notes ? `<p class="text-sm text-charcoal/50 mt-0.5 truncate">${task.notes}</p>` : ''}
+                          ${task.dueDate ? `<p class="text-xs text-charcoal/40 mt-1">📅 ${new Date(task.dueDate).toLocaleDateString()}</p>` : ''}
+                        </div>
+                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                          ${!task.completed ? `
+                            <select onchange="moveTaskTo('${task.id}', this.value); this.value=''"
+                              class="text-xs px-2 py-1 border border-softborder rounded bg-white text-charcoal/70">
+                              <option value="">Move to...</option>
+                              <option value="inbox">📥 Inbox</option>
+                              <option value="today">⭐ Today</option>
+                              <option value="anytime">📋 Anytime</option>
+                              <option value="someday">💭 Someday</option>
+                            </select>
+                          ` : ''}
+                          <button onclick="editingTaskId='${task.id}'; showTaskModal=true; render()"
+                            class="px-2 py-1 text-xs text-charcoal/50 hover:text-charcoal">Edit</button>
+                          <button onclick="if(confirm('Delete this task?')) { deleteTask('${task.id}'); render(); }"
+                            class="px-2 py-1 text-xs text-red-400 hover:text-red-600">Delete</button>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Task Modal
+      const editingTask = editingTaskId ? tasksData.find(t => t.id === editingTaskId) : null;
+      const taskModalHtml = showTaskModal ? `
+        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showTaskModal=false; editingTaskId=null; render()}">
+          <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4" onclick="event.stopPropagation()">
+            <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal">${editingTask ? 'Edit Task' : 'New Task'}</h3>
+              <button onclick="showTaskModal=false; editingTaskId=null; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Title</label>
+                <input type="text" id="task-title" value="${editingTask ? editingTask.title : ''}"
+                  placeholder="What needs to be done?"
+                  class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              </div>
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Notes</label>
+                <textarea id="task-notes" rows="3" placeholder="Add details..."
+                  class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none resize-none">${editingTask ? editingTask.notes : ''}</textarea>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="text-sm text-charcoal/70 block mb-1">When</label>
+                  <select id="task-status" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+                    <option value="inbox" ${editingTask?.status === 'inbox' ? 'selected' : ''}>📥 Inbox</option>
+                    <option value="today" ${editingTask?.status === 'today' ? 'selected' : ''}>⭐ Today</option>
+                    <option value="anytime" ${editingTask?.status === 'anytime' ? 'selected' : ''}>📋 Anytime</option>
+                    <option value="someday" ${editingTask?.status === 'someday' ? 'selected' : ''}>💭 Someday</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-sm text-charcoal/70 block mb-1">Category</label>
+                  <select id="task-category" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+                    <option value="">None</option>
+                    ${taskCategories.map(cat => `
+                      <option value="${cat.id}" ${editingTask?.categoryId === cat.id ? 'selected' : ''}>${cat.name}</option>
+                    `).join('')}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Due Date</label>
+                <input type="date" id="task-due" value="${editingTask?.dueDate || ''}"
+                  class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              </div>
+            </div>
+            <div class="px-6 py-4 border-t border-softborder flex justify-end gap-3">
+              <button onclick="showTaskModal=false; editingTaskId=null; render()"
+                class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
+              <button onclick="saveTaskFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+                ${editingTask ? 'Save Changes' : 'Add Task'}
+              </button>
+            </div>
+          </div>
+        </div>
+      ` : '';
+
+      // Perspective Modal
+      const perspectiveModalHtml = showPerspectiveModal ? `
+        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showPerspectiveModal=false; render()}">
+          <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4" onclick="event.stopPropagation()">
+            <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal">New Perspective</h3>
+              <button onclick="showPerspectiveModal=false; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Name</label>
+                <input type="text" id="perspective-name" placeholder="e.g., Work Projects"
+                  class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              </div>
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Icon (emoji)</label>
+                <input type="text" id="perspective-icon" value="📌" maxlength="2"
+                  class="w-20 px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-center text-xl">
+              </div>
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Filter by Category</label>
+                <select id="perspective-category" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+                  <option value="">Any category</option>
+                  ${taskCategories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Filter by Status</label>
+                <select id="perspective-status" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+                  <option value="">Any status</option>
+                  <option value="inbox">Inbox</option>
+                  <option value="today">Today</option>
+                  <option value="anytime">Anytime</option>
+                  <option value="someday">Someday</option>
+                </select>
+              </div>
+              <div class="flex items-center gap-2">
+                <input type="checkbox" id="perspective-due" class="rounded border-softborder">
+                <label for="perspective-due" class="text-sm text-charcoal/70">Only show tasks with due dates</label>
+              </div>
+            </div>
+            <div class="px-6 py-4 border-t border-softborder flex justify-end gap-3">
+              <button onclick="showPerspectiveModal=false; render()"
+                class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
+              <button onclick="savePerspectiveFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+                Create Perspective
+              </button>
+            </div>
+          </div>
+        </div>
+      ` : '';
+
+      return `
+        <div class="flex gap-6">
+          ${sidebarHtml}
+          ${taskListHtml}
+        </div>
+        ${taskModalHtml}
+        ${perspectiveModalHtml}
+      `;
+    }
+
+    // Save task from modal
+    function saveTaskFromModal() {
+      const title = document.getElementById('task-title').value.trim();
+      if (!title) {
+        alert('Please enter a task title');
+        return;
+      }
+
+      const taskData = {
+        title: title,
+        notes: document.getElementById('task-notes').value.trim(),
+        status: document.getElementById('task-status').value,
+        categoryId: document.getElementById('task-category').value || null,
+        dueDate: document.getElementById('task-due').value || null
+      };
+
+      if (editingTaskId) {
+        updateTask(editingTaskId, taskData);
+      } else {
+        createTask(title, taskData);
+      }
+
+      showTaskModal = false;
+      editingTaskId = null;
+      render();
+    }
+
+    // Save perspective from modal
+    function savePerspectiveFromModal() {
+      const name = document.getElementById('perspective-name').value.trim();
+      if (!name) {
+        alert('Please enter a perspective name');
+        return;
+      }
+
+      const icon = document.getElementById('perspective-icon').value || '📌';
+      const filter = {};
+
+      const categoryId = document.getElementById('perspective-category').value;
+      if (categoryId) filter.categoryId = categoryId;
+
+      const status = document.getElementById('perspective-status').value;
+      if (status) filter.status = status;
+
+      if (document.getElementById('perspective-due').checked) {
+        filter.hasDueDate = true;
+      }
+
+      createPerspective(name, icon, filter);
+      showPerspectiveModal = false;
+      activePerspective = customPerspectives[customPerspectives.length - 1].id;
+      render();
+    }
+
     function exportData() {
       const exportObj = {
         data: allData,
         weights: WEIGHTS,
+        tasks: tasksData,
+        taskCategories: taskCategories,
+        customPerspectives: customPerspectives,
         lastUpdated: new Date().toISOString()
       };
       const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
@@ -1647,7 +2132,20 @@
             WEIGHTS = imported.weights;
             saveWeights();
           }
+          if (imported.tasks) {
+            tasksData = imported.tasks;
+            localStorage.setItem(TASKS_KEY, JSON.stringify(tasksData));
+          }
+          if (imported.taskCategories) {
+            taskCategories = imported.taskCategories;
+            localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(taskCategories));
+          }
+          if (imported.customPerspectives) {
+            customPerspectives = imported.customPerspectives;
+            localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(customPerspectives));
+          }
           alert('Data imported successfully!');
+          debouncedSaveToGithub();
           render();
         } catch (err) {
           alert('Error importing data: ' + err.message);
