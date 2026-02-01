@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T22:03:41.485Z",
+  "lastUpdated": "2026-02-01T22:04:04.890Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1742,6 +1742,22 @@
       "repeat": null,
       "createdAt": "2026-02-01T22:03:39.098Z",
       "updatedAt": "2026-02-01T22:03:39.098Z"
+    },
+    {
+      "id": "task_1769983442869_hmqn0dbb5",
+      "title": "a work task",
+      "notes": "",
+      "status": "inbox",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "createdAt": "2026-02-01T22:04:02.869Z",
+      "updatedAt": "2026-02-01T22:04:02.869Z"
     }
   ],
   "taskCategories": [
