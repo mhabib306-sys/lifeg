@@ -1405,26 +1405,26 @@
       return taskPeople.find(p => p.id === personId);
     }
 
-    // ============ DRAG AND DROP REORDER ============
-    let draggedItem = null;
-    let draggedType = null;
+    // ============ SIDEBAR DRAG AND DROP REORDER ============
+    let draggedSidebarItem = null;
+    let draggedSidebarType = null;
 
-    function handleDragStart(e, id, type) {
-      draggedItem = id;
-      draggedType = type;
+    function handleSidebarDragStart(e, id, type) {
+      draggedSidebarItem = id;
+      draggedSidebarType = type;
       e.target.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', id);
     }
 
-    function handleDragEnd(e) {
+    function handleSidebarDragEnd(e) {
       e.target.classList.remove('dragging');
       document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-      draggedItem = null;
-      draggedType = null;
+      draggedSidebarItem = null;
+      draggedSidebarType = null;
     }
 
-    function handleDragOver(e) {
+    function handleSidebarDragOver(e) {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
       const target = e.target.closest('.draggable-item');
@@ -1434,16 +1434,16 @@
       }
     }
 
-    function handleDragLeave(e) {
+    function handleSidebarDragLeave(e) {
       const target = e.target.closest('.draggable-item');
       if (target) target.classList.remove('drag-over');
     }
 
-    function handleDrop(e, targetId, type) {
+    function handleSidebarDrop(e, targetId, type) {
       e.preventDefault();
       document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
 
-      if (!draggedItem || draggedType !== type || draggedItem === targetId) return;
+      if (!draggedSidebarItem || draggedSidebarType !== type || draggedSidebarItem === targetId) return;
 
       let arr;
       if (type === 'category') arr = taskCategories;
@@ -1452,7 +1452,7 @@
       else if (type === 'perspective') arr = customPerspectives;
       else return;
 
-      const fromIdx = arr.findIndex(item => item.id === draggedItem);
+      const fromIdx = arr.findIndex(item => item.id === draggedSidebarItem);
       const toIdx = arr.findIndex(item => item.id === targetId);
 
       if (fromIdx === -1 || toIdx === -1) return;
@@ -3641,11 +3641,11 @@
                 <button onclick="showCategoryTasks('${cat.id}')"
                   class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isCategoryActive(cat.id) ? 'active' : ''}"
                   draggable="true"
-                  ondragstart="handleDragStart(event, '${cat.id}', 'category')"
-                  ondragend="handleDragEnd(event)"
-                  ondragover="handleDragOver(event)"
-                  ondragleave="handleDragLeave(event)"
-                  ondrop="handleDrop(event, '${cat.id}', 'category')">
+                  ondragstart="handleSidebarDragStart(event, '${cat.id}', 'category')"
+                  ondragend="handleSidebarDragEnd(event)"
+                  ondragover="handleSidebarDragOver(event)"
+                  ondragleave="handleSidebarDragLeave(event)"
+                  ondrop="handleSidebarDrop(event, '${cat.id}', 'category')">
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-charcoal/40">${THINGS3_ICONS.area}</span>
                   <span class="flex-1 text-[14px] ${isCategoryActive(cat.id) ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${cat.name}</span>
                   <span class="w-6 text-right text-[13px] group-hover:opacity-0 transition-opacity text-charcoal/35">${categoryCounts[cat.id] || ''}</span>
@@ -3669,11 +3669,11 @@
                 <button onclick="showLabelTasks('${label.id}')"
                   class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isLabelActive(label.id) ? 'active' : ''}"
                   draggable="true"
-                  ondragstart="handleDragStart(event, '${label.id}', 'label')"
-                  ondragend="handleDragEnd(event)"
-                  ondragover="handleDragOver(event)"
-                  ondragleave="handleDragLeave(event)"
-                  ondrop="handleDrop(event, '${label.id}', 'label')">
+                  ondragstart="handleSidebarDragStart(event, '${label.id}', 'label')"
+                  ondragend="handleSidebarDragEnd(event)"
+                  ondragover="handleSidebarDragOver(event)"
+                  ondragleave="handleSidebarDragLeave(event)"
+                  ondrop="handleSidebarDrop(event, '${label.id}', 'label')">
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0">
                     <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${label.color}"></span>
                   </span>
@@ -3699,11 +3699,11 @@
                 <button onclick="showPersonTasks('${person.id}')"
                   class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isPersonActive(person.id) ? 'active' : ''}"
                   draggable="true"
-                  ondragstart="handleDragStart(event, '${person.id}', 'person')"
-                  ondragend="handleDragEnd(event)"
-                  ondragover="handleDragOver(event)"
-                  ondragleave="handleDragLeave(event)"
-                  ondrop="handleDrop(event, '${person.id}', 'person')">
+                  ondragstart="handleSidebarDragStart(event, '${person.id}', 'person')"
+                  ondragend="handleSidebarDragEnd(event)"
+                  ondragover="handleSidebarDragOver(event)"
+                  ondragleave="handleSidebarDragLeave(event)"
+                  ondrop="handleSidebarDrop(event, '${person.id}', 'person')">
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-charcoal/40">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   </span>
