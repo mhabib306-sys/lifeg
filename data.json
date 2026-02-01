@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T23:44:05.976Z",
+  "lastUpdated": "2026-02-01T23:44:18.986Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1842,6 +1842,11 @@
       "id": "blocked",
       "name": "Blocked",
       "color": "#6B7280"
+    },
+    {
+      "id": "label_1769989456692",
+      "name": "Active Topics",
+      "color": "#6b7280"
     }
   ],
   "customPerspectives": []
