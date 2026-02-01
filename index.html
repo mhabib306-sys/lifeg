@@ -1555,7 +1555,12 @@
     function updateTask(taskId, updates) {
       const idx = tasksData.findIndex(t => t.id === taskId);
       if (idx !== -1) {
-        tasksData[idx] = { ...tasksData[idx], ...updates, updatedAt: new Date().toISOString() };
+        const task = tasksData[idx];
+        // Things 3 logic: Assigning Area to Inbox task moves it to Anytime
+        if (task.status === 'inbox' && updates.categoryId && !task.categoryId) {
+          updates.status = 'anytime';
+        }
+        tasksData[idx] = { ...task, ...updates, updatedAt: new Date().toISOString() };
         saveTasksData();
       }
     }
@@ -1852,9 +1857,10 @@
           return task.status === 'someday';
         }
 
-        // Inbox: Unprocessed tasks
+        // Inbox: Unprocessed tasks (no area assigned)
+        // Things 3 logic: Inbox and Areas are mutually exclusive
         if (perspectiveId === 'inbox') {
-          return task.status === 'inbox';
+          return task.status === 'inbox' && !task.categoryId;
         }
 
         // Custom perspectives
