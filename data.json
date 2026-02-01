@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-01T08:58:10.013Z",
+  "lastUpdated": "2026-02-01T08:58:29.584Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1347,7 +1347,7 @@
       "glucose": {
         "avg": "168",
         "tir": "32",
-        "insulin": "36"
+        "insulin": ""
       },
       "whoop": {
         "sleepPerf": "80",
