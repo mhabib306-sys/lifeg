@@ -32,8 +32,20 @@
   <style>
     body { font-feature-settings: 'kern' 1, 'liga' 1; }
     .sb-card { background: #EFEDE8; border: 1px solid #E5E3DE; }
-    .sb-btn { background: #1a1a1a; color: white; transition: all 0.15s ease; }
-    .sb-btn:hover { background: #333; }
+    .sb-btn {
+      background: #1a1a1a;
+      color: white;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sb-btn:hover {
+      background: #333;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .sb-btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
     .sb-link { color: #E5533D; text-decoration: underline; text-underline-offset: 2px; }
     .sb-link:hover { color: #C4432F; }
     .sb-section-title {
@@ -50,6 +62,199 @@
       border-color: #E5533D;
       outline: none;
       box-shadow: 0 0 0 2px rgba(229, 83, 61, 0.1);
+    }
+
+    /* Things 3 inspired micro-interactions */
+
+    /* Task item interactions */
+    .task-item {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 3px solid transparent;
+    }
+    .task-item:hover {
+      background: rgba(239, 237, 232, 0.7);
+      border-left-color: #E5533D;
+    }
+    .task-item:active {
+      background: rgba(239, 237, 232, 0.9);
+    }
+
+    /* Checkbox interactions */
+    .task-checkbox {
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+    .task-checkbox:hover {
+      transform: scale(1.15);
+      border-color: #E5533D !important;
+    }
+    .task-checkbox:active {
+      transform: scale(0.95);
+    }
+    .task-checkbox.completed {
+      animation: checkPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes checkPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    /* Sidebar item interactions */
+    .sidebar-item {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 6px;
+      margin: 2px 4px;
+    }
+    .sidebar-item:hover {
+      background: rgba(229, 83, 61, 0.08);
+      transform: translateX(2px);
+    }
+    .sidebar-item:active {
+      transform: translateX(0);
+      background: rgba(229, 83, 61, 0.15);
+    }
+    .sidebar-item.active {
+      background: rgba(229, 83, 61, 0.12);
+    }
+
+    /* Category/Label pill interactions */
+    .tag-pill {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+    .tag-pill:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .tag-pill:active {
+      transform: scale(0.98);
+    }
+
+    /* Button micro-interactions */
+    .action-btn {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+    }
+    .task-item:hover .action-btn {
+      opacity: 1;
+    }
+    .action-btn:hover {
+      transform: scale(1.1);
+    }
+    .action-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Move dropdown */
+    .move-dropdown {
+      transition: all 0.15s ease;
+      opacity: 0;
+      transform: translateY(-2px);
+    }
+    .task-item:hover .move-dropdown {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Modal animations */
+    .modal-overlay {
+      animation: fadeIn 0.2s ease-out;
+    }
+    .modal-content {
+      animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Input focus animations */
+    .task-input {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .task-input:focus {
+      border-color: #E5533D;
+      box-shadow: 0 0 0 3px rgba(229, 83, 61, 0.1);
+      transform: scale(1.01);
+    }
+
+    /* Label checkbox interactions */
+    .label-checkbox {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .label-checkbox:hover {
+      transform: scale(1.02);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .label-checkbox:has(input:checked) {
+      transform: scale(1.02);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Add button pulse */
+    .add-task-btn {
+      position: relative;
+      overflow: hidden;
+    }
+    .add-task-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s;
+    }
+    .add-task-btn:hover::after {
+      transform: translateX(100%);
+    }
+
+    /* Empty state animation */
+    .empty-state {
+      animation: fadeInUp 0.4s ease-out;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Perspective count badge */
+    .count-badge {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar-item:hover .count-badge {
+      transform: scale(1.1);
+    }
+
+    /* Smooth scrollbar */
+    .task-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .task-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .task-list::-webkit-scrollbar-thumb {
+      background: rgba(26, 26, 26, 0.2);
+      border-radius: 3px;
+    }
+    .task-list::-webkit-scrollbar-thumb:hover {
+      background: rgba(26, 26, 26, 0.3);
     }
   </style>
 </head>
@@ -460,6 +665,9 @@
     let taskLabels = JSON.parse(localStorage.getItem(TASK_LABELS_KEY) || 'null') || DEFAULT_TASK_LABELS;
     let customPerspectives = JSON.parse(localStorage.getItem(PERSPECTIVES_KEY) || '[]');
     let activePerspective = 'inbox';
+    let activeFilterType = 'perspective'; // 'perspective', 'category', 'label'
+    let activeCategoryFilter = null;
+    let activeLabelFilter = null;
     let editingTaskId = null;
     let showTaskModal = false;
     let showPerspectiveModal = false;
@@ -467,6 +675,31 @@
     let showLabelModal = false;
     let editingCategoryId = null;
     let editingLabelId = null;
+
+    // Switch to category view
+    function showCategoryTasks(categoryId) {
+      activeFilterType = 'category';
+      activeCategoryFilter = categoryId;
+      activeLabelFilter = null;
+      render();
+    }
+
+    // Switch to label view
+    function showLabelTasks(labelId) {
+      activeFilterType = 'label';
+      activeLabelFilter = labelId;
+      activeCategoryFilter = null;
+      render();
+    }
+
+    // Switch to perspective view
+    function showPerspectiveTasks(perspectiveId) {
+      activeFilterType = 'perspective';
+      activePerspective = perspectiveId;
+      activeCategoryFilter = null;
+      activeLabelFilter = null;
+      render();
+    }
 
     // Task helper functions
     function generateTaskId() {
@@ -635,6 +868,55 @@
         if (perspectiveId === 'inbox') return new Date(b.createdAt) - new Date(a.createdAt);
         return new Date(a.createdAt) - new Date(b.createdAt);
       });
+    }
+
+    // Get tasks by category
+    function getTasksByCategory(categoryId) {
+      const today = new Date().toISOString().split('T')[0];
+      return tasksData.filter(task => task.categoryId === categoryId && !task.completed)
+        .sort((a, b) => {
+          if (a.dueDate && !b.dueDate) return -1;
+          if (!a.dueDate && b.dueDate) return 1;
+          if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        });
+    }
+
+    // Get tasks by label
+    function getTasksByLabel(labelId) {
+      return tasksData.filter(task => (task.labels || []).includes(labelId) && !task.completed)
+        .sort((a, b) => {
+          if (a.dueDate && !b.dueDate) return -1;
+          if (!a.dueDate && b.dueDate) return 1;
+          if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        });
+    }
+
+    // Get current filtered tasks based on active filter type
+    function getCurrentFilteredTasks() {
+      if (activeFilterType === 'category' && activeCategoryFilter) {
+        return getTasksByCategory(activeCategoryFilter);
+      } else if (activeFilterType === 'label' && activeLabelFilter) {
+        return getTasksByLabel(activeLabelFilter);
+      } else {
+        return getFilteredTasks(activePerspective);
+      }
+    }
+
+    // Get current view info
+    function getCurrentViewInfo() {
+      if (activeFilterType === 'category' && activeCategoryFilter) {
+        const cat = getCategoryById(activeCategoryFilter);
+        return { icon: '📁', name: cat?.name || 'Category', color: cat?.color };
+      } else if (activeFilterType === 'label' && activeLabelFilter) {
+        const label = getLabelById(activeLabelFilter);
+        return { icon: '🏷️', name: label?.name || 'Label', color: label?.color };
+      } else {
+        const allPerspectives = [...BUILTIN_PERSPECTIVES, ...customPerspectives];
+        const p = allPerspectives.find(p => p.id === activePerspective) || BUILTIN_PERSPECTIVES[0];
+        return { icon: p.icon, name: p.name };
+      }
     }
 
     function createPerspective(name, icon, filter) {
@@ -1880,8 +2162,8 @@
     // ============ TASKS TAB RENDERING ============
     function renderTasksTab() {
       const allPerspectives = [...BUILTIN_PERSPECTIVES, ...customPerspectives];
-      const currentPerspective = allPerspectives.find(p => p.id === activePerspective) || BUILTIN_PERSPECTIVES[0];
-      const filteredTasks = getFilteredTasks(activePerspective);
+      const filteredTasks = getCurrentFilteredTasks();
+      const viewInfo = getCurrentViewInfo();
 
       // Count tasks per perspective
       const taskCounts = {};
@@ -1892,6 +2174,23 @@
         taskCounts[p.id] = getFilteredTasks(p.id).length;
       });
 
+      // Count tasks per category
+      const categoryCounts = {};
+      taskCategories.forEach(cat => {
+        categoryCounts[cat.id] = getTasksByCategory(cat.id).length;
+      });
+
+      // Count tasks per label
+      const labelCounts = {};
+      taskLabels.forEach(label => {
+        labelCounts[label.id] = getTasksByLabel(label.id).length;
+      });
+
+      // Check if perspective is active
+      const isPerspectiveActive = (pId) => activeFilterType === 'perspective' && activePerspective === pId;
+      const isCategoryActive = (cId) => activeFilterType === 'category' && activeCategoryFilter === cId;
+      const isLabelActive = (lId) => activeFilterType === 'label' && activeLabelFilter === lId;
+
       // Build sidebar
       const sidebarHtml = `
         <div class="w-64 flex-shrink-0">
@@ -1899,37 +2198,37 @@
             <div class="px-4 py-3 bg-warmgray border-b border-softborder">
               <h3 class="font-semibold text-charcoal text-sm">Perspectives</h3>
             </div>
-            <div class="bg-white">
+            <div class="bg-white py-1">
               ${BUILTIN_PERSPECTIVES.map(p => `
-                <button onclick="activePerspective='${p.id}'; render()"
-                  class="w-full px-4 py-2.5 flex items-center justify-between hover:bg-warmgray transition text-left ${activePerspective === p.id ? 'bg-coral/10 border-r-2 border-coral' : ''}">
+                <button onclick="showPerspectiveTasks('${p.id}')"
+                  class="sidebar-item w-full px-3 py-2 flex items-center justify-between text-left ${isPerspectiveActive(p.id) ? 'active border-r-2 border-coral' : ''}">
                   <span class="flex items-center gap-2">
-                    <span>${p.icon}</span>
-                    <span class="text-sm ${activePerspective === p.id ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${p.name}</span>
+                    <span class="text-base">${p.icon}</span>
+                    <span class="text-sm ${isPerspectiveActive(p.id) ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${p.name}</span>
                   </span>
-                  <span class="text-xs ${activePerspective === p.id ? 'text-coral font-medium' : 'text-charcoal/40'}">${taskCounts[p.id] || ''}</span>
+                  <span class="count-badge text-xs px-1.5 py-0.5 rounded ${isPerspectiveActive(p.id) ? 'bg-coral/20 text-coral font-medium' : 'text-charcoal/40'}">${taskCounts[p.id] || ''}</span>
                 </button>
               `).join('')}
 
               ${customPerspectives.length > 0 ? `
-                <div class="px-4 py-2 border-t border-softborder">
+                <div class="px-4 py-2 border-t border-softborder mt-1">
                   <span class="text-xs font-medium text-charcoal/50 uppercase tracking-wide">Custom</span>
                 </div>
                 ${customPerspectives.map(p => `
-                  <button onclick="activePerspective='${p.id}'; render()"
-                    class="w-full px-4 py-2.5 flex items-center justify-between hover:bg-warmgray transition text-left ${activePerspective === p.id ? 'bg-coral/10 border-r-2 border-coral' : ''}">
+                  <button onclick="showPerspectiveTasks('${p.id}')"
+                    class="sidebar-item w-full px-3 py-2 flex items-center justify-between text-left ${isPerspectiveActive(p.id) ? 'active border-r-2 border-coral' : ''}">
                     <span class="flex items-center gap-2">
-                      <span>${p.icon}</span>
-                      <span class="text-sm ${activePerspective === p.id ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${p.name}</span>
+                      <span class="text-base">${p.icon}</span>
+                      <span class="text-sm ${isPerspectiveActive(p.id) ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${p.name}</span>
                     </span>
-                    <span class="text-xs ${activePerspective === p.id ? 'text-coral font-medium' : 'text-charcoal/40'}">${taskCounts[p.id] || ''}</span>
+                    <span class="count-badge text-xs px-1.5 py-0.5 rounded ${isPerspectiveActive(p.id) ? 'bg-coral/20 text-coral font-medium' : 'text-charcoal/40'}">${taskCounts[p.id] || ''}</span>
                   </button>
                 `).join('')}
               ` : ''}
 
-              <div class="px-4 py-3 border-t border-softborder">
+              <div class="px-3 py-2 border-t border-softborder mt-1">
                 <button onclick="showPerspectiveModal=true; render()"
-                  class="w-full px-3 py-2 text-sm text-coral hover:bg-coral/10 rounded transition flex items-center justify-center gap-1">
+                  class="w-full px-3 py-2 text-sm text-coral hover:bg-coral/10 rounded-md transition flex items-center justify-center gap-1">
                   <span>+</span> New Perspective
                 </button>
               </div>
@@ -1940,18 +2239,23 @@
           <div class="sb-card rounded-lg overflow-hidden mt-4">
             <div class="px-4 py-3 bg-warmgray border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal text-sm">Categories</h3>
-              <button onclick="editingCategoryId=null; showCategoryModal=true; render()" class="text-coral text-xs hover:underline">+ Add</button>
+              <button onclick="editingCategoryId=null; showCategoryModal=true; render()" class="text-coral text-xs hover:underline transition">+ Add</button>
             </div>
-            <div class="bg-white p-2 space-y-0.5">
+            <div class="bg-white py-1">
               ${taskCategories.map(cat => `
-                <div class="flex items-center justify-between px-2 py-1.5 rounded hover:bg-warmgray group">
-                  <div class="flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full" style="background-color: ${cat.color}"></span>
-                    <span class="text-sm text-charcoal/70">${cat.name}</span>
-                  </div>
-                  <button onclick="editingCategoryId='${cat.id}'; showCategoryModal=true; render()"
-                    class="text-xs text-charcoal/30 hover:text-charcoal opacity-0 group-hover:opacity-100">Edit</button>
-                </div>
+                <button onclick="showCategoryTasks('${cat.id}')"
+                  class="sidebar-item w-full px-3 py-2 flex items-center justify-between text-left group ${isCategoryActive(cat.id) ? 'active border-r-2' : ''}"
+                  style="${isCategoryActive(cat.id) ? `border-color: ${cat.color}` : ''}">
+                  <span class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full transition" style="background-color: ${cat.color}"></span>
+                    <span class="text-sm ${isCategoryActive(cat.id) ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${cat.name}</span>
+                  </span>
+                  <span class="flex items-center gap-2">
+                    <span class="count-badge text-xs px-1.5 py-0.5 rounded ${isCategoryActive(cat.id) ? 'font-medium' : 'text-charcoal/40'}" ${isCategoryActive(cat.id) ? `style="background-color: ${cat.color}20; color: ${cat.color}"` : ''}>${categoryCounts[cat.id] || ''}</span>
+                    <span onclick="event.stopPropagation(); editingCategoryId='${cat.id}'; showCategoryModal=true; render()"
+                      class="action-btn text-xs text-charcoal/30 hover:text-charcoal px-1">Edit</span>
+                  </span>
+                </button>
               `).join('')}
             </div>
           </div>
@@ -1960,18 +2264,23 @@
           <div class="sb-card rounded-lg overflow-hidden mt-4">
             <div class="px-4 py-3 bg-warmgray border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal text-sm">Labels</h3>
-              <button onclick="editingLabelId=null; showLabelModal=true; render()" class="text-coral text-xs hover:underline">+ Add</button>
+              <button onclick="editingLabelId=null; showLabelModal=true; render()" class="text-coral text-xs hover:underline transition">+ Add</button>
             </div>
-            <div class="bg-white p-2 space-y-0.5">
+            <div class="bg-white py-1">
               ${taskLabels.map(label => `
-                <div class="flex items-center justify-between px-2 py-1.5 rounded hover:bg-warmgray group">
-                  <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded" style="background-color: ${label.color}"></span>
-                    <span class="text-sm text-charcoal/70">${label.name}</span>
-                  </div>
-                  <button onclick="editingLabelId='${label.id}'; showLabelModal=true; render()"
-                    class="text-xs text-charcoal/30 hover:text-charcoal opacity-0 group-hover:opacity-100">Edit</button>
-                </div>
+                <button onclick="showLabelTasks('${label.id}')"
+                  class="sidebar-item w-full px-3 py-2 flex items-center justify-between text-left group ${isLabelActive(label.id) ? 'active border-r-2' : ''}"
+                  style="${isLabelActive(label.id) ? `border-color: ${label.color}` : ''}">
+                  <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded transition" style="background-color: ${label.color}"></span>
+                    <span class="text-sm ${isLabelActive(label.id) ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${label.name}</span>
+                  </span>
+                  <span class="flex items-center gap-2">
+                    <span class="count-badge text-xs px-1.5 py-0.5 rounded ${isLabelActive(label.id) ? 'font-medium' : 'text-charcoal/40'}" ${isLabelActive(label.id) ? `style="background-color: ${label.color}20; color: ${label.color}"` : ''}>${labelCounts[label.id] || ''}</span>
+                    <span onclick="event.stopPropagation(); editingLabelId='${label.id}'; showLabelModal=true; render()"
+                      class="action-btn text-xs text-charcoal/30 hover:text-charcoal px-1">Edit</span>
+                  </span>
+                </button>
               `).join('')}
             </div>
           </div>
@@ -1984,49 +2293,49 @@
           <div class="sb-card rounded-lg overflow-hidden">
             <div class="px-5 py-4 bg-warmgray border-b border-softborder flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <span class="text-xl">${currentPerspective.icon}</span>
-                <h2 class="text-lg font-semibold text-charcoal">${currentPerspective.name}</h2>
+                <span class="text-xl" ${viewInfo.color ? `style="color: ${viewInfo.color}"` : ''}>${viewInfo.icon}</span>
+                <h2 class="text-lg font-semibold text-charcoal">${viewInfo.name}</h2>
                 <span class="text-sm text-charcoal/50">${filteredTasks.length} task${filteredTasks.length !== 1 ? 's' : ''}</span>
               </div>
               <button onclick="showTaskModal=true; editingTaskId=null; render()"
-                class="sb-btn px-4 py-2 rounded text-sm font-medium flex items-center gap-1">
+                class="sb-btn add-task-btn px-4 py-2 rounded text-sm font-medium flex items-center gap-1">
                 <span>+</span> Add Task
               </button>
             </div>
 
-            <div class="bg-white min-h-[400px]">
+            <div class="bg-white min-h-[400px] task-list">
               ${filteredTasks.length === 0 ? `
-                <div class="flex flex-col items-center justify-center py-16 text-charcoal/40">
-                  <span class="text-4xl mb-3">${currentPerspective.icon}</span>
+                <div class="empty-state flex flex-col items-center justify-center py-16 text-charcoal/40">
+                  <span class="text-4xl mb-3">${viewInfo.icon}</span>
                   <p class="text-sm">No tasks in ${currentPerspective.name}</p>
                   ${activePerspective === 'inbox' ? '<p class="text-xs mt-1">Add a task to get started!</p>' : ''}
                 </div>
               ` : `
-                <div class="divide-y divide-softborder">
+                <div class="divide-y divide-softborder/50">
                   ${filteredTasks.map(task => {
                     const category = getCategoryById(task.categoryId);
                     const labels = (task.labels || []).map(lid => getLabelById(lid)).filter(Boolean);
                     const today = new Date().toISOString().split('T')[0];
                     const isOverdue = task.dueDate && task.dueDate < today && !task.completed;
                     return `
-                      <div class="px-5 py-3 flex items-start gap-3 hover:bg-warmgray/50 transition group">
+                      <div class="task-item px-5 py-3 flex items-start gap-3 group">
                         <button onclick="toggleTaskComplete('${task.id}')"
-                          class="mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center transition ${task.completed ? 'bg-coral border-coral text-white' : 'border-charcoal/30 hover:border-coral'}">
+                          class="task-checkbox mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center ${task.completed ? 'completed bg-coral border-coral text-white' : 'border-charcoal/30'}">
                           ${task.completed ? '<span class="text-xs">✓</span>' : ''}
                         </button>
                         <div class="flex-1 min-w-0">
                           <div class="flex items-center gap-2 flex-wrap">
-                            <span class="${task.completed ? 'line-through text-charcoal/40' : 'text-charcoal'} font-medium">${task.title}</span>
-                            ${category ? `<span class="px-2 py-0.5 text-xs rounded-full text-white" style="background-color: ${category.color}">${category.name}</span>` : ''}
-                            ${labels.map(l => `<span class="px-1.5 py-0.5 text-xs rounded border" style="border-color: ${l.color}; color: ${l.color}">${l.name}</span>`).join('')}
+                            <span class="${task.completed ? 'line-through text-charcoal/40' : 'text-charcoal'} font-medium transition">${task.title}</span>
+                            ${category ? `<span onclick="showCategoryTasks('${category.id}')" class="tag-pill px-2 py-0.5 text-xs rounded-full text-white cursor-pointer" style="background-color: ${category.color}">${category.name}</span>` : ''}
+                            ${labels.map(l => `<span onclick="showLabelTasks('${l.id}')" class="tag-pill px-1.5 py-0.5 text-xs rounded border cursor-pointer" style="border-color: ${l.color}; color: ${l.color}">${l.name}</span>`).join('')}
                           </div>
-                          ${task.notes ? `<p class="text-sm text-charcoal/50 mt-0.5 truncate">${task.notes}</p>` : ''}
-                          ${task.dueDate ? `<p class="text-xs mt-1 ${isOverdue ? 'text-red-500 font-medium' : 'text-charcoal/40'}">${isOverdue ? '⚠️ Overdue: ' : '📅 '}${new Date(task.dueDate).toLocaleDateString()}</p>` : ''}
+                          ${task.notes ? `<p class="text-sm text-charcoal/50 mt-1 truncate">${task.notes}</p>` : ''}
+                          ${task.dueDate ? `<p class="text-xs mt-1.5 ${isOverdue ? 'text-red-500 font-medium' : 'text-charcoal/40'}">${isOverdue ? '⚠️ Overdue: ' : '📅 '}${new Date(task.dueDate).toLocaleDateString()}</p>` : ''}
                         </div>
-                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                        <div class="flex items-center gap-1">
                           ${!task.completed ? `
                             <select onchange="moveTaskTo('${task.id}', this.value); this.value=''"
-                              class="text-xs px-2 py-1 border border-softborder rounded bg-white text-charcoal/70">
+                              class="move-dropdown text-xs px-2 py-1 border border-softborder rounded bg-white text-charcoal/70 cursor-pointer">
                               <option value="">Move to...</option>
                               <option value="inbox">📥 Inbox</option>
                               <option value="today">⭐ Today</option>
@@ -2035,9 +2344,9 @@
                             </select>
                           ` : ''}
                           <button onclick="editingTaskId='${task.id}'; showTaskModal=true; render()"
-                            class="px-2 py-1 text-xs text-charcoal/50 hover:text-charcoal">Edit</button>
+                            class="action-btn px-2 py-1 text-xs text-charcoal/50 hover:text-charcoal rounded">Edit</button>
                           <button onclick="if(confirm('Delete this task?')) { deleteTask('${task.id}'); render(); }"
-                            class="px-2 py-1 text-xs text-red-400 hover:text-red-600">Delete</button>
+                            class="action-btn px-2 py-1 text-xs text-red-400 hover:text-red-600 rounded">Delete</button>
                         </div>
                       </div>
                     `;
@@ -2052,8 +2361,8 @@
       // Task Modal
       const editingTask = editingTaskId ? tasksData.find(t => t.id === editingTaskId) : null;
       const taskModalHtml = showTaskModal ? `
-        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showTaskModal=false; editingTaskId=null; render()}">
-          <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4" onclick="event.stopPropagation()">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showTaskModal=false; editingTaskId=null; render()}">
+          <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-lg mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">${editingTask ? 'Edit Task' : 'New Task'}</h3>
               <button onclick="showTaskModal=false; editingTaskId=null; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
@@ -2123,8 +2432,8 @@
 
       // Perspective Modal
       const perspectiveModalHtml = showPerspectiveModal ? `
-        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showPerspectiveModal=false; render()}">
-          <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4" onclick="event.stopPropagation()">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showPerspectiveModal=false; render()}">
+          <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-md mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">New Perspective</h3>
               <button onclick="showPerspectiveModal=false; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
@@ -2176,8 +2485,8 @@
       // Category Modal
       const editingCategory = editingCategoryId ? taskCategories.find(c => c.id === editingCategoryId) : null;
       const categoryModalHtml = showCategoryModal ? `
-        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showCategoryModal=false; editingCategoryId=null; render()}">
-          <div class="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showCategoryModal=false; editingCategoryId=null; render()}">
+          <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">${editingCategory ? 'Edit Category' : 'New Category'}</h3>
               <button onclick="showCategoryModal=false; editingCategoryId=null; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
@@ -2215,8 +2524,8 @@
       // Label Modal
       const editingLabel = editingLabelId ? taskLabels.find(l => l.id === editingLabelId) : null;
       const labelModalHtml = showLabelModal ? `
-        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}">
-          <div class="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}">
+          <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">${editingLabel ? 'Edit Label' : 'New Label'}</h3>
               <button onclick="showLabelModal=false; editingLabelId=null; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
