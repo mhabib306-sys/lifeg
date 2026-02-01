@@ -1017,8 +1017,9 @@
     const PERSPECTIVES_KEY = 'lifeGamificationPerspectives';
     const TASK_CATEGORIES_KEY = 'lifeGamificationTaskCategories';
     const TASK_LABELS_KEY = 'lifeGamificationTaskLabels';
+    const TASK_PEOPLE_KEY = 'lifeGamificationTaskPeople';
 
-    // Default categories
+    // Default categories (Areas)
     const DEFAULT_TASK_CATEGORIES = [
       { id: 'personal', name: 'Personal', color: '#4A90A4' },
       { id: 'work', name: 'Work', color: '#6B8E5A' },
@@ -1027,12 +1028,17 @@
       { id: 'learning', name: 'Learning', color: '#7C6B8E' }
     ];
 
-    // Default labels
+    // Default labels (Tags)
     const DEFAULT_TASK_LABELS = [
       { id: 'urgent', name: 'Urgent', color: '#DC2626' },
       { id: 'quick', name: 'Quick Win', color: '#16A34A' },
       { id: 'waiting', name: 'Waiting', color: '#CA8A04' },
       { id: 'blocked', name: 'Blocked', color: '#6B7280' }
+    ];
+
+    // Default people
+    const DEFAULT_TASK_PEOPLE = [
+      { id: 'self', name: 'Self', color: '#4A90A4' }
     ];
 
     // Things 3 exact SVG icons (filled style matching the app)
@@ -1069,19 +1075,23 @@
     let tasksData = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
     let taskCategories = JSON.parse(localStorage.getItem(TASK_CATEGORIES_KEY) || 'null') || DEFAULT_TASK_CATEGORIES;
     let taskLabels = JSON.parse(localStorage.getItem(TASK_LABELS_KEY) || 'null') || DEFAULT_TASK_LABELS;
+    let taskPeople = JSON.parse(localStorage.getItem(TASK_PEOPLE_KEY) || 'null') || DEFAULT_TASK_PEOPLE;
     let customPerspectives = JSON.parse(localStorage.getItem(PERSPECTIVES_KEY) || '[]');
     let activePerspective = savedViewState.activePerspective || 'inbox';
     let activeFilterType = savedViewState.activeFilterType || 'perspective';
     let activeCategoryFilter = savedViewState.activeCategoryFilter || null;
     let activeLabelFilter = savedViewState.activeLabelFilter || null;
+    let activePersonFilter = null;
     let editingTaskId = null;
-    let newTaskContext = { categoryId: null, labelId: null, status: 'inbox' }; // Context for new task
+    let newTaskContext = { categoryId: null, labelId: null, personId: null, status: 'inbox' }; // Context for new task
     let showTaskModal = false;
     let showPerspectiveModal = false;
     let showCategoryModal = false;
     let showLabelModal = false;
+    let showPersonModal = false;
     let editingCategoryId = null;
     let editingLabelId = null;
+    let editingPersonId = null;
 
     // Switch to category view
     function showCategoryTasks(categoryId) {
@@ -1168,6 +1178,7 @@
       localStorage.setItem(TASKS_KEY, JSON.stringify(tasksData));
       localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(taskCategories));
       localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(taskLabels));
+      localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(taskPeople));
       localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(customPerspectives));
       debouncedSaveToGithub();
     }
@@ -1236,6 +1247,55 @@
       return taskLabels.find(l => l.id === labelId);
     }
 
+    // ============ PEOPLE CRUD ============
+    function createPerson(name, color) {
+      const person = {
+        id: 'person_' + Date.now(),
+        name: name,
+        color: color || '#6B7280'
+      };
+      taskPeople.push(person);
+      saveTasksData();
+      return person;
+    }
+
+    function updatePerson(personId, updates) {
+      const idx = taskPeople.findIndex(p => p.id === personId);
+      if (idx !== -1) {
+        taskPeople[idx] = { ...taskPeople[idx], ...updates };
+        saveTasksData();
+      }
+    }
+
+    function deletePerson(personId) {
+      taskPeople = taskPeople.filter(p => p.id !== personId);
+      // Remove person from tasks that use it
+      tasksData.forEach(task => {
+        if (task.people) {
+          task.people = task.people.filter(p => p !== personId);
+        }
+      });
+      saveTasksData();
+    }
+
+    function getPersonById(personId) {
+      return taskPeople.find(p => p.id === personId);
+    }
+
+    function getTasksByPerson(personId) {
+      return tasksData.filter(task => task.people && task.people.includes(personId) && !task.completed);
+    }
+
+    function showPersonTasks(personId) {
+      activeFilterType = 'person';
+      activePersonFilter = personId;
+      activePerspective = null;
+      activeCategoryFilter = null;
+      activeLabelFilter = null;
+      saveViewState();
+      render();
+    }
+
     function createTask(title, options = {}) {
       const task = {
         id: generateTaskId(),
@@ -1246,6 +1306,7 @@
         completedAt: null,
         categoryId: options.categoryId || null,
         labels: options.labels || [],
+        people: options.people || [],       // Array of person IDs
         deferDate: options.deferDate || null, // When task becomes available
         dueDate: options.dueDate || null,     // Deadline
         repeat: options.repeat || null,       // { type: 'daily'|'weekly'|'monthly'|'yearly', interval: 1, from: 'completion'|'due' }
@@ -1621,6 +1682,8 @@
         return getTasksByCategory(activeCategoryFilter);
       } else if (activeFilterType === 'label' && activeLabelFilter) {
         return getTasksByLabel(activeLabelFilter);
+      } else if (activeFilterType === 'person' && activePersonFilter) {
+        return getTasksByPerson(activePersonFilter);
       } else {
         return getFilteredTasks(activePerspective);
       }
@@ -1633,7 +1696,10 @@
         return { icon: '📁', name: cat?.name || 'Category', color: cat?.color };
       } else if (activeFilterType === 'label' && activeLabelFilter) {
         const label = getLabelById(activeLabelFilter);
-        return { icon: '🏷️', name: label?.name || 'Label', color: label?.color };
+        return { icon: '🏷️', name: label?.name || 'Tag', color: label?.color };
+      } else if (activeFilterType === 'person' && activePersonFilter) {
+        const person = getPersonById(activePersonFilter);
+        return { icon: '👤', name: person?.name || 'Person', color: person?.color };
       } else {
         const allPerspectives = [...BUILTIN_PERSPECTIVES, ...customPerspectives];
         const p = allPerspectives.find(p => p.id === activePerspective) || BUILTIN_PERSPECTIVES[0];
@@ -3027,10 +3093,17 @@
         labelCounts[label.id] = getTasksByLabel(label.id).length;
       });
 
+      // Count tasks per person
+      const peopleCounts = {};
+      taskPeople.forEach(person => {
+        peopleCounts[person.id] = getTasksByPerson(person.id).length;
+      });
+
       // Check if perspective is active
       const isPerspectiveActive = (pId) => activeFilterType === 'perspective' && activePerspective === pId;
       const isCategoryActive = (cId) => activeFilterType === 'category' && activeCategoryFilter === cId;
       const isLabelActive = (lId) => activeFilterType === 'label' && activeLabelFilter === lId;
+      const isPersonActive = (pId) => activeFilterType === 'person' && activePersonFilter === pId;
 
       // Build sidebar
       const sidebarHtml = `
@@ -3123,6 +3196,36 @@
                   <span class="flex items-center gap-1">
                     <span class="min-w-[20px] text-center text-[13px] font-medium ${isLabelActive(label.id) ? '' : 'text-charcoal/40'}" ${isLabelActive(label.id) ? `style="color: ${label.color}"` : ''}>${labelCounts[label.id] || ''}</span>
                     <span onclick="event.stopPropagation(); editingLabelId='${label.id}'; showLabelModal=true; render()"
+                      class="action-btn text-[11px] text-charcoal/30 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-charcoal/5">Edit</span>
+                  </span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- People -->
+          <div class="sb-card rounded-xl overflow-hidden shadow-sm">
+            <div class="px-4 py-3 border-b border-softborder/50 flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal text-[13px] tracking-wide flex items-center gap-2">
+                <svg class="w-4 h-4 text-charcoal/60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                People
+              </h3>
+              <button onclick="editingPersonId=null; showPersonModal=true; render()" class="text-charcoal/30 hover:text-charcoal transition p-1.5 -mr-1 rounded-lg hover:bg-charcoal/5">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+            </div>
+            <div class="bg-white py-2 px-2">
+              ${taskPeople.map(person => `
+                <button onclick="showPersonTasks('${person.id}')"
+                  class="sidebar-item w-full px-3 py-2.5 flex items-center gap-3 text-left rounded-lg group ${isPersonActive(person.id) ? 'active' : ''}"
+                  style="${isPersonActive(person.id) ? `background: ${person.color}08` : ''}">
+                  <span class="w-6 h-6 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4" style="color: ${person.color}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  </span>
+                  <span class="flex-1 text-[14px] ${isPersonActive(person.id) ? 'font-medium text-charcoal' : 'text-charcoal/80'}">${person.name}</span>
+                  <span class="flex items-center gap-1">
+                    <span class="min-w-[20px] text-center text-[13px] font-medium ${isPersonActive(person.id) ? '' : 'text-charcoal/40'}" ${isPersonActive(person.id) ? `style="color: ${person.color}"` : ''}>${peopleCounts[person.id] || ''}</span>
+                    <span onclick="event.stopPropagation(); editingPersonId='${person.id}'; showPersonModal=true; render()"
                       class="action-btn text-[11px] text-charcoal/30 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-charcoal/5">Edit</span>
                   </span>
                 </button>
@@ -3342,6 +3445,21 @@
                   }).join('')}
                 </div>
               </div>
+
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">People</label>
+                <div class="flex flex-wrap gap-2" id="task-people-container">
+                  ${taskPeople.map(person => {
+                    const isSelected = editingTask?.people?.includes(person.id) || (!editingTask && newTaskContext.personId === person.id);
+                    return `
+                      <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition ${isSelected ? 'bg-warmgray' : 'hover:bg-warmgray/50'}" style="border-color: ${person.color}">
+                        <input type="checkbox" value="${person.id}" ${isSelected ? 'checked' : ''} class="task-person-checkbox rounded" style="accent-color: ${person.color}">
+                        <span class="text-sm" style="color: ${person.color}">${person.name}</span>
+                      </label>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
             </div>
             <div class="px-6 py-4 border-t border-softborder flex justify-end gap-3">
               <button onclick="showTaskModal=false; editingTaskId=null; render()"
@@ -3484,6 +3602,45 @@
         </div>
       ` : '';
 
+      // Person Modal
+      const editingPerson = editingPersonId ? taskPeople.find(p => p.id === editingPersonId) : null;
+      const personModalHtml = showPersonModal ? `
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}">
+          <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+            <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal">${editingPerson ? 'Edit Person' : 'New Person'}</h3>
+              <button onclick="showPersonModal=false; editingPersonId=null; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Name</label>
+                <input type="text" id="person-name" value="${editingPerson?.name || ''}"
+                  placeholder="e.g., John Doe"
+                  class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              </div>
+              <div>
+                <label class="text-sm text-charcoal/70 block mb-1">Color</label>
+                <input type="color" id="person-color" value="${editingPerson?.color || '#6B7280'}"
+                  class="w-full h-10 rounded border border-softborder cursor-pointer">
+              </div>
+            </div>
+            <div class="px-6 py-4 border-t border-softborder flex justify-between">
+              ${editingPerson ? `
+                <button onclick="if(confirm('Delete this person?')){deletePerson('${editingPerson.id}'); showPersonModal=false; editingPersonId=null; render();}"
+                  class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
+              ` : '<div></div>'}
+              <div class="flex gap-3">
+                <button onclick="showPersonModal=false; editingPersonId=null; render()"
+                  class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
+                <button onclick="savePersonFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+                  ${editingPerson ? 'Save' : 'Create'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ` : '';
+
       return `
         <div class="flex flex-col md:flex-row gap-6">
           ${sidebarHtml}
@@ -3493,6 +3650,7 @@
         ${perspectiveModalHtml}
         ${categoryModalHtml}
         ${labelModalHtml}
+        ${personModalHtml}
       `;
     }
 
@@ -3519,7 +3677,7 @@
     function saveLabelFromModal() {
       const name = document.getElementById('label-name').value.trim();
       if (!name) {
-        alert('Please enter a label name');
+        alert('Please enter a tag name');
         return;
       }
       const color = document.getElementById('label-color').value;
@@ -3534,6 +3692,25 @@
       render();
     }
 
+    // Save person from modal
+    function savePersonFromModal() {
+      const name = document.getElementById('person-name').value.trim();
+      if (!name) {
+        alert('Please enter a name');
+        return;
+      }
+      const color = document.getElementById('person-color').value;
+
+      if (editingPersonId) {
+        updatePerson(editingPersonId, { name, color });
+      } else {
+        createPerson(name, color);
+      }
+      showPersonModal = false;
+      editingPersonId = null;
+      render();
+    }
+
     // Save task from modal
     function saveTaskFromModal() {
       const title = document.getElementById('task-title').value.trim();
@@ -3542,9 +3719,13 @@
         return;
       }
 
-      // Get selected labels
+      // Get selected labels (tags)
       const labelCheckboxes = document.querySelectorAll('.task-label-checkbox:checked');
       const selectedLabels = Array.from(labelCheckboxes).map(cb => cb.value);
+
+      // Get selected people
+      const personCheckboxes = document.querySelectorAll('.task-person-checkbox:checked');
+      const selectedPeople = Array.from(personCheckboxes).map(cb => cb.value);
 
       // Get repeat settings
       const repeatType = document.getElementById('task-repeat-type').value;
@@ -3566,7 +3747,8 @@
         deferDate: document.getElementById('task-defer').value || null,
         dueDate: document.getElementById('task-due').value || null,
         repeat: repeat,
-        labels: selectedLabels
+        labels: selectedLabels,
+        people: selectedPeople
       };
 
       if (editingTaskId) {
