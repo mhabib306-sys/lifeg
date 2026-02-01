@@ -1121,7 +1121,9 @@
       // Trash - gray trash can
       trash: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`,
       // Area - Things 3 style stacked cards icon
-      area: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>`
+      area: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>`,
+      // Next - forward/play arrow in circle (OmniFocus-style)
+      next: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="white"/></svg>`
     };
 
     // Default perspectives with exact Things 3 colors
@@ -1130,6 +1132,7 @@
       { id: 'today', name: 'Today', icon: THINGS3_ICONS.today, color: '#FFCA28', filter: { status: 'today' }, builtin: true },
       { id: 'upcoming', name: 'Upcoming', icon: THINGS3_ICONS.upcoming, color: '#EF5350', filter: { upcoming: true }, builtin: true },
       { id: 'anytime', name: 'Anytime', icon: THINGS3_ICONS.anytime, color: '#26A69A', filter: { status: 'anytime' }, builtin: true },
+      { id: 'next', name: 'Next', icon: THINGS3_ICONS.next, color: '#8B5CF6', filter: { next: true }, builtin: true },
       { id: 'someday', name: 'Someday', icon: THINGS3_ICONS.someday, color: '#D4A24C', filter: { status: 'someday' }, builtin: true },
       { id: 'logbook', name: 'Logbook', icon: THINGS3_ICONS.logbook, color: '#66BB6A', filter: { completed: true }, builtin: true }
     ];
@@ -1923,6 +1926,18 @@
         // Someday: Tasks for later consideration
         if (perspectiveId === 'someday') {
           return task.status === 'someday';
+        }
+
+        // Next: Available tasks without deadlines (OmniFocus-style)
+        // Shows tasks you can work on right now with no time pressure
+        if (perspectiveId === 'next') {
+          // Must be in anytime status (not inbox, someday, or today)
+          if (task.status !== 'anytime') return false;
+          // Must NOT have a due date (no deadline pressure)
+          if (task.dueDate) return false;
+          // Must be available now (not deferred to future)
+          if (task.deferDate && task.deferDate > today) return false;
+          return true;
         }
 
         // Inbox: Unprocessed tasks (no area assigned)
