@@ -701,7 +701,7 @@
     // MAJOR: New major features (Home view, Next perspective, etc.)
     // MINOR: Enhancements and improvements
     // PATCH: Bug fixes and small tweaks
-    const APP_VERSION = '2.3.1';
+    const APP_VERSION = '2.4.0';
 
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -1278,15 +1278,30 @@
       editingTaskId = null;
       // Set context based on current view
       if (activeFilterType === 'category' && activeCategoryFilter) {
-        newTaskContext = { categoryId: activeCategoryFilter, labelId: null, status: 'inbox' };
+        newTaskContext = { categoryId: activeCategoryFilter, labelId: null, labelIds: null, personId: null, status: 'inbox' };
       } else if (activeFilterType === 'label' && activeLabelFilter) {
-        newTaskContext = { categoryId: null, labelId: activeLabelFilter, status: 'inbox' };
+        newTaskContext = { categoryId: null, labelId: activeLabelFilter, labelIds: null, personId: null, status: 'inbox' };
+      } else if (activeFilterType === 'person' && activePersonFilter) {
+        newTaskContext = { categoryId: null, labelId: null, labelIds: null, personId: activePersonFilter, status: 'inbox' };
       } else if (activeFilterType === 'perspective') {
-        // Set status based on perspective (except for special ones)
-        const statusMap = { inbox: 'inbox', today: 'today', anytime: 'anytime', someday: 'someday' };
-        newTaskContext = { categoryId: null, labelId: null, status: statusMap[activePerspective] || 'inbox' };
+        // Check if it's a custom perspective
+        const customPerspective = customPerspectives.find(p => p.id === activePerspective);
+        if (customPerspective && customPerspective.filter) {
+          // Apply custom perspective filter rules
+          newTaskContext = {
+            categoryId: customPerspective.filter.categoryId || null,
+            labelId: null,
+            labelIds: customPerspective.filter.labelIds || null,
+            personId: null,
+            status: customPerspective.filter.status || 'inbox'
+          };
+        } else {
+          // Built-in perspective - set status based on perspective
+          const statusMap = { inbox: 'inbox', today: 'today', anytime: 'anytime', someday: 'someday' };
+          newTaskContext = { categoryId: null, labelId: null, labelIds: null, personId: null, status: statusMap[activePerspective] || 'inbox' };
+        }
       } else {
-        newTaskContext = { categoryId: null, labelId: null, status: 'inbox' };
+        newTaskContext = { categoryId: null, labelId: null, labelIds: null, personId: null, status: 'inbox' };
       }
       showTaskModal = true;
       render();
@@ -1312,10 +1327,21 @@
       } else if (activeFilterType === 'person' && activePersonFilter) {
         options.people = [activePersonFilter];
       } else if (activeFilterType === 'perspective' && activePerspective) {
-        // Set status based on perspective
-        const statusMap = { inbox: 'inbox', today: 'today', anytime: 'anytime', someday: 'someday' };
-        if (statusMap[activePerspective]) {
-          options.status = statusMap[activePerspective];
+        // Check if it's a custom perspective
+        const customPerspective = customPerspectives.find(p => p.id === activePerspective);
+        if (customPerspective && customPerspective.filter) {
+          // Apply custom perspective filter rules
+          if (customPerspective.filter.status) options.status = customPerspective.filter.status;
+          if (customPerspective.filter.categoryId) options.categoryId = customPerspective.filter.categoryId;
+          if (customPerspective.filter.labelIds && customPerspective.filter.labelIds.length > 0) {
+            options.labels = customPerspective.filter.labelIds;
+          }
+        } else {
+          // Built-in perspective - set status based on perspective
+          const statusMap = { inbox: 'inbox', today: 'today', anytime: 'anytime', someday: 'someday' };
+          if (statusMap[activePerspective]) {
+            options.status = statusMap[activePerspective];
+          }
         }
       }
 
@@ -4140,7 +4166,9 @@
                 <label class="text-sm text-charcoal/70 block mb-1">Tags</label>
                 <div class="flex flex-wrap gap-2" id="task-labels-container">
                   ${taskLabels.map(label => {
-                    const isSelected = editingTask?.labels?.includes(label.id) || (!editingTask && newTaskContext.labelId === label.id);
+                    const isSelected = editingTask?.labels?.includes(label.id) ||
+                      (!editingTask && newTaskContext.labelId === label.id) ||
+                      (!editingTask && newTaskContext.labelIds && newTaskContext.labelIds.includes(label.id));
                     return `
                       <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition ${isSelected ? 'bg-warmgray' : 'hover:bg-warmgray/50'}" style="border-color: ${label.color}">
                         <input type="checkbox" value="${label.id}" ${isSelected ? 'checked' : ''} class="task-label-checkbox rounded" style="accent-color: ${label.color}">
