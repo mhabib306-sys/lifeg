@@ -218,8 +218,10 @@
 
     /* Task item - Things 3 style (no left border, subtle hover) */
     .task-item {
-      transition: background 0.15s ease;
+      transition: background 0.15s ease, border-radius 0.15s ease;
       border-left: none;
+      border-radius: 8px;
+      margin: 0 4px;
     }
     .task-item:hover {
       background: var(--accent-hover);
@@ -401,6 +403,7 @@
       transition: all 0.15s ease;
       -webkit-user-select: none;
       user-select: none;
+      position: relative;
     }
     .draggable-item:active {
       cursor: grabbing;
@@ -410,9 +413,32 @@
       background: rgba(0, 0, 0, 0.08) !important;
     }
     .draggable-item.drag-over {
-      background: rgba(20, 126, 251, 0.1) !important;
-      border-radius: 8px;
-      box-shadow: inset 0 0 0 2px rgba(20, 126, 251, 0.3);
+      position: relative;
+    }
+    .draggable-item.drag-over::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 8px;
+      right: 8px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+      z-index: 10;
+    }
+    .draggable-item.drag-over-bottom {
+      position: relative;
+    }
+    .draggable-item.drag-over-bottom::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 8px;
+      right: 8px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+      z-index: 10;
     }
 
     /* Modal animations */
@@ -1161,7 +1187,6 @@
       { id: 'today', name: 'Today', icon: THINGS3_ICONS.today, color: '#FFCA28', filter: { status: 'today' }, builtin: true },
       { id: 'upcoming', name: 'Upcoming', icon: THINGS3_ICONS.upcoming, color: '#EF5350', filter: { upcoming: true }, builtin: true },
       { id: 'anytime', name: 'Anytime', icon: THINGS3_ICONS.anytime, color: '#26A69A', filter: { status: 'anytime' }, builtin: true },
-      { id: 'next', name: 'Next', icon: THINGS3_ICONS.next, color: '#8B5CF6', filter: { next: true }, builtin: true },
       { id: 'someday', name: 'Someday', icon: THINGS3_ICONS.someday, color: '#D4A24C', filter: { status: 'someday' }, builtin: true },
       { id: 'logbook', name: 'Logbook', icon: THINGS3_ICONS.logbook, color: '#66BB6A', filter: { completed: true }, builtin: true }
     ];
@@ -1437,6 +1462,7 @@
     // ============ SIDEBAR DRAG AND DROP REORDER ============
     let draggedSidebarItem = null;
     let draggedSidebarType = null;
+    let sidebarDragPosition = null; // 'top' or 'bottom'
 
     // Setup sidebar drag and drop using event delegation (called after render)
     function setupSidebarDragDrop() {
@@ -1444,7 +1470,6 @@
         item.addEventListener('dragstart', function(e) {
           const id = this.dataset.id;
           const type = this.dataset.type;
-          console.log('[SIDEBAR DRAG] Start:', id, type);
           draggedSidebarItem = id;
           draggedSidebarType = type;
           this.classList.add('dragging');
@@ -1453,35 +1478,52 @@
         });
 
         item.addEventListener('dragend', function(e) {
-          console.log('[SIDEBAR DRAG] End');
           this.classList.remove('dragging');
-          document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+          document.querySelectorAll('.drag-over, .drag-over-bottom').forEach(el => {
+            el.classList.remove('drag-over', 'drag-over-bottom');
+          });
           draggedSidebarItem = null;
           draggedSidebarType = null;
+          sidebarDragPosition = null;
         });
 
         item.addEventListener('dragover', function(e) {
           e.preventDefault();
           e.dataTransfer.dropEffect = 'move';
-          if (!this.classList.contains('dragging')) {
-            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+          if (this.classList.contains('dragging')) return;
+
+          // Determine if cursor is in top or bottom half
+          const rect = this.getBoundingClientRect();
+          const midpoint = rect.top + rect.height / 2;
+          const position = e.clientY < midpoint ? 'top' : 'bottom';
+
+          // Clear previous indicators
+          document.querySelectorAll('.drag-over, .drag-over-bottom').forEach(el => {
+            el.classList.remove('drag-over', 'drag-over-bottom');
+          });
+
+          // Add appropriate class
+          if (position === 'top') {
             this.classList.add('drag-over');
+          } else {
+            this.classList.add('drag-over-bottom');
           }
+          sidebarDragPosition = position;
         });
 
         item.addEventListener('dragleave', function(e) {
-          this.classList.remove('drag-over');
+          this.classList.remove('drag-over', 'drag-over-bottom');
         });
 
         item.addEventListener('drop', function(e) {
           e.preventDefault();
           const targetId = this.dataset.id;
           const type = this.dataset.type;
-          console.log('[SIDEBAR DRAG] Drop on:', targetId, type, '| Dragged:', draggedSidebarItem, draggedSidebarType);
-          document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+          document.querySelectorAll('.drag-over, .drag-over-bottom').forEach(el => {
+            el.classList.remove('drag-over', 'drag-over-bottom');
+          });
 
           if (!draggedSidebarItem || draggedSidebarType !== type || draggedSidebarItem === targetId) {
-            console.log('[SIDEBAR DRAG] Drop rejected');
             return;
           }
 
@@ -1493,18 +1535,24 @@
           else return;
 
           const fromIdx = arr.findIndex(item => item.id === draggedSidebarItem);
-          const toIdx = arr.findIndex(item => item.id === targetId);
-          console.log('[SIDEBAR DRAG] Reorder from index', fromIdx, 'to', toIdx);
+          let toIdx = arr.findIndex(item => item.id === targetId);
 
-          if (fromIdx === -1 || toIdx === -1) {
-            console.log('[SIDEBAR DRAG] Invalid indices');
-            return;
+          if (fromIdx === -1 || toIdx === -1) return;
+
+          // Adjust target index based on drop position
+          if (sidebarDragPosition === 'bottom' && fromIdx < toIdx) {
+            // No adjustment needed
+          } else if (sidebarDragPosition === 'bottom' && fromIdx > toIdx) {
+            toIdx += 1;
+          } else if (sidebarDragPosition === 'top' && fromIdx > toIdx) {
+            // No adjustment needed
+          } else if (sidebarDragPosition === 'top' && fromIdx < toIdx) {
+            toIdx -= 1;
           }
 
           // Remove from old position and insert at new position
           const [removed] = arr.splice(fromIdx, 1);
           arr.splice(toIdx, 0, removed);
-          console.log('[SIDEBAR DRAG] Reorder SUCCESS');
 
           saveTasksData();
           render();
@@ -1948,10 +1996,18 @@
         // - Tasks explicitly marked as 'today'
         // - Tasks with today's due date
         // - Overdue tasks (due date in the past)
+        // - "Next" tasks: anytime status, no due date, available now (not deferred)
         if (perspectiveId === 'today') {
           const isDueToday = task.dueDate === today;
           const isOverdue = task.dueDate && task.dueDate < today;
-          return task.status === 'today' || isDueToday || isOverdue;
+          const isTodayTask = task.status === 'today' || isDueToday || isOverdue;
+
+          // Include "Next" tasks (anytime, no due date, available)
+          const isNextTask = task.status === 'anytime' &&
+                            !task.dueDate &&
+                            (!task.deferDate || task.deferDate <= today);
+
+          return isTodayTask || isNextTask;
         }
 
         // Upcoming: Tasks with future due dates (not today, not overdue)
