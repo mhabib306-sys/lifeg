@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-02T08:13:37.792Z",
+  "lastUpdated": "2026-02-02T08:15:07.158Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1826,6 +1826,22 @@
       "repeat": null,
       "createdAt": "2026-02-02T08:09:36.918Z",
       "updatedAt": "2026-02-02T08:09:52.631Z"
+    },
+    {
+      "id": "task_1770020104608_3pypqlvmh",
+      "title": "Schedule 1:1 with Seif",
+      "notes": "",
+      "status": "inbox",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "createdAt": "2026-02-02T08:15:04.608Z",
+      "updatedAt": "2026-02-02T08:15:04.608Z"
     }
   ],
   "taskCategories": [
