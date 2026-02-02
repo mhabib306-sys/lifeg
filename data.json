@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-02T07:26:20.058Z",
+  "lastUpdated": "2026-02-02T07:26:32.968Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1671,17 +1671,19 @@
       "id": "task_1769984504582_xua0ibokb",
       "title": "The only way I",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
       "categoryId": "cat_1769983795940",
-      "labels": [],
+      "labels": [
+        "label_1769989456692"
+      ],
       "people": [],
       "deferDate": null,
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T22:21:44.582Z",
-      "updatedAt": "2026-02-01T22:21:44.582Z",
+      "updatedAt": "2026-02-02T07:26:30.741Z",
       "order": 1000
     },
     {
