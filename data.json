@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-02T09:10:51.459Z",
+  "lastUpdated": "2026-02-02T09:11:06.938Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1943,5 +1943,18 @@
       "builtin": false
     }
   ],
-  "notes": []
+  "notes": [
+    {
+      "id": "note_1770023464674_r48eaok1e",
+      "content": "A note",
+      "parentId": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [
+        "person_1769977441169"
+      ],
+      "createdAt": "2026-02-02T09:11:04.674Z",
+      "updatedAt": "2026-02-02T09:11:04.674Z"
+    }
+  ]
 }
