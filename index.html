@@ -403,6 +403,12 @@
     .draggable-item:active {
       cursor: grabbing;
     }
+    .draggable-item > * {
+      pointer-events: none;
+    }
+    .draggable-item > span[onclick] {
+      pointer-events: auto;
+    }
     .draggable-item.dragging {
       opacity: 0.5;
       background: rgba(0, 0, 0, 0.08) !important;
@@ -1433,13 +1439,15 @@
     function handleSidebarDragStart(e, id, type) {
       draggedSidebarItem = id;
       draggedSidebarType = type;
-      e.target.classList.add('dragging');
+      const item = e.currentTarget || e.target.closest('.draggable-item');
+      if (item) item.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', id);
     }
 
     function handleSidebarDragEnd(e) {
-      e.target.classList.remove('dragging');
+      const item = e.currentTarget || e.target.closest('.draggable-item');
+      if (item) item.classList.remove('dragging');
       document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
       draggedSidebarItem = null;
       draggedSidebarType = null;
