@@ -395,6 +395,24 @@
       background: var(--accent) !important;
     }
 
+    /* Sidebar draggable items */
+    .draggable-item {
+      cursor: grab;
+      transition: all 0.15s ease;
+    }
+    .draggable-item:active {
+      cursor: grabbing;
+    }
+    .draggable-item.dragging {
+      opacity: 0.5;
+      background: rgba(0, 0, 0, 0.08) !important;
+    }
+    .draggable-item.drag-over {
+      background: rgba(20, 126, 251, 0.1) !important;
+      border-radius: 8px;
+      box-shadow: inset 0 0 0 2px rgba(20, 126, 251, 0.3);
+    }
+
     /* Modal animations */
     .modal-overlay {
       animation: fadeIn 0.2s ease-out;
@@ -3641,8 +3659,8 @@
             </div>
             <div class="py-1.5 px-1.5">
               ${taskCategories.map(cat => `
-                <button onclick="showCategoryTasks('${cat.id}')"
-                  class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isCategoryActive(cat.id) ? 'active' : ''}"
+                <div onclick="showCategoryTasks('${cat.id}')"
+                  class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative cursor-pointer select-none ${isCategoryActive(cat.id) ? 'active' : ''}"
                   draggable="true"
                   ondragstart="handleSidebarDragStart(event, '${cat.id}', 'category')"
                   ondragend="handleSidebarDragEnd(event)"
@@ -3654,7 +3672,7 @@
                   <span class="w-6 text-right text-[13px] group-hover:opacity-0 transition-opacity text-charcoal/35">${categoryCounts[cat.id] || ''}</span>
                   <span onclick="event.stopPropagation(); editingCategoryId='${cat.id}'; showCategoryModal=true; render()"
                     class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/40 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-black/5">Edit</span>
-                </button>
+                </div>
               `).join('')}
             </div>
           </div>
@@ -3669,8 +3687,8 @@
             </div>
             <div class="py-1.5 px-1.5">
               ${taskLabels.map(label => `
-                <button onclick="showLabelTasks('${label.id}')"
-                  class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isLabelActive(label.id) ? 'active' : ''}"
+                <div onclick="showLabelTasks('${label.id}')"
+                  class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative cursor-pointer select-none ${isLabelActive(label.id) ? 'active' : ''}"
                   draggable="true"
                   ondragstart="handleSidebarDragStart(event, '${label.id}', 'label')"
                   ondragend="handleSidebarDragEnd(event)"
@@ -3684,7 +3702,7 @@
                   <span class="w-6 text-right text-[13px] group-hover:opacity-0 transition-opacity text-charcoal/35">${labelCounts[label.id] || ''}</span>
                   <span onclick="event.stopPropagation(); editingLabelId='${label.id}'; showLabelModal=true; render()"
                     class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/40 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-black/5">Edit</span>
-                </button>
+                </div>
               `).join('')}
             </div>
           </div>
@@ -3699,8 +3717,8 @@
             </div>
             <div class="py-1.5 px-1.5">
               ${taskPeople.map(person => `
-                <button onclick="showPersonTasks('${person.id}')"
-                  class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative ${isPersonActive(person.id) ? 'active' : ''}"
+                <div onclick="showPersonTasks('${person.id}')"
+                  class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative cursor-pointer select-none ${isPersonActive(person.id) ? 'active' : ''}"
                   draggable="true"
                   ondragstart="handleSidebarDragStart(event, '${person.id}', 'person')"
                   ondragend="handleSidebarDragEnd(event)"
@@ -3714,7 +3732,7 @@
                   <span class="w-6 text-right text-[13px] group-hover:opacity-0 transition-opacity text-charcoal/35">${peopleCounts[person.id] || ''}</span>
                   <span onclick="event.stopPropagation(); editingPersonId='${person.id}'; showPersonModal=true; render()"
                     class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-charcoal/40 hover:text-charcoal px-1.5 py-0.5 rounded hover:bg-black/5">Edit</span>
-                </button>
+                </div>
               `).join('')}
             </div>
           </div>
