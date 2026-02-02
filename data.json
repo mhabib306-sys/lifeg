@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-02T08:02:00.586Z",
+  "lastUpdated": "2026-02-02T08:02:03.460Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1795,11 +1795,6 @@
       "color": "#4a90a4"
     },
     {
-      "id": "health",
-      "name": "Health",
-      "color": "#E5533D"
-    },
-    {
       "id": "work",
       "name": "Breadfast",
       "color": "#ea39b2"
@@ -1808,6 +1803,11 @@
       "id": "family",
       "name": "Family",
       "color": "#C4943D"
+    },
+    {
+      "id": "health",
+      "name": "Health",
+      "color": "#E5533D"
     },
     {
       "id": "learning",
