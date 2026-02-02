@@ -701,7 +701,7 @@
     // MAJOR: New major features (Home view, Next perspective, etc.)
     // MINOR: Enhancements and improvements
     // PATCH: Bug fixes and small tweaks
-    const APP_VERSION = '2.3.0';
+    const APP_VERSION = '2.3.1';
 
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -3664,8 +3664,19 @@
 
       // Count tasks per perspective
       const taskCounts = {};
+      const todayDate = new Date().toISOString().split('T')[0];
       BUILTIN_PERSPECTIVES.forEach(p => {
-        taskCounts[p.id] = getFilteredTasks(p.id).length;
+        if (p.id === 'today') {
+          // Today count shows only dated tasks (not Next-tagged tasks)
+          taskCounts[p.id] = tasksData.filter(t => {
+            if (t.completed) return false;
+            const isDueToday = t.dueDate === todayDate;
+            const isOverdue = t.dueDate && t.dueDate < todayDate;
+            return t.status === 'today' || isDueToday || isOverdue;
+          }).length;
+        } else {
+          taskCounts[p.id] = getFilteredTasks(p.id).length;
+        }
       });
       customPerspectives.forEach(p => {
         taskCounts[p.id] = getFilteredTasks(p.id).length;
