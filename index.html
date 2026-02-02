@@ -701,7 +701,7 @@
     // MAJOR: New major features (Home view, Next perspective, etc.)
     // MINOR: Enhancements and improvements
     // PATCH: Bug fixes and small tweaks
-    const APP_VERSION = '2.2.0';
+    const APP_VERSION = '2.3.0';
 
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -1996,16 +1996,15 @@
         // - Tasks explicitly marked as 'today'
         // - Tasks with today's due date
         // - Overdue tasks (due date in the past)
-        // - "Next" tasks: anytime status, no due date, available now (not deferred)
+        // - "Next" tasks: tasks tagged with a "next" label
         if (perspectiveId === 'today') {
           const isDueToday = task.dueDate === today;
           const isOverdue = task.dueDate && task.dueDate < today;
           const isTodayTask = task.status === 'today' || isDueToday || isOverdue;
 
-          // Include "Next" tasks (anytime, no due date, available)
-          const isNextTask = task.status === 'anytime' &&
-                            !task.dueDate &&
-                            (!task.deferDate || task.deferDate <= today);
+          // Include tasks tagged with "next" label
+          const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
+          const isNextTask = nextLabel && (task.labels || []).includes(nextLabel.id);
 
           return isTodayTask || isNextTask;
         }
@@ -3856,6 +3855,7 @@
               ${activePerspective === 'home' ? (() => {
                 // Home view: Today tasks + Next tasks + mini stats
                 const today = new Date().toISOString().split('T')[0];
+                const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
                 const todayTasks = tasksData.filter(t => {
                   if (t.completed) return false;
                   const isDueToday = t.dueDate === today;
@@ -3868,13 +3868,15 @@
                   if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
                   return 0;
                 });
-                const nextTasks = tasksData.filter(t => {
+                // Next tasks: tasks tagged with "next" label (not already in dated tasks)
+                const nextTasks = nextLabel ? tasksData.filter(t => {
                   if (t.completed) return false;
-                  if (t.status !== 'anytime') return false;
-                  if (t.dueDate) return false;
-                  if (t.deferDate && t.deferDate > today) return false;
-                  return true;
-                });
+                  const isNextTagged = (t.labels || []).includes(nextLabel.id);
+                  if (!isNextTagged) return false;
+                  // Exclude tasks already shown in dated section
+                  const isDatedTask = t.status === 'today' || t.dueDate === today || (t.dueDate && t.dueDate < today);
+                  return !isDatedTask;
+                }) : [];
                 const completedToday = tasksData.filter(t => t.completed && t.completedAt && t.completedAt.startsWith(today)).length;
                 const totalActive = tasksData.filter(t => !t.completed).length;
                 const inboxCount = tasksData.filter(t => !t.completed && t.status === 'inbox' && !t.categoryId).length;
@@ -3890,7 +3892,7 @@
                     </div>
                     <div class="bg-warmgray/30 rounded-lg p-4 text-center">
                       <div class="text-2xl font-bold text-charcoal">${nextTasks.length}</div>
-                      <div class="text-xs text-charcoal/50 mt-1">Available</div>
+                      <div class="text-xs text-charcoal/50 mt-1">Tagged Next</div>
                     </div>
                     <div class="bg-warmgray/30 rounded-lg p-4 text-center">
                       <div class="text-2xl font-bold text-green-600">${completedToday}</div>
@@ -3923,15 +3925,15 @@
                   <div>
                     <div class="flex items-center gap-2 mb-3">
                       <span class="text-[#8B5CF6]">${THINGS3_ICONS.next}</span>
-                      <h3 class="text-sm font-semibold text-charcoal uppercase tracking-wider">Available Next</h3>
+                      <h3 class="text-sm font-semibold text-charcoal uppercase tracking-wider">Next</h3>
                       <span class="text-xs text-charcoal/40">${nextTasks.length}</span>
                     </div>
                     ${nextTasks.length === 0 ? `
-                      <div class="py-8 text-center text-charcoal/30 text-sm">No available tasks without deadlines</div>
+                      <div class="py-8 text-center text-charcoal/30 text-sm">No tasks tagged with "next"</div>
                     ` : `
                       <div class="bg-white rounded-lg">
                         ${nextTasks.slice(0, 5).map(task => renderTaskItem(task, false)).join('')}
-                        ${nextTasks.length > 5 ? `<div class="px-4 py-2 text-center"><button onclick="showPerspectiveTasks('next')" class="text-sm text-[#147EFB] hover:underline">View all ${nextTasks.length} tasks →</button></div>` : ''}
+                        ${nextTasks.length > 5 ? `<div class="px-4 py-2 text-center"><button onclick="showPerspectiveTasks('today')" class="text-sm text-[#147EFB] hover:underline">View all ${nextTasks.length} tasks →</button></div>` : ''}
                       </div>
                     `}
                   </div>
@@ -3971,12 +3973,58 @@
                     </div>
                   `).join('')}
                 </div>
-              ` : `
+              ` : (activePerspective === 'today' ? (() => {
+                // Today view: Split into dated tasks and Next-tagged tasks
+                const today = new Date().toISOString().split('T')[0];
+                const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
+
+                // Dated tasks: tasks with status 'today', due today, or overdue
+                const datedTasks = filteredTasks.filter(t => {
+                  const isDueToday = t.dueDate === today;
+                  const isOverdue = t.dueDate && t.dueDate < today;
+                  return t.status === 'today' || isDueToday || isOverdue;
+                });
+
+                // Next tasks: tasks tagged with "next" label (not already in dated)
+                const nextTasks = nextLabel ? filteredTasks.filter(t => {
+                  const isNextTagged = (t.labels || []).includes(nextLabel.id);
+                  const isDatedTask = t.status === 'today' || t.dueDate === today || (t.dueDate && t.dueDate < today);
+                  return isNextTagged && !isDatedTask;
+                }) : [];
+
+                return `
+                <div class="task-list">
+                  ${datedTasks.length > 0 ? `
+                    <div class="dated-tasks-section">
+                      ${datedTasks.map(task => renderTaskItem(task)).join('')}
+                    </div>
+                  ` : ''}
+                  ${nextTasks.length > 0 ? `
+                    <div class="next-tasks-section mt-4">
+                      <div class="px-5 py-2 sticky top-0 bg-white">
+                        <div class="flex items-center gap-2">
+                          <span class="text-[#8B5CF6]">${THINGS3_ICONS.next}</span>
+                          <span class="text-[13px] font-semibold text-charcoal/50 uppercase tracking-wider">Next</span>
+                          <span class="text-xs text-charcoal/30">${nextTasks.length}</span>
+                        </div>
+                      </div>
+                      ${nextTasks.map(task => renderTaskItem(task)).join('')}
+                    </div>
+                  ` : ''}
+                  ${datedTasks.length === 0 && nextTasks.length === 0 ? `
+                    <div class="empty-state flex flex-col items-center justify-center py-20 text-charcoal/30">
+                      <div class="w-16 h-16 mb-4 flex items-center justify-center opacity-50">${viewInfo.icon}</div>
+                      <p class="text-[15px] font-medium">No tasks in ${viewInfo.name}</p>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+              })() : `
                 <!-- Regular task list -->
                 <div class="task-list">
                   ${filteredTasks.map(task => renderTaskItem(task)).join('')}
                 </div>
-              `)))}
+              `))))}
             </div>
           </div>
         </div>
