@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-02T08:18:31.179Z",
+  "lastUpdated": "2026-02-02T08:18:49.024Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1731,13 +1731,15 @@
       "completed": false,
       "completedAt": null,
       "categoryId": null,
-      "labels": [],
+      "labels": [
+        "label_1770020325388"
+      ],
       "people": [],
       "deferDate": null,
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T23:28:26.419Z",
-      "updatedAt": "2026-02-02T08:18:11.539Z",
+      "updatedAt": "2026-02-02T08:18:46.701Z",
       "order": 4000
     },
     {
@@ -1907,6 +1909,11 @@
     {
       "id": "label_1769989456692",
       "name": "Active Topics",
+      "color": "#6b7280"
+    },
+    {
+      "id": "label_1770020325388",
+      "name": "next",
       "color": "#6b7280"
     }
   ],
