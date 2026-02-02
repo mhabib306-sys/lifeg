@@ -1432,73 +1432,78 @@
     let draggedSidebarItem = null;
     let draggedSidebarType = null;
 
-    function handleSidebarDragStart(e, id, type) {
-      console.log('[SIDEBAR DRAG] Start:', id, type);
-      draggedSidebarItem = id;
-      draggedSidebarType = type;
-      const item = e.currentTarget || e.target.closest('.draggable-item');
-      if (item) item.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', id);
-    }
+    // Setup sidebar drag and drop using event delegation (called after render)
+    function setupSidebarDragDrop() {
+      document.querySelectorAll('.draggable-item').forEach(item => {
+        item.addEventListener('dragstart', function(e) {
+          const id = this.dataset.id;
+          const type = this.dataset.type;
+          console.log('[SIDEBAR DRAG] Start:', id, type);
+          draggedSidebarItem = id;
+          draggedSidebarType = type;
+          this.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', id);
+        });
 
-    function handleSidebarDragEnd(e) {
-      console.log('[SIDEBAR DRAG] End');
-      const item = e.currentTarget || e.target.closest('.draggable-item');
-      if (item) item.classList.remove('dragging');
-      document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-      draggedSidebarItem = null;
-      draggedSidebarType = null;
-    }
+        item.addEventListener('dragend', function(e) {
+          console.log('[SIDEBAR DRAG] End');
+          this.classList.remove('dragging');
+          document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+          draggedSidebarItem = null;
+          draggedSidebarType = null;
+        });
 
-    function handleSidebarDragOver(e) {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      const target = e.target.closest('.draggable-item');
-      if (target && !target.classList.contains('dragging')) {
-        document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-        target.classList.add('drag-over');
-      }
-    }
+        item.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          if (!this.classList.contains('dragging')) {
+            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            this.classList.add('drag-over');
+          }
+        });
 
-    function handleSidebarDragLeave(e) {
-      const target = e.target.closest('.draggable-item');
-      if (target) target.classList.remove('drag-over');
-    }
+        item.addEventListener('dragleave', function(e) {
+          this.classList.remove('drag-over');
+        });
 
-    function handleSidebarDrop(e, targetId, type) {
-      e.preventDefault();
-      console.log('[SIDEBAR DRAG] Drop on:', targetId, type, '| Dragged:', draggedSidebarItem, draggedSidebarType);
-      document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+        item.addEventListener('drop', function(e) {
+          e.preventDefault();
+          const targetId = this.dataset.id;
+          const type = this.dataset.type;
+          console.log('[SIDEBAR DRAG] Drop on:', targetId, type, '| Dragged:', draggedSidebarItem, draggedSidebarType);
+          document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
 
-      if (!draggedSidebarItem || draggedSidebarType !== type || draggedSidebarItem === targetId) {
-        console.log('[SIDEBAR DRAG] Drop rejected');
-        return;
-      }
+          if (!draggedSidebarItem || draggedSidebarType !== type || draggedSidebarItem === targetId) {
+            console.log('[SIDEBAR DRAG] Drop rejected');
+            return;
+          }
 
-      let arr;
-      if (type === 'category') arr = taskCategories;
-      else if (type === 'label') arr = taskLabels;
-      else if (type === 'person') arr = taskPeople;
-      else if (type === 'perspective') arr = customPerspectives;
-      else return;
+          let arr;
+          if (type === 'category') arr = taskCategories;
+          else if (type === 'label') arr = taskLabels;
+          else if (type === 'person') arr = taskPeople;
+          else if (type === 'perspective') arr = customPerspectives;
+          else return;
 
-      const fromIdx = arr.findIndex(item => item.id === draggedSidebarItem);
-      const toIdx = arr.findIndex(item => item.id === targetId);
-      console.log('[SIDEBAR DRAG] Reorder from index', fromIdx, 'to', toIdx);
+          const fromIdx = arr.findIndex(item => item.id === draggedSidebarItem);
+          const toIdx = arr.findIndex(item => item.id === targetId);
+          console.log('[SIDEBAR DRAG] Reorder from index', fromIdx, 'to', toIdx);
 
-      if (fromIdx === -1 || toIdx === -1) {
-        console.log('[SIDEBAR DRAG] Invalid indices');
-        return;
-      }
+          if (fromIdx === -1 || toIdx === -1) {
+            console.log('[SIDEBAR DRAG] Invalid indices');
+            return;
+          }
 
-      // Remove from old position and insert at new position
-      const [removed] = arr.splice(fromIdx, 1);
-      arr.splice(toIdx, 0, removed);
-      console.log('[SIDEBAR DRAG] Reorder SUCCESS');
+          // Remove from old position and insert at new position
+          const [removed] = arr.splice(fromIdx, 1);
+          arr.splice(toIdx, 0, removed);
+          console.log('[SIDEBAR DRAG] Reorder SUCCESS');
 
-      saveTasksData();
-      render();
+          saveTasksData();
+          render();
+        });
+      });
     }
 
     function getTasksByPerson(personId) {
@@ -3024,6 +3029,11 @@
       `;
 
       document.getElementById('dateInput').addEventListener('change', (e) => { currentDate = e.target.value; render(); });
+
+      // Setup sidebar drag and drop after DOM is updated
+      if (activeTab === 'tasks') {
+        setupSidebarDragDrop();
+      }
     }
 
     function switchTab(tab) { activeTab = tab; saveViewState(); render(); }
@@ -3677,11 +3687,8 @@
                 <div onclick="showCategoryTasks('${cat.id}')"
                   class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative cursor-pointer select-none ${isCategoryActive(cat.id) ? 'active' : ''}"
                   draggable="true"
-                  ondragstart="handleSidebarDragStart(event, '${cat.id}', 'category')"
-                  ondragend="handleSidebarDragEnd(event)"
-                  ondragover="handleSidebarDragOver(event)"
-                  ondragleave="handleSidebarDragLeave(event)"
-                  ondrop="handleSidebarDrop(event, '${cat.id}', 'category')">
+                  data-id="${cat.id}"
+                  data-type="category">
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-charcoal/40">${THINGS3_ICONS.area}</span>
                   <span class="flex-1 text-[14px] ${isCategoryActive(cat.id) ? 'font-medium text-charcoal' : 'text-charcoal/70'}">${cat.name}</span>
                   <span class="w-6 text-right text-[13px] group-hover:opacity-0 transition-opacity text-charcoal/35">${categoryCounts[cat.id] || ''}</span>
@@ -3705,11 +3712,8 @@
                 <div onclick="showLabelTasks('${label.id}')"
                   class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative cursor-pointer select-none ${isLabelActive(label.id) ? 'active' : ''}"
                   draggable="true"
-                  ondragstart="handleSidebarDragStart(event, '${label.id}', 'label')"
-                  ondragend="handleSidebarDragEnd(event)"
-                  ondragover="handleSidebarDragOver(event)"
-                  ondragleave="handleSidebarDragLeave(event)"
-                  ondrop="handleSidebarDrop(event, '${label.id}', 'label')">
+                  data-id="${label.id}"
+                  data-type="label">
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0">
                     <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${label.color}"></span>
                   </span>
@@ -3735,11 +3739,8 @@
                 <div onclick="showPersonTasks('${person.id}')"
                   class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative cursor-pointer select-none ${isPersonActive(person.id) ? 'active' : ''}"
                   draggable="true"
-                  ondragstart="handleSidebarDragStart(event, '${person.id}', 'person')"
-                  ondragend="handleSidebarDragEnd(event)"
-                  ondragover="handleSidebarDragOver(event)"
-                  ondragleave="handleSidebarDragLeave(event)"
-                  ondrop="handleSidebarDrop(event, '${person.id}', 'person')">
+                  data-id="${person.id}"
+                  data-type="person">
                   <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-charcoal/40">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   </span>
