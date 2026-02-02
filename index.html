@@ -3639,9 +3639,9 @@
           </div>
 
           <!-- Custom Perspectives -->
-          <div class="bg-white rounded-xl border border-charcoal/[0.06]">
-            <div class="px-4 py-2.5 border-b border-charcoal/[0.06] flex items-center justify-between">
-              <h3 class="font-semibold text-charcoal/60 text-[12px] uppercase tracking-wider">Custom Views</h3>
+          <div class="bg-white rounded-xl">
+            <div class="px-4 py-2.5 flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal/40 text-[11px] uppercase tracking-wider">Custom Views</h3>
               <button onclick="showPerspectiveModal=true; render()" class="text-charcoal/30 hover:text-charcoal transition p-1.5 -mr-1 rounded-lg hover:bg-charcoal/5">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
               </button>
@@ -3665,9 +3665,9 @@
           </div>
 
           <!-- Areas -->
-          <div class="bg-white rounded-xl border border-charcoal/[0.06]">
-            <div class="px-4 py-2.5 border-b border-charcoal/[0.06] flex items-center justify-between">
-              <h3 class="font-semibold text-charcoal/60 text-[12px] uppercase tracking-wider">Areas</h3>
+          <div class="bg-white rounded-xl">
+            <div class="px-4 py-2.5 flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal/40 text-[11px] uppercase tracking-wider">Areas</h3>
               <button onclick="editingCategoryId=null; showCategoryModal=true; render()" class="text-charcoal/30 hover:text-charcoal transition p-1.5 -mr-1 rounded-lg hover:bg-charcoal/5">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
               </button>
@@ -3693,9 +3693,9 @@
           </div>
 
           <!-- Tags -->
-          <div class="bg-white rounded-xl border border-charcoal/[0.06]">
-            <div class="px-4 py-2.5 border-b border-charcoal/[0.06] flex items-center justify-between">
-              <h3 class="font-semibold text-charcoal/60 text-[12px] uppercase tracking-wider">Tags</h3>
+          <div class="bg-white rounded-xl">
+            <div class="px-4 py-2.5 flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal/40 text-[11px] uppercase tracking-wider">Tags</h3>
               <button onclick="editingLabelId=null; showLabelModal=true; render()" class="text-charcoal/30 hover:text-charcoal transition p-1.5 -mr-1 rounded-lg hover:bg-charcoal/5">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
               </button>
@@ -3723,9 +3723,9 @@
           </div>
 
           <!-- People -->
-          <div class="bg-white rounded-xl border border-charcoal/[0.06]">
-            <div class="px-4 py-2.5 border-b border-charcoal/[0.06] flex items-center justify-between">
-              <h3 class="font-semibold text-charcoal/60 text-[12px] uppercase tracking-wider">People</h3>
+          <div class="bg-white rounded-xl">
+            <div class="px-4 py-2.5 flex items-center justify-between">
+              <h3 class="font-semibold text-charcoal/40 text-[11px] uppercase tracking-wider">People</h3>
               <button onclick="editingPersonId=null; showPersonModal=true; render()" class="text-charcoal/30 hover:text-charcoal transition p-1.5 -mr-1 rounded-lg hover:bg-charcoal/5">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
               </button>
@@ -3757,7 +3757,7 @@
       // Build task list
       const taskListHtml = `
         <div class="flex-1">
-          <div class="bg-white rounded-xl shadow-sm border border-charcoal/[0.06]">
+          <div class="bg-white rounded-xl">
             <div class="px-5 py-4 flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <span class="text-2xl" ${viewInfo.color ? `style="color: ${viewInfo.color}"` : ''}>${viewInfo.icon}</span>
@@ -3771,7 +3771,7 @@
 
             ${activePerspective !== 'upcoming' && activePerspective !== 'home' ? `
             <!-- Quick Add Input -->
-            <div class="px-4 py-3 border-t border-charcoal/[0.06]">
+            <div class="px-4 py-3">
               <div class="flex items-center gap-3">
                 <div class="w-5 h-5 rounded-full border-2 border-dashed border-charcoal/20 flex-shrink-0"></div>
                 <input type="text" id="quick-add-input"
@@ -3846,7 +3846,7 @@
                     ${todayTasks.length === 0 ? `
                       <div class="py-8 text-center text-charcoal/30 text-sm">No tasks due today</div>
                     ` : `
-                      <div class="bg-white rounded-lg border border-charcoal/[0.06] divide-y divide-charcoal/[0.06]">
+                      <div class="bg-white rounded-lg">
                         ${todayTasks.slice(0, 5).map(task => renderTaskItem(task, false)).join('')}
                         ${todayTasks.length > 5 ? `<div class="px-4 py-2 text-center"><button onclick="showPerspectiveTasks('today')" class="text-sm text-[#147EFB] hover:underline">View all ${todayTasks.length} tasks →</button></div>` : ''}
                       </div>
@@ -3863,7 +3863,7 @@
                     ${nextTasks.length === 0 ? `
                       <div class="py-8 text-center text-charcoal/30 text-sm">No available tasks without deadlines</div>
                     ` : `
-                      <div class="bg-white rounded-lg border border-charcoal/[0.06] divide-y divide-charcoal/[0.06]">
+                      <div class="bg-white rounded-lg">
                         ${nextTasks.slice(0, 5).map(task => renderTaskItem(task, false)).join('')}
                         ${nextTasks.length > 5 ? `<div class="px-4 py-2 text-center"><button onclick="showPerspectiveTasks('next')" class="text-sm text-[#147EFB] hover:underline">View all ${nextTasks.length} tasks →</button></div>` : ''}
                       </div>
@@ -3881,11 +3881,11 @@
                 <!-- Upcoming view grouped by date -->
                 <div class="task-list">
                   ${groupTasksByDate(filteredTasks).map(group => `
-                    <div class="date-group">
-                      <div class="px-5 py-2.5 bg-charcoal/[0.02] border-t border-charcoal/[0.06] sticky top-0">
-                        <span class="text-[13px] font-semibold text-charcoal/60">${group.label}</span>
+                    <div class="date-group mb-6">
+                      <div class="px-5 py-2 sticky top-0 bg-white">
+                        <span class="text-[13px] font-semibold text-charcoal/50">${group.label}</span>
                       </div>
-                      <div class="divide-y divide-charcoal/[0.06]">
+                      <div>
                         ${group.tasks.map(task => renderTaskItem(task, false)).join('')}
                       </div>
                     </div>
@@ -3895,11 +3895,11 @@
                 <!-- Logbook view grouped by completion date -->
                 <div class="task-list">
                   ${groupTasksByCompletionDate(filteredTasks).map(group => `
-                    <div class="date-group">
-                      <div class="px-5 py-2.5 bg-charcoal/[0.02] border-t border-charcoal/[0.06] sticky top-0">
-                        <span class="text-[13px] font-semibold text-charcoal/60">${group.label}</span>
+                    <div class="date-group mb-6">
+                      <div class="px-5 py-2 sticky top-0 bg-white">
+                        <span class="text-[13px] font-semibold text-charcoal/50">${group.label}</span>
                       </div>
-                      <div class="divide-y divide-charcoal/[0.06]">
+                      <div>
                         ${group.tasks.map(task => renderTaskItem(task, false)).join('')}
                       </div>
                     </div>
@@ -3907,7 +3907,7 @@
                 </div>
               ` : `
                 <!-- Regular task list -->
-                <div class="task-list divide-y divide-charcoal/[0.06]">
+                <div class="task-list">
                   ${filteredTasks.map(task => renderTaskItem(task)).join('')}
                 </div>
               `)))}
