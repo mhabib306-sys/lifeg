@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-02T08:09:39.235Z",
+  "lastUpdated": "2026-02-02T08:09:55.243Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1813,17 +1813,19 @@
       "id": "task_1770019776918_pke6505zt",
       "title": "Weight loss progress",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
-      "categoryId": null,
-      "labels": [],
+      "categoryId": "cat_1769983795940",
+      "labels": [
+        "label_1769989456692"
+      ],
       "people": [],
       "deferDate": null,
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-02T08:09:36.918Z",
-      "updatedAt": "2026-02-02T08:09:36.918Z"
+      "updatedAt": "2026-02-02T08:09:52.631Z"
     }
   ],
   "taskCategories": [
