@@ -399,15 +399,11 @@
     .draggable-item {
       cursor: grab;
       transition: all 0.15s ease;
+      -webkit-user-select: none;
+      user-select: none;
     }
     .draggable-item:active {
       cursor: grabbing;
-    }
-    .draggable-item > * {
-      pointer-events: none;
-    }
-    .draggable-item > span[onclick] {
-      pointer-events: auto;
     }
     .draggable-item.dragging {
       opacity: 0.5;
