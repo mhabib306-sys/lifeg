@@ -671,6 +671,12 @@
   <div id="app"></div>
 
   <script>
+    // App Version (MAJOR.MINOR.PATCH)
+    // MAJOR: New major features (Home view, Next perspective, etc.)
+    // MINOR: Enhancements and improvements
+    // PATCH: Bug fixes and small tweaks
+    const APP_VERSION = '2.1.0';
+
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
     const GITHUB_TOKEN_KEY = 'lifeGamificationGithubToken';
@@ -2978,7 +2984,10 @@
                   <rect x="24" y="72" width="22" height="10" rx="3" style="fill: var(--bg-primary); opacity: 0.5"/>
                 </svg>
                 <div>
-                  <h1 class="text-2xl font-bold tracking-tight text-charcoal">Life Gamification</h1>
+                  <div class="flex items-center gap-2">
+                    <h1 class="text-2xl font-bold tracking-tight text-charcoal">Life Gamification</h1>
+                    <span class="text-[10px] font-medium text-charcoal/40 bg-charcoal/5 px-1.5 py-0.5 rounded">v${APP_VERSION}</span>
+                  </div>
                   <p class="text-sm text-charcoal/60 mt-0.5">Track habits, diabetes <span class="text-coral">+</span> reduce your biological age</p>
                 </div>
               </div>
