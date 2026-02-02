@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-02T07:31:11.981Z",
+  "lastUpdated": "2026-02-02T07:32:48.836Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1858,6 +1858,18 @@
       "icon": "📌",
       "filter": {
         "categoryId": "cat_1769983795940",
+        "labelIds": [
+          "label_1769989456692"
+        ]
+      },
+      "builtin": false
+    },
+    {
+      "id": "custom_1770017566346",
+      "name": "Breadfast: Active Topics",
+      "icon": "📌",
+      "filter": {
+        "categoryId": "work",
         "labelIds": [
           "label_1769989456692"
         ]
