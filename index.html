@@ -1437,6 +1437,7 @@
     let draggedSidebarType = null;
 
     function handleSidebarDragStart(e, id, type) {
+      console.log('[SIDEBAR DRAG] Start:', id, type);
       draggedSidebarItem = id;
       draggedSidebarType = type;
       const item = e.currentTarget || e.target.closest('.draggable-item');
@@ -1446,6 +1447,7 @@
     }
 
     function handleSidebarDragEnd(e) {
+      console.log('[SIDEBAR DRAG] End');
       const item = e.currentTarget || e.target.closest('.draggable-item');
       if (item) item.classList.remove('dragging');
       document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
@@ -1470,9 +1472,13 @@
 
     function handleSidebarDrop(e, targetId, type) {
       e.preventDefault();
+      console.log('[SIDEBAR DRAG] Drop on:', targetId, type, '| Dragged:', draggedSidebarItem, draggedSidebarType);
       document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
 
-      if (!draggedSidebarItem || draggedSidebarType !== type || draggedSidebarItem === targetId) return;
+      if (!draggedSidebarItem || draggedSidebarType !== type || draggedSidebarItem === targetId) {
+        console.log('[SIDEBAR DRAG] Drop rejected');
+        return;
+      }
 
       let arr;
       if (type === 'category') arr = taskCategories;
@@ -1483,12 +1489,17 @@
 
       const fromIdx = arr.findIndex(item => item.id === draggedSidebarItem);
       const toIdx = arr.findIndex(item => item.id === targetId);
+      console.log('[SIDEBAR DRAG] Reorder from index', fromIdx, 'to', toIdx);
 
-      if (fromIdx === -1 || toIdx === -1) return;
+      if (fromIdx === -1 || toIdx === -1) {
+        console.log('[SIDEBAR DRAG] Invalid indices');
+        return;
+      }
 
       // Remove from old position and insert at new position
       const [removed] = arr.splice(fromIdx, 1);
       arr.splice(toIdx, 0, removed);
+      console.log('[SIDEBAR DRAG] Reorder SUCCESS');
 
       saveTasksData();
       render();
