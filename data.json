@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-02T07:32:48.836Z",
+  "lastUpdated": "2026-02-02T07:33:03.207Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1606,14 +1606,15 @@
       "completedAt": null,
       "categoryId": "work",
       "labels": [
-        "urgent"
+        "urgent",
+        "label_1769989456692"
       ],
       "people": [],
       "deferDate": null,
       "dueDate": "2026-02-02",
       "repeat": null,
       "createdAt": "2026-02-01T21:58:54.892Z",
-      "updatedAt": "2026-02-01T23:27:56.681Z",
+      "updatedAt": "2026-02-02T07:33:00.767Z",
       "order": 1000
     },
     {
