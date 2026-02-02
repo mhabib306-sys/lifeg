@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-02T07:26:03.689Z",
+  "lastUpdated": "2026-02-02T07:26:20.058Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1849,5 +1849,18 @@
       "color": "#6b7280"
     }
   ],
-  "customPerspectives": []
+  "customPerspectives": [
+    {
+      "id": "custom_1770017177816",
+      "name": "Nancy: Active Topics",
+      "icon": "📌",
+      "filter": {
+        "categoryId": "cat_1769983795940",
+        "labelIds": [
+          "label_1769989456692"
+        ]
+      },
+      "builtin": false
+    }
+  ]
 }
