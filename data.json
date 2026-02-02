@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-02T08:02:03.460Z",
+  "lastUpdated": "2026-02-02T08:02:09.518Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1810,14 +1810,14 @@
       "color": "#E5533D"
     },
     {
-      "id": "learning",
-      "name": "Learning",
-      "color": "#7C6B8E"
-    },
-    {
       "id": "cat_1769983795940",
       "name": "Nancy",
       "color": "#6b7280"
+    },
+    {
+      "id": "learning",
+      "name": "Learning",
+      "color": "#7C6B8E"
     },
     {
       "id": "cat_1769987564631",
