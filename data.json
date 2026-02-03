@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-03T09:11:53.790Z",
+  "lastUpdated": "2026-02-03T09:12:39.362Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1430,7 +1430,7 @@
         "insulin": ""
       },
       "whoop": {
-        "sleepPerf": "",
+        "sleepPerf": "46",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
