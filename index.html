@@ -1723,11 +1723,11 @@
         'daily-entry': '#F97316'
       };
 
-      // Quick-add widget has minimal styling (no border, no header)
+      // Quick-add widget has minimal styling (no border, no background, no header)
       if (widget.type === 'quick-add' && !isEditing) {
         return `
-          <div class="widget ${sizeClass} bg-warmgray/30 rounded-xl overflow-hidden widget-drop-target">
-            <div class="p-4">
+          <div class="widget ${sizeClass} widget-drop-target">
+            <div class="py-2">
               ${content}
             </div>
           </div>
