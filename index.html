@@ -397,6 +397,19 @@
       background: var(--accent) !important;
     }
 
+    /* Home widgets */
+    .widget {
+      transition: all 0.2s ease;
+    }
+    .widget.dragging {
+      opacity: 0.5;
+      transform: scale(0.98);
+    }
+    .widget-drop-target.drag-over {
+      outline: 2px dashed var(--accent);
+      outline-offset: 2px;
+    }
+
     /* Sidebar draggable items */
     .draggable-item {
       cursor: grab;
@@ -701,7 +714,7 @@
     // MAJOR: New major features (Home view, Next perspective, etc.)
     // MINOR: Enhancements and improvements
     // PATCH: Bug fixes and small tweaks
-    const APP_VERSION = '3.0.1';
+    const APP_VERSION = '3.1.0';
 
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -833,8 +846,7 @@
           tasks: tasksData,
           taskCategories: taskCategories,
           taskLabels: taskLabels,
-          customPerspectives: customPerspectives,
-          notes: notesData
+          customPerspectives: customPerspectives
         };
 
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
@@ -929,10 +941,6 @@
             if (cloudData.customPerspectives) {
               customPerspectives = cloudData.customPerspectives;
               localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(customPerspectives));
-            }
-            if (cloudData.notes) {
-              notesData = cloudData.notes;
-              localStorage.setItem(NOTES_KEY, JSON.stringify(notesData));
             }
             console.log('✅ Loaded from GitHub');
             updateSyncStatus('success', 'Loaded from GitHub');
@@ -1138,7 +1146,16 @@
     const TASK_CATEGORIES_KEY = 'lifeGamificationTaskCategories';
     const TASK_LABELS_KEY = 'lifeGamificationTaskLabels';
     const TASK_PEOPLE_KEY = 'lifeGamificationTaskPeople';
-    const NOTES_KEY = 'lifeGamificationNotes';
+    const HOME_WIDGETS_KEY = 'lifeGamificationHomeWidgets';
+
+    // Default home widgets configuration
+    const DEFAULT_HOME_WIDGETS = [
+      { id: 'quick-stats', type: 'stats', title: 'Quick Stats', size: 'full', order: 0, visible: true },
+      { id: 'quick-add', type: 'quick-add', title: 'Quick Add Task', size: 'full', order: 1, visible: true },
+      { id: 'today-tasks', type: 'today-tasks', title: 'Today', size: 'half', order: 2, visible: true },
+      { id: 'next-tasks', type: 'next-tasks', title: 'Next', size: 'half', order: 3, visible: true },
+      { id: 'daily-entry', type: 'daily-entry', title: 'Daily Entry', size: 'full', order: 4, visible: true }
+    ];
 
     // Default categories (Areas)
     const DEFAULT_TASK_CATEGORIES = [
@@ -1206,6 +1223,9 @@
     let taskLabels = JSON.parse(localStorage.getItem(TASK_LABELS_KEY) || 'null') || DEFAULT_TASK_LABELS;
     let taskPeople = JSON.parse(localStorage.getItem(TASK_PEOPLE_KEY) || 'null') || DEFAULT_TASK_PEOPLE;
     let customPerspectives = JSON.parse(localStorage.getItem(PERSPECTIVES_KEY) || '[]');
+    let homeWidgets = JSON.parse(localStorage.getItem(HOME_WIDGETS_KEY) || 'null') || DEFAULT_HOME_WIDGETS;
+    let editingHomeWidgets = false;
+    let draggingWidgetId = null;
     let activePerspective = savedViewState.activePerspective || 'home';
     let activeFilterType = savedViewState.activeFilterType || 'perspective';
     let activeCategoryFilter = savedViewState.activeCategoryFilter || null;
@@ -1222,13 +1242,6 @@
     let editingCategoryId = null;
     let editingLabelId = null;
     let editingPersonId = null;
-
-    // ============ NOTES SYSTEM (Tana-style nodes) ============
-    let notesData = JSON.parse(localStorage.getItem(NOTES_KEY) || '[]');
-    let showNoteModal = false;
-    let editingNoteId = null;
-    let inlineEditingNoteId = null;
-    let expandedNoteIds = new Set(); // Track which notes are expanded to show children
 
     // Inline task title editing
     function startInlineEdit(taskId) {
@@ -1343,20 +1356,27 @@
       } else if (activeFilterType === 'person' && activePersonFilter) {
         options.people = [activePersonFilter];
       } else if (activeFilterType === 'perspective' && activePerspective) {
+        // Check if it's the Notes perspective
+        if (activePerspective === 'notes') {
+          options.isNote = true;
+          options.status = 'anytime'; // Notes go to anytime by default
+        }
         // Check if it's a custom perspective
-        const customPerspective = customPerspectives.find(p => p.id === activePerspective);
-        if (customPerspective && customPerspective.filter) {
-          // Apply custom perspective filter rules
-          if (customPerspective.filter.status) options.status = customPerspective.filter.status;
-          if (customPerspective.filter.categoryId) options.categoryId = customPerspective.filter.categoryId;
-          if (customPerspective.filter.labelIds && customPerspective.filter.labelIds.length > 0) {
-            options.labels = customPerspective.filter.labelIds;
-          }
-        } else {
-          // Built-in perspective - set status based on perspective
-          const statusMap = { inbox: 'inbox', today: 'today', anytime: 'anytime', someday: 'someday' };
-          if (statusMap[activePerspective]) {
-            options.status = statusMap[activePerspective];
+        else {
+          const customPerspective = customPerspectives.find(p => p.id === activePerspective);
+          if (customPerspective && customPerspective.filter) {
+            // Apply custom perspective filter rules
+            if (customPerspective.filter.status) options.status = customPerspective.filter.status;
+            if (customPerspective.filter.categoryId) options.categoryId = customPerspective.filter.categoryId;
+            if (customPerspective.filter.labelIds && customPerspective.filter.labelIds.length > 0) {
+              options.labels = customPerspective.filter.labelIds;
+            }
+          } else {
+            // Built-in perspective - set status based on perspective
+            const statusMap = { inbox: 'inbox', today: 'today', anytime: 'anytime', someday: 'someday' };
+            if (statusMap[activePerspective]) {
+              options.status = statusMap[activePerspective];
+            }
           }
         }
       }
@@ -1390,6 +1410,344 @@
       render();
     }
 
+    // ============ HOME WIDGET MANAGEMENT ============
+    function saveHomeWidgets() {
+      localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(homeWidgets));
+    }
+
+    function toggleWidgetVisibility(widgetId) {
+      const widget = homeWidgets.find(w => w.id === widgetId);
+      if (widget) {
+        widget.visible = !widget.visible;
+        saveHomeWidgets();
+        render();
+      }
+    }
+
+    function toggleWidgetSize(widgetId) {
+      const widget = homeWidgets.find(w => w.id === widgetId);
+      if (widget) {
+        // Cycle through sizes: full -> half -> third -> full
+        if (widget.size === 'full') widget.size = 'half';
+        else if (widget.size === 'half') widget.size = 'third';
+        else widget.size = 'full';
+        saveHomeWidgets();
+        render();
+      }
+    }
+
+    function moveWidgetUp(widgetId) {
+      const idx = homeWidgets.findIndex(w => w.id === widgetId);
+      if (idx > 0) {
+        [homeWidgets[idx], homeWidgets[idx - 1]] = [homeWidgets[idx - 1], homeWidgets[idx]];
+        // Update order numbers
+        homeWidgets.forEach((w, i) => w.order = i);
+        saveHomeWidgets();
+        render();
+      }
+    }
+
+    function moveWidgetDown(widgetId) {
+      const idx = homeWidgets.findIndex(w => w.id === widgetId);
+      if (idx < homeWidgets.length - 1) {
+        [homeWidgets[idx], homeWidgets[idx + 1]] = [homeWidgets[idx + 1], homeWidgets[idx]];
+        // Update order numbers
+        homeWidgets.forEach((w, i) => w.order = i);
+        saveHomeWidgets();
+        render();
+      }
+    }
+
+    function handleWidgetDragStart(event, widgetId) {
+      draggingWidgetId = widgetId;
+      event.dataTransfer.effectAllowed = 'move';
+      event.target.classList.add('dragging');
+    }
+
+    function handleWidgetDragEnd(event) {
+      event.target.classList.remove('dragging');
+      document.querySelectorAll('.widget-drop-target').forEach(el => el.classList.remove('drag-over'));
+      draggingWidgetId = null;
+    }
+
+    function handleWidgetDragOver(event, targetWidgetId) {
+      event.preventDefault();
+      if (draggingWidgetId && draggingWidgetId !== targetWidgetId) {
+        event.currentTarget.classList.add('drag-over');
+      }
+    }
+
+    function handleWidgetDragLeave(event) {
+      event.currentTarget.classList.remove('drag-over');
+    }
+
+    function handleWidgetDrop(event, targetWidgetId) {
+      event.preventDefault();
+      event.currentTarget.classList.remove('drag-over');
+      if (draggingWidgetId && draggingWidgetId !== targetWidgetId) {
+        const dragIdx = homeWidgets.findIndex(w => w.id === draggingWidgetId);
+        const targetIdx = homeWidgets.findIndex(w => w.id === targetWidgetId);
+        if (dragIdx !== -1 && targetIdx !== -1) {
+          const [draggedWidget] = homeWidgets.splice(dragIdx, 1);
+          homeWidgets.splice(targetIdx, 0, draggedWidget);
+          homeWidgets.forEach((w, i) => w.order = i);
+          saveHomeWidgets();
+          render();
+        }
+      }
+      draggingWidgetId = null;
+    }
+
+    function resetHomeWidgets() {
+      if (confirm('Reset home widgets to default layout?')) {
+        homeWidgets = JSON.parse(JSON.stringify(DEFAULT_HOME_WIDGETS));
+        saveHomeWidgets();
+        render();
+      }
+    }
+
+    function toggleEditHomeWidgets() {
+      editingHomeWidgets = !editingHomeWidgets;
+      render();
+    }
+
+    // Render a single widget based on its type
+    function renderHomeWidget(widget, isEditing) {
+      const today = new Date().toISOString().split('T')[0];
+      const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
+
+      // Size class mapping
+      const sizeClass = widget.size === 'full' ? 'col-span-2' : widget.size === 'half' ? 'col-span-1' : 'col-span-1';
+
+      // Edit controls shown in edit mode
+      const editControls = isEditing ? `
+        <div class="flex items-center gap-1 ml-auto">
+          <button onclick="event.stopPropagation(); toggleWidgetSize('${widget.id}')" class="p-1 text-charcoal/40 hover:text-charcoal rounded transition" title="Change size (${widget.size})">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg>
+          </button>
+          <button onclick="event.stopPropagation(); moveWidgetUp('${widget.id}')" class="p-1 text-charcoal/40 hover:text-charcoal rounded transition" title="Move up">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </button>
+          <button onclick="event.stopPropagation(); moveWidgetDown('${widget.id}')" class="p-1 text-charcoal/40 hover:text-charcoal rounded transition" title="Move down">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+          </button>
+          <button onclick="event.stopPropagation(); toggleWidgetVisibility('${widget.id}')" class="p-1 text-charcoal/40 hover:text-red-500 rounded transition" title="Hide widget">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      ` : '';
+
+      let content = '';
+
+      switch (widget.type) {
+        case 'stats':
+          const todayTasksCount = tasksData.filter(t => {
+            if (t.completed || t.isNote) return false;
+            const isDueToday = t.dueDate === today;
+            const isOverdue = t.dueDate && t.dueDate < today;
+            return t.status === 'today' || isDueToday || isOverdue;
+          }).length;
+          const nextTasksCount = nextLabel ? tasksData.filter(t => {
+            if (t.completed || t.isNote) return false;
+            return (t.labels || []).includes(nextLabel.id);
+          }).length : 0;
+          const completedToday = tasksData.filter(t => t.completed && t.completedAt && t.completedAt.startsWith(today)).length;
+          const inboxCount = tasksData.filter(t => !t.completed && !t.isNote && t.status === 'inbox' && !t.categoryId).length;
+
+          content = `
+            <div class="grid grid-cols-4 gap-3">
+              <div class="bg-warmgray/30 rounded-lg p-3 text-center cursor-pointer hover:bg-warmgray/50 transition" onclick="showPerspectiveTasks('today')">
+                <div class="text-2xl font-bold text-charcoal">${todayTasksCount}</div>
+                <div class="text-xs text-charcoal/50 mt-1">Due Today</div>
+              </div>
+              <div class="bg-warmgray/30 rounded-lg p-3 text-center">
+                <div class="text-2xl font-bold text-[#8B5CF6]">${nextTasksCount}</div>
+                <div class="text-xs text-charcoal/50 mt-1">Tagged Next</div>
+              </div>
+              <div class="bg-warmgray/30 rounded-lg p-3 text-center">
+                <div class="text-2xl font-bold text-green-600">${completedToday}</div>
+                <div class="text-xs text-charcoal/50 mt-1">Done Today</div>
+              </div>
+              <div class="bg-warmgray/30 rounded-lg p-3 text-center cursor-pointer hover:bg-warmgray/50 transition" onclick="showPerspectiveTasks('inbox')">
+                <div class="text-2xl font-bold ${inboxCount > 0 ? 'text-blue-500' : 'text-charcoal'}">${inboxCount}</div>
+                <div class="text-xs text-charcoal/50 mt-1">In Inbox</div>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'quick-add':
+          content = `
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 rounded-full border-2 border-dashed border-charcoal/20 flex-shrink-0"></div>
+              <input type="text" id="home-quick-add-input"
+                placeholder="Quick add task... (press Enter)"
+                onkeydown="if(event.key==='Enter'){event.preventDefault();homeQuickAddTask(this);}"
+                class="flex-1 text-[15px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none focus:ring-0">
+              <button onclick="homeQuickAddTask(document.getElementById('home-quick-add-input'))"
+                class="text-charcoal/30 hover:text-coral transition p-1" title="Add task">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          `;
+          break;
+
+        case 'today-tasks':
+          const todayTasks = tasksData.filter(t => {
+            if (t.completed || t.isNote) return false;
+            const isDueToday = t.dueDate === today;
+            const isOverdue = t.dueDate && t.dueDate < today;
+            return t.status === 'today' || isDueToday || isOverdue;
+          }).sort((a, b) => {
+            if (a.dueDate && !b.dueDate) return -1;
+            if (!a.dueDate && b.dueDate) return 1;
+            if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
+            return 0;
+          });
+
+          content = todayTasks.length === 0 ? `
+            <div class="py-6 text-center text-charcoal/30 text-sm">No tasks due today</div>
+          ` : `
+            <div class="space-y-1 max-h-[300px] overflow-y-auto">
+              ${todayTasks.slice(0, 8).map(task => renderTaskItem(task, false)).join('')}
+              ${todayTasks.length > 8 ? '<div class="px-4 py-2 text-center"><button onclick="showPerspectiveTasks(\'today\')" class="text-sm text-[#147EFB] hover:underline">View all ' + todayTasks.length + ' tasks →</button></div>' : ''}
+            </div>
+          `;
+          break;
+
+        case 'next-tasks':
+          const nextTasks = nextLabel ? tasksData.filter(t => {
+            if (t.completed || t.isNote) return false;
+            const isNextTagged = (t.labels || []).includes(nextLabel.id);
+            if (!isNextTagged) return false;
+            const isDatedTask = t.status === 'today' || t.dueDate === today || (t.dueDate && t.dueDate < today);
+            return !isDatedTask;
+          }) : [];
+
+          content = nextTasks.length === 0 ? `
+            <div class="py-6 text-center text-charcoal/30 text-sm">No tasks tagged "Next"</div>
+          ` : `
+            <div class="space-y-1 max-h-[300px] overflow-y-auto">
+              ${nextTasks.slice(0, 8).map(task => renderTaskItem(task, false)).join('')}
+              ${nextTasks.length > 8 ? '<div class="px-4 py-2 text-center"><button onclick="showLabelTasks(\'' + nextLabel.id + '\')" class="text-sm text-[#147EFB] hover:underline">View all ' + nextTasks.length + ' tasks →</button></div>' : ''}
+            </div>
+          `;
+          break;
+
+        case 'daily-entry':
+          const todayData = allData[today] || {};
+          const categories = {
+            prayers: { label: 'Prayers', fields: ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'quran'], headers: ['F', 'D', 'A', 'M', 'I', 'Q'], icon: '🕌' },
+            glucose: { label: 'Glucose', fields: ['avg', 'tir', 'insulin'], headers: ['Avg', 'TIR', 'Ins'], icon: '💉' },
+            whoop: { label: 'Whoop', fields: ['sleepPerf', 'recovery', 'strain'], headers: ['Sleep', 'Rec', 'Strain'], icon: '⏱️' },
+            habits: { label: 'Habits', fields: ['exercise', 'reading', 'meditation', 'water', 'vitamins'], headers: ['🏋️', '📚', '🧘', '💧', '💊'], icon: '✨' }
+          };
+
+          content = `
+            <div class="space-y-3">
+              ${Object.entries(categories).map(([catKey, cat]) => {
+                const catData = todayData[catKey] || {};
+                return '<div class="flex items-center gap-2">' +
+                  '<span class="text-sm w-20 text-charcoal/70">' + cat.icon + ' ' + cat.label + '</span>' +
+                  '<div class="flex gap-1 flex-1">' +
+                    cat.fields.map((field, i) => {
+                      const value = catData[field] || '';
+                      const isChecked = value === true || value === 1 || value === '1';
+                      const isNumeric = cat.headers[i].length > 2;
+                      if (isNumeric) {
+                        return '<div class="flex flex-col items-center">' +
+                          '<span class="text-[10px] text-charcoal/40">' + cat.headers[i] + '</span>' +
+                          '<input type="number" value="' + (value || '') + '" ' +
+                          'onchange="updateDailyField(\'' + catKey + '\', \'' + field + '\', this.value)" ' +
+                          'class="w-12 text-center text-sm border border-charcoal/15 rounded px-1 py-0.5 focus:border-coral focus:outline-none">' +
+                          '</div>';
+                      } else {
+                        return '<div class="flex flex-col items-center">' +
+                          '<span class="text-[10px] text-charcoal/40">' + cat.headers[i] + '</span>' +
+                          '<button onclick="toggleDailyField(\'' + catKey + '\', \'' + field + '\')" ' +
+                          'class="w-7 h-7 rounded border transition ' + (isChecked ? 'bg-coral border-coral text-white' : 'border-charcoal/20 hover:border-coral/50') + '">' +
+                          (isChecked ? '<svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>' : '') +
+                          '</button></div>';
+                      }
+                    }).join('') +
+                  '</div>' +
+                '</div>';
+              }).join('')}
+            </div>
+          `;
+          break;
+
+        default:
+          content = '<div class="py-4 text-center text-charcoal/30">Unknown widget type</div>';
+      }
+
+      // Widget icon based on type
+      const widgetIcons = {
+        'stats': '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>',
+        'quick-add': '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+        'today-tasks': THINGS3_ICONS.today,
+        'next-tasks': THINGS3_ICONS.next,
+        'daily-entry': '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'
+      };
+
+      const widgetColors = {
+        'stats': '#6B7280',
+        'quick-add': '#147EFB',
+        'today-tasks': '#FFCA28',
+        'next-tasks': '#8B5CF6',
+        'daily-entry': '#F97316'
+      };
+
+      return `
+        <div class="widget ${sizeClass} bg-white rounded-xl shadow-sm border border-charcoal/5 overflow-hidden widget-drop-target ${isEditing ? 'cursor-grab' : ''}"
+          ${isEditing ? `draggable="true" ondragstart="handleWidgetDragStart(event, '${widget.id}')" ondragend="handleWidgetDragEnd(event)" ondragover="handleWidgetDragOver(event, '${widget.id}')" ondragleave="handleWidgetDragLeave(event)" ondrop="handleWidgetDrop(event, '${widget.id}')"` : ''}>
+          <div class="px-4 py-2 border-b border-charcoal/5 flex items-center gap-2">
+            ${isEditing ? '<div class="text-charcoal/30 cursor-grab"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg></div>' : ''}
+            <span style="color: ${widgetColors[widget.type] || '#6B7280'}">${widgetIcons[widget.type] || ''}</span>
+            <h3 class="text-sm font-medium text-charcoal">${widget.title}</h3>
+            ${editControls}
+          </div>
+          <div class="p-4">
+            ${content}
+          </div>
+        </div>
+      `;
+    }
+
+    // Home quick add task function
+    function homeQuickAddTask(inputElement) {
+      const title = inputElement.value.trim();
+      if (!title) return;
+      createTask(title, { status: 'inbox' });
+      inputElement.value = '';
+      render();
+      setTimeout(() => {
+        const input = document.getElementById('home-quick-add-input');
+        if (input) input.focus();
+      }, 50);
+    }
+
+    // Toggle daily field (checkbox style)
+    function toggleDailyField(category, field) {
+      const today = new Date().toISOString().split('T')[0];
+      if (!allData[today]) allData[today] = {};
+      if (!allData[today][category]) allData[today][category] = {};
+      allData[today][category][field] = !allData[today][category][field];
+      saveData();
+      debouncedSaveToGithub();
+      render();
+    }
+
+    // Update daily field (numeric)
+    function updateDailyField(category, field, value) {
+      const today = new Date().toISOString().split('T')[0];
+      if (!allData[today]) allData[today] = {};
+      if (!allData[today][category]) allData[today][category] = {};
+      allData[today][category][field] = value === '' ? null : parseFloat(value) || value;
+      saveData();
+      debouncedSaveToGithub();
+    }
+
     // Task helper functions
     function generateTaskId() {
       return 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -1401,7 +1759,6 @@
       localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(taskLabels));
       localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(taskPeople));
       localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(customPerspectives));
-      localStorage.setItem(NOTES_KEY, JSON.stringify(notesData));
       debouncedSaveToGithub();
     }
 
@@ -1743,6 +2100,7 @@
         deferDate: options.deferDate || null, // When task becomes available
         dueDate: options.dueDate || null,     // Deadline
         repeat: options.repeat || null,       // { type: 'daily'|'weekly'|'monthly'|'yearly', interval: 1, from: 'completion'|'due' }
+        isNote: options.isNote || false,      // If true, displays as note (bullet) instead of task (checkbox)
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -1777,272 +2135,6 @@
         deleteTask(taskId);
         render();
       }
-    }
-
-    // ============ NOTE CRUD FUNCTIONS ============
-    function generateNoteId() {
-      return 'note_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    }
-
-    function createNote(content, options = {}) {
-      const note = {
-        id: generateNoteId(),
-        content: content,
-        parentId: options.parentId || null, // For nested notes (Tana-style hierarchy)
-        categoryId: options.categoryId || null,
-        labels: options.labels || [],
-        people: options.people || [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      notesData.push(note);
-      saveTasksData();
-      return note;
-    }
-
-    function updateNote(noteId, updates) {
-      const idx = notesData.findIndex(n => n.id === noteId);
-      if (idx !== -1) {
-        notesData[idx] = { ...notesData[idx], ...updates, updatedAt: new Date().toISOString() };
-        saveTasksData();
-      }
-    }
-
-    function deleteNote(noteId) {
-      // Also delete all child notes
-      const childNotes = notesData.filter(n => n.parentId === noteId);
-      childNotes.forEach(child => deleteNote(child.id));
-      notesData = notesData.filter(n => n.id !== noteId);
-      saveTasksData();
-    }
-
-    function confirmDeleteNote(noteId) {
-      inlineEditingNoteId = null;
-      const childCount = notesData.filter(n => n.parentId === noteId).length;
-      const message = childCount > 0
-        ? `Delete this note and its ${childCount} child note(s)?`
-        : 'Delete this note?';
-      if (confirm(message)) {
-        deleteNote(noteId);
-        render();
-      }
-    }
-
-    function getChildNotes(parentId) {
-      return notesData.filter(n => n.parentId === parentId).sort((a, b) =>
-        new Date(a.createdAt) - new Date(b.createdAt)
-      );
-    }
-
-    function getRootNotes() {
-      return notesData.filter(n => !n.parentId).sort((a, b) =>
-        new Date(b.createdAt) - new Date(a.createdAt)
-      );
-    }
-
-    function getFilteredNotes() {
-      let filtered = notesData;
-
-      // Filter by category
-      if (activeFilterType === 'category' && activeCategoryFilter) {
-        filtered = filtered.filter(n => n.categoryId === activeCategoryFilter);
-      }
-      // Filter by label
-      else if (activeFilterType === 'label' && activeLabelFilter) {
-        filtered = filtered.filter(n => (n.labels || []).includes(activeLabelFilter));
-      }
-      // Filter by person
-      else if (activeFilterType === 'person' && activePersonFilter) {
-        filtered = filtered.filter(n => (n.people || []).includes(activePersonFilter));
-      }
-
-      // Return only root notes (non-nested), children are rendered under parents
-      return filtered.filter(n => !n.parentId).sort((a, b) =>
-        new Date(b.createdAt) - new Date(a.createdAt)
-      );
-    }
-
-    function toggleNoteExpand(noteId) {
-      if (expandedNoteIds.has(noteId)) {
-        expandedNoteIds.delete(noteId);
-      } else {
-        expandedNoteIds.add(noteId);
-      }
-      render();
-    }
-
-    function startNoteInlineEdit(noteId) {
-      inlineEditingNoteId = noteId;
-      render();
-      setTimeout(() => {
-        const input = document.getElementById('note-inline-edit-input');
-        if (input) {
-          input.focus();
-          input.select();
-        }
-      }, 10);
-    }
-
-    function saveNoteInlineEdit(noteId) {
-      const input = document.getElementById('note-inline-edit-input');
-      if (input) {
-        const newContent = input.value.trim();
-        if (newContent) {
-          updateNote(noteId, { content: newContent });
-        }
-      }
-      inlineEditingNoteId = null;
-      render();
-    }
-
-    function handleNoteInlineEditKeydown(event, noteId) {
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        saveNoteInlineEdit(noteId);
-      } else if (event.key === 'Escape') {
-        inlineEditingNoteId = null;
-        render();
-      }
-    }
-
-    function quickAddNote(inputElement, parentId = null) {
-      const content = inputElement.value.trim();
-      if (!content) return;
-
-      const options = { parentId };
-
-      // Apply context if viewing filtered area/tag/person
-      if (activeFilterType === 'category' && activeCategoryFilter) {
-        options.categoryId = activeCategoryFilter;
-      } else if (activeFilterType === 'label' && activeLabelFilter) {
-        options.labels = [activeLabelFilter];
-      } else if (activeFilterType === 'person' && activePersonFilter) {
-        options.people = [activePersonFilter];
-      }
-
-      createNote(content, options);
-      inputElement.value = '';
-      render();
-
-      setTimeout(() => {
-        const quickInput = document.getElementById(parentId ? `note-child-input-${parentId}` : 'note-quick-add-input');
-        if (quickInput) quickInput.focus();
-      }, 50);
-    }
-
-    function handleNoteQuickAddKeydown(event, inputElement, parentId = null) {
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        quickAddNote(inputElement, parentId);
-      }
-    }
-
-    function openNoteModal(noteId = null) {
-      editingNoteId = noteId;
-      showNoteModal = true;
-      render();
-      setTimeout(() => {
-        const contentInput = document.getElementById('note-content');
-        if (contentInput) contentInput.focus();
-      }, 50);
-    }
-
-    // Render the Notes view (Tana-style bullet list)
-    function renderNotesView() {
-      const filteredNotes = getFilteredNotes();
-
-      function renderNoteItem(note, depth) {
-        const children = getChildNotes(note.id);
-        const hasChildren = children.length > 0;
-        const isExpanded = expandedNoteIds.has(note.id);
-        const isEditing = inlineEditingNoteId === note.id;
-        const category = getCategoryById(note.categoryId);
-        const labels = (note.labels || []).map(lid => getLabelById(lid)).filter(Boolean);
-
-        let html = '<div class="note-item group" style="margin-left: ' + (depth * 24) + 'px">';
-        html += '<div class="flex items-start gap-2 px-4 py-2 hover:bg-charcoal/[0.02] rounded-lg transition">';
-
-        // Expand/collapse button
-        html += '<button onclick="event.stopPropagation(); toggleNoteExpand(\'' + note.id + '\')" class="w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5 text-charcoal/30 hover:text-charcoal transition ' + (hasChildren ? '' : 'invisible') + '">';
-        html += '<svg class="w-3 h-3 transition-transform ' + (isExpanded ? 'rotate-90' : '') + '" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>';
-        html += '</button>';
-
-        // Bullet point
-        html += '<div class="w-2 h-2 rounded-full bg-charcoal/30 mt-2 flex-shrink-0"></div>';
-
-        // Content
-        html += '<div class="flex-1 min-w-0">';
-        if (isEditing) {
-          html += '<input type="text" id="note-inline-edit-input" value="' + note.content.replace(/"/g, '&quot;') + '" onkeydown="handleNoteInlineEditKeydown(event, \'' + note.id + '\')" onblur="saveNoteInlineEdit(\'' + note.id + '\')" class="w-full text-[15px] text-charcoal bg-white border border-coral rounded px-2 py-0.5 outline-none focus:ring-2 focus:ring-coral/20">';
-        } else {
-          html += '<span ondblclick="event.stopPropagation(); startNoteInlineEdit(\'' + note.id + '\')" class="text-[15px] text-charcoal leading-snug cursor-text">' + note.content + '</span>';
-        }
-
-        // Tags/labels
-        if (category || labels.length > 0) {
-          html += '<div class="flex items-center gap-2 mt-1 flex-wrap text-[12px]">';
-          if (category) {
-            html += '<span onclick="event.stopPropagation(); showCategoryTasks(\'' + category.id + '\')" class="tag-pill px-2 py-0.5 rounded-full cursor-pointer border border-charcoal/15 text-charcoal/50 hover:text-charcoal/70">' + category.name + '</span>';
-          }
-          labels.forEach(l => {
-            html += '<span onclick="event.stopPropagation(); showLabelTasks(\'' + l.id + '\')" class="tag-pill px-2 py-0.5 rounded-full cursor-pointer border border-charcoal/15 text-charcoal/50 hover:text-charcoal/70">' + l.name + '</span>';
-          });
-          html += '</div>';
-        }
-        html += '</div>';
-
-        // Action buttons
-        html += '<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">';
-        html += '<button onclick="event.stopPropagation(); openNoteModal(\'' + note.id + '\')" class="p-1 text-charcoal/40 hover:text-charcoal hover:bg-charcoal/5 rounded transition" title="Edit"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>';
-        html += '<button onclick="event.stopPropagation(); confirmDeleteNote(\'' + note.id + '\')" class="p-1 text-charcoal/40 hover:text-red-500 hover:bg-red-50 rounded transition" title="Delete"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>';
-        html += '</div>';
-
-        html += '</div>';
-
-        // Children
-        if (isExpanded && hasChildren) {
-          html += '<div class="note-children">';
-          children.forEach(child => {
-            html += renderNoteItem(child, depth + 1);
-          });
-          html += '</div>';
-          // Child input
-          html += '<div class="flex items-center gap-2 px-4 py-1" style="margin-left: ' + ((depth + 1) * 24) + 'px">';
-          html += '<div class="w-5"></div>';
-          html += '<div class="w-2 h-2 rounded-full border border-dashed border-charcoal/20"></div>';
-          html += '<input type="text" id="note-child-input-' + note.id + '" placeholder="Add child note..." onkeydown="handleNoteQuickAddKeydown(event, this, \'' + note.id + '\')" class="flex-1 text-[14px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none">';
-          html += '</div>';
-        }
-
-        html += '</div>';
-        return html;
-      }
-
-      let result = '<div class="notes-list">';
-
-      // Quick add input
-      result += '<div class="px-4 py-3"><div class="flex items-center gap-2">';
-      result += '<div class="w-5"></div>';
-      result += '<div class="w-2 h-2 rounded-full border-2 border-dashed border-charcoal/20"></div>';
-      result += '<input type="text" id="note-quick-add-input" placeholder="Add a note... (press Enter)" onkeydown="handleNoteQuickAddKeydown(event, this)" class="flex-1 text-[15px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none">';
-      result += '</div></div>';
-
-      if (filteredNotes.length === 0) {
-        result += '<div class="empty-state flex flex-col items-center justify-center py-20 text-charcoal/30">';
-        result += '<div class="w-16 h-16 mb-4 flex items-center justify-center opacity-50">' + THINGS3_ICONS.notes + '</div>';
-        result += '<p class="text-[15px] font-medium">No notes yet</p>';
-        result += '<p class="text-[13px] mt-1 text-charcoal/25">Add your first note above</p>';
-        result += '</div>';
-      } else {
-        result += '<div class="space-y-1">';
-        filteredNotes.forEach(note => {
-          result += renderNoteItem(note, 0);
-        });
-        result += '</div>';
-      }
-
-      result += '</div>';
-      return result;
     }
 
     function toggleTaskComplete(taskId) {
@@ -2287,8 +2379,11 @@
     initializeTaskOrders();
 
     function getFilteredTasks(perspectiveId) {
-      // Notes perspective doesn't show tasks
-      if (perspectiveId === 'notes') return [];
+      // Notes perspective shows tasks marked as notes
+      if (perspectiveId === 'notes') {
+        return tasksData.filter(task => task.isNote && !task.completed)
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      }
 
       const allPerspectives = [...BUILTIN_PERSPECTIVES, ...customPerspectives];
       const perspective = allPerspectives.find(p => p.id === perspectiveId);
@@ -2297,7 +2392,10 @@
       const today = new Date().toISOString().split('T')[0];
 
       return tasksData.filter(task => {
-        // Logbook (completed) shows all completed tasks
+        // Notes don't appear in regular task perspectives (except logbook which shows all completed)
+        if (task.isNote && !perspective.filter.completed) return false;
+
+        // Logbook (completed) shows all completed tasks (including notes)
         if (perspective.filter.completed) {
           return task.completed;
         }
@@ -3283,10 +3381,14 @@
           ondragleave="handleDragLeave(event)"
           ondrop="handleDrop(event, '${task.id}')">
           <div class="flex items-start gap-3 px-4 py-2">
-            <button onclick="event.stopPropagation(); toggleTaskComplete('${task.id}')"
-              class="task-checkbox mt-0.5 w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${task.completed ? 'completed bg-coral border-coral text-white' : 'border-charcoal/25 hover:border-coral/50'}">
-              ${task.completed ? '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>' : ''}
-            </button>
+            ${task.isNote ? `
+              <div class="mt-1.5 w-2 h-2 rounded-full bg-[#8B5CF6] flex-shrink-0"></div>
+            ` : `
+              <button onclick="event.stopPropagation(); toggleTaskComplete('${task.id}')"
+                class="task-checkbox mt-0.5 w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${task.completed ? 'completed bg-coral border-coral text-white' : 'border-charcoal/25 hover:border-coral/50'}">
+                ${task.completed ? '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>' : ''}
+              </button>
+            `}
             <div class="flex-1 min-w-0">
               ${isInlineEditing ? `
                 <input type="text" id="inline-edit-input" value="${task.title.replace(/"/g, '&quot;')}"
@@ -3987,8 +4089,8 @@
             return t.status === 'today' || isDueToday || isOverdue;
           }).length;
         } else if (p.id === 'notes') {
-          // Notes count shows root notes only
-          taskCounts[p.id] = notesData.filter(n => !n.parentId).length;
+          // Notes count shows tasks marked as notes
+          taskCounts[p.id] = tasksData.filter(t => t.isNote && !t.completed).length;
         } else {
           taskCounts[p.id] = getFilteredTasks(p.id).length;
         }
@@ -4154,23 +4256,27 @@
                 <span class="text-2xl" ${viewInfo.color ? `style="color: ${viewInfo.color}"` : ''}>${viewInfo.icon}</span>
                 <h2 class="text-xl font-semibold text-charcoal">${viewInfo.name}</h2>
               </div>
-              <button onclick="${activePerspective === 'notes' ? 'openNoteModal()' : 'openNewTaskModal()'}"
+              <button onclick="openNewTaskModal()"
                 class="w-8 h-8 rounded-full bg-[#147EFB] text-white flex items-center justify-center hover:bg-[#0E6AD8] transition shadow-sm" title="${activePerspective === 'notes' ? 'Add Note' : 'Add Task'}">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
               </button>
             </div>
 
-            ${activePerspective !== 'upcoming' && activePerspective !== 'home' && activePerspective !== 'notes' ? `
+            ${activePerspective !== 'upcoming' && activePerspective !== 'home' ? `
             <!-- Quick Add Input -->
             <div class="px-4 py-3">
               <div class="flex items-center gap-3">
-                <div class="w-5 h-5 rounded-full border-2 border-dashed border-charcoal/20 flex-shrink-0"></div>
+                ${activePerspective === 'notes' ? `
+                  <div class="w-2 h-2 rounded-full border-2 border-dashed border-[#8B5CF6]/40 flex-shrink-0 ml-1.5"></div>
+                ` : `
+                  <div class="w-5 h-5 rounded-full border-2 border-dashed border-charcoal/20 flex-shrink-0"></div>
+                `}
                 <input type="text" id="quick-add-input"
-                  placeholder="Quick add to ${viewInfo.name}... (press Enter)"
+                  placeholder="${activePerspective === 'notes' ? 'Add a note... (press Enter)' : 'Quick add to ' + viewInfo.name + '... (press Enter)'}"
                   onkeydown="handleQuickAddKeydown(event, this)"
                   class="flex-1 text-[15px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none focus:ring-0">
                 <button onclick="quickAddTask(document.getElementById('quick-add-input'))"
-                  class="text-charcoal/30 hover:text-coral transition p-1" title="Add to ${viewInfo.name}">
+                  class="text-charcoal/30 hover:text-coral transition p-1" title="${activePerspective === 'notes' ? 'Add Note' : 'Add to ' + viewInfo.name}">
                   <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </button>
               </div>
@@ -4178,94 +4284,38 @@
             ` : ''}
 
             <div class="min-h-[400px] task-list">
-              ${activePerspective === 'home' ? (() => {
-                // Home view: Today tasks + Next tasks + mini stats
-                const today = new Date().toISOString().split('T')[0];
-                const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
-                const todayTasks = tasksData.filter(t => {
-                  if (t.completed) return false;
-                  const isDueToday = t.dueDate === today;
-                  const isOverdue = t.dueDate && t.dueDate < today;
-                  return t.status === 'today' || isDueToday || isOverdue;
-                }).sort((a, b) => {
-                  // Due dates first, then by date
-                  if (a.dueDate && !b.dueDate) return -1;
-                  if (!a.dueDate && b.dueDate) return 1;
-                  if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
-                  return 0;
-                });
-                // Next tasks: tasks tagged with "next" label (not already in dated tasks)
-                const nextTasks = nextLabel ? tasksData.filter(t => {
-                  if (t.completed) return false;
-                  const isNextTagged = (t.labels || []).includes(nextLabel.id);
-                  if (!isNextTagged) return false;
-                  // Exclude tasks already shown in dated section
-                  const isDatedTask = t.status === 'today' || t.dueDate === today || (t.dueDate && t.dueDate < today);
-                  return !isDatedTask;
-                }) : [];
-                const completedToday = tasksData.filter(t => t.completed && t.completedAt && t.completedAt.startsWith(today)).length;
-                const totalActive = tasksData.filter(t => !t.completed).length;
-                const inboxCount = tasksData.filter(t => !t.completed && t.status === 'inbox' && !t.categoryId).length;
-
-                return `
-                <!-- Home Dashboard -->
-                <div class="p-5 space-y-6">
-                  <!-- Mini Stats -->
-                  <div class="grid grid-cols-4 gap-4">
-                    <div class="bg-warmgray/30 rounded-lg p-4 text-center">
-                      <div class="text-2xl font-bold text-charcoal">${todayTasks.length}</div>
-                      <div class="text-xs text-charcoal/50 mt-1">Due Today</div>
+              ${activePerspective === 'home' ? `
+                <!-- Widget-based Home Dashboard -->
+                <div class="p-4">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                      ${editingHomeWidgets ? `
+                        <span class="text-sm text-coral font-medium">Editing Dashboard</span>
+                      ` : ''}
                     </div>
-                    <div class="bg-warmgray/30 rounded-lg p-4 text-center">
-                      <div class="text-2xl font-bold text-charcoal">${nextTasks.length}</div>
-                      <div class="text-xs text-charcoal/50 mt-1">Tagged Next</div>
-                    </div>
-                    <div class="bg-warmgray/30 rounded-lg p-4 text-center">
-                      <div class="text-2xl font-bold text-green-600">${completedToday}</div>
-                      <div class="text-xs text-charcoal/50 mt-1">Done Today</div>
-                    </div>
-                    <div class="bg-warmgray/30 rounded-lg p-4 text-center">
-                      <div class="text-2xl font-bold ${inboxCount > 0 ? 'text-blue-500' : 'text-charcoal'}">${inboxCount}</div>
-                      <div class="text-xs text-charcoal/50 mt-1">In Inbox</div>
+                    <div class="flex items-center gap-2">
+                      ${editingHomeWidgets ? `
+                        <button onclick="resetHomeWidgets()" class="text-xs text-charcoal/50 hover:text-charcoal px-2 py-1 rounded hover:bg-charcoal/5 transition">Reset Layout</button>
+                        <!-- Show hidden widgets -->
+                        ${homeWidgets.filter(w => !w.visible).length > 0 ? `
+                          <div class="flex items-center gap-1">
+                            <span class="text-xs text-charcoal/40">Hidden:</span>
+                            ${homeWidgets.filter(w => !w.visible).map(w => `
+                              <button onclick="toggleWidgetVisibility('${w.id}')" class="text-xs px-2 py-1 rounded border border-dashed border-charcoal/20 text-charcoal/50 hover:border-coral hover:text-coral transition">${w.title}</button>
+                            `).join('')}
+                          </div>
+                        ` : ''}
+                      ` : ''}
+                      <button onclick="toggleEditHomeWidgets()" class="text-xs text-charcoal/50 hover:text-charcoal px-2 py-1 rounded ${editingHomeWidgets ? 'bg-coral text-white hover:text-white' : 'hover:bg-charcoal/5'} transition">
+                        ${editingHomeWidgets ? 'Done' : 'Customize'}
+                      </button>
                     </div>
                   </div>
-
-                  <!-- Today Section -->
-                  <div>
-                    <div class="flex items-center gap-2 mb-3">
-                      <span class="text-[#FFCA28]">${THINGS3_ICONS.today}</span>
-                      <h3 class="text-sm font-semibold text-charcoal uppercase tracking-wider">Today</h3>
-                      <span class="text-xs text-charcoal/40">${todayTasks.length}</span>
-                    </div>
-                    ${todayTasks.length === 0 ? `
-                      <div class="py-8 text-center text-charcoal/30 text-sm">No tasks due today</div>
-                    ` : `
-                      <div class="bg-white rounded-lg">
-                        ${todayTasks.slice(0, 5).map(task => renderTaskItem(task, false)).join('')}
-                        ${todayTasks.length > 5 ? `<div class="px-4 py-2 text-center"><button onclick="showPerspectiveTasks('today')" class="text-sm text-[#147EFB] hover:underline">View all ${todayTasks.length} tasks →</button></div>` : ''}
-                      </div>
-                    `}
-                  </div>
-
-                  <!-- Next Section -->
-                  <div>
-                    <div class="flex items-center gap-2 mb-3">
-                      <span class="text-[#8B5CF6]">${THINGS3_ICONS.next}</span>
-                      <h3 class="text-sm font-semibold text-charcoal uppercase tracking-wider">Next</h3>
-                      <span class="text-xs text-charcoal/40">${nextTasks.length}</span>
-                    </div>
-                    ${nextTasks.length === 0 ? `
-                      <div class="py-8 text-center text-charcoal/30 text-sm">No tasks tagged with "next"</div>
-                    ` : `
-                      <div class="bg-white rounded-lg">
-                        ${nextTasks.slice(0, 5).map(task => renderTaskItem(task, false)).join('')}
-                        ${nextTasks.length > 5 ? `<div class="px-4 py-2 text-center"><button onclick="showPerspectiveTasks('today')" class="text-sm text-[#147EFB] hover:underline">View all ${nextTasks.length} tasks →</button></div>` : ''}
-                      </div>
-                    `}
+                  <div class="grid grid-cols-2 gap-4">
+                    ${homeWidgets.filter(w => w.visible).sort((a, b) => a.order - b.order).map(widget => renderHomeWidget(widget, editingHomeWidgets)).join('')}
                   </div>
                 </div>
-              `;
-              })() : (filteredTasks.length === 0 ? `
+              ` : (filteredTasks.length === 0 ? `
                 <div class="empty-state flex flex-col items-center justify-center py-20 text-charcoal/30">
                   <div class="w-16 h-16 mb-4 flex items-center justify-center opacity-50">${viewInfo.icon}</div>
                   <p class="text-[15px] font-medium">No tasks in ${viewInfo.name}</p>
@@ -4345,12 +4395,12 @@
                   ` : ''}
                 </div>
               `;
-              })() : (activePerspective === 'notes' ? renderNotesView() : `
+              })() : `
                 <!-- Regular task list -->
                 <div class="task-list">
                   ${filteredTasks.map(task => renderTaskItem(task)).join('')}
                 </div>
-              `)))))}
+              `))))}
             </div>
           </div>
         </div>
@@ -4366,15 +4416,27 @@
               <button onclick="showTaskModal=false; editingTaskId=null; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
             </div>
             <div class="p-6 space-y-4">
+              <!-- Type Toggle: Task vs Note -->
+              <div class="flex items-center gap-4 pb-3 border-b border-softborder">
+                <span class="text-sm text-charcoal/70">Type:</span>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="task-type" value="task" ${!editingTask?.isNote && activePerspective !== 'notes' ? 'checked' : ''} class="accent-coral">
+                  <span class="text-sm text-charcoal">Task</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="task-type" value="note" ${editingTask?.isNote || activePerspective === 'notes' ? 'checked' : ''} class="accent-[#8B5CF6]">
+                  <span class="text-sm text-charcoal">Note</span>
+                </label>
+              </div>
               <div>
                 <label class="text-sm text-charcoal/70 block mb-1">Title</label>
                 <input type="text" id="task-title" value="${editingTask ? editingTask.title : ''}"
-                  placeholder="What needs to be done?" autofocus
+                  placeholder="${editingTask?.isNote || activePerspective === 'notes' ? 'What do you want to capture?' : 'What needs to be done?'}" autofocus
                   onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();saveTaskFromModal();}"
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
               </div>
               <div>
-                <label class="text-sm text-charcoal/70 block mb-1">Notes</label>
+                <label class="text-sm text-charcoal/70 block mb-1">Details</label>
                 <textarea id="task-notes" rows="3" placeholder="Add details..."
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none resize-none">${editingTask ? editingTask.notes : ''}</textarea>
               </div>
@@ -4498,70 +4560,6 @@
                 class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
               <button onclick="saveTaskFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
                 ${editingTask ? 'Save Changes' : 'Add Task'}
-              </button>
-            </div>
-          </div>
-        </div>
-      ` : '';
-
-      // Note Modal
-      const editingNote = editingNoteId ? notesData.find(n => n.id === editingNoteId) : null;
-      const noteModalHtml = showNoteModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showNoteModal=false; editingNoteId=null; render()}" onkeydown="if(event.key==='Escape'){showNoteModal=false; editingNoteId=null; render();}">
-          <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-lg mx-4" onclick="event.stopPropagation()">
-            <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
-              <h3 class="font-semibold text-charcoal">${editingNote ? 'Edit Note' : 'New Note'}</h3>
-              <button onclick="showNoteModal=false; editingNoteId=null; render()" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
-            </div>
-            <div class="p-6 space-y-4">
-              <div>
-                <label class="text-sm text-charcoal/70 block mb-1">Content</label>
-                <textarea id="note-content" rows="4" placeholder="Write your note..."
-                  class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none resize-none">${editingNote?.content || ''}</textarea>
-              </div>
-              <div>
-                <label class="text-sm text-charcoal/70 block mb-1">Area</label>
-                <select id="note-category" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
-                  <option value="">None</option>
-                  ${taskCategories.map(cat => `
-                    <option value="${cat.id}" ${editingNote?.categoryId === cat.id ? 'selected' : ''}>${cat.name}</option>
-                  `).join('')}
-                </select>
-              </div>
-              <div>
-                <label class="text-sm text-charcoal/70 block mb-1">Tags</label>
-                <div class="flex flex-wrap gap-2">
-                  ${taskLabels.map(label => {
-                    const isSelected = editingNote?.labels?.includes(label.id);
-                    return `
-                      <label class="flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition ${isSelected ? 'bg-warmgray' : 'hover:bg-warmgray/50'}" style="border-color: ${label.color}">
-                        <input type="checkbox" value="${label.id}" ${isSelected ? 'checked' : ''} class="note-label-checkbox rounded" style="accent-color: ${label.color}">
-                        <span class="text-sm" style="color: ${label.color}">${label.name}</span>
-                      </label>
-                    `;
-                  }).join('')}
-                </div>
-              </div>
-              <div>
-                <label class="text-sm text-charcoal/70 block mb-1">People</label>
-                <div class="flex flex-wrap gap-2">
-                  ${taskPeople.map(person => {
-                    const isSelected = editingNote?.people?.includes(person.id);
-                    return `
-                      <label class="flex items-center gap-1.5 px-2 py-1 rounded border border-charcoal/20 cursor-pointer transition ${isSelected ? 'bg-warmgray border-charcoal/40' : 'hover:bg-warmgray/50'}">
-                        <input type="checkbox" value="${person.id}" ${isSelected ? 'checked' : ''} class="note-person-checkbox rounded">
-                        <span class="text-sm text-charcoal/70">${person.name}</span>
-                      </label>
-                    `;
-                  }).join('')}
-                </div>
-              </div>
-            </div>
-            <div class="px-6 py-4 border-t border-softborder flex justify-end gap-3">
-              <button onclick="showNoteModal=false; editingNoteId=null; render()"
-                class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
-              <button onclick="saveNoteFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
-                ${editingNote ? 'Save Changes' : 'Add Note'}
               </button>
             </div>
           </div>
@@ -4756,7 +4754,6 @@
           ${taskListHtml}
         </div>
         ${taskModalHtml}
-        ${noteModalHtml}
         ${perspectiveModalHtml}
         ${categoryModalHtml}
         ${labelModalHtml}
@@ -4847,6 +4844,9 @@
         };
       }
 
+      // Get task type (task vs note)
+      const isNote = document.querySelector('input[name="task-type"]:checked')?.value === 'note';
+
       const taskData = {
         title: title,
         notes: document.getElementById('task-notes').value.trim(),
@@ -4856,11 +4856,12 @@
         dueDate: document.getElementById('task-due').value || null,
         repeat: repeat,
         labels: selectedLabels,
-        people: selectedPeople
+        people: selectedPeople,
+        isNote: isNote
       };
 
-      // Things 3 logic: Assigning an Area to an Inbox task moves it to Anytime
-      if (taskData.status === 'inbox' && taskData.categoryId) {
+      // Things 3 logic: Assigning an Area to an Inbox task moves it to Anytime (not for notes)
+      if (!isNote && taskData.status === 'inbox' && taskData.categoryId) {
         taskData.status = 'anytime';
       }
 
@@ -4872,40 +4873,6 @@
 
       showTaskModal = false;
       editingTaskId = null;
-      render();
-    }
-
-    // Save note from modal
-    function saveNoteFromModal() {
-      const content = document.getElementById('note-content').value.trim();
-      if (!content) {
-        alert('Please enter note content');
-        return;
-      }
-
-      // Get selected labels
-      const labelCheckboxes = document.querySelectorAll('.note-label-checkbox:checked');
-      const selectedLabels = Array.from(labelCheckboxes).map(cb => cb.value);
-
-      // Get selected people
-      const personCheckboxes = document.querySelectorAll('.note-person-checkbox:checked');
-      const selectedPeople = Array.from(personCheckboxes).map(cb => cb.value);
-
-      const noteData = {
-        content: content,
-        categoryId: document.getElementById('note-category').value || null,
-        labels: selectedLabels,
-        people: selectedPeople
-      };
-
-      if (editingNoteId) {
-        updateNote(editingNoteId, noteData);
-      } else {
-        createNote(content, noteData);
-      }
-
-      showNoteModal = false;
-      editingNoteId = null;
       render();
     }
 
@@ -4959,7 +4926,6 @@
         taskCategories: taskCategories,
         taskLabels: taskLabels,
         customPerspectives: customPerspectives,
-        notes: notesData,
         lastUpdated: new Date().toISOString()
       };
       const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
@@ -5002,10 +4968,6 @@
           if (imported.customPerspectives) {
             customPerspectives = imported.customPerspectives;
             localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(customPerspectives));
-          }
-          if (imported.notes) {
-            notesData = imported.notes;
-            localStorage.setItem(NOTES_KEY, JSON.stringify(notesData));
           }
           alert('Data imported successfully!');
           debouncedSaveToGithub();
