@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-06T23:11:38.065Z",
+  "lastUpdated": "2026-02-06T23:11:41.647Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1839,7 +1839,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T22:00:13.352Z",
       "updatedAt": "2026-02-01T22:08:24.521Z",
-      "order": 10000
+      "order": 9000
     },
     {
       "id": "task_1769983575696_3yq56ixj0",
@@ -1856,7 +1856,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T22:06:15.696Z",
       "updatedAt": "2026-02-01T22:06:15.696Z",
-      "order": 11000
+      "order": 10000
     },
     {
       "id": "task_1769984504582_xua0ibokb",
@@ -1892,7 +1892,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T22:58:28.273Z",
       "updatedAt": "2026-02-01T23:06:21.695Z",
-      "order": 9000
+      "order": 8000
     },
     {
       "id": "task_1769987546598_2phz0gy20",
@@ -1947,7 +1947,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:28:35.754Z",
       "updatedAt": "2026-02-02T08:18:09.487Z",
-      "order": 7000
+      "order": 6000
     },
     {
       "id": "task_1769988521177_vhh01bgsj",
@@ -1964,7 +1964,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:28:41.177Z",
       "updatedAt": "2026-02-02T08:18:14.318Z",
-      "order": 8000
+      "order": 7000
     },
     {
       "id": "task_1769988612754_r5uemyqjd",
@@ -1983,7 +1983,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:30:12.754Z",
       "updatedAt": "2026-02-06T19:44:28.464Z",
-      "order": 6000
+      "order": 5000
     },
     {
       "id": "task_1770019730706_1pnzslxtt",
@@ -2126,7 +2126,7 @@
       "isNote": true,
       "createdAt": "2026-02-06T19:45:18.912Z",
       "updatedAt": "2026-02-06T21:31:04.351Z",
-      "order": 5000
+      "order": 6000
     },
     {
       "id": "task_1770419495459_db8m1al68",
@@ -2143,7 +2143,8 @@
       "repeat": null,
       "isNote": false,
       "createdAt": "2026-02-06T23:11:35.459Z",
-      "updatedAt": "2026-02-06T23:11:35.459Z"
+      "updatedAt": "2026-02-06T23:11:39.233Z",
+      "order": 7000
     }
   ],
   "taskCategories": [
