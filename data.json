@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-06T23:11:41.647Z",
+  "lastUpdated": "2026-02-06T23:11:45.727Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2145,6 +2145,23 @@
       "createdAt": "2026-02-06T23:11:35.459Z",
       "updatedAt": "2026-02-06T23:11:39.233Z",
       "order": 7000
+    },
+    {
+      "id": "task_1770419503417_ps4ynftsw",
+      "title": "Breadfast note",
+      "notes": "",
+      "status": "inbox",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "work",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "createdAt": "2026-02-06T23:11:43.417Z",
+      "updatedAt": "2026-02-06T23:11:43.417Z"
     }
   ],
   "taskCategories": [
