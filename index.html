@@ -1723,6 +1723,17 @@
         'daily-entry': '#F97316'
       };
 
+      // Quick-add widget has minimal styling (no border, no header)
+      if (widget.type === 'quick-add' && !isEditing) {
+        return `
+          <div class="widget ${sizeClass} bg-warmgray/30 rounded-xl overflow-hidden widget-drop-target">
+            <div class="p-4">
+              ${content}
+            </div>
+          </div>
+        `;
+      }
+
       return `
         <div class="widget ${sizeClass} bg-white rounded-xl shadow-sm border border-charcoal/5 overflow-hidden widget-drop-target ${isEditing ? 'cursor-grab' : ''}"
           ${isEditing ? `draggable="true" ondragstart="handleWidgetDragStart(event, '${widget.id}')" ondragend="handleWidgetDragEnd(event)" ondragover="handleWidgetDragOver(event, '${widget.id}')" ondragleave="handleWidgetDragLeave(event)" ondrop="handleWidgetDrop(event, '${widget.id}')"` : ''}>
