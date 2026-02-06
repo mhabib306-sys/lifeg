@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-06T14:55:30.475Z",
+  "lastUpdated": "2026-02-06T14:56:27.979Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2150,40 +2150,6 @@
         ]
       },
       "builtin": false
-    }
-  ],
-  "notes": [
-    {
-      "id": "note_1770023464674_r48eaok1e",
-      "content": "A note",
-      "parentId": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [
-        "person_1769977441169"
-      ],
-      "createdAt": "2026-02-02T09:11:04.674Z",
-      "updatedAt": "2026-02-02T09:11:04.674Z"
-    },
-    {
-      "id": "note_1770023515743_c8zd54dvs",
-      "content": "note",
-      "parentId": null,
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "createdAt": "2026-02-02T09:11:55.743Z",
-      "updatedAt": "2026-02-02T09:11:55.743Z"
-    },
-    {
-      "id": "note_1770388504890_fwledrst2",
-      "content": "Note",
-      "parentId": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "createdAt": "2026-02-06T14:35:04.890Z",
-      "updatedAt": "2026-02-06T14:35:04.890Z"
     }
   ]
 }
