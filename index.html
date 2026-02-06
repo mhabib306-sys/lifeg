@@ -1225,16 +1225,18 @@
       notes: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><circle cx="4" cy="6" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="4" cy="18" r="2"/><rect x="8" y="5" width="14" height="2" rx="1"/><rect x="8" y="11" width="14" height="2" rx="1"/><rect x="8" y="17" width="14" height="2" rx="1"/></svg>`
     };
 
-    // Default perspectives with exact Things 3 colors
+    // Default perspectives with exact Things 3 colors (Tasks only - Notes is separate)
     const BUILTIN_PERSPECTIVES = [
       { id: 'inbox', name: 'Inbox', icon: THINGS3_ICONS.inbox, color: '#5598FE', filter: { status: 'inbox' }, builtin: true },
       { id: 'today', name: 'Today', icon: THINGS3_ICONS.today, color: '#FFCA28', filter: { status: 'today' }, builtin: true },
       { id: 'upcoming', name: 'Upcoming', icon: THINGS3_ICONS.upcoming, color: '#EF5350', filter: { upcoming: true }, builtin: true },
       { id: 'anytime', name: 'Anytime', icon: THINGS3_ICONS.anytime, color: '#26A69A', filter: { status: 'anytime' }, builtin: true },
       { id: 'someday', name: 'Someday', icon: THINGS3_ICONS.someday, color: '#D4A24C', filter: { status: 'someday' }, builtin: true },
-      { id: 'logbook', name: 'Logbook', icon: THINGS3_ICONS.logbook, color: '#66BB6A', filter: { completed: true }, builtin: true },
-      { id: 'notes', name: 'Notes', icon: THINGS3_ICONS.notes, color: '#8B5CF6', filter: { notes: true }, builtin: true }
+      { id: 'logbook', name: 'Logbook', icon: THINGS3_ICONS.logbook, color: '#66BB6A', filter: { completed: true }, builtin: true }
     ];
+
+    // Notes perspective (separate from task perspectives)
+    const NOTES_PERSPECTIVE = { id: 'notes', name: 'Notes', icon: THINGS3_ICONS.notes, color: '#8B5CF6', filter: { notes: true }, builtin: true };
 
     // Load tasks data
     let tasksData = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
@@ -3652,7 +3654,7 @@
                 📊 Life Score
               </button>
               <button onclick="switchTab('tasks')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 ${activeTab === 'tasks' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
-                ✓ Tasks
+                📋 Items
               </button>
               <button onclick="switchTab('settings')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 ${activeTab === 'settings' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 ⚙️ Settings
@@ -4278,13 +4280,13 @@
             const isOverdue = t.dueDate && t.dueDate < todayDate;
             return t.status === 'today' || isDueToday || isOverdue;
           }).length;
-        } else if (p.id === 'notes') {
-          // Notes count shows tasks marked as notes
-          taskCounts[p.id] = tasksData.filter(t => t.isNote && !t.completed).length;
         } else {
           taskCounts[p.id] = getFilteredTasks(p.id).length;
         }
       });
+      // Notes count (separate from task perspectives)
+      taskCounts['notes'] = tasksData.filter(t => t.isNote && !t.completed).length;
+
       customPerspectives.forEach(p => {
         taskCounts[p.id] = getFilteredTasks(p.id).length;
       });
@@ -4316,8 +4318,11 @@
       // Build sidebar
       const sidebarHtml = `
         <div class="w-full md:w-64 flex-shrink-0 space-y-2">
-          <!-- Perspectives -->
+          <!-- Tasks Section -->
           <div class="bg-white rounded-xl border border-charcoal/[0.06]">
+            <div class="px-4 py-2 border-b border-charcoal/5">
+              <h3 class="font-semibold text-charcoal/50 text-[11px] uppercase tracking-wider">Tasks</h3>
+            </div>
             <div class="py-1.5 px-1.5">
               ${BUILTIN_PERSPECTIVES.map(p => `
                 <button onclick="showPerspectiveTasks('${p.id}')"
@@ -4327,6 +4332,21 @@
                   <span class="count-badge w-6 text-right text-[13px] text-charcoal/35">${taskCounts[p.id] || ''}</span>
                 </button>
               `).join('')}
+            </div>
+          </div>
+
+          <!-- Notes Section (Equal weight to Tasks) -->
+          <div class="bg-white rounded-xl border border-charcoal/[0.06]">
+            <div class="px-4 py-2 border-b border-charcoal/5">
+              <h3 class="font-semibold text-charcoal/50 text-[11px] uppercase tracking-wider">Notes</h3>
+            </div>
+            <div class="py-1.5 px-1.5">
+              <button onclick="showPerspectiveTasks('notes')"
+                class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg ${isPerspectiveActive('notes') ? 'active' : ''}">
+                <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="color: ${NOTES_PERSPECTIVE.color}">${NOTES_PERSPECTIVE.icon}</span>
+                <span class="flex-1 text-[14px] ${isPerspectiveActive('notes') ? 'font-medium text-charcoal' : 'text-charcoal/70'}">All Notes</span>
+                <span class="count-badge w-6 text-right text-[13px] text-charcoal/35">${taskCounts['notes'] || ''}</span>
+              </button>
             </div>
           </div>
 
