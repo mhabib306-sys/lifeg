@@ -1378,34 +1378,34 @@
       // Build options based on current context
       const options = { status: 'inbox' };
 
+      // If in Notes perspective, always create a note (even when filtering by category/label/person)
+      if (activePerspective === 'notes') {
+        options.isNote = true;
+        options.status = 'anytime'; // Notes go to anytime by default
+      }
+
+      // Apply category/label/person context
       if (activeFilterType === 'category' && activeCategoryFilter) {
         options.categoryId = activeCategoryFilter;
       } else if (activeFilterType === 'label' && activeLabelFilter) {
         options.labels = [activeLabelFilter];
       } else if (activeFilterType === 'person' && activePersonFilter) {
         options.people = [activePersonFilter];
-      } else if (activeFilterType === 'perspective' && activePerspective) {
-        // Check if it's the Notes perspective
-        if (activePerspective === 'notes') {
-          options.isNote = true;
-          options.status = 'anytime'; // Notes go to anytime by default
-        }
-        // Check if it's a custom perspective
-        else {
-          const customPerspective = customPerspectives.find(p => p.id === activePerspective);
-          if (customPerspective && customPerspective.filter) {
-            // Apply custom perspective filter rules
-            if (customPerspective.filter.status) options.status = customPerspective.filter.status;
-            if (customPerspective.filter.categoryId) options.categoryId = customPerspective.filter.categoryId;
-            if (customPerspective.filter.labelIds && customPerspective.filter.labelIds.length > 0) {
-              options.labels = customPerspective.filter.labelIds;
-            }
-          } else {
-            // Built-in perspective - set status based on perspective
-            const statusMap = { inbox: 'inbox', today: 'today', anytime: 'anytime', someday: 'someday' };
-            if (statusMap[activePerspective]) {
-              options.status = statusMap[activePerspective];
-            }
+      } else if (activeFilterType === 'perspective' && activePerspective && activePerspective !== 'notes') {
+        // Handle custom and built-in perspectives (notes already handled above)
+        const customPerspective = customPerspectives.find(p => p.id === activePerspective);
+        if (customPerspective && customPerspective.filter) {
+          // Apply custom perspective filter rules
+          if (customPerspective.filter.status) options.status = customPerspective.filter.status;
+          if (customPerspective.filter.categoryId) options.categoryId = customPerspective.filter.categoryId;
+          if (customPerspective.filter.labelIds && customPerspective.filter.labelIds.length > 0) {
+            options.labels = customPerspective.filter.labelIds;
+          }
+        } else {
+          // Built-in perspective - set status based on perspective
+          const statusMap = { inbox: 'inbox', today: 'today', anytime: 'anytime', someday: 'someday' };
+          if (statusMap[activePerspective]) {
+            options.status = statusMap[activePerspective];
           }
         }
       }
