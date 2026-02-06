@@ -3559,6 +3559,7 @@
     }
 
     function render() {
+      try {
       const app = document.getElementById('app');
       const dateDisplay = new Date(currentDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -3653,6 +3654,10 @@
       // Setup sidebar drag and drop after DOM is updated
       if (activeTab === 'tasks') {
         setupSidebarDragDrop();
+      }
+      } catch (err) {
+        console.error('Render error:', err);
+        document.getElementById('app').innerHTML = '<div style="padding:20px;color:red;font-family:monospace;">Render error: ' + err.message + '<br><br>Stack: ' + err.stack + '</div>';
       }
     }
 
@@ -5134,7 +5139,10 @@
     });
 
     // Initialize: load cloud data then render
-    loadCloudData().then(() => render());
+    loadCloudData().then(() => render()).catch(err => {
+      console.error('Initialization error:', err);
+      document.getElementById('app').innerHTML = '<div style="padding:20px;color:red;">Error loading app: ' + err.message + '</div>';
+    });
   </script>
 </body>
 </html>
