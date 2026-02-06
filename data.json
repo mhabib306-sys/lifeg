@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-06T23:11:06.006Z",
+  "lastUpdated": "2026-02-06T23:11:38.065Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2127,6 +2127,23 @@
       "createdAt": "2026-02-06T19:45:18.912Z",
       "updatedAt": "2026-02-06T21:31:04.351Z",
       "order": 5000
+    },
+    {
+      "id": "task_1770419495459_db8m1al68",
+      "title": "Breadfast task",
+      "notes": "",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "work",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "createdAt": "2026-02-06T23:11:35.459Z",
+      "updatedAt": "2026-02-06T23:11:35.459Z"
     }
   ],
   "taskCategories": [
