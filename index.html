@@ -1548,7 +1548,7 @@
       let content = '';
 
       switch (widget.type) {
-        case 'stats':
+        case 'stats': {
           const todayTasksCount = tasksData.filter(t => {
             if (t.completed || t.isNote) return false;
             const isDueToday = t.dueDate === today;
@@ -1583,6 +1583,7 @@
             </div>
           `;
           break;
+        }
 
         case 'quick-add':
           content = `
@@ -1600,7 +1601,7 @@
           `;
           break;
 
-        case 'today-tasks':
+        case 'today-tasks': {
           const todayTasks = tasksData.filter(t => {
             if (t.completed || t.isNote) return false;
             const isDueToday = t.dueDate === today;
@@ -1622,8 +1623,9 @@
             </div>
           `;
           break;
+        }
 
-        case 'next-tasks':
+        case 'next-tasks': {
           const nextTasks = nextLabel ? tasksData.filter(t => {
             if (t.completed || t.isNote) return false;
             const isNextTagged = (t.labels || []).includes(nextLabel.id);
@@ -1641,8 +1643,9 @@
             </div>
           `;
           break;
+        }
 
-        case 'daily-entry':
+        case 'daily-entry': {
           const todayData = allData[today] || {};
           const categories = {
             prayers: { label: 'Prayers', fields: ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'quran'], headers: ['F', 'D', 'A', 'M', 'I', 'Q'], icon: '🕌' },
@@ -1684,6 +1687,7 @@
             </div>
           `;
           break;
+        }
 
         default:
           content = '<div class="py-4 text-center text-charcoal/30">Unknown widget type</div>';
