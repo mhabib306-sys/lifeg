@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-06T14:55:05.126Z",
+  "lastUpdated": "2026-02-06T14:55:14.391Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2039,7 +2039,7 @@
     },
     {
       "id": "task_1770023484203_knltwbqf7",
-      "title": "Task",
+      "title": "Let's do some stuff!",
       "notes": "",
       "status": "inbox",
       "completed": false,
@@ -2053,7 +2053,7 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-02T09:11:24.203Z",
-      "updatedAt": "2026-02-02T09:11:24.203Z",
+      "updatedAt": "2026-02-06T14:55:11.965Z",
       "order": 1000
     }
   ],
