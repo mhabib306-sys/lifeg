@@ -3608,7 +3608,7 @@
 
       app.innerHTML = `
         <header class="border-b border-softborder" style="background: var(--bg-primary);">
-          <div class="${activeTab === 'tasks' ? 'max-w-6xl' : 'max-w-5xl'} mx-auto px-6 py-6">
+          <div class="${activeTab === 'tasks' || activeTab === 'home' ? 'max-w-6xl' : 'max-w-5xl'} mx-auto px-6 py-6">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-4">
                 <svg class="w-12 h-12 app-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
