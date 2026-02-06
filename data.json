@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-06T19:44:07.353Z",
+  "lastUpdated": "2026-02-06T19:44:11.164Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2089,6 +2089,23 @@
       "isNote": true,
       "createdAt": "2026-02-06T19:43:58.478Z",
       "updatedAt": "2026-02-06T19:44:04.992Z"
+    },
+    {
+      "id": "task_1770407048879_4e86e0ajn",
+      "title": "Another note",
+      "notes": "",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "createdAt": "2026-02-06T19:44:08.879Z",
+      "updatedAt": "2026-02-06T19:44:08.879Z"
     }
   ],
   "taskCategories": [
