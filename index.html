@@ -714,7 +714,7 @@
     // MAJOR: New major features (Home view, Next perspective, etc.)
     // MINOR: Enhancements and improvements
     // PATCH: Bug fixes and small tweaks
-    const APP_VERSION = '3.2.0';
+    const APP_VERSION = '3.2.1';
 
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -1122,8 +1122,20 @@
     // View state persistence
     const VIEW_STATE_KEY = 'lifeGamificationViewState';
     const savedViewState = JSON.parse(localStorage.getItem(VIEW_STATE_KEY) || '{}');
+
+    // Migrate old tab values to new structure
     let activeTab = savedViewState.activeTab || 'home';
-    let activeSubTab = savedViewState.activeSubTab || 'daily'; // For Life tab sub-navigation
+    let activeSubTab = savedViewState.activeSubTab || 'daily';
+
+    // Handle migration from old tab structure
+    if (activeTab === 'track' || activeTab === 'bulk' || activeTab === 'dashboard') {
+      activeSubTab = activeTab === 'track' ? 'daily' : activeTab;
+      activeTab = 'life';
+    }
+    // Ensure valid tab values
+    if (!['home', 'life', 'tasks', 'settings'].includes(activeTab)) {
+      activeTab = 'home';
+    }
 
     function saveViewState() {
       localStorage.setItem(VIEW_STATE_KEY, JSON.stringify({
@@ -1215,7 +1227,6 @@
 
     // Default perspectives with exact Things 3 colors
     const BUILTIN_PERSPECTIVES = [
-      { id: 'home', name: 'Home', icon: THINGS3_ICONS.home, color: '#F97316', filter: { home: true }, builtin: true },
       { id: 'inbox', name: 'Inbox', icon: THINGS3_ICONS.inbox, color: '#5598FE', filter: { status: 'inbox' }, builtin: true },
       { id: 'today', name: 'Today', icon: THINGS3_ICONS.today, color: '#FFCA28', filter: { status: 'today' }, builtin: true },
       { id: 'upcoming', name: 'Upcoming', icon: THINGS3_ICONS.upcoming, color: '#EF5350', filter: { upcoming: true }, builtin: true },
@@ -1234,7 +1245,9 @@
     let homeWidgets = JSON.parse(localStorage.getItem(HOME_WIDGETS_KEY) || 'null') || DEFAULT_HOME_WIDGETS;
     let editingHomeWidgets = false;
     let draggingWidgetId = null;
-    let activePerspective = savedViewState.activePerspective || 'home';
+    let activePerspective = savedViewState.activePerspective || 'inbox';
+    // Migrate old 'home' perspective to 'inbox' since Home is now a separate tab
+    if (activePerspective === 'home') activePerspective = 'inbox';
     let activeFilterType = savedViewState.activeFilterType || 'perspective';
     let activeCategoryFilter = savedViewState.activeCategoryFilter || null;
     let activeLabelFilter = savedViewState.activeLabelFilter || null;
@@ -1758,6 +1771,7 @@
       allData[today][category][field] = value === '' ? null : parseFloat(value) || value;
       saveData();
       debouncedSaveToGithub();
+      render(); // Update UI to reflect score changes
     }
 
     // Task helper functions
@@ -3086,6 +3100,7 @@
           <div class="flex items-center justify-between">
             <div>
               <h1 class="text-2xl font-bold text-charcoal">Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, Muhammad</h1>
+              <p class="text-charcoal/40 text-xs mt-0.5">Press <kbd class="px-1.5 py-0.5 bg-charcoal/10 rounded text-[10px] font-mono">⌘K</kbd> to quick add</p>
               <p class="text-charcoal/50 text-sm mt-1">${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
             </div>
             <div class="flex items-center gap-3">
@@ -4389,7 +4404,7 @@
               </button>
             </div>
 
-            ${activePerspective !== 'upcoming' && activePerspective !== 'home' ? `
+            ${activePerspective !== 'upcoming' ? `
             <!-- Quick Add Input -->
             <div class="px-4 py-3">
               <div class="flex items-center gap-3">
@@ -4411,38 +4426,7 @@
             ` : ''}
 
             <div class="min-h-[400px] task-list">
-              ${activePerspective === 'home' ? `
-                <!-- Widget-based Home Dashboard -->
-                <div class="p-4">
-                  <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-2">
-                      ${editingHomeWidgets ? `
-                        <span class="text-sm text-coral font-medium">Editing Dashboard</span>
-                      ` : ''}
-                    </div>
-                    <div class="flex items-center gap-2">
-                      ${editingHomeWidgets ? `
-                        <button onclick="resetHomeWidgets()" class="text-xs text-charcoal/50 hover:text-charcoal px-2 py-1 rounded hover:bg-charcoal/5 transition">Reset Layout</button>
-                        <!-- Show hidden widgets -->
-                        ${homeWidgets.filter(w => !w.visible).length > 0 ? `
-                          <div class="flex items-center gap-1">
-                            <span class="text-xs text-charcoal/40">Hidden:</span>
-                            ${homeWidgets.filter(w => !w.visible).map(w => `
-                              <button onclick="toggleWidgetVisibility('${w.id}')" class="text-xs px-2 py-1 rounded border border-dashed border-charcoal/20 text-charcoal/50 hover:border-coral hover:text-coral transition">${w.title}</button>
-                            `).join('')}
-                          </div>
-                        ` : ''}
-                      ` : ''}
-                      <button onclick="toggleEditHomeWidgets()" class="text-xs text-charcoal/50 hover:text-charcoal px-2 py-1 rounded ${editingHomeWidgets ? 'bg-coral text-white hover:text-white' : 'hover:bg-charcoal/5'} transition">
-                        ${editingHomeWidgets ? 'Done' : 'Customize'}
-                      </button>
-                    </div>
-                  </div>
-                  <div class="grid grid-cols-2 gap-4">
-                    ${homeWidgets.filter(w => w.visible).sort((a, b) => a.order - b.order).map(widget => renderHomeWidget(widget, editingHomeWidgets)).join('')}
-                  </div>
-                </div>
-              ` : (filteredTasks.length === 0 ? `
+              ${filteredTasks.length === 0 ? `
                 <div class="empty-state flex flex-col items-center justify-center py-20 text-charcoal/30">
                   <div class="w-16 h-16 mb-4 flex items-center justify-center opacity-50">${viewInfo.icon}</div>
                   <p class="text-[15px] font-medium">No tasks in ${viewInfo.name}</p>
@@ -4527,7 +4511,7 @@
                 <div class="task-list">
                   ${filteredTasks.map(task => renderTaskItem(task)).join('')}
                 </div>
-              `))))}
+              `)))}
             </div>
           </div>
         </div>
@@ -5105,6 +5089,49 @@
       };
       reader.readAsText(file);
     }
+
+    // ============ KEYBOARD SHORTCUTS ============
+    document.addEventListener('keydown', (e) => {
+      // Don't trigger shortcuts when typing in inputs
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+        return;
+      }
+
+      // Cmd/Ctrl + K: Focus quick add input
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        const quickAddInput = document.getElementById('home-quick-add-input') || document.getElementById('quick-add-input');
+        if (quickAddInput) {
+          quickAddInput.focus();
+        } else if (activeTab !== 'home') {
+          switchTab('home');
+          setTimeout(() => {
+            const input = document.getElementById('home-quick-add-input');
+            if (input) input.focus();
+          }, 100);
+        }
+      }
+
+      // Cmd/Ctrl + 1-4: Switch tabs
+      if ((e.metaKey || e.ctrlKey) && e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        const tabs = ['home', 'life', 'tasks', 'settings'];
+        const tabIndex = parseInt(e.key) - 1;
+        if (tabs[tabIndex]) {
+          switchTab(tabs[tabIndex]);
+        }
+      }
+
+      // Escape: Close any open modal
+      if (e.key === 'Escape') {
+        if (showTaskModal) { showTaskModal = false; editingTaskId = null; render(); }
+        if (showPerspectiveModal) { showPerspectiveModal = false; editingPerspectiveId = null; render(); }
+        if (showCategoryModal) { showCategoryModal = false; editingCategoryId = null; render(); }
+        if (showLabelModal) { showLabelModal = false; editingLabelId = null; render(); }
+        if (showPersonModal) { showPersonModal = false; editingPersonId = null; render(); }
+        if (editingHomeWidgets) { editingHomeWidgets = false; render(); }
+      }
+    });
 
     // Initialize: load cloud data then render
     loadCloudData().then(() => render());
