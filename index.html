@@ -3087,7 +3087,7 @@
     // ============ HOME TAB (Customizable Widget Dashboard) ============
     function renderHomeTab() {
       const today = new Date().toISOString().split('T')[0];
-      const todayData = allData[today] || {};
+      const todayData = allData[today] || JSON.parse(JSON.stringify(defaultDayData));
       const scores = calculateScores(todayData);
 
       // Get visible widgets sorted by order
