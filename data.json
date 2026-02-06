@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-06T14:53:26.838Z",
+  "lastUpdated": "2026-02-06T14:53:30.647Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1874,8 +1874,8 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T22:21:44.582Z",
-      "updatedAt": "2026-02-02T07:26:48.280Z",
-      "order": 2000
+      "updatedAt": "2026-02-06T14:53:28.333Z",
+      "order": 1000
     },
     {
       "id": "task_1769986708273_8h0ih9rn2",
@@ -1910,8 +1910,8 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T23:12:26.598Z",
-      "updatedAt": "2026-02-02T09:06:12.087Z",
-      "order": 3000
+      "updatedAt": "2026-02-06T14:53:30.380Z",
+      "order": 2000
     },
     {
       "id": "task_1769988506419_k5obmgok8",
@@ -2018,7 +2018,7 @@
       "repeat": null,
       "createdAt": "2026-02-02T08:09:36.918Z",
       "updatedAt": "2026-02-02T08:09:52.631Z",
-      "order": 1000
+      "order": 3000
     },
     {
       "id": "task_1770020104608_3pypqlvmh",
