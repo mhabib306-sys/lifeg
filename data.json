@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-06T14:36:14.572Z",
+  "lastUpdated": "2026-02-06T14:36:30.719Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1520,7 +1520,7 @@
         "asr": "1",
         "maghrib": "1",
         "isha": "1",
-        "quran": "10"
+        "quran": "1"
       },
       "glucose": {
         "avg": "",
@@ -1558,7 +1558,7 @@
         "asr": "",
         "maghrib": "",
         "isha": "",
-        "quran": 0
+        "quran": "1"
       },
       "glucose": {
         "avg": "",
@@ -1592,8 +1592,84 @@
     "2026-02-04": {
       "prayers": {
         "fajr": "1",
-        "dhuhr": "",
-        "asr": "",
+        "dhuhr": "1",
+        "asr": "1",
+        "maghrib": "1",
+        "isha": "1",
+        "quran": "1"
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "insulin": ""
+      },
+      "whoop": {
+        "sleepPerf": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "family": {
+        "mom": false,
+        "dad": false,
+        "jana": false,
+        "tia": false,
+        "ahmed": false,
+        "eman": false
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0,
+        "nop": ""
+      }
+    },
+    "2026-02-05": {
+      "prayers": {
+        "fajr": "0.1",
+        "dhuhr": "1",
+        "asr": "1",
+        "maghrib": "1",
+        "isha": "1",
+        "quran": "1"
+      },
+      "glucose": {
+        "avg": "",
+        "tir": "",
+        "insulin": ""
+      },
+      "whoop": {
+        "sleepPerf": "",
+        "recovery": "",
+        "strain": "",
+        "whoopAge": ""
+      },
+      "family": {
+        "mom": false,
+        "dad": false,
+        "jana": false,
+        "tia": false,
+        "ahmed": false,
+        "eman": false
+      },
+      "habits": {
+        "exercise": 0,
+        "reading": 0,
+        "meditation": 0,
+        "water": "",
+        "vitamins": false,
+        "brushTeeth": 0,
+        "nop": ""
+      }
+    },
+    "2026-02-06": {
+      "prayers": {
+        "fajr": "0.1",
+        "dhuhr": "1",
+        "asr": "1",
         "maghrib": "",
         "isha": "",
         "quran": 0
