@@ -3610,7 +3610,7 @@
 
       app.innerHTML = `
         <header class="border-b border-softborder" style="background: var(--bg-primary);">
-          <div class="${activeTab === 'tasks' || activeTab === 'home' ? 'max-w-6xl' : 'max-w-5xl'} mx-auto px-6 py-6">
+          <div class="max-w-6xl mx-auto px-6 py-6">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-4">
                 <svg class="w-12 h-12 app-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -3645,7 +3645,7 @@
 
         <!-- Main Navigation -->
         <nav class="border-b border-charcoal/10 bg-white/60">
-          <div class="${activeTab === 'tasks' || activeTab === 'home' ? 'max-w-6xl' : 'max-w-5xl'} mx-auto px-6">
+          <div class="max-w-6xl mx-auto px-6">
             <div class="flex gap-0">
               <button onclick="switchTab('home')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 ${activeTab === 'home' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 🏠 Home
@@ -3666,7 +3666,7 @@
         ${activeTab === 'life' ? `
         <!-- Sub Navigation for Life Score -->
         <div class="bg-warmgray/30 border-b border-charcoal/5">
-          <div class="max-w-5xl mx-auto px-6">
+          <div class="max-w-6xl mx-auto px-6">
             <div class="flex gap-1 py-2">
               <button onclick="switchSubTab('daily')" class="px-4 py-1.5 text-sm rounded-lg transition ${activeSubTab === 'daily' ? 'bg-white shadow-sm text-charcoal font-medium' : 'text-charcoal/60 hover:text-charcoal hover:bg-white/50'}">
                 Daily Entry
@@ -3682,7 +3682,7 @@
         </div>
         ` : ''}
 
-        <main class="${activeTab === 'tasks' || activeTab === 'home' ? 'max-w-6xl' : 'max-w-5xl'} mx-auto px-6 py-8">
+        <main class="max-w-6xl mx-auto px-6 py-8">
           ${activeTab === 'home' ? renderHomeTab() :
             activeTab === 'life' ? (activeSubTab === 'daily' ? renderTrackingTab() : activeSubTab === 'bulk' ? renderBulkEntryTab() : renderDashboardTab()) :
             activeTab === 'tasks' ? renderTasksTab() :
