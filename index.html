@@ -1659,7 +1659,7 @@
         }
 
         case 'daily-entry': {
-          const todayData = allData[today] || {};
+          const todayData = allData[today] || JSON.parse(JSON.stringify(defaultDayData));
           const categories = {
             prayers: { label: 'Prayers', fields: ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'quran'], headers: ['F', 'D', 'A', 'M', 'I', 'Q'], icon: '🕌' },
             glucose: { label: 'Glucose', fields: ['avg', 'tir', 'insulin'], headers: ['Avg', 'TIR', 'Ins'], icon: '💉' },
