@@ -714,7 +714,7 @@
     // MAJOR: New major features (Home view, Next perspective, etc.)
     // MINOR: Enhancements and improvements
     // PATCH: Bug fixes and small tweaks
-    const APP_VERSION = '3.2.1';
+    const APP_VERSION = '3.2.2';
 
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -2700,7 +2700,8 @@
       let lastDate = null;
 
       dates.forEach(date => {
-        const dayData = allData[date];
+        const dayData = allData[date] || {};
+        const prayers = dayData.prayers || {};
         const scores = calculateScores(dayData);
 
         // Highest day score
@@ -2719,7 +2720,7 @@
         }
 
         // Most Quran pages
-        const quranPages = parseInt(dayData.prayers.quran) || 0;
+        const quranPages = parseInt(prayers.quran) || 0;
         if (quranPages > bests.mostQuranPages.value) {
           bests.mostQuranPages = { value: quranPages, date };
         }
@@ -2727,7 +2728,7 @@
         // Perfect prayer days (5 on-time prayers)
         let onTimePrayers = 0;
         ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(p => {
-          const { onTime } = parsePrayer(dayData.prayers[p]);
+          const { onTime } = parsePrayer(prayers[p]);
           if (onTime >= 1) onTimePrayers++;
         });
         if (onTimePrayers === 5) bests.perfectPrayerDays++;
@@ -2810,28 +2811,38 @@
     }
 
     function calculateScores(data) {
+      // Ensure data has required structure with safe defaults
+      if (!data || typeof data !== 'object') {
+        data = JSON.parse(JSON.stringify(defaultDayData));
+      }
+      const prayers = data.prayers || {};
+      const glucose = data.glucose || {};
+      const whoop = data.whoop || {};
+      const family = data.family || {};
+      const habits = data.habits || {};
+
       // Prayer Score
       let prayerScore = 0;
       let totalOnTime = 0, totalLate = 0;
       ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(p => {
-        const { onTime, late } = parsePrayer(data.prayers[p]);
+        const { onTime, late } = parsePrayer(prayers[p]);
         totalOnTime += onTime;
         totalLate += late;
         prayerScore += onTime * WEIGHTS.prayer.onTime + late * WEIGHTS.prayer.late;
       });
       // Quran pages
-      const quranPages = parseInt(data.prayers.quran) || 0;
+      const quranPages = parseInt(prayers.quran) || 0;
       prayerScore += quranPages * WEIGHTS.prayer.quran;
 
       // Diabetes/Glucose Score
       let diabetesScore = 0;
-      const avg = parseFloat(data.glucose.avg) || 0;
-      const tir = parseFloat(data.glucose.tir) || 0;
-      const insulin = parseFloat(data.glucose.insulin) || 0;
+      const avg = parseFloat(glucose.avg) || 0;
+      const tir = parseFloat(glucose.tir) || 0;
+      const insulin = parseFloat(glucose.insulin) || 0;
 
       // Avg glucose scoring - progressive: closer to 105 (midpoint of 70-140) = more points
       // Scale: 105 = max points, decreases as you move away from 105
-      if (data.glucose.avg !== '') {
+      if (glucose.avg !== '' && glucose.avg !== undefined) {
         const target = 105; // ideal midpoint
         const maxPts = WEIGHTS.glucose.avgMax || 20;
         if (avg >= 70 && avg <= 140) {
@@ -2850,14 +2861,14 @@
 
       // TIR scoring - progressive: each % point matters
       // Scale: 0.3 pts per % (so 70% = 21 pts, 100% = 30 pts)
-      if (data.glucose.tir !== '' && tir > 0) {
+      if (glucose.tir !== '' && glucose.tir !== undefined && tir > 0) {
         const ptsPerPercent = WEIGHTS.glucose.tirPerPoint || 0.3;
         diabetesScore += tir * ptsPerPercent;
       }
 
       // Insulin scoring: base points if ≤threshold, flat penalty if >threshold
       const insulinThreshold = WEIGHTS.glucose.insulinThreshold || 40;
-      if (data.glucose.insulin !== '' && insulin > 0) {
+      if (glucose.insulin !== '' && glucose.insulin !== undefined && insulin > 0) {
         if (insulin <= insulinThreshold) {
           diabetesScore += WEIGHTS.glucose.insulinBase;
         } else {
@@ -2867,12 +2878,12 @@
 
       // Whoop Age Score - Based on age-reducing metrics
       let whoopScore = 0;
-      const w = data.whoop;
+      const w = whoop;
       const ww = WEIGHTS.whoop;
 
       // Sleep Performance: ≥90% optimal
       const sleepPerf = parseFloat(w.sleepPerf) || 0;
-      if (w.sleepPerf !== '') {
+      if (w.sleepPerf !== '' && w.sleepPerf !== undefined) {
         if (sleepPerf >= 90) whoopScore += ww.sleepPerfHigh;
         else if (sleepPerf >= 70) whoopScore += ww.sleepPerfMid;
         else if (sleepPerf >= 50) whoopScore += ww.sleepPerfLow;
@@ -2880,7 +2891,7 @@
 
       // Recovery
       const recovery = parseFloat(w.recovery) || 0;
-      if (w.recovery !== '') {
+      if (w.recovery !== '' && w.recovery !== undefined) {
         if (recovery >= 66) whoopScore += ww.recoveryHigh;
         else if (recovery >= 50) whoopScore += ww.recoveryMid;
         else if (recovery >= 33) whoopScore += ww.recoveryLow;
@@ -2891,7 +2902,7 @@
       // Medium recovery (33-65%) → reward moderate strain (10-14)
       // Low recovery (<33%) → reward rest/light strain (0-10)
       const strain = parseFloat(w.strain) || 0;
-      if (w.strain !== '' && w.recovery !== '') {
+      if (w.strain !== '' && w.strain !== undefined && w.recovery !== '' && w.recovery !== undefined) {
         let strainMatch = false;
         if (recovery >= 66 && strain >= 14) strainMatch = true;
         else if (recovery >= 33 && recovery < 66 && strain >= 10 && strain < 14) strainMatch = true;
@@ -2904,20 +2915,20 @@
 
       // Family Score - individual weights per member
       let familyScore = 0;
-      Object.entries(data.family).forEach(([member, checked]) => {
+      Object.entries(family).forEach(([member, checked]) => {
         if (checked) familyScore += WEIGHTS.family[member] || 0;
       });
 
       // Habit Score
       let habitScore = 0;
-      habitScore += (parseInt(data.habits.exercise) || 0) * WEIGHTS.habits.exercise;
-      habitScore += (parseInt(data.habits.reading) || 0) * WEIGHTS.habits.reading;
-      habitScore += (parseInt(data.habits.meditation) || 0) * WEIGHTS.habits.meditation;
-      habitScore += (parseFloat(data.habits.water) || 0) * WEIGHTS.habits.water;
-      habitScore += data.habits.vitamins ? WEIGHTS.habits.vitamins : 0;
-      habitScore += (parseInt(data.habits.brushTeeth) || 0) * WEIGHTS.habits.brushTeeth;
+      habitScore += (parseInt(habits.exercise) || 0) * WEIGHTS.habits.exercise;
+      habitScore += (parseInt(habits.reading) || 0) * WEIGHTS.habits.reading;
+      habitScore += (parseInt(habits.meditation) || 0) * WEIGHTS.habits.meditation;
+      habitScore += (parseFloat(habits.water) || 0) * WEIGHTS.habits.water;
+      habitScore += habits.vitamins ? WEIGHTS.habits.vitamins : 0;
+      habitScore += (parseInt(habits.brushTeeth) || 0) * WEIGHTS.habits.brushTeeth;
       // NoP scoring: points if 1, penalty if 0
-      const nop = data.habits.nop;
+      const nop = habits.nop;
       if (nop !== '' && nop !== null && nop !== undefined) {
         if (parseInt(nop) === 1) habitScore += (WEIGHTS.habits.nopYes || 5);
         else if (parseInt(nop) === 0) habitScore += (WEIGHTS.habits.nopNo || -3);
@@ -3088,7 +3099,18 @@
     function renderHomeTab() {
       const today = new Date().toISOString().split('T')[0];
       const todayData = allData[today] || JSON.parse(JSON.stringify(defaultDayData));
-      const scores = calculateScores(todayData);
+      const rawScores = calculateScores(todayData);
+      // Safe defaults for all score properties
+      const scores = {
+        total: rawScores?.total ?? 0,
+        prayer: rawScores?.prayer ?? 0,
+        diabetes: rawScores?.diabetes ?? 0,
+        whoop: rawScores?.whoop ?? 0,
+        family: rawScores?.family ?? 0,
+        habit: rawScores?.habit ?? 0,
+        prayerOnTime: rawScores?.prayerOnTime ?? 0,
+        prayerLate: rawScores?.prayerLate ?? 0
+      };
 
       // Get visible widgets sorted by order
       const visibleWidgets = homeWidgets.filter(w => w.visible).sort((a, b) => a.order - b.order);
@@ -3182,7 +3204,17 @@
 
     function renderTrackingTab() {
       const data = getTodayData();
-      const scores = calculateScores(data);
+      const rawScores = calculateScores(data);
+      const scores = {
+        total: rawScores?.total ?? 0,
+        prayer: rawScores?.prayer ?? 0,
+        diabetes: rawScores?.diabetes ?? 0,
+        whoop: rawScores?.whoop ?? 0,
+        family: rawScores?.family ?? 0,
+        habit: rawScores?.habit ?? 0,
+        prayerOnTime: rawScores?.prayerOnTime ?? 0,
+        prayerLate: rawScores?.prayerLate ?? 0
+      };
 
       const prayerHelp = `<span class="text-xs text-charcoal/50">X.Y = X on-time + Y late</span>`;
       const prayersContent = `
@@ -3194,12 +3226,12 @@
         <div class="border-t border-softborder pt-4">
           <div class="flex items-center justify-center gap-3">
             <span class="text-sm text-charcoal/70">📖 Quran</span>
-            <button onclick="updateData('prayers', 'quran', Math.max(0, ${parseInt(data.prayers.quran) || 0} - 1))"
+            <button onclick="updateData('prayers', 'quran', Math.max(0, ${parseInt(prayers.quran) || 0} - 1))"
               class="w-7 h-7 rounded-full bg-warmgray hover:bg-softborder flex items-center justify-center font-bold text-charcoal/60">−</button>
-            <span class="w-8 text-center font-semibold text-lg">${parseInt(data.prayers.quran) || 0}</span>
-            <button onclick="updateData('prayers', 'quran', ${parseInt(data.prayers.quran) || 0} + 1)"
+            <span class="w-8 text-center font-semibold text-lg">${parseInt(prayers.quran) || 0}</span>
+            <button onclick="updateData('prayers', 'quran', ${parseInt(prayers.quran) || 0} + 1)"
               class="w-7 h-7 rounded-full bg-coral hover:bg-coralDark text-white flex items-center justify-center font-bold">+</button>
-            <span class="text-xs text-charcoal/50">pages · ${(parseInt(data.prayers.quran) || 0) * 5} pts</span>
+            <span class="text-xs text-charcoal/50">pages · ${(parseInt(prayers.quran) || 0) * 5} pts</span>
           </div>
         </div>
       `;
