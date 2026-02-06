@@ -3237,12 +3237,12 @@
         <div class="border-t border-softborder pt-4">
           <div class="flex items-center justify-center gap-3">
             <span class="text-sm text-charcoal/70">📖 Quran</span>
-            <button onclick="updateData('prayers', 'quran', Math.max(0, ${parseInt(prayers.quran) || 0} - 1))"
+            <button onclick="updateData('prayers', 'quran', Math.max(0, ${parseInt(data.prayers.quran) || 0} - 1))"
               class="w-7 h-7 rounded-full bg-warmgray hover:bg-softborder flex items-center justify-center font-bold text-charcoal/60">−</button>
-            <span class="w-8 text-center font-semibold text-lg">${parseInt(prayers.quran) || 0}</span>
-            <button onclick="updateData('prayers', 'quran', ${parseInt(prayers.quran) || 0} + 1)"
+            <span class="w-8 text-center font-semibold text-lg">${parseInt(data.prayers.quran) || 0}</span>
+            <button onclick="updateData('prayers', 'quran', ${parseInt(data.prayers.quran) || 0} + 1)"
               class="w-7 h-7 rounded-full bg-coral hover:bg-coralDark text-white flex items-center justify-center font-bold">+</button>
-            <span class="text-xs text-charcoal/50">pages · ${(parseInt(prayers.quran) || 0) * 5} pts</span>
+            <span class="text-xs text-charcoal/50">pages · ${(parseInt(data.prayers.quran) || 0) * 5} pts</span>
           </div>
         </div>
       `;
