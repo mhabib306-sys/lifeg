@@ -47,6 +47,7 @@
       --accent-dark: #C4432F;
       --accent-light: rgba(229, 83, 61, 0.1);
       --accent-hover: rgba(229, 83, 61, 0.08);
+      --notes-accent: #8B5CF6;
       --border: #E5E3DE;
       --border-light: #F0EEE9;
       --success: #22C55E;
@@ -81,6 +82,7 @@
       --accent-dark: #0066DC;
       --accent-light: rgba(20, 126, 251, 0.08);
       --accent-hover: rgba(0, 0, 0, 0.03);
+      --notes-accent: #8B5CF6;
 
       /* Borders */
       --border: #E5E5EA;
@@ -969,6 +971,41 @@
       /* Settings */
       .settings-grid {
         grid-template-columns: 1fr;
+      }
+
+      /* Mobile text size fixes - ensure readability */
+      .modal-section-label {
+        font-size: 12px !important;
+      }
+
+      .autocomplete-option,
+      .autocomplete-create {
+        font-size: 14px !important;
+        min-height: 44px !important;
+        padding: 12px !important;
+      }
+
+      /* Status pills - proper touch targets */
+      .status-pill {
+        min-height: 44px !important;
+        padding: 10px 16px !important;
+        font-size: 14px !important;
+      }
+
+      /* Sidebar items - touch friendly */
+      .sidebar-item {
+        min-height: 44px !important;
+        padding: 10px 12px !important;
+      }
+
+      /* Section labels */
+      .section-label {
+        font-size: 13px !important;
+      }
+
+      /* Action buttons visible on mobile (no hover) */
+      .task-item .absolute.right-3 {
+        opacity: 1 !important;
       }
     }
 
@@ -2781,6 +2818,7 @@
 
     // Home quick add task function
     function homeQuickAddTask(inputElement) {
+      if (!inputElement) return;
       const title = inputElement.value.trim();
       if (!title) return;
       createTask(title, { status: 'inbox' });
@@ -3027,7 +3065,14 @@
     }
 
     function getTasksByPerson(personId) {
-      return tasksData.filter(task => task.people && task.people.includes(personId) && !task.completed);
+      const today = new Date().toISOString().split('T')[0];
+      return tasksData.filter(task => {
+        if (!task.people || !task.people.includes(personId)) return false;
+        if (task.completed) return false;
+        // Hide deferred tasks (deferDate in the future)
+        if (task.deferDate && task.deferDate > today) return false;
+        return true;
+      });
     }
 
     function showPersonTasks(personId) {
@@ -3989,8 +4034,13 @@
     // Get tasks by category
     function getTasksByCategory(categoryId) {
       const today = new Date().toISOString().split('T')[0];
-      return tasksData.filter(task => task.categoryId === categoryId && !task.completed)
-        .sort((a, b) => {
+      return tasksData.filter(task => {
+        if (task.categoryId !== categoryId) return false;
+        if (task.completed) return false;
+        // Hide deferred tasks (deferDate in the future)
+        if (task.deferDate && task.deferDate > today) return false;
+        return true;
+      }).sort((a, b) => {
           if (a.dueDate && !b.dueDate) return -1;
           if (!a.dueDate && b.dueDate) return 1;
           if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
@@ -4000,8 +4050,14 @@
 
     // Get tasks by label
     function getTasksByLabel(labelId) {
-      return tasksData.filter(task => (task.labels || []).includes(labelId) && !task.completed)
-        .sort((a, b) => {
+      const today = new Date().toISOString().split('T')[0];
+      return tasksData.filter(task => {
+        if (!(task.labels || []).includes(labelId)) return false;
+        if (task.completed) return false;
+        // Hide deferred tasks (deferDate in the future)
+        if (task.deferDate && task.deferDate > today) return false;
+        return true;
+      }).sort((a, b) => {
           if (a.dueDate && !b.dueDate) return -1;
           if (!a.dueDate && b.dueDate) return 1;
           if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
@@ -4959,7 +5015,7 @@
             <div class="flex items-center h-11 px-3">
               ${task.isNote ? `
                 <div class="w-5 h-5 flex items-center justify-center flex-shrink-0">
-                  <div class="w-2 h-2 rounded-full bg-[#8B5CF6]"></div>
+                  <div class="w-2 h-2 rounded-full bg-[var(--notes-accent)]"></div>
                 </div>
               ` : `
                 <button onclick="event.stopPropagation(); toggleTaskComplete('${task.id}')"
@@ -4968,6 +5024,11 @@
                 </button>
               `}
               <span class="flex-1 ml-3 text-[14px] leading-tight ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} truncate">${task.title}</span>
+              ${task.repeat && task.repeat.type !== 'none' ? `
+                <span class="ml-1 text-[var(--accent)]" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                </span>
+              ` : ''}
               ${labels.length > 0 ? `
                 <span class="ml-2 text-[11px] text-charcoal/40 flex-shrink-0">${labels[0].name}</span>
               ` : ''}
@@ -4986,7 +5047,7 @@
           ondrop="handleDrop(event, '${task.id}')">
           <div class="flex items-start gap-3 px-4 py-2.5" style="${indentLevel > 0 ? `padding-left: ${16 + indentPx}px` : ''}">
             ${task.isNote ? `
-              <div class="mt-1.5 w-2 h-2 rounded-full ${indentLevel > 0 ? 'bg-[#8B5CF6]/50' : 'bg-[#8B5CF6]'} flex-shrink-0"></div>
+              <div class="mt-1.5 w-2 h-2 rounded-full ${indentLevel > 0 ? 'bg-[var(--notes-accent)]/50' : 'bg-[var(--notes-accent)]'} flex-shrink-0"></div>
             ` : `
               <button onclick="event.stopPropagation(); toggleTaskComplete('${task.id}')"
                 class="task-checkbox mt-0.5 w-5 h-5 rounded-full border-[1.5px] flex-shrink-0 flex items-center justify-center transition-all ${task.completed ? 'completed bg-[var(--accent)] border-[var(--accent)] text-white' : 'border-[var(--text-muted)] hover:border-[var(--accent)]'}">
@@ -5174,7 +5235,12 @@
         </footer>
       `;
 
-      document.getElementById('dateInput').addEventListener('change', (e) => { currentDate = e.target.value; render(); });
+      // Setup date input handler (with cleanup to prevent memory leak)
+      const dateInput = document.getElementById('dateInput');
+      if (dateInput && !dateInput._hasChangeHandler) {
+        dateInput._hasChangeHandler = true;
+        dateInput.addEventListener('change', (e) => { currentDate = e.target.value; render(); });
+      }
 
       // Setup sidebar drag and drop after DOM is updated
       if (activeTab === 'tasks') {
