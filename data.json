@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-07T08:22:59.661Z",
+  "lastUpdated": "2026-02-07T08:23:14.482Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1792,8 +1792,8 @@
       "title": "Review Q1 Board Material",
       "notes": "",
       "status": "today",
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-07T08:23:12.141Z",
       "categoryId": "work",
       "labels": [
         "urgent",
@@ -1804,7 +1804,7 @@
       "dueDate": "2026-02-02",
       "repeat": null,
       "createdAt": "2026-02-01T21:58:54.892Z",
-      "updatedAt": "2026-02-02T08:15:49.359Z",
+      "updatedAt": "2026-02-07T08:23:12.141Z",
       "order": 1000
     },
     {
