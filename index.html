@@ -2716,7 +2716,8 @@
             if (t.completed || t.isNote) return false;
             const isDueToday = t.dueDate === today;
             const isOverdue = t.dueDate && t.dueDate < today;
-            return t.status === 'today' || isDueToday || isOverdue;
+            const isScheduledForToday = t.deferDate && t.deferDate <= today;
+            return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
           }).length;
           const nextTasksCount = nextLabel ? tasksData.filter(t => {
             if (t.completed || t.isNote) return false;
@@ -2769,7 +2770,8 @@
             if (t.completed || t.isNote) return false;
             const isDueToday = t.dueDate === today;
             const isOverdue = t.dueDate && t.dueDate < today;
-            return t.status === 'today' || isDueToday || isOverdue;
+            const isScheduledForToday = t.deferDate && t.deferDate <= today;
+            return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
           }).sort((a, b) => {
             if (a.dueDate && !b.dueDate) return -1;
             if (!a.dueDate && b.dueDate) return 1;
@@ -3890,9 +3892,10 @@
       }
 
       // Create new task with same properties
+      // Keep the same status (Today tasks stay in Today with new date)
       createTask(completedTask.title, {
         notes: completedTask.notes,
-        status: completedTask.status === 'today' ? 'inbox' : completedTask.status,
+        status: completedTask.status,
         categoryId: completedTask.categoryId,
         labels: [...(completedTask.labels || [])],
         deferDate: newDeferDate,
@@ -4096,11 +4099,13 @@
         // - Tasks explicitly marked as 'today'
         // - Tasks with today's due date
         // - Overdue tasks (due date in the past)
+        // - Tasks scheduled for today or earlier (deferDate)
         // - "Next" tasks: tasks tagged with a "next" label
         if (perspectiveId === 'today') {
           const isDueToday = task.dueDate === today;
           const isOverdue = task.dueDate && task.dueDate < today;
-          const isTodayTask = task.status === 'today' || isDueToday || isOverdue;
+          const isScheduledForToday = task.deferDate && task.deferDate <= today;
+          const isTodayTask = task.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
 
           // Include tasks tagged with "next" label
           const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
@@ -6072,7 +6077,8 @@
             if (t.completed) return false;
             const isDueToday = t.dueDate === todayDate;
             const isOverdue = t.dueDate && t.dueDate < todayDate;
-            return t.status === 'today' || isDueToday || isOverdue;
+            const isScheduledForToday = t.deferDate && t.deferDate <= todayDate;
+            return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
           }).length;
         } else {
           taskCounts[p.id] = getFilteredTasks(p.id).length;
@@ -6278,9 +6284,9 @@
         const noteItems = areaTasks.filter(t => t.isNote);
         const taskItems = areaTasks.filter(t => !t.isNote);
         const overdueTasks = taskItems.filter(t => t.dueDate && t.dueDate < todayDate);
-        const todayTasks = taskItems.filter(t => t.status === 'today' || t.dueDate === todayDate);
-        const upcomingTasks = taskItems.filter(t => t.dueDate && t.dueDate > todayDate && t.status !== 'today');
-        const anytimeTasks = taskItems.filter(t => t.status === 'anytime' && !t.dueDate);
+        const todayTasks = taskItems.filter(t => t.status === 'today' || t.dueDate === todayDate || (t.deferDate && t.deferDate <= todayDate));
+        const upcomingTasks = taskItems.filter(t => t.dueDate && t.dueDate > todayDate && t.status !== 'today' && !(t.deferDate && t.deferDate <= todayDate));
+        const anytimeTasks = taskItems.filter(t => t.status === 'anytime' && !t.dueDate && !(t.deferDate && t.deferDate <= todayDate));
         const somedayTasks = taskItems.filter(t => t.status === 'someday');
         const inboxTasks = taskItems.filter(t => t.status === 'inbox');
 
@@ -6588,17 +6594,19 @@
                 const today = new Date().toISOString().split('T')[0];
                 const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
 
-                // Dated tasks: tasks with status 'today', due today, or overdue
+                // Dated tasks: tasks with status 'today', due today, overdue, or scheduled for today
                 const datedTasks = filteredTasks.filter(t => {
                   const isDueToday = t.dueDate === today;
                   const isOverdue = t.dueDate && t.dueDate < today;
-                  return t.status === 'today' || isDueToday || isOverdue;
+                  const isScheduledForToday = t.deferDate && t.deferDate <= today;
+                  return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
                 });
 
                 // Next tasks: tasks tagged with "next" label (not already in dated)
                 const nextTasks = nextLabel ? filteredTasks.filter(t => {
                   const isNextTagged = (t.labels || []).includes(nextLabel.id);
-                  const isDatedTask = t.status === 'today' || t.dueDate === today || (t.dueDate && t.dueDate < today);
+                  const isScheduledForToday = t.deferDate && t.deferDate <= today;
+                  const isDatedTask = t.status === 'today' || t.dueDate === today || (t.dueDate && t.dueDate < today) || isScheduledForToday;
                   return isNextTagged && !isDatedTask;
                 }) : [];
 
@@ -7470,7 +7478,7 @@
       const taskData = {
         title: title,
         notes: document.getElementById('task-notes')?.value.trim() || '',
-        status: modalSelectedStatus === 'today' ? 'anytime' : modalSelectedStatus, // Today is date-based, not a status
+        status: modalSelectedStatus, // Keep the status as-is (today, inbox, anytime, someday)
         categoryId: modalSelectedArea,
         deferDate: deferDateValue,
         dueDate: document.getElementById('task-due')?.value || null,
