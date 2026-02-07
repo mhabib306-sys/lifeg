@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#E5533D">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Nucleus</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -2673,22 +2675,22 @@
           const inboxCount = tasksData.filter(t => !t.completed && !t.isNote && t.status === 'inbox' && !t.categoryId).length;
 
           content = `
-            <div class="grid grid-cols-4 gap-2 sm:gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
               <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('today')">
                 <div class="text-xl sm:text-2xl font-bold text-charcoal">${todayTasksCount}</div>
-                <div class="text-[11px] sm:text-xs text-charcoal/50 mt-1">Due Today</div>
+                <div class="text-xs text-charcoal/50 mt-1">Due Today</div>
               </button>
               <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="${nextLabel ? `showLabelTasks('${nextLabel.id}')` : 'void(0)'}">
                 <div class="text-xl sm:text-2xl font-bold text-[#8B5CF6]">${nextTasksCount}</div>
-                <div class="text-[11px] sm:text-xs text-charcoal/50 mt-1">Tagged Next</div>
+                <div class="text-xs text-charcoal/50 mt-1">Tagged Next</div>
               </button>
               <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('logbook')">
                 <div class="text-xl sm:text-2xl font-bold text-green-600">${completedToday}</div>
-                <div class="text-[11px] sm:text-xs text-charcoal/50 mt-1">Done Today</div>
+                <div class="text-xs text-charcoal/50 mt-1">Done Today</div>
               </button>
               <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('inbox')">
                 <div class="text-xl sm:text-2xl font-bold ${inboxCount > 0 ? 'text-blue-500' : 'text-charcoal'}">${inboxCount}</div>
-                <div class="text-[11px] sm:text-xs text-charcoal/50 mt-1">In Inbox</div>
+                <div class="text-xs text-charcoal/50 mt-1">In Inbox</div>
               </button>
             </div>
           `;
@@ -2774,7 +2776,7 @@
               <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-3">
                 <div class="flex items-center justify-between mb-2">
                   <span class="text-xs font-semibold text-amber-700 uppercase tracking-wide">🕌 Prayers</span>
-                  <span class="text-[10px] text-amber-600 font-medium">${prayersDone}/5</span>
+                  <span class="text-[11px] text-amber-600 font-medium">${prayersDone}/5</span>
                 </div>
                 <div class="flex items-center gap-2">
                   ${['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((p, i) => {
@@ -2787,7 +2789,7 @@
                   }).join('')}
                   <div class="w-px h-6 bg-amber-200"></div>
                   <div class="flex items-center gap-1 bg-white/80 rounded-lg px-2 py-1">
-                    <span class="text-[10px] text-amber-600">📖</span>
+                    <span class="text-[11px] text-amber-600">📖</span>
                     <input type="number" value="${prayerData.quran || ''}" placeholder="0"
                       onchange="updateDailyField('prayers', 'quran', this.value)"
                       class="w-8 text-center text-xs bg-transparent focus:outline-none text-charcoal">
@@ -2802,19 +2804,19 @@
                 </div>
                 <div class="flex items-center gap-3">
                   <div class="flex-1 bg-white/80 rounded-lg px-3 py-1.5">
-                    <span class="text-[10px] text-blue-500 block">Avg</span>
+                    <span class="text-[11px] text-blue-500 block">Avg</span>
                     <input type="number" value="${glucoseData.avg || ''}" placeholder="--"
                       onchange="updateDailyField('glucose', 'avg', this.value)"
                       class="w-full text-sm font-medium bg-transparent focus:outline-none text-charcoal">
                   </div>
                   <div class="flex-1 bg-white/80 rounded-lg px-3 py-1.5">
-                    <span class="text-[10px] text-blue-500 block">TIR %</span>
+                    <span class="text-[11px] text-blue-500 block">TIR %</span>
                     <input type="number" value="${glucoseData.tir || ''}" placeholder="--"
                       onchange="updateDailyField('glucose', 'tir', this.value)"
                       class="w-full text-sm font-medium bg-transparent focus:outline-none text-charcoal">
                   </div>
                   <div class="flex-1 bg-white/80 rounded-lg px-3 py-1.5">
-                    <span class="text-[10px] text-blue-500 block">Insulin</span>
+                    <span class="text-[11px] text-blue-500 block">Insulin</span>
                     <input type="number" value="${glucoseData.insulin || ''}" placeholder="--"
                       onchange="updateDailyField('glucose', 'insulin', this.value)"
                       class="w-full text-sm font-medium bg-transparent focus:outline-none text-charcoal">
@@ -2829,19 +2831,19 @@
                 </div>
                 <div class="flex items-center gap-3">
                   <div class="flex-1 bg-white/80 rounded-lg px-3 py-1.5">
-                    <span class="text-[10px] text-emerald-500 block">Sleep %</span>
+                    <span class="text-[11px] text-emerald-500 block">Sleep %</span>
                     <input type="number" value="${whoopData.sleepPerf || ''}" placeholder="--"
                       onchange="updateDailyField('whoop', 'sleepPerf', this.value)"
                       class="w-full text-sm font-medium bg-transparent focus:outline-none text-charcoal">
                   </div>
                   <div class="flex-1 bg-white/80 rounded-lg px-3 py-1.5">
-                    <span class="text-[10px] text-emerald-500 block">Recovery</span>
+                    <span class="text-[11px] text-emerald-500 block">Recovery</span>
                     <input type="number" value="${whoopData.recovery || ''}" placeholder="--"
                       onchange="updateDailyField('whoop', 'recovery', this.value)"
                       class="w-full text-sm font-medium bg-transparent focus:outline-none text-charcoal">
                   </div>
                   <div class="flex-1 bg-white/80 rounded-lg px-3 py-1.5">
-                    <span class="text-[10px] text-emerald-500 block">Strain</span>
+                    <span class="text-[11px] text-emerald-500 block">Strain</span>
                     <input type="number" value="${whoopData.strain || ''}" placeholder="--"
                       onchange="updateDailyField('whoop', 'strain', this.value)"
                       class="w-full text-sm font-medium bg-transparent focus:outline-none text-charcoal">
@@ -2853,7 +2855,7 @@
               <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3">
                 <div class="flex items-center justify-between mb-2">
                   <span class="text-xs font-semibold text-purple-700 uppercase tracking-wide">✨ Habits</span>
-                  <span class="text-[10px] text-purple-600 font-medium">${habitsDone}/5</span>
+                  <span class="text-[11px] text-purple-600 font-medium">${habitsDone}/5</span>
                 </div>
                 <div class="flex items-center gap-2">
                   ${[
@@ -4702,15 +4704,15 @@
                   <div class="weather-inline flex items-center gap-2 text-charcoal/70" title="${weatherData.city}">
                     <span class="text-base">${WEATHER_ICONS[weatherData.weatherCode] || '🌡️'}</span>
                     <span class="text-sm font-semibold">${weatherData.temp}°</span>
-                    <span class="text-[10px] text-charcoal/40 font-medium">↑${weatherData.tempMax}° <span class="opacity-60">${weatherData.maxHour || ''}</span></span>
-                    <span class="text-[10px] text-charcoal/40 font-medium">↓${weatherData.tempMin}° <span class="opacity-60">${weatherData.minHour || ''}</span></span>
+                    <span class="text-[11px] text-charcoal/40 font-medium">↑${weatherData.tempMax}° <span class="opacity-60">${weatherData.maxHour || ''}</span></span>
+                    <span class="text-[11px] text-charcoal/40 font-medium">↓${weatherData.tempMin}° <span class="opacity-60">${weatherData.minHour || ''}</span></span>
                   </div>
                 ` : ''}
               </div>
               <div class="flex items-center gap-3 mt-1">
                 <p class="text-charcoal/50 text-sm">${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
                 <span class="text-charcoal/30">•</span>
-                <p class="text-charcoal/40 text-xs">Press <kbd class="px-1.5 py-0.5 bg-charcoal/10 rounded text-[10px] font-mono">⌘K</kbd> to quick add</p>
+                <p class="text-charcoal/40 text-xs">Press <kbd class="px-1.5 py-0.5 bg-charcoal/10 rounded text-[11px] font-mono">⌘K</kbd> to quick add</p>
               </div>
             </div>
             <div class="flex items-center gap-3">
@@ -5245,7 +5247,7 @@
           <div class="flex items-center gap-3">
             <div class="flex items-center gap-1.5">
               <div class="w-2 h-2 rounded-full ${getGithubToken() ? 'bg-green-500' : 'bg-charcoal/20'}"></div>
-              <span class="text-[10px] text-charcoal/40">${getGithubToken() ? 'Synced' : 'Local'}</span>
+              <span class="text-[11px] text-charcoal/40">${getGithubToken() ? 'Synced' : 'Local'}</span>
             </div>
             <button onclick="setToday()" class="text-xs font-semibold px-2.5 py-1 bg-coral/10 text-coral rounded-lg">Today</button>
           </div>
@@ -5273,7 +5275,7 @@
                 <div>
                   <div class="flex items-center gap-2">
                     <h1 class="text-2xl font-bold tracking-tight text-charcoal">Nucleus</h1>
-                    <span class="text-[10px] font-medium text-charcoal/40 bg-charcoal/5 px-1.5 py-0.5 rounded">v${APP_VERSION}</span>
+                    <span class="text-[11px] font-medium text-charcoal/40 bg-charcoal/5 px-1.5 py-0.5 rounded">v${APP_VERSION}</span>
                   </div>
                   <p class="text-sm text-charcoal/60 mt-0.5">The core of your life <span class="text-coral">•</span> habits, health, productivity</p>
                 </div>
