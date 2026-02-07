@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#E5533D">
+  <meta name="theme-color" content="#FFFFFF">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Nucleus</title>
   <!-- Allow browser caching for better performance -->
@@ -735,25 +735,23 @@
 
     .mobile-nav-item {
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
-      padding: 8px 16px;
-      min-height: 52px;
+      padding: 10px 16px;
+      min-height: 44px;
       border-radius: 12px;
       color: var(--text-muted);
       transition: all 0.2s ease;
       -webkit-tap-highlight-color: transparent;
     }
 
-    .mobile-nav-item.active {
-      color: var(--accent);
+    .mobile-nav-item svg {
+      width: 24px;
+      height: 24px;
     }
 
-    .mobile-nav-item span {
-      font-size: 11px;
-      font-weight: 500;
+    .mobile-nav-item.active {
+      color: var(--accent);
     }
 
     /* Mobile Header Compact */
@@ -841,6 +839,16 @@
         border-radius: 0 !important;
         border-left: none !important;
         border-right: none !important;
+      }
+
+      /* Things 3 flat task items on mobile */
+      [data-theme="things3"] .task-item {
+        border-radius: 0;
+        margin: 0;
+        border-bottom: 1px solid var(--border-light);
+      }
+      [data-theme="things3"] .task-item:last-child {
+        border-bottom: none;
       }
 
       /* Task items - larger touch targets */
@@ -1430,7 +1438,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(to bottom, var(--bg-input), var(--modal-bg));
+      background: var(--modal-bg);
     }
     .modal-body-enhanced {
       padding: 24px;
@@ -1916,7 +1924,7 @@
      * @returns {string} Theme name ('simplebits' or 'things3')
      */
     function getTheme() {
-      return localStorage.getItem(THEME_KEY) || 'simplebits';
+      return localStorage.getItem(THEME_KEY) || 'things3';
     }
 
     // Set theme
@@ -2514,6 +2522,7 @@
     let editingTaskId = null;
     let inlineEditingTaskId = null; // For inline title editing
     let newTaskContext = { categoryId: null, labelId: null, personId: null, status: 'inbox' }; // Context for new task
+    let mobileDrawerOpen = false;
     let showTaskModal = false;
     let showPerspectiveModal = false;
     let showCategoryModal = false;
@@ -2522,6 +2531,19 @@
     let editingCategoryId = null;
     let editingLabelId = null;
     let editingPersonId = null;
+
+    // Mobile drawer functions
+    function openMobileDrawer() { mobileDrawerOpen = true; renderMobileDrawer(); }
+    function closeMobileDrawer() { mobileDrawerOpen = false; renderMobileDrawer(); }
+    function renderMobileDrawer() {
+      const overlay = document.getElementById('mobile-sidebar-overlay');
+      if (!overlay) return;
+      if (mobileDrawerOpen) {
+        overlay.classList.add('show');
+      } else {
+        overlay.classList.remove('show');
+      }
+    }
 
     // Inline task title editing
     function startInlineEdit(taskId) {
@@ -2569,6 +2591,7 @@
       activeFilterType = 'category';
       activeCategoryFilter = categoryId;
       activeLabelFilter = null;
+      mobileDrawerOpen = false;
       // Switch to tasks tab when navigating from Quick Stats or other widgets
       if (activeTab !== 'tasks') {
         activeTab = 'tasks';
@@ -2583,6 +2606,7 @@
       activeFilterType = 'label';
       activeLabelFilter = labelId;
       activeCategoryFilter = null;
+      mobileDrawerOpen = false;
       // Switch to tasks tab when navigating from Quick Stats or other widgets
       if (activeTab !== 'tasks') {
         activeTab = 'tasks';
@@ -2696,6 +2720,7 @@
       activePerspective = perspectiveId;
       activeCategoryFilter = null;
       activeLabelFilter = null;
+      mobileDrawerOpen = false;
       // Switch to tasks tab when navigating from Quick Stats or other widgets
       if (activeTab !== 'tasks') {
         activeTab = 'tasks';
@@ -2982,90 +3007,90 @@
           content = `
             <div class="space-y-4">
               <!-- Prayers Section -->
-              <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4">
+              <div class="bg-[var(--bg-secondary)] rounded-xl p-4 border border-[var(--border-light)]">
                 <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs font-semibold text-amber-700 uppercase tracking-wide">🕌 Prayers</span>
-                  <span class="text-xs text-amber-600 font-medium">${prayersDone}/5</span>
+                  <span class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">🕌 Prayers</span>
+                  <span class="text-xs text-[var(--text-muted)] font-medium">${prayersDone}/5</span>
                 </div>
                 <div class="grid grid-cols-6 gap-2">
                   ${['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((p, i) => {
                     const labels = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
                     const shortLabels = ['F', 'D', 'A', 'M', 'I'];
                     return '<div class="text-center">' +
-                      '<label class="text-[10px] text-amber-600 font-medium block mb-1">' + shortLabels[i] + '</label>' +
+                      '<label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">' + shortLabels[i] + '</label>' +
                       '<input type="number" step="0.1" min="0" max="1" value="' + (prayerData[p] || '') + '" placeholder="0"' +
                       ' onchange="updateDailyField(\'prayers\', \'' + p + '\', this.value)"' +
-                      ' class="w-full px-2 py-2 text-center text-sm font-medium bg-white border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200">' +
+                      ' class="w-full px-2 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">' +
                       '</div>';
                   }).join('')}
                   <div class="text-center">
-                    <label class="text-[10px] text-amber-600 font-medium block mb-1">📖</label>
+                    <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">📖</label>
                     <input type="number" step="0.1" value="${prayerData.quran || ''}" placeholder="0"
                       onchange="updateDailyField('prayers', 'quran', this.value)"
-                      class="w-full px-2 py-2 text-center text-sm font-medium bg-white border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200">
+                      class="w-full px-2 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
                   </div>
                 </div>
               </div>
 
               <!-- Glucose Section -->
-              <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4">
+              <div class="bg-[var(--bg-secondary)] rounded-xl p-4 border border-[var(--border-light)]">
                 <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs font-semibold text-blue-700 uppercase tracking-wide">💉 Glucose</span>
+                  <span class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">💉 Glucose</span>
                 </div>
                 <div class="grid grid-cols-3 gap-3">
                   <div class="text-center">
-                    <label class="text-[10px] text-blue-500 font-medium block mb-1">Avg</label>
+                    <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Avg</label>
                     <input type="number" value="${glucoseData.avg || ''}" placeholder="--"
                       onchange="updateDailyField('glucose', 'avg', this.value)"
-                      class="w-full px-3 py-2 text-center text-sm font-medium bg-white border border-blue-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200">
+                      class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
                   </div>
                   <div class="text-center">
-                    <label class="text-[10px] text-blue-500 font-medium block mb-1">TIR %</label>
+                    <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">TIR %</label>
                     <input type="number" value="${glucoseData.tir || ''}" placeholder="--"
                       onchange="updateDailyField('glucose', 'tir', this.value)"
-                      class="w-full px-3 py-2 text-center text-sm font-medium bg-white border border-blue-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200">
+                      class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
                   </div>
                   <div class="text-center">
-                    <label class="text-[10px] text-blue-500 font-medium block mb-1">Insulin</label>
+                    <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Insulin</label>
                     <input type="number" value="${glucoseData.insulin || ''}" placeholder="--"
                       onchange="updateDailyField('glucose', 'insulin', this.value)"
-                      class="w-full px-3 py-2 text-center text-sm font-medium bg-white border border-blue-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200">
+                      class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
                   </div>
                 </div>
               </div>
 
               <!-- Whoop Section -->
-              <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4">
+              <div class="bg-[var(--bg-secondary)] rounded-xl p-4 border border-[var(--border-light)]">
                 <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs font-semibold text-emerald-700 uppercase tracking-wide">⏱️ Whoop</span>
+                  <span class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">⏱️ Whoop</span>
                 </div>
                 <div class="grid grid-cols-3 gap-3">
                   <div class="text-center">
-                    <label class="text-[10px] text-emerald-500 font-medium block mb-1">Sleep %</label>
+                    <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Sleep %</label>
                     <input type="number" value="${whoopData.sleepPerf || ''}" placeholder="--"
                       onchange="updateDailyField('whoop', 'sleepPerf', this.value)"
-                      class="w-full px-3 py-2 text-center text-sm font-medium bg-white border border-emerald-200 rounded-lg focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200">
+                      class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
                   </div>
                   <div class="text-center">
-                    <label class="text-[10px] text-emerald-500 font-medium block mb-1">Recovery</label>
+                    <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Recovery</label>
                     <input type="number" value="${whoopData.recovery || ''}" placeholder="--"
                       onchange="updateDailyField('whoop', 'recovery', this.value)"
-                      class="w-full px-3 py-2 text-center text-sm font-medium bg-white border border-emerald-200 rounded-lg focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200">
+                      class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
                   </div>
                   <div class="text-center">
-                    <label class="text-[10px] text-emerald-500 font-medium block mb-1">Strain</label>
+                    <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Strain</label>
                     <input type="number" value="${whoopData.strain || ''}" placeholder="--"
                       onchange="updateDailyField('whoop', 'strain', this.value)"
-                      class="w-full px-3 py-2 text-center text-sm font-medium bg-white border border-emerald-200 rounded-lg focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200">
+                      class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
                   </div>
                 </div>
               </div>
 
               <!-- Habits Section -->
-              <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4">
+              <div class="bg-[var(--bg-secondary)] rounded-xl p-4 border border-[var(--border-light)]">
                 <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs font-semibold text-purple-700 uppercase tracking-wide">✨ Habits</span>
-                  <span class="text-xs text-purple-600 font-medium">${habitsDone}/5</span>
+                  <span class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">✨ Habits</span>
+                  <span class="text-xs text-[var(--text-muted)] font-medium">${habitsDone}/5</span>
                 </div>
                 <div class="grid grid-cols-5 gap-2">
                   ${[
@@ -3123,12 +3148,12 @@
       }
 
       return `
-        <div class="widget ${sizeClass} bg-white rounded-xl shadow-sm border border-charcoal/5 overflow-hidden widget-drop-target ${isEditing ? 'cursor-grab' : ''}"
+        <div class="widget ${sizeClass} bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden widget-drop-target ${isEditing ? 'cursor-grab' : ''}"
           ${isEditing ? `draggable="true" ondragstart="handleWidgetDragStart(event, '${widget.id}')" ondragend="handleWidgetDragEnd(event)" ondragover="handleWidgetDragOver(event, '${widget.id}')" ondragleave="handleWidgetDragLeave(event)" ondrop="handleWidgetDrop(event, '${widget.id}')"` : ''}>
-          <div class="px-4 py-2 border-b border-charcoal/5 flex items-center gap-2">
-            ${isEditing ? '<div class="text-charcoal/30 cursor-grab"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg></div>' : ''}
+          <div class="px-4 py-2 border-b border-[var(--border-light)] flex items-center gap-2">
+            ${isEditing ? '<div class="text-[var(--text-muted)]/30 cursor-grab"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg></div>' : ''}
             <span style="color: ${widgetColors[widget.type] || '#6B7280'}">${widgetIcons[widget.type] || ''}</span>
-            <h3 class="text-sm font-medium text-charcoal">${widget.title}</h3>
+            <h3 class="text-sm font-medium text-[var(--text-primary)]">${widget.title}</h3>
             ${editControls}
           </div>
           <div class="p-4">
@@ -3447,6 +3472,7 @@
       activePerspective = null;
       activeCategoryFilter = null;
       activeLabelFilter = null;
+      mobileDrawerOpen = false;
       // Switch to tasks tab when navigating from Quick Stats or other widgets
       if (activeTab !== 'tasks') {
         activeTab = 'tasks';
@@ -5094,15 +5120,15 @@
     function createCard(title, icon, accentColor, content, extraHeader = '') {
       const accent = accentColor || '#6B7280';
       return `
-        <div class="sb-card rounded-lg overflow-hidden">
-          <div class="px-5 py-3 flex items-center justify-between bg-warmgray" style="border-bottom: 3px solid ${accent}">
+        <div class="sb-card rounded-lg overflow-hidden border border-[var(--border-light)]">
+          <div class="px-5 py-3 flex items-center justify-between bg-[var(--bg-secondary)]" style="border-bottom: 2px solid ${accent}">
             <div class="flex items-center gap-2">
               <span class="text-lg">${icon}</span>
-              <h3 class="font-semibold text-charcoal">${title}</h3>
+              <h3 class="font-semibold text-[var(--text-primary)]">${title}</h3>
             </div>
-            ${extraHeader ? `<span class="text-charcoal/50 text-xs">${extraHeader}</span>` : ''}
+            ${extraHeader ? `<span class="text-[var(--text-muted)] text-xs">${extraHeader}</span>` : ''}
           </div>
-          <div class="p-5 bg-white">${content}</div>
+          <div class="p-5 bg-[var(--bg-card)]">${content}</div>
         </div>
       `;
     }
@@ -5186,40 +5212,40 @@
           </div>
 
           <!-- Today's Score Summary -->
-          <div class="bg-gradient-to-br from-coral to-coralDark rounded-xl p-6 text-white">
+          <div class="bg-[var(--bg-card)] rounded-xl p-6 border border-[var(--border-light)]">
             <div class="flex items-center justify-between">
               <div>
-                <h3 class="text-lg font-semibold opacity-90">Today's Score</h3>
-                <p class="text-4xl font-bold mt-1">${scores.total.toFixed(0)} <span class="text-lg font-normal opacity-70">/ ${MAX_SCORES.total}</span></p>
+                <h3 class="text-lg font-semibold text-[var(--text-primary)]">Today's Score</h3>
+                <p class="text-4xl font-bold mt-1 text-[var(--accent)]">${scores.total.toFixed(0)} <span class="text-lg font-normal text-[var(--text-muted)]">/ ${MAX_SCORES.total}</span></p>
               </div>
               <div class="text-right">
-                <div class="text-sm opacity-70">Progress</div>
-                <div class="text-2xl font-bold">${Math.round((scores.total / MAX_SCORES.total) * 100)}%</div>
+                <div class="text-sm text-[var(--text-muted)]">Progress</div>
+                <div class="text-2xl font-bold text-[var(--text-primary)]">${Math.round((scores.total / MAX_SCORES.total) * 100)}%</div>
               </div>
             </div>
-            <div class="h-2 bg-white/20 rounded-full mt-4 overflow-hidden">
-              <div class="h-full bg-white rounded-full transition-all duration-500" style="width: ${Math.min((scores.total / MAX_SCORES.total) * 100, 100)}%"></div>
+            <div class="h-2 bg-[var(--bg-secondary)] rounded-full mt-4 overflow-hidden">
+              <div class="h-full bg-[var(--accent)] rounded-full transition-all duration-500" style="width: ${Math.min((scores.total / MAX_SCORES.total) * 100, 100)}%"></div>
             </div>
             <div class="grid grid-cols-5 gap-2 mt-4">
               <div class="text-center">
-                <div class="text-xs opacity-60">Prayers</div>
-                <div class="font-semibold">${scores.prayer.toFixed(0)}</div>
+                <div class="text-xs text-[var(--text-muted)]">Prayers</div>
+                <div class="font-semibold text-[var(--text-primary)]">${scores.prayer.toFixed(0)}</div>
               </div>
               <div class="text-center">
-                <div class="text-xs opacity-60">Glucose</div>
-                <div class="font-semibold">${scores.diabetes.toFixed(0)}</div>
+                <div class="text-xs text-[var(--text-muted)]">Glucose</div>
+                <div class="font-semibold text-[var(--text-primary)]">${scores.diabetes.toFixed(0)}</div>
               </div>
               <div class="text-center">
-                <div class="text-xs opacity-60">Whoop</div>
-                <div class="font-semibold">${scores.whoop.toFixed(0)}</div>
+                <div class="text-xs text-[var(--text-muted)]">Whoop</div>
+                <div class="font-semibold text-[var(--text-primary)]">${scores.whoop.toFixed(0)}</div>
               </div>
               <div class="text-center">
-                <div class="text-xs opacity-60">Family</div>
-                <div class="font-semibold">${scores.family.toFixed(0)}</div>
+                <div class="text-xs text-[var(--text-muted)]">Family</div>
+                <div class="font-semibold text-[var(--text-primary)]">${scores.family.toFixed(0)}</div>
               </div>
               <div class="text-center">
-                <div class="text-xs opacity-60">Habits</div>
-                <div class="font-semibold">${scores.habit.toFixed(0)}</div>
+                <div class="text-xs text-[var(--text-muted)]">Habits</div>
+                <div class="font-semibold text-[var(--text-primary)]">${scores.habit.toFixed(0)}</div>
               </div>
             </div>
           </div>
@@ -5311,30 +5337,30 @@
 
       const summaryContent = `
         <div class="space-y-3">
-          <div class="p-3 bg-purple-50 rounded-lg">
+          <div class="p-3 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-light)]">
             <div class="flex justify-between items-center">
-              <span class="font-medium">Whoop Age</span>
+              <span class="font-medium text-[var(--text-primary)]">Whoop Age</span>
               <div class="flex items-center gap-2">
                 <input type="number" step="0.1" value="${data.whoop.whoopAge || ''}" placeholder="—"
-                  class="w-16 px-2 py-1 border border-purple-200 rounded text-center text-sm bg-white font-bold text-purple-600"
+                  class="w-16 px-2 py-1 border border-[var(--border)] rounded text-center text-sm bg-[var(--bg-input)] font-bold text-[var(--accent)]"
                   onchange="updateData('whoop', 'whoopAge', this.value)">
-                <span class="text-xs text-purple-400">yrs</span>
+                <span class="text-xs text-[var(--text-muted)]">yrs</span>
               </div>
             </div>
           </div>
-          <div class="p-3 bg-blue-50 rounded-lg">
+          <div class="p-3 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-light)]">
             <div class="flex justify-between items-center">
-              <span class="font-medium">Prayers</span>
-              <span class="font-bold text-blue-600">${scores.prayer} pts</span>
+              <span class="font-medium text-[var(--text-primary)]">Prayers</span>
+              <span class="font-bold text-[var(--accent)]">${scores.prayer} pts</span>
             </div>
             <div class="text-xs mt-1">
               <span class="inline-block bg-green-100 text-green-700 px-2 py-0.5 rounded mr-1">${scores.prayerOnTime} on-time</span>
               <span class="inline-block bg-amber-100 text-amber-700 px-2 py-0.5 rounded">${scores.prayerLate} late</span>
             </div>
           </div>
-          <div class="flex justify-between items-center p-3 bg-amber-50 rounded-lg">
-            <span class="font-medium">Family</span>
-            <span class="font-bold text-amber-600">${Object.values(data.family).filter(Boolean).length}/6</span>
+          <div class="flex justify-between items-center p-3 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-light)]">
+            <span class="font-medium text-[var(--text-primary)]">Family</span>
+            <span class="font-bold text-[var(--accent)]">${Object.values(data.family).filter(Boolean).length}/6</span>
           </div>
         </div>
       `;
@@ -5346,14 +5372,14 @@
           ${createScoreCard('Whoop', scores.whoop, MAX_SCORES.whoop, 'bg-purple-500')}
           ${createScoreCard('Family', scores.family, MAX_SCORES.family, 'bg-amber-500')}
           ${createScoreCard('Habits', scores.habit, MAX_SCORES.habits, 'bg-slate-500')}
-          <div class="sb-card rounded-lg p-4 bg-coral text-white">
-            <div class="sb-section-title text-white/80 flex justify-between">
+          <div class="sb-card rounded-lg p-4 bg-[var(--bg-card)] border border-[var(--border-light)]">
+            <div class="sb-section-title text-[var(--text-muted)] flex justify-between">
               <span>Total</span>
               <span>${Math.round((scores.total / MAX_SCORES.total) * 100)}%</span>
             </div>
-            <div class="text-3xl font-bold mt-1">${fmt(scores.total)}</div>
-            <div class="h-1.5 bg-white/30 rounded-full mt-2 overflow-hidden">
-              <div class="h-full bg-white rounded-full" style="width: ${Math.min((scores.total / MAX_SCORES.total) * 100, 100)}%"></div>
+            <div class="text-3xl font-bold mt-1 text-[var(--accent)]">${fmt(scores.total)}</div>
+            <div class="h-1.5 bg-[var(--bg-secondary)] rounded-full mt-2 overflow-hidden">
+              <div class="h-full bg-[var(--accent)] rounded-full" style="width: ${Math.min((scores.total / MAX_SCORES.total) * 100, 100)}%"></div>
             </div>
           </div>
         </div>
@@ -5425,9 +5451,9 @@
       return `
         <div class="space-y-8">
           <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div class="sb-card rounded-lg p-5 bg-coral text-white">
-              <div class="sb-section-title text-white/70">30-Day Score</div>
-              <div class="text-3xl font-bold mt-1">${fmt(stats.totalScore)}</div>
+            <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)] border border-[var(--border-light)]">
+              <div class="sb-section-title text-[var(--text-muted)]">30-Day Score</div>
+              <div class="text-3xl font-bold mt-1 text-[var(--accent)]">${fmt(stats.totalScore)}</div>
             </div>
             <div class="sb-card rounded-lg p-5">
               <div class="sb-section-title text-charcoal/50">Days Logged</div>
@@ -5698,24 +5724,24 @@
       const dateDisplay = new Date(currentDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
       app.innerHTML = `
-        <!-- Mobile Header - clean minimal design -->
-        <header class="mobile-header-compact border-b border-softborder/50 bg-white/95 backdrop-blur-xl sticky top-0 z-50" style="display: none;">
+        <!-- Mobile Header - Things 3 style -->
+        <header class="mobile-header-compact border-b border-[var(--border-light)] bg-[var(--bg-card)] sticky top-0 z-50" style="display: none;">
           <div class="flex items-center gap-3">
-            <svg class="w-8 h-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <defs><linearGradient id="mobileGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color: var(--accent)"/><stop offset="100%" style="stop-color: #D4402E"/></linearGradient></defs>
-              <circle cx="50" cy="50" r="45" fill="url(#mobileGrad)"/><circle cx="50" cy="50" r="18" fill="white"/><circle cx="50" cy="50" r="8" fill="var(--accent)"/>
-            </svg>
-            <div>
-              <div class="text-base font-semibold text-charcoal">${activeTab === 'home' ? 'Home' : activeTab === 'tasks' ? 'Workspace' : activeTab === 'life' ? 'Life Score' : 'Settings'}</div>
-              <div class="text-[11px] text-charcoal/50">${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
-            </div>
+            ${activeTab === 'tasks' ? `
+              <button onclick="openMobileDrawer()" class="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] transition" aria-label="Open sidebar">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+              </button>
+            ` : ''}
           </div>
-          <div class="flex items-center gap-3">
-            <div class="flex items-center gap-1.5">
-              <div class="w-2 h-2 rounded-full ${getGithubToken() ? 'bg-green-500' : 'bg-charcoal/20'}"></div>
-              <span class="text-[11px] text-charcoal/40">${getGithubToken() ? 'Synced' : 'Local'}</span>
-            </div>
-            <button onclick="setToday()" class="text-xs font-semibold px-2.5 py-1 bg-coral/10 text-coral rounded-lg">Today</button>
+          <h1 class="text-[17px] font-bold text-[var(--text-primary)]">${activeTab === 'home' ? 'Home' : activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi.name; })() : activeTab === 'life' ? 'Life Score' : 'Settings'}</h1>
+          <div class="flex items-center gap-2">
+            ${activeTab === 'tasks' ? `
+              <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[#147EFB] text-white flex items-center justify-center shadow-sm" aria-label="New task">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+            ` : `
+              <button onclick="setToday()" class="text-xs font-semibold px-3 py-1.5 text-[var(--accent)] rounded-lg">Today</button>
+            `}
           </div>
         </header>
 
@@ -5762,19 +5788,19 @@
         </header>
 
         <!-- Main Navigation - Desktop only -->
-        <nav class="desktop-nav border-b border-charcoal/10 bg-white/60">
+        <nav class="desktop-nav border-b border-[var(--border-light)] bg-[var(--bg-card)]">
           <div class="max-w-6xl mx-auto px-6">
             <div class="flex gap-0">
-              <button onclick="switchTab('home')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'home' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+              <button onclick="switchTab('home')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'home' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 ${THINGS3_ICONS.home.replace('w-5 h-5', 'w-4 h-4')} Home
               </button>
-              <button onclick="switchTab('tasks')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'tasks' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+              <button onclick="switchTab('tasks')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'tasks' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 ${THINGS3_ICONS.workspace} Workspace
               </button>
-              <button onclick="switchTab('life')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'life' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+              <button onclick="switchTab('life')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'life' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 ${THINGS3_ICONS.lifeScore} Life Score
               </button>
-              <button onclick="switchTab('settings')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'settings' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+              <button onclick="switchTab('settings')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'settings' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 ${THINGS3_ICONS.settings} Settings
               </button>
             </div>
@@ -5810,6 +5836,24 @@
         <footer class="border-t border-softborder py-8 mt-12">
           <p class="text-center text-charcoal/40 text-sm">${getGithubToken() ? 'Data synced to GitHub' : 'Data saved locally'} <span class="text-coral">•</span> Nucleus</p>
         </footer>
+
+        <!-- Mobile Bottom Navigation (all tabs) -->
+        <nav class="mobile-bottom-nav" aria-label="Main navigation">
+          <div class="mobile-bottom-nav-inner" role="tablist">
+            <button onclick="switchTab('home')" class="mobile-nav-item ${activeTab === 'home' ? 'active' : ''}" role="tab" aria-selected="${activeTab === 'home'}">
+              ${THINGS3_ICONS.home}
+            </button>
+            <button onclick="switchTab('tasks')" class="mobile-nav-item ${activeTab === 'tasks' ? 'active' : ''}" role="tab" aria-selected="${activeTab === 'tasks'}">
+              ${THINGS3_ICONS.workspace}
+            </button>
+            <button onclick="switchTab('life')" class="mobile-nav-item ${activeTab === 'life' ? 'active' : ''}" role="tab" aria-selected="${activeTab === 'life'}">
+              ${THINGS3_ICONS.lifeScore}
+            </button>
+            <button onclick="switchTab('settings')" class="mobile-nav-item ${activeTab === 'settings' ? 'active' : ''}" role="tab" aria-selected="${activeTab === 'settings'}">
+              ${THINGS3_ICONS.settings}
+            </button>
+          </div>
+        </nav>
       `;
 
       // Setup date input handler (with cleanup to prevent memory leak)
@@ -6625,8 +6669,8 @@
         return `
           <div class="flex-1 space-y-6">
             <!-- Area Hero Header -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-charcoal/[0.06]">
-              <div class="relative h-32 flex items-end p-6" style="background: linear-gradient(135deg, ${categoryColor}15 0%, ${categoryColor}08 100%);">
+            <div class="bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+              <div class="relative h-32 flex items-end p-6" style="background: var(--bg-secondary);">
                 <div class="absolute top-4 right-4 opacity-10" style="color: ${categoryColor}">
                   <svg class="w-24 h-24" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
                 </div>
@@ -6681,7 +6725,7 @@
             </div>
 
             <!-- Quick Add -->
-            <div class="bg-white rounded-xl border border-charcoal/[0.06] px-4 py-3">
+            <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] px-4 py-3">
               <div class="flex items-center gap-3">
                 <div class="w-5 h-5 rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${categoryColor}40"></div>
                 <input type="text" id="quick-add-input"
@@ -6850,7 +6894,7 @@
       // Build task list (default view for non-area views)
       const taskListHtml = isAreaView ? buildAreaTaskListHtml() : `
         <div class="flex-1">
-          <div class="bg-white rounded-xl">
+          <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
             <div class="px-5 py-4 flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <span class="text-2xl" ${viewInfo.color ? `style="color: ${viewInfo.color}"` : ''}>${viewInfo.icon}</span>
@@ -6872,7 +6916,7 @@
                   <div class="w-5 h-5 rounded-full border-2 border-dashed border-charcoal/20 flex-shrink-0"></div>
                 `}
                 <input type="text" id="quick-add-input"
-                  placeholder="${activePerspective === 'notes' ? 'Add a note... (press Enter)' : 'Quick add to ' + viewInfo.name + '... (press Enter)'}"
+                  placeholder="${activePerspective === 'notes' ? 'New Note' : 'New To-Do'}"
                   onkeydown="handleQuickAddKeydown(event, this)"
                   class="flex-1 text-[15px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none focus:ring-0">
                 <button onclick="quickAddTask(document.getElementById('quick-add-input'))"
@@ -6895,7 +6939,7 @@
                 <div class="task-list">
                   ${groupTasksByDate(filteredTasks).map(group => `
                     <div class="date-group mb-6">
-                      <div class="px-5 py-2 sticky top-0 bg-white">
+                      <div class="px-5 py-2 sticky top-0 bg-[var(--bg-card)]">
                         <span class="text-[13px] font-semibold text-charcoal/50">${group.label}</span>
                       </div>
                       <div>
@@ -6909,7 +6953,7 @@
                 <div class="task-list">
                   ${groupTasksByCompletionDate(filteredTasks).map(group => `
                     <div class="date-group mb-6">
-                      <div class="px-5 py-2 sticky top-0 bg-white">
+                      <div class="px-5 py-2 sticky top-0 bg-[var(--bg-card)]">
                         <span class="text-[13px] font-semibold text-charcoal/50">${group.label}</span>
                       </div>
                       <div>
@@ -6948,7 +6992,7 @@
                   ` : ''}
                   ${nextTasks.length > 0 ? `
                     <div class="next-tasks-section mt-4">
-                      <div class="px-5 py-2 sticky top-0 bg-white">
+                      <div class="px-5 py-2 sticky top-0 bg-[var(--bg-card)]">
                         <div class="flex items-center gap-2">
                           <span class="text-[#8B5CF6]">${THINGS3_ICONS.next}</span>
                           <span class="text-[13px] font-semibold text-charcoal/50 uppercase tracking-wider">Next</span>
@@ -6968,7 +7012,7 @@
               `;
               })() : (activePerspective === 'notes' ? `
                 <!-- Notes Outliner View -->
-                <div class="notes-outliner bg-white">
+                <div class="notes-outliner bg-[var(--bg-card)]">
                   <div class="px-4 py-3 border-b border-charcoal/5">
                     <div class="flex items-center gap-2 text-xs text-charcoal/40">
                       <span>Tab to indent</span>
@@ -7008,6 +7052,10 @@
       const taskModalHtml = showTaskModal ? `
         <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showTaskModal=false; editingTaskId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
           <div class="modal-enhanced w-full max-w-xl mx-4" onclick="event.stopPropagation()">
+            <!-- Mobile drag handle -->
+            <div class="flex justify-center pt-3 pb-1 md:hidden">
+              <div class="w-10 h-1 rounded-full bg-[var(--text-muted)]/30"></div>
+            </div>
             <!-- Header -->
             <div class="modal-header-enhanced">
               <div class="flex items-center gap-4">
@@ -7336,8 +7384,21 @@
       ` : '';
 
       return `
+        <!-- Mobile Sidebar Drawer -->
+        <div id="mobile-sidebar-overlay" class="mobile-sidebar-overlay ${mobileDrawerOpen ? 'show' : ''}" onclick="if(event.target===this) closeMobileDrawer()">
+          <div class="mobile-sidebar-drawer">
+            <div class="p-4 border-b border-[var(--border-light)]">
+              <h2 class="text-lg font-bold text-[var(--text-primary)]">Workspace</h2>
+            </div>
+            ${sidebarHtml.replace('w-full md:w-64', 'w-full')}
+          </div>
+        </div>
+
         <div class="flex flex-col md:flex-row gap-6">
-          ${sidebarHtml}
+          <!-- Desktop sidebar - hidden on mobile -->
+          <div class="hidden md:block">
+            ${sidebarHtml}
+          </div>
           ${taskListHtml}
         </div>
         ${taskModalHtml}
@@ -7345,28 +7406,6 @@
         ${categoryModalHtml}
         ${labelModalHtml}
         ${personModalHtml}
-
-        <!-- Mobile Bottom Navigation -->
-        <nav class="mobile-bottom-nav" aria-label="Main navigation">
-          <div class="mobile-bottom-nav-inner" role="tablist">
-            <button onclick="switchTab('home')" class="mobile-nav-item ${activeTab === 'home' ? 'active' : ''}" role="tab" aria-selected="${activeTab === 'home'}">
-              ${THINGS3_ICONS.home}
-              <span>Home</span>
-            </button>
-            <button onclick="switchTab('tasks')" class="mobile-nav-item ${activeTab === 'tasks' ? 'active' : ''}" role="tab" aria-selected="${activeTab === 'tasks'}">
-              ${THINGS3_ICONS.workspace}
-              <span>Workspace</span>
-            </button>
-            <button onclick="switchTab('life')" class="mobile-nav-item ${activeTab === 'life' ? 'active' : ''}" role="tab" aria-selected="${activeTab === 'life'}">
-              ${THINGS3_ICONS.lifeScore}
-              <span>Life Score</span>
-            </button>
-            <button onclick="switchTab('settings')" class="mobile-nav-item ${activeTab === 'settings' ? 'active' : ''}" role="tab" aria-selected="${activeTab === 'settings'}">
-              ${THINGS3_ICONS.settings}
-              <span>Settings</span>
-            </button>
-          </div>
-        </nav>
       `;
     }
 
