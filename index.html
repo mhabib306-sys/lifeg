@@ -401,15 +401,117 @@
 
     /* Home widgets */
     .widget {
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
     }
     .widget.dragging {
-      opacity: 0.5;
-      transform: scale(0.98);
+      opacity: 0.7;
+      transform: scale(0.95) rotate(2deg);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      z-index: 1000;
     }
-    .widget-drop-target.drag-over {
-      outline: 2px dashed var(--accent);
-      outline-offset: 2px;
+    .widget.drag-over-top::before {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 2px;
+      animation: dropIndicatorPulse 0.5s ease infinite alternate;
+    }
+    .widget.drag-over-bottom::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 2px;
+      animation: dropIndicatorPulse 0.5s ease infinite alternate;
+    }
+    @keyframes dropIndicatorPulse {
+      from { opacity: 0.5; transform: scaleX(0.95); }
+      to { opacity: 1; transform: scaleX(1); }
+    }
+    .widget-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    .widget-placeholder {
+      background: var(--accent-light);
+      border: 2px dashed var(--accent);
+      border-radius: 12px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* Outliner Notes Styles */
+    .note-item {
+      position: relative;
+      transition: all 0.15s ease;
+    }
+    .note-item:hover {
+      background: rgba(139, 92, 246, 0.04);
+    }
+    .note-item.editing {
+      background: rgba(139, 92, 246, 0.08);
+    }
+    .note-indent-line {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgba(139, 92, 246, 0.15);
+    }
+    .note-bullet {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #8B5CF6;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .note-bullet:hover {
+      transform: scale(1.3);
+      background: #7C3AED;
+    }
+    .note-bullet.has-children {
+      background: transparent;
+      border: 2px solid #8B5CF6;
+    }
+    .note-bullet.collapsed {
+      background: #8B5CF6;
+      border: none;
+    }
+    .note-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-size: 15px;
+      color: var(--text-primary);
+      padding: 0;
+    }
+    .note-input::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.5;
+    }
+    .note-children {
+      margin-left: 24px;
+      border-left: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    .note-collapsed .note-children {
+      display: none;
     }
 
     /* Sidebar draggable items */
@@ -1487,52 +1589,111 @@
       }
     }
 
+    let draggedWidgetElement = null;
+    let dropPosition = null; // 'before' or 'after'
+
     function handleWidgetDragStart(event, widgetId) {
       draggingWidgetId = widgetId;
+      draggedWidgetElement = event.target;
       event.dataTransfer.effectAllowed = 'move';
-      event.target.classList.add('dragging');
+      event.dataTransfer.setData('text/plain', widgetId);
+
+      // Add dragging class after a slight delay for smooth animation
+      requestAnimationFrame(() => {
+        event.target.classList.add('dragging');
+      });
     }
 
     function handleWidgetDragEnd(event) {
       event.target.classList.remove('dragging');
-      document.querySelectorAll('.widget-drop-target').forEach(el => el.classList.remove('drag-over'));
+      document.querySelectorAll('.widget').forEach(el => {
+        el.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
       draggingWidgetId = null;
+      draggedWidgetElement = null;
+      dropPosition = null;
     }
 
     function handleWidgetDragOver(event, targetWidgetId) {
       event.preventDefault();
-      if (draggingWidgetId && draggingWidgetId !== targetWidgetId) {
-        event.currentTarget.classList.add('drag-over');
+      event.dataTransfer.dropEffect = 'move';
+
+      if (!draggingWidgetId || draggingWidgetId === targetWidgetId) return;
+
+      const target = event.currentTarget;
+      const rect = target.getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+
+      // Clear previous indicators
+      document.querySelectorAll('.widget').forEach(el => {
+        if (el !== target) {
+          el.classList.remove('drag-over-top', 'drag-over-bottom');
+        }
+      });
+
+      // Determine drop position based on mouse Y position
+      if (event.clientY < midY) {
+        target.classList.remove('drag-over-bottom');
+        target.classList.add('drag-over-top');
+        dropPosition = 'before';
+      } else {
+        target.classList.remove('drag-over-top');
+        target.classList.add('drag-over-bottom');
+        dropPosition = 'after';
       }
     }
 
     function handleWidgetDragLeave(event) {
-      event.currentTarget.classList.remove('drag-over');
+      // Only remove if actually leaving the element (not entering a child)
+      if (!event.currentTarget.contains(event.relatedTarget)) {
+        event.currentTarget.classList.remove('drag-over-top', 'drag-over-bottom');
+      }
     }
 
     function handleWidgetDrop(event, targetWidgetId) {
       event.preventDefault();
-      event.currentTarget.classList.remove('drag-over');
-      if (draggingWidgetId && draggingWidgetId !== targetWidgetId) {
-        const dragIdx = homeWidgets.findIndex(w => w.id === draggingWidgetId);
-        const targetIdx = homeWidgets.findIndex(w => w.id === targetWidgetId);
-        if (dragIdx !== -1 && targetIdx !== -1) {
-          const [draggedWidget] = homeWidgets.splice(dragIdx, 1);
-          homeWidgets.splice(targetIdx, 0, draggedWidget);
-          homeWidgets.forEach((w, i) => w.order = i);
-          saveHomeWidgets();
-          render();
-        }
-      }
-      draggingWidgetId = null;
-    }
+      event.currentTarget.classList.remove('drag-over-top', 'drag-over-bottom');
 
-    function resetHomeWidgets() {
-      if (confirm('Reset home widgets to default layout?')) {
-        homeWidgets = JSON.parse(JSON.stringify(DEFAULT_HOME_WIDGETS));
+      if (!draggingWidgetId || draggingWidgetId === targetWidgetId) {
+        draggingWidgetId = null;
+        return;
+      }
+
+      const dragIdx = homeWidgets.findIndex(w => w.id === draggingWidgetId);
+      let targetIdx = homeWidgets.findIndex(w => w.id === targetWidgetId);
+
+      if (dragIdx !== -1 && targetIdx !== -1) {
+        // Remove the dragged widget
+        const [draggedWidget] = homeWidgets.splice(dragIdx, 1);
+
+        // Adjust target index if needed (because we removed an item)
+        if (dragIdx < targetIdx) {
+          targetIdx--;
+        }
+
+        // Insert at correct position
+        if (dropPosition === 'after') {
+          targetIdx++;
+        }
+
+        homeWidgets.splice(targetIdx, 0, draggedWidget);
+
+        // Update order numbers
+        homeWidgets.forEach((w, i) => w.order = i);
         saveHomeWidgets();
         render();
       }
+
+      draggingWidgetId = null;
+      dropPosition = null;
+    }
+
+    function resetHomeWidgets() {
+      // Reset to default without confirmation for better UX
+      homeWidgets = JSON.parse(JSON.stringify(DEFAULT_HOME_WIDGETS));
+      localStorage.removeItem(HOME_WIDGETS_KEY);
+      saveHomeWidgets();
+      render();
     }
 
     function toggleEditHomeWidgets() {
@@ -2156,38 +2317,342 @@
       return task;
     }
 
-    // Indent a note (make it a child of the previous sibling)
+    // ============ OUTLINER NOTES SYSTEM ============
+    let editingNoteId = null;
+    let collapsedNotes = new Set(JSON.parse(localStorage.getItem('collapsedNotes') || '[]'));
+
+    function saveCollapsedNotes() {
+      localStorage.setItem('collapsedNotes', JSON.stringify([...collapsedNotes]));
+    }
+
+    function toggleNoteCollapse(noteId) {
+      if (collapsedNotes.has(noteId)) {
+        collapsedNotes.delete(noteId);
+      } else {
+        collapsedNotes.add(noteId);
+      }
+      saveCollapsedNotes();
+      render();
+    }
+
+    // Get notes in hierarchical order for display
+    function getNotesHierarchy(categoryId = null) {
+      let notes = tasksData.filter(t => t.isNote && !t.completed);
+      if (categoryId) {
+        notes = notes.filter(n => n.categoryId === categoryId);
+      }
+      // Sort by creation date, maintaining parent-child relationships
+      return notes.sort((a, b) => {
+        if (a.indent !== b.indent) return a.indent - b.indent;
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
+    }
+
+    // Check if a note has children
+    function noteHasChildren(noteId) {
+      return tasksData.some(t => t.isNote && t.parentId === noteId && !t.completed);
+    }
+
+    // Get direct children of a note
+    function getNoteChildren(noteId) {
+      return tasksData.filter(t => t.isNote && t.parentId === noteId && !t.completed);
+    }
+
+    // Indent a note (Tab key)
     function indentNote(noteId) {
-      const noteIdx = tasksData.findIndex(t => t.id === noteId);
+      const notes = tasksData.filter(t => t.isNote && !t.completed);
+      const noteIdx = notes.findIndex(t => t.id === noteId);
       if (noteIdx <= 0) return;
 
-      const note = tasksData[noteIdx];
-      if (!note.isNote) return;
+      const note = notes[noteIdx];
+      const maxIndent = 5; // Maximum nesting level
+      if ((note.indent || 0) >= maxIndent) return;
 
-      // Find previous sibling at same or lower indent level
+      // Find previous note that could be the parent
       for (let i = noteIdx - 1; i >= 0; i--) {
-        const prev = tasksData[i];
-        if (prev.isNote && prev.categoryId === note.categoryId && prev.indent <= note.indent) {
+        const prev = notes[i];
+        if (prev.categoryId === note.categoryId && (prev.indent || 0) <= (note.indent || 0)) {
           note.parentId = prev.id;
           note.indent = (note.indent || 0) + 1;
           note.updatedAt = new Date().toISOString();
           saveTasksData();
           render();
+          // Refocus the note after render
+          setTimeout(() => focusNote(noteId), 50);
           return;
         }
       }
     }
 
-    // Outdent a note (move it up one level)
+    // Outdent a note (Shift+Tab key)
     function outdentNote(noteId) {
       const note = tasksData.find(t => t.id === noteId);
-      if (!note || !note.isNote || !note.indent || note.indent <= 0) return;
+      if (!note || !note.isNote || (note.indent || 0) <= 0) return;
 
-      note.indent = note.indent - 1;
+      // Move children up with the note
+      const children = getNoteChildren(noteId);
+      children.forEach(child => {
+        child.parentId = note.parentId;
+      });
+
+      note.indent = (note.indent || 0) - 1;
       if (note.indent === 0) note.parentId = null;
       note.updatedAt = new Date().toISOString();
       saveTasksData();
       render();
+      setTimeout(() => focusNote(noteId), 50);
+    }
+
+    // Create a new note at the same level as current
+    function createNoteAfter(noteId) {
+      const note = tasksData.find(t => t.id === noteId);
+      if (!note) return;
+
+      const newNote = createTask('', {
+        isNote: true,
+        categoryId: note.categoryId,
+        parentId: note.parentId,
+        indent: note.indent || 0,
+        status: 'anytime'
+      });
+
+      // Insert after the current note and its children
+      const noteIdx = tasksData.findIndex(t => t.id === noteId);
+      const newNoteIdx = tasksData.findIndex(t => t.id === newNote.id);
+
+      // Remove from current position
+      tasksData.splice(newNoteIdx, 1);
+
+      // Find the last child of the current note
+      let insertIdx = noteIdx + 1;
+      for (let i = noteIdx + 1; i < tasksData.length; i++) {
+        const t = tasksData[i];
+        if (t.isNote && t.indent > (note.indent || 0)) {
+          insertIdx = i + 1;
+        } else {
+          break;
+        }
+      }
+
+      tasksData.splice(insertIdx, 0, newNote);
+      saveTasksData();
+      render();
+      setTimeout(() => focusNote(newNote.id), 50);
+    }
+
+    // Create a child note under current
+    function createChildNote(noteId) {
+      const note = tasksData.find(t => t.id === noteId);
+      if (!note) return;
+
+      const newNote = createTask('', {
+        isNote: true,
+        categoryId: note.categoryId,
+        parentId: noteId,
+        indent: (note.indent || 0) + 1,
+        status: 'anytime'
+      });
+
+      // Insert right after the parent
+      const noteIdx = tasksData.findIndex(t => t.id === noteId);
+      const newNoteIdx = tasksData.findIndex(t => t.id === newNote.id);
+      tasksData.splice(newNoteIdx, 1);
+      tasksData.splice(noteIdx + 1, 0, newNote);
+
+      saveTasksData();
+      render();
+      setTimeout(() => focusNote(newNote.id), 50);
+    }
+
+    // Delete note and optionally its children
+    function deleteNote(noteId, deleteChildren = false) {
+      const note = tasksData.find(t => t.id === noteId);
+      if (!note) return;
+
+      if (deleteChildren) {
+        // Recursively delete children
+        const toDelete = [noteId];
+        const findChildren = (parentId) => {
+          tasksData.filter(t => t.parentId === parentId).forEach(child => {
+            toDelete.push(child.id);
+            findChildren(child.id);
+          });
+        };
+        findChildren(noteId);
+        tasksData = tasksData.filter(t => !toDelete.includes(t.id));
+      } else {
+        // Move children up to parent level
+        const children = getNoteChildren(noteId);
+        children.forEach(child => {
+          child.parentId = note.parentId;
+          child.indent = note.indent || 0;
+        });
+        tasksData = tasksData.filter(t => t.id !== noteId);
+      }
+
+      saveTasksData();
+      render();
+    }
+
+    // Focus a note's input field
+    function focusNote(noteId) {
+      const input = document.querySelector(`[data-note-id="${noteId}"] .note-input`);
+      if (input) {
+        input.focus();
+        // Move cursor to end
+        input.selectionStart = input.selectionEnd = input.value.length;
+      }
+    }
+
+    // Handle note keydown events
+    function handleNoteKeydown(event, noteId) {
+      const note = tasksData.find(t => t.id === noteId);
+      if (!note) return;
+
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        if (event.shiftKey) {
+          outdentNote(noteId);
+        } else {
+          indentNote(noteId);
+        }
+      } else if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        // Save current note first
+        const input = event.target;
+        if (input.value.trim() !== note.title) {
+          note.title = input.value.trim();
+          note.updatedAt = new Date().toISOString();
+          saveTasksData();
+        }
+        // Create new note
+        createNoteAfter(noteId);
+      } else if (event.key === 'Backspace' && event.target.value === '' && event.target.selectionStart === 0) {
+        event.preventDefault();
+        // Delete empty note and focus previous
+        const notes = tasksData.filter(t => t.isNote && !t.completed && t.categoryId === note.categoryId);
+        const noteIdx = notes.findIndex(t => t.id === noteId);
+        if (noteIdx > 0) {
+          const prevNote = notes[noteIdx - 1];
+          deleteNote(noteId);
+          setTimeout(() => focusNote(prevNote.id), 50);
+        } else if (notes.length === 1) {
+          deleteNote(noteId);
+        }
+      } else if (event.key === 'ArrowUp' && event.target.selectionStart === 0) {
+        event.preventDefault();
+        const notes = tasksData.filter(t => t.isNote && !t.completed && t.categoryId === note.categoryId);
+        const noteIdx = notes.findIndex(t => t.id === noteId);
+        if (noteIdx > 0) {
+          focusNote(notes[noteIdx - 1].id);
+        }
+      } else if (event.key === 'ArrowDown' && event.target.selectionStart === event.target.value.length) {
+        event.preventDefault();
+        const notes = tasksData.filter(t => t.isNote && !t.completed && t.categoryId === note.categoryId);
+        const noteIdx = notes.findIndex(t => t.id === noteId);
+        if (noteIdx < notes.length - 1) {
+          focusNote(notes[noteIdx + 1].id);
+        }
+      }
+    }
+
+    // Update note title on blur
+    function handleNoteBlur(event, noteId) {
+      const note = tasksData.find(t => t.id === noteId);
+      if (!note) return;
+
+      const newTitle = event.target.value.trim();
+      if (newTitle !== note.title) {
+        if (newTitle === '' && note.title === '') {
+          // Delete empty notes
+          deleteNote(noteId);
+        } else {
+          note.title = newTitle;
+          note.updatedAt = new Date().toISOString();
+          saveTasksData();
+        }
+      }
+    }
+
+    // Render a note item in outliner style
+    function renderNoteItem(note, allNotes) {
+      const hasChildren = noteHasChildren(note.id);
+      const isCollapsed = collapsedNotes.has(note.id);
+      const indentPx = (note.indent || 0) * 24;
+
+      return `
+        <div class="note-item ${isCollapsed ? 'note-collapsed' : ''}" data-note-id="${note.id}" style="padding-left: ${indentPx}px;">
+          <div class="flex items-start gap-2 py-1.5 px-3 group">
+            <button onclick="event.stopPropagation(); ${hasChildren ? `toggleNoteCollapse('${note.id}')` : `createChildNote('${note.id}')`}"
+              class="note-bullet mt-1.5 ${hasChildren ? (isCollapsed ? 'collapsed' : 'has-children') : ''}"
+              title="${hasChildren ? (isCollapsed ? 'Expand' : 'Collapse') : 'Add child note'}">
+            </button>
+            <input type="text"
+              class="note-input flex-1"
+              value="${(note.title || '').replace(/"/g, '&quot;')}"
+              placeholder="Type something..."
+              onkeydown="handleNoteKeydown(event, '${note.id}')"
+              onblur="handleNoteBlur(event, '${note.id}')"
+              onfocus="editingNoteId='${note.id}'">
+            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button onclick="event.stopPropagation(); createNoteAfter('${note.id}')"
+                class="p-1 text-charcoal/30 hover:text-purple-500 rounded" title="Add note below (Enter)">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+              <button onclick="event.stopPropagation(); deleteNote('${note.id}')"
+                class="p-1 text-charcoal/30 hover:text-red-500 rounded" title="Delete note">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render notes in outliner format
+    function renderNotesOutliner(categoryId = null) {
+      const notes = tasksData.filter(t => t.isNote && !t.completed);
+      const filteredNotes = categoryId ? notes.filter(n => n.categoryId === categoryId) : notes;
+
+      // Build hierarchy - only show root notes and non-collapsed children
+      const visibleNotes = [];
+      const addVisibleNotes = (parentId, parentCollapsed) => {
+        filteredNotes
+          .filter(n => n.parentId === parentId)
+          .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+          .forEach(note => {
+            if (!parentCollapsed) {
+              visibleNotes.push(note);
+            }
+            addVisibleNotes(note.id, parentCollapsed || collapsedNotes.has(note.id));
+          });
+      };
+
+      // Start with root notes (no parent or parent is null)
+      filteredNotes
+        .filter(n => !n.parentId)
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+        .forEach(note => {
+          visibleNotes.push(note);
+          addVisibleNotes(note.id, collapsedNotes.has(note.id));
+        });
+
+      if (visibleNotes.length === 0) {
+        return `
+          <div class="text-center py-12 text-charcoal/40">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-50 flex items-center justify-center">
+              <svg class="w-6 h-6 text-purple-300" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="4" cy="6" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="4" cy="18" r="2"/>
+                <rect x="8" y="5" width="14" height="2" rx="1"/><rect x="8" y="11" width="14" height="2" rx="1"/><rect x="8" y="17" width="14" height="2" rx="1"/>
+              </svg>
+            </div>
+            <p class="text-sm font-medium mb-1">No notes yet</p>
+            <p class="text-xs text-charcoal/30 mb-3">Start typing to capture your thoughts</p>
+          </div>
+        `;
+      }
+
+      return visibleNotes.map(note => renderNoteItem(note, filteredNotes)).join('');
     }
 
     function updateTask(taskId, updates) {
@@ -4832,12 +5297,37 @@
                   ` : ''}
                 </div>
               `;
-              })() : `
+              })() : (activePerspective === 'notes' ? `
+                <!-- Notes Outliner View -->
+                <div class="notes-outliner bg-white">
+                  <div class="px-4 py-3 border-b border-charcoal/5">
+                    <div class="flex items-center gap-2 text-xs text-charcoal/40">
+                      <span>Tab to indent</span>
+                      <span>•</span>
+                      <span>Shift+Tab to outdent</span>
+                      <span>•</span>
+                      <span>Enter for new note</span>
+                      <span>•</span>
+                      <span>Click bullet to collapse</span>
+                    </div>
+                  </div>
+                  <div class="py-2">
+                    ${renderNotesOutliner(activeCategoryFilter)}
+                    <div class="px-3 py-2">
+                      <button onclick="createTask('', { isNote: true, categoryId: activeCategoryFilter, status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && !t.completed); if (notes.length) focusNote(notes[notes.length-1].id); }, 50);"
+                        class="flex items-center gap-2 px-3 py-2 w-full text-left text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                        Add new note
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ` : `
                 <!-- Regular task list -->
                 <div class="task-list">
                   ${filteredTasks.map(task => renderTaskItem(task)).join('')}
                 </div>
-              `)))}
+              `))))}
             </div>
           </div>
         </div>
