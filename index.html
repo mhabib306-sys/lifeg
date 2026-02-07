@@ -2766,98 +2766,99 @@
 
           // Calculate completion for progress indicators
           const prayerFields = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-          const prayersDone = prayerFields.filter(f => prayerData[f]).length;
+          const prayersDone = prayerFields.filter(f => prayerData[f] && parseFloat(prayerData[f]) > 0).length;
           const habitFields = ['exercise', 'reading', 'meditation', 'water', 'vitamins'];
           const habitsDone = habitFields.filter(f => habitsData[f]).length;
 
           content = `
             <div class="space-y-4">
               <!-- Prayers Section -->
-              <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-3">
-                <div class="flex items-center justify-between mb-2">
+              <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-3">
                   <span class="text-xs font-semibold text-amber-700 uppercase tracking-wide">🕌 Prayers</span>
-                  <span class="text-[11px] text-amber-600 font-medium">${prayersDone}/5</span>
+                  <span class="text-xs text-amber-600 font-medium">${prayersDone}/5</span>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="grid grid-cols-6 gap-2">
                   ${['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((p, i) => {
-                    const isChecked = prayerData[p];
-                    const labels = ['F', 'D', 'A', 'M', 'I'];
-                    return '<button onclick="toggleDailyField(\'prayers\', \'' + p + '\')" ' +
-                      'class="flex-1 py-2 rounded-lg text-xs font-medium transition-all ' +
-                      (isChecked ? 'bg-amber-500 text-white shadow-sm' : 'bg-white/80 text-charcoal/50 hover:bg-white hover:text-charcoal') + '">' +
-                      labels[i] + '</button>';
+                    const labels = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+                    const shortLabels = ['F', 'D', 'A', 'M', 'I'];
+                    return '<div class="text-center">' +
+                      '<label class="text-[10px] text-amber-600 font-medium block mb-1">' + shortLabels[i] + '</label>' +
+                      '<input type="number" step="0.1" min="0" max="1" value="' + (prayerData[p] || '') + '" placeholder="0"' +
+                      ' onchange="updateDailyField(\'prayers\', \'' + p + '\', this.value)"' +
+                      ' class="w-full px-2 py-2 text-center text-sm font-medium bg-white border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200">' +
+                      '</div>';
                   }).join('')}
-                  <div class="w-px h-6 bg-amber-200"></div>
-                  <div class="flex items-center gap-1 bg-white/80 rounded-lg px-2 py-1">
-                    <span class="text-[11px] text-amber-600">📖</span>
-                    <input type="number" value="${prayerData.quran || ''}" placeholder="0"
+                  <div class="text-center">
+                    <label class="text-[10px] text-amber-600 font-medium block mb-1">📖</label>
+                    <input type="number" step="0.1" value="${prayerData.quran || ''}" placeholder="0"
                       onchange="updateDailyField('prayers', 'quran', this.value)"
-                      class="w-8 text-center text-xs bg-transparent focus:outline-none text-charcoal">
+                      class="w-full px-2 py-2 text-center text-sm font-medium bg-white border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200">
                   </div>
                 </div>
               </div>
 
               <!-- Glucose Section -->
-              <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-3">
-                <div class="flex items-center justify-between mb-2">
+              <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-3">
                   <span class="text-xs font-semibold text-blue-700 uppercase tracking-wide">💉 Glucose</span>
                 </div>
-                <div class="flex items-center gap-3">
-                  <div class="flex-1 bg-white/80 rounded-lg px-3 py-1.5">
-                    <span class="text-[11px] text-blue-500 block">Avg</span>
+                <div class="grid grid-cols-3 gap-3">
+                  <div class="text-center">
+                    <label class="text-[10px] text-blue-500 font-medium block mb-1">Avg</label>
                     <input type="number" value="${glucoseData.avg || ''}" placeholder="--"
                       onchange="updateDailyField('glucose', 'avg', this.value)"
-                      class="w-full text-sm font-medium bg-transparent focus:outline-none text-charcoal">
+                      class="w-full px-3 py-2 text-center text-sm font-medium bg-white border border-blue-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200">
                   </div>
-                  <div class="flex-1 bg-white/80 rounded-lg px-3 py-1.5">
-                    <span class="text-[11px] text-blue-500 block">TIR %</span>
+                  <div class="text-center">
+                    <label class="text-[10px] text-blue-500 font-medium block mb-1">TIR %</label>
                     <input type="number" value="${glucoseData.tir || ''}" placeholder="--"
                       onchange="updateDailyField('glucose', 'tir', this.value)"
-                      class="w-full text-sm font-medium bg-transparent focus:outline-none text-charcoal">
+                      class="w-full px-3 py-2 text-center text-sm font-medium bg-white border border-blue-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200">
                   </div>
-                  <div class="flex-1 bg-white/80 rounded-lg px-3 py-1.5">
-                    <span class="text-[11px] text-blue-500 block">Insulin</span>
+                  <div class="text-center">
+                    <label class="text-[10px] text-blue-500 font-medium block mb-1">Insulin</label>
                     <input type="number" value="${glucoseData.insulin || ''}" placeholder="--"
                       onchange="updateDailyField('glucose', 'insulin', this.value)"
-                      class="w-full text-sm font-medium bg-transparent focus:outline-none text-charcoal">
+                      class="w-full px-3 py-2 text-center text-sm font-medium bg-white border border-blue-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200">
                   </div>
                 </div>
               </div>
 
               <!-- Whoop Section -->
-              <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg p-3">
-                <div class="flex items-center justify-between mb-2">
+              <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-3">
                   <span class="text-xs font-semibold text-emerald-700 uppercase tracking-wide">⏱️ Whoop</span>
                 </div>
-                <div class="flex items-center gap-3">
-                  <div class="flex-1 bg-white/80 rounded-lg px-3 py-1.5">
-                    <span class="text-[11px] text-emerald-500 block">Sleep %</span>
+                <div class="grid grid-cols-3 gap-3">
+                  <div class="text-center">
+                    <label class="text-[10px] text-emerald-500 font-medium block mb-1">Sleep %</label>
                     <input type="number" value="${whoopData.sleepPerf || ''}" placeholder="--"
                       onchange="updateDailyField('whoop', 'sleepPerf', this.value)"
-                      class="w-full text-sm font-medium bg-transparent focus:outline-none text-charcoal">
+                      class="w-full px-3 py-2 text-center text-sm font-medium bg-white border border-emerald-200 rounded-lg focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200">
                   </div>
-                  <div class="flex-1 bg-white/80 rounded-lg px-3 py-1.5">
-                    <span class="text-[11px] text-emerald-500 block">Recovery</span>
+                  <div class="text-center">
+                    <label class="text-[10px] text-emerald-500 font-medium block mb-1">Recovery</label>
                     <input type="number" value="${whoopData.recovery || ''}" placeholder="--"
                       onchange="updateDailyField('whoop', 'recovery', this.value)"
-                      class="w-full text-sm font-medium bg-transparent focus:outline-none text-charcoal">
+                      class="w-full px-3 py-2 text-center text-sm font-medium bg-white border border-emerald-200 rounded-lg focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200">
                   </div>
-                  <div class="flex-1 bg-white/80 rounded-lg px-3 py-1.5">
-                    <span class="text-[11px] text-emerald-500 block">Strain</span>
+                  <div class="text-center">
+                    <label class="text-[10px] text-emerald-500 font-medium block mb-1">Strain</label>
                     <input type="number" value="${whoopData.strain || ''}" placeholder="--"
                       onchange="updateDailyField('whoop', 'strain', this.value)"
-                      class="w-full text-sm font-medium bg-transparent focus:outline-none text-charcoal">
+                      class="w-full px-3 py-2 text-center text-sm font-medium bg-white border border-emerald-200 rounded-lg focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200">
                   </div>
                 </div>
               </div>
 
               <!-- Habits Section -->
-              <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3">
-                <div class="flex items-center justify-between mb-2">
+              <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-3">
                   <span class="text-xs font-semibold text-purple-700 uppercase tracking-wide">✨ Habits</span>
-                  <span class="text-[11px] text-purple-600 font-medium">${habitsDone}/5</span>
+                  <span class="text-xs text-purple-600 font-medium">${habitsDone}/5</span>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="grid grid-cols-5 gap-2">
                   ${[
                     { field: 'exercise', icon: '🏋️', label: 'Exercise' },
                     { field: 'reading', icon: '📚', label: 'Read' },
@@ -2866,10 +2867,12 @@
                     { field: 'vitamins', icon: '💊', label: 'Vitamins' }
                   ].map(h => {
                     const isChecked = habitsData[h.field];
-                    return '<button onclick="toggleDailyField(\'habits\', \'' + h.field + '\')" title="' + h.label + '" ' +
-                      'class="flex-1 py-2.5 rounded-lg text-base transition-all ' +
-                      (isChecked ? 'bg-purple-500 shadow-sm scale-105' : 'bg-white/80 hover:bg-white hover:scale-105') + '">' +
-                      h.icon + '</button>';
+                    return '<label class="flex flex-col items-center cursor-pointer">' +
+                      '<span class="text-lg mb-1">' + h.icon + '</span>' +
+                      '<input type="checkbox" ' + (isChecked ? 'checked' : '') +
+                      ' onchange="toggleDailyField(\'habits\', \'' + h.field + '\')"' +
+                      ' class="w-5 h-5 rounded border-2 border-purple-300 text-purple-500 focus:ring-purple-300 focus:ring-offset-0 cursor-pointer">' +
+                      '</label>';
                   }).join('')}
                 </div>
               </div>
