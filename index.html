@@ -824,8 +824,15 @@
       }
 
       .task-item .task-checkbox {
-        width: 24px !important;
-        height: 24px !important;
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        min-height: 22px !important;
+        max-width: 22px !important;
+        max-height: 22px !important;
+        border-radius: 50% !important;
+        flex-shrink: 0 !important;
+        aspect-ratio: 1 / 1 !important;
       }
 
       /* Widget cards */
@@ -887,6 +894,24 @@
       /* Hide some elements on mobile */
       .hide-mobile {
         display: none !important;
+      }
+
+      /* Home view header - stack on mobile */
+      .home-greeting-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+      }
+
+      .home-greeting-row h1 {
+        font-size: 1.375rem !important;
+      }
+
+      /* Widget grid - single column on small screens */
+      .widget-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        padding: 0 16px !important;
       }
 
       /* Score grid */
@@ -2422,11 +2447,11 @@
                 <div class="text-2xl font-bold text-charcoal">${todayTasksCount}</div>
                 <div class="text-xs text-charcoal/50 mt-1">Due Today</div>
               </div>
-              <div class="bg-warmgray/30 rounded-lg p-3 text-center">
+              <div class="bg-warmgray/30 rounded-lg p-3 text-center cursor-pointer hover:bg-warmgray/50 transition" onclick="${nextLabel ? `showLabelTasks('${nextLabel.id}')` : ''}">
                 <div class="text-2xl font-bold text-[#8B5CF6]">${nextTasksCount}</div>
                 <div class="text-xs text-charcoal/50 mt-1">Tagged Next</div>
               </div>
-              <div class="bg-warmgray/30 rounded-lg p-3 text-center">
+              <div class="bg-warmgray/30 rounded-lg p-3 text-center cursor-pointer hover:bg-warmgray/50 transition" onclick="showPerspectiveTasks('logbook')">
                 <div class="text-2xl font-bold text-green-600">${completedToday}</div>
                 <div class="text-xs text-charcoal/50 mt-1">Done Today</div>
               </div>
@@ -4418,11 +4443,22 @@
       return `
         <div class="space-y-6">
           <!-- Header -->
-          <div class="flex items-center justify-between">
+          <div class="flex items-start justify-between flex-wrap gap-4">
             <div>
-              <h1 class="text-2xl font-bold text-charcoal">Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, Muhammad</h1>
-              <p class="text-charcoal/40 text-xs mt-0.5">Press <kbd class="px-1.5 py-0.5 bg-charcoal/10 rounded text-[10px] font-mono">⌘K</kbd> to quick add</p>
-              <p class="text-charcoal/50 text-sm mt-1">${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
+              <div class="home-greeting-row flex items-center gap-3">
+                <h1 class="text-2xl font-bold text-charcoal">Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, Muhammad</h1>
+                ${weatherData ? `
+                  <div class="flex items-center gap-1.5 text-charcoal/60" title="${weatherData.city} - ${WEATHER_DESCRIPTIONS[weatherData.weatherCode] || 'Weather'}">
+                    <span class="text-lg">${WEATHER_ICONS[weatherData.weatherCode] || '🌡️'}</span>
+                    <span class="text-sm font-medium">${weatherData.temp}°</span>
+                  </div>
+                ` : ''}
+              </div>
+              <div class="flex items-center gap-3 mt-1">
+                <p class="text-charcoal/50 text-sm">${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+                <span class="text-charcoal/30">•</span>
+                <p class="text-charcoal/40 text-xs">Press <kbd class="px-1.5 py-0.5 bg-charcoal/10 rounded text-[10px] font-mono">⌘K</kbd> to quick add</p>
+              </div>
             </div>
             <div class="flex items-center gap-3">
               ${editingHomeWidgets ? `
@@ -4963,39 +4999,6 @@
                 </div>
               </div>
               <div class="flex items-center gap-4">
-                <!-- Weather Widget -->
-                ${weatherData ? `
-                <div class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gradient-to-br from-sky-50 to-blue-50 border border-sky-100/50" title="${WEATHER_DESCRIPTIONS[weatherData.weatherCode] || 'Weather'}">
-                  <div class="text-3xl">${WEATHER_ICONS[weatherData.weatherCode] || '🌡️'}</div>
-                  <div class="flex flex-col">
-                    <div class="flex items-baseline gap-1">
-                      <span class="text-2xl font-semibold text-sky-900">${weatherData.temp}°</span>
-                      <span class="text-xs text-sky-600/70">${WEATHER_DESCRIPTIONS[weatherData.weatherCode] || ''}</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-[11px] text-sky-600/60">
-                      <span class="flex items-center gap-0.5">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
-                        ${weatherData.tempMax}°
-                      </span>
-                      <span class="flex items-center gap-0.5">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/></svg>
-                        ${weatherData.tempMin}°
-                      </span>
-                      <span class="text-sky-400">•</span>
-                      <span>${weatherData.city}</span>
-                    </div>
-                  </div>
-                </div>
-                ` : `
-                <div class="flex items-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-br from-sky-50 to-blue-50 border border-sky-100/50 animate-pulse">
-                  <div class="w-8 h-8 rounded-full bg-sky-200/50"></div>
-                  <div class="space-y-1.5">
-                    <div class="w-16 h-5 rounded bg-sky-200/50"></div>
-                    <div class="w-24 h-3 rounded bg-sky-200/30"></div>
-                  </div>
-                </div>
-                `}
-
                 <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-warmgray border border-softborder" title="Cloud sync status">
                   <div id="sync-indicator" class="w-2 h-2 rounded-full ${getGithubToken() ? 'bg-green-500' : 'bg-charcoal/30'}"></div>
                   <span class="text-xs text-charcoal/50">${getGithubToken() ? 'Synced' : 'Local'}</span>
