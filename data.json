@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-07T09:24:51.460Z",
+  "lastUpdated": "2026-02-07T09:25:02.619Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2289,14 +2289,14 @@
       "categoryId": null,
       "labels": [],
       "people": [],
-      "deferDate": null,
+      "deferDate": "2026-02-07",
       "dueDate": null,
       "repeat": null,
       "isNote": false,
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-07T09:24:35.106Z",
-      "updatedAt": "2026-02-07T09:24:35.106Z"
+      "updatedAt": "2026-02-07T09:25:00.267Z"
     }
   ],
   "taskCategories": [
