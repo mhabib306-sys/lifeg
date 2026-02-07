@@ -2383,62 +2383,92 @@
       setTimeout(() => focusNote(noteId), 50);
     }
 
-    // Create a new note at the same level as current
+    // Create a new note at the same level as current (right after it)
     function createNoteAfter(noteId) {
       const note = tasksData.find(t => t.id === noteId);
       if (!note) return;
 
-      const newNote = createTask('', {
-        isNote: true,
+      // Find the next sibling note at same level (to insert between current and next)
+      const siblings = tasksData.filter(t =>
+        t.isNote && !t.completed &&
+        t.parentId === note.parentId &&
+        t.categoryId === note.categoryId
+      );
+      const siblingIdx = siblings.findIndex(s => s.id === noteId);
+      const nextSibling = siblings[siblingIdx + 1];
+
+      // Calculate a createdAt timestamp between current note and next sibling
+      const currentTime = new Date(note.createdAt).getTime();
+      const nextTime = nextSibling ? new Date(nextSibling.createdAt).getTime() : Date.now() + 1000;
+      const newTime = currentTime + Math.floor((nextTime - currentTime) / 2);
+
+      // Create the new note with the calculated timestamp
+      const newNote = {
+        id: generateTaskId(),
+        title: '',
+        notes: '',
+        status: 'anytime',
+        completed: false,
+        completedAt: null,
         categoryId: note.categoryId,
+        labels: [],
+        people: [],
+        deferDate: null,
+        dueDate: null,
+        repeat: null,
+        isNote: true,
         parentId: note.parentId,
         indent: note.indent || 0,
-        status: 'anytime'
-      });
+        createdAt: new Date(newTime).toISOString(),
+        updatedAt: new Date().toISOString()
+      };
 
-      // Insert after the current note and its children
-      const noteIdx = tasksData.findIndex(t => t.id === noteId);
-      const newNoteIdx = tasksData.findIndex(t => t.id === newNote.id);
-
-      // Remove from current position
-      tasksData.splice(newNoteIdx, 1);
-
-      // Find the last child of the current note
-      let insertIdx = noteIdx + 1;
-      for (let i = noteIdx + 1; i < tasksData.length; i++) {
-        const t = tasksData[i];
-        if (t.isNote && t.indent > (note.indent || 0)) {
-          insertIdx = i + 1;
-        } else {
-          break;
-        }
-      }
-
-      tasksData.splice(insertIdx, 0, newNote);
+      tasksData.push(newNote);
       saveTasksData();
       render();
       setTimeout(() => focusNote(newNote.id), 50);
     }
 
-    // Create a child note under current
+    // Create a child note under current (as first child)
     function createChildNote(noteId) {
       const note = tasksData.find(t => t.id === noteId);
       if (!note) return;
 
-      const newNote = createTask('', {
-        isNote: true,
+      // Get existing children to determine timestamp
+      const existingChildren = tasksData.filter(t =>
+        t.isNote && !t.completed && t.parentId === noteId
+      ).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+      // Set timestamp before first child (or current time if no children)
+      let newTime;
+      if (existingChildren.length > 0) {
+        const firstChildTime = new Date(existingChildren[0].createdAt).getTime();
+        newTime = firstChildTime - 1000; // 1 second before first child
+      } else {
+        newTime = Date.now();
+      }
+
+      const newNote = {
+        id: generateTaskId(),
+        title: '',
+        notes: '',
+        status: 'anytime',
+        completed: false,
+        completedAt: null,
         categoryId: note.categoryId,
+        labels: [],
+        people: [],
+        deferDate: null,
+        dueDate: null,
+        repeat: null,
+        isNote: true,
         parentId: noteId,
         indent: (note.indent || 0) + 1,
-        status: 'anytime'
-      });
+        createdAt: new Date(newTime).toISOString(),
+        updatedAt: new Date().toISOString()
+      };
 
-      // Insert right after the parent
-      const noteIdx = tasksData.findIndex(t => t.id === noteId);
-      const newNoteIdx = tasksData.findIndex(t => t.id === newNote.id);
-      tasksData.splice(newNoteIdx, 1);
-      tasksData.splice(noteIdx + 1, 0, newNote);
-
+      tasksData.push(newNote);
       saveTasksData();
       render();
       setTimeout(() => focusNote(newNote.id), 50);
