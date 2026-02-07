@@ -166,24 +166,23 @@
     }
     input[type="number"], input[type="text"], textarea, select {
       background: var(--bg-input);
-      border: 1px solid var(--border);
+      border: none;
       border-radius: calc(var(--border-radius) - 2px);
       color: var(--text-primary);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: background 0.2s ease, box-shadow 0.2s ease;
     }
     input[type="number"]:focus, input[type="text"]:focus, textarea:focus, select:focus {
-      border-color: var(--accent);
       outline: none;
-      box-shadow: 0 0 0 3px var(--accent-light);
+      box-shadow: none;
+      background: var(--bg-input);
     }
 
-    /* Quick add input - no border */
-    #quick-add-input {
+    /* All text inputs - no borders */
+    input, textarea {
       border: none !important;
-      box-shadow: none !important;
-      background: transparent !important;
+      outline: none !important;
     }
-    #quick-add-input:focus {
+    input:focus, textarea:focus {
       border: none !important;
       box-shadow: none !important;
     }
@@ -510,13 +509,19 @@
       border: none;
     }
     .note-input {
-      border: none;
-      outline: none;
-      background: transparent;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
       width: 100%;
       font-size: 15px;
       color: var(--text-primary);
       padding: 0;
+    }
+    .note-input:focus {
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
     }
     .note-input::placeholder {
       color: var(--text-secondary);
