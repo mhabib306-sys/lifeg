@@ -5255,6 +5255,11 @@
 
     function renderTrackingTab() {
       const data = getTodayData();
+      data.prayers = data.prayers || {};
+      data.glucose = data.glucose || {};
+      data.whoop = data.whoop || {};
+      data.family = data.family || {};
+      data.habits = data.habits || {};
       const rawScores = calculateScores(data);
       const scores = {
         total: rawScores?.total ?? 0,
