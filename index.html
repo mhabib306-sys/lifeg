@@ -684,125 +684,305 @@
       min-width: 50px;
     }
 
-    /* Mobile Responsive Styles */
+    /* ========== MOBILE RESPONSIVE - SILICON VALLEY STANDARDS ========== */
+
+    /* Mobile Bottom Navigation */
+    .mobile-bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--modal-bg);
+      border-top: 1px solid var(--border);
+      padding: 8px 0;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .mobile-bottom-nav-inner {
+      display: flex;
+      justify-content: space-around;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .mobile-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 8px 16px;
+      border-radius: 12px;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-nav-item.active {
+      color: var(--accent);
+    }
+
+    .mobile-nav-item span {
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    /* Mobile Header Compact */
+    .mobile-header-compact {
+      display: none;
+    }
+
     @media (max-width: 768px) {
+      /* Show bottom nav, hide top nav */
+      .mobile-bottom-nav {
+        display: block;
+      }
+
+      .desktop-nav {
+        display: none !important;
+      }
+
+      /* Compact header for mobile */
+      .desktop-header-content {
+        display: none !important;
+      }
+
+      .mobile-header-compact {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+      }
+
       /* Header adjustments */
-      header .max-w-5xl {
-        padding-left: 1rem;
-        padding-right: 1rem;
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
       }
 
-      /* Tab buttons */
-      header button {
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-        font-size: 0.875rem;
+      header .max-w-6xl {
+        padding: 0;
       }
 
-      /* Main content container */
-      .max-w-5xl {
-        padding-left: 1rem;
-        padding-right: 1rem;
+      /* Main content padding for bottom nav */
+      main, .main-content {
+        padding-bottom: 80px !important;
       }
 
-      /* Sidebar and main layout - stack vertically on mobile */
-      .mobile-layout {
-        flex-direction: column;
+      /* Sidebar becomes full-screen overlay on mobile */
+      .mobile-sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 200;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
       }
 
-      .mobile-sidebar {
-        width: 100% !important;
-        flex-shrink: 1 !important;
+      .mobile-sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
       }
 
-      .mobile-main {
-        width: 100% !important;
-      }
-
-      /* Hide desktop sidebar on mobile, show mobile nav */
-      .desktop-sidebar {
-        display: none;
-      }
-
-      .mobile-nav {
-        display: flex;
-      }
-
-      /* Prayer inputs on mobile */
-      .prayer-input {
-        font-size: 1rem;
-        padding: 0.625rem 0.5rem;
-      }
-
-      /* Cards on mobile */
-      .sb-card {
-        border-radius: 0.5rem;
-      }
-
-      /* Task items spacing */
-      .task-item {
-        padding: 0.75rem;
-      }
-
-      /* Modal adjustments */
-      .modal-content {
-        margin: 1rem;
-        max-height: calc(100vh - 2rem);
-        width: calc(100% - 2rem);
-      }
-
-      /* Table scrolling for bulk edit */
-      .bulk-table-container {
-        overflow-x: auto;
+      .mobile-sidebar-drawer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 85%;
+        max-width: 320px;
+        background: var(--bg-primary);
+        z-index: 201;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-y: auto;
         -webkit-overflow-scrolling: touch;
       }
 
-      /* Score cards grid */
+      .mobile-sidebar-overlay.show .mobile-sidebar-drawer {
+        transform: translateX(0);
+      }
+
+      /* Task list fullscreen */
+      .task-list-container {
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+      }
+
+      /* Task items - larger touch targets */
+      .task-item {
+        padding: 14px 16px;
+        min-height: 56px;
+      }
+
+      .task-item .task-checkbox {
+        width: 24px !important;
+        height: 24px !important;
+      }
+
+      /* Widget cards */
+      .widget {
+        border-radius: 16px;
+        margin: 0 16px 12px;
+      }
+
+      /* Modal - fullscreen on mobile */
+      .modal-overlay {
+        align-items: flex-end !important;
+      }
+
+      .modal-content, .modal-enhanced {
+        margin: 0 !important;
+        max-height: 90vh !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 20px 20px 0 0 !important;
+        animation: slideUpModal 0.3s ease;
+      }
+
+      @keyframes slideUpModal {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+      }
+
+      /* Form inputs */
+      input[type="text"],
+      input[type="date"],
+      input[type="number"],
+      textarea,
+      select {
+        font-size: 16px !important; /* Prevents iOS zoom */
+        padding: 14px 16px !important;
+        border-radius: 12px !important;
+      }
+
+      /* Weather widget compact */
+      .weather-widget-mobile {
+        padding: 8px 12px !important;
+        border-radius: 10px !important;
+      }
+
+      .weather-widget-mobile .text-3xl {
+        font-size: 1.5rem !important;
+      }
+
+      .weather-widget-mobile .text-2xl {
+        font-size: 1.25rem !important;
+      }
+
+      /* Quick add input */
+      #home-quick-add-input,
+      #quick-add-input {
+        font-size: 16px !important;
+      }
+
+      /* Hide some elements on mobile */
+      .hide-mobile {
+        display: none !important;
+      }
+
+      /* Score grid */
       .score-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
       }
 
-      /* Charts container */
+      /* Area hero - compact */
+      .area-hero {
+        padding: 16px !important;
+      }
+
+      .area-hero h2 {
+        font-size: 1.5rem !important;
+      }
+
+      /* Progress ring smaller */
+      .progress-ring {
+        width: 48px !important;
+        height: 48px !important;
+      }
+
+      /* Sidebar sections stack */
+      .sidebar-section {
+        margin-bottom: 8px;
+      }
+
+      /* Remove hover effects on touch */
+      .task-item:hover {
+        background: transparent;
+      }
+
+      /* Charts responsive */
       .chart-container {
-        height: 200px !important;
+        height: 180px !important;
       }
 
-      /* Settings sections */
+      /* Settings */
       .settings-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    /* Small mobile (iPhone SE, etc.) */
+    /* Small phones (iPhone SE, older devices) */
     @media (max-width: 375px) {
-      header .max-w-5xl {
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
+      .mobile-header-compact {
+        padding: 10px 12px;
       }
 
-      .prayer-input {
-        font-size: 0.875rem;
-        padding: 0.5rem 0.375rem;
+      .widget {
+        margin: 0 12px 10px;
+      }
+
+      .task-item {
+        padding: 12px;
       }
 
       .score-grid {
         grid-template-columns: 1fr;
       }
+
+      .mobile-nav-item {
+        padding: 6px 12px;
+      }
+
+      .mobile-nav-item span {
+        font-size: 9px;
+      }
     }
 
     /* Large phones (iPhone Pro Max, etc.) */
     @media (min-width: 390px) and (max-width: 768px) {
-      .prayer-input {
-        min-width: 55px;
+      .widget {
+        margin: 0 20px 16px;
+      }
+
+      .score-grid {
+        gap: 12px;
+      }
+    }
+
+    /* Tablet portrait */
+    @media (min-width: 768px) and (max-width: 1024px) {
+      .sidebar-container {
+        width: 240px !important;
       }
     }
 
     /* Touch-friendly tap targets */
     @media (hover: none) and (pointer: coarse) {
+      /* All interactive elements get larger touch targets */
       .sidebar-item {
-        min-height: 44px;
-        padding-top: 0.625rem;
-        padding-bottom: 0.625rem;
+        min-height: 48px;
+        padding-top: 12px;
+        padding-bottom: 12px;
       }
 
       .action-btn {
@@ -6389,6 +6569,28 @@
         ${categoryModalHtml}
         ${labelModalHtml}
         ${personModalHtml}
+
+        <!-- Mobile Bottom Navigation -->
+        <nav class="mobile-bottom-nav">
+          <div class="mobile-bottom-nav-inner">
+            <button onclick="switchTab('home')" class="mobile-nav-item ${activeTab === 'home' ? 'active' : ''}">
+              ${THINGS3_ICONS.home}
+              <span>Home</span>
+            </button>
+            <button onclick="switchTab('tasks')" class="mobile-nav-item ${activeTab === 'tasks' ? 'active' : ''}">
+              ${THINGS3_ICONS.workspace}
+              <span>Workspace</span>
+            </button>
+            <button onclick="switchTab('life')" class="mobile-nav-item ${activeTab === 'life' ? 'active' : ''}">
+              ${THINGS3_ICONS.lifeScore}
+              <span>Life Score</span>
+            </button>
+            <button onclick="switchTab('settings')" class="mobile-nav-item ${activeTab === 'settings' ? 'active' : ''}">
+              ${THINGS3_ICONS.settings}
+              <span>Settings</span>
+            </button>
+          </div>
+        </nav>
       `;
     }
 
