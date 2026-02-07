@@ -1606,11 +1606,57 @@
   <div id="app"></div>
 
   <script>
+    /**
+     * ============================================================================
+     * NUCLEUS - Life Gamification & Task Management App
+     * ============================================================================
+     *
+     * A single-file web application combining:
+     * - Things 3/OmniFocus-style task management with perspectives
+     * - Daily habit tracking with gamification scoring
+     * - Health metrics tracking (prayers, glucose, WHOOP integration)
+     * - Outliner notes with hierarchical structure
+     *
+     * ARCHITECTURE OVERVIEW:
+     * ----------------------
+     * - Single HTML file with embedded CSS and JavaScript
+     * - Reactive rendering via full DOM replacement on state change
+     * - localStorage for persistence, GitHub API for cloud sync
+     * - No framework dependencies (vanilla JS)
+     *
+     * MAIN SECTIONS:
+     * --------------
+     * 1. CONFIGURATION & CONSTANTS (Lines ~1608-2200)
+     *    - App version, storage keys, themes, weights
+     * 2. WEATHER SYSTEM (Lines ~1716-1870)
+     *    - Open-Meteo API integration with caching
+     * 3. GITHUB SYNC (Lines ~1870-2080)
+     *    - Cloud backup/restore with conflict resolution
+     * 4. DATA INITIALIZATION (Lines ~2080-2400)
+     *    - Load from localStorage, defaults, migrations
+     * 5. TASK SYSTEM (Lines ~2400-4100)
+     *    - CRUD, perspectives, drag-drop, repeating tasks
+     * 6. OUTLINER NOTES (Lines ~3450-3800)
+     *    - Hierarchical notes with indent/outdent
+     * 7. SCORING ENGINE (Lines ~4500-4700)
+     *    - Multi-category scoring with memoization
+     * 8. RENDERING (Lines ~4800-7600)
+     *    - Home, Tasks, Track, Bulk, Dashboard tabs
+     *
+     * @author Muhammad Habib
+     * @version 3.2.3
+     * @license MIT
+     */
+
+    // ============================================================================
+    // SECTION 1: CONFIGURATION & CONSTANTS
+    // ============================================================================
+
     // App Version (MAJOR.MINOR.PATCH)
     // MAJOR: New major features (Home view, Next perspective, etc.)
     // MINOR: Enhancements and improvements
     // PATCH: Bug fixes and small tweaks
-    const APP_VERSION = '3.2.2';
+    const APP_VERSION = '3.2.3';
 
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -1695,7 +1741,17 @@
       99: 'Severe Storm',
     };
 
-    // Load cached weather location
+    // ============================================================================
+    // SECTION 2: WEATHER SYSTEM
+    // ============================================================================
+    // Uses Open-Meteo API (free, no key needed) for weather data
+    // Implements 30-minute caching to reduce API calls
+    // Supports geolocation with fallback to default location (New Cairo)
+
+    /**
+     * Load cached weather location from localStorage
+     * Uses try-catch to handle corrupted cache gracefully
+     */
     function loadWeatherLocation() {
       try {
         const cached = localStorage.getItem(WEATHER_LOCATION_KEY);
@@ -1712,7 +1768,17 @@
       localStorage.setItem(WEATHER_LOCATION_KEY, JSON.stringify(weatherLocation));
     }
 
-    // Fetch weather from Open-Meteo (free, no API key needed)
+    /**
+     * Fetch weather from Open-Meteo API
+     * CACHING: 30-minute cache stored in localStorage
+     * FALLBACK: Returns stale cached data if API fails
+     *
+     * API returns: current conditions, daily min/max, hourly temps
+     * We calculate the time of day when max/min temps occur
+     *
+     * @async
+     * @returns {void} Updates global weatherData object
+     */
     async function fetchWeather() {
       try {
         // Check cache first (cache for 30 minutes)
@@ -1821,18 +1887,34 @@
       detectUserLocation();
     }
 
-    // Get stored GitHub token
+    // ============================================================================
+    // SECTION 3: GITHUB SYNC & SETTINGS
+    // ============================================================================
+    // Cloud backup via GitHub API using Personal Access Token
+    // Syncs: daily data, tasks, categories, labels, perspectives
+    // Implements debounced auto-sync (2-second delay after changes)
+
+    /**
+     * Get stored GitHub Personal Access Token
+     * @returns {string} Token or empty string if not set
+     */
     function getGithubToken() {
       return localStorage.getItem(GITHUB_TOKEN_KEY) || '';
     }
 
-    // Save GitHub token
+    /**
+     * Store GitHub PAT and trigger re-render to update UI
+     * @param {string} token - GitHub Personal Access Token
+     */
     function setGithubToken(token) {
       localStorage.setItem(GITHUB_TOKEN_KEY, token);
       render();
     }
 
-    // Get stored theme
+    /**
+     * Get current theme name from localStorage
+     * @returns {string} Theme name ('simplebits' or 'things3')
+     */
     function getTheme() {
       return localStorage.getItem(THEME_KEY) || 'simplebits';
     }
@@ -2082,6 +2164,17 @@
       habits: { exercise: 0, reading: 0, meditation: 0, water: '', vitamins: false, brushTeeth: 0, nop: '' }
     };
 
+    // ============================================================================
+    // SECTION 4: SCORING WEIGHTS CONFIGURATION
+    // ============================================================================
+    // Configurable point values for each tracking category
+    // Users can adjust these in Settings to customize their scoring
+    //
+    // DESIGN PHILOSOPHY:
+    // - Target ~100 points for a "perfect" day
+    // - Base unit = 5 points (makes math intuitive)
+    // - Categories weighted by importance to user
+    //
     // Consistent scoring framework - base unit = 5 pts
     // Target daily max ~100 pts: Prayer 30, Diabetes 25, Whoop 25, Habits 15, Family 5
     const DEFAULT_WEIGHTS = {
@@ -2349,7 +2442,26 @@
       settings: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7zm7.43-2.53c.04-.32.07-.64.07-.97s-.03-.66-.07-.98l2.11-1.65a.5.5 0 00.12-.64l-2-3.46a.5.5 0 00-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.5.5 0 0014 2h-4a.5.5 0 00-.49.42l-.38 2.65c-.61.25-1.17.58-1.69.98l-2.49-1a.5.5 0 00-.61.22l-2 3.46a.5.5 0 00.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65a.5.5 0 00-.12.64l2 3.46a.5.5 0 00.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65a.5.5 0 00.49.42h4a.5.5 0 00.49-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.49 1a.5.5 0 00.61-.22l2-3.46a.5.5 0 00-.12-.64l-2.11-1.65z"/></svg>`
     };
 
-    // Default perspectives with exact Things 3 colors (Tasks only - Notes is separate)
+    /**
+     * BUILTIN PERSPECTIVES - Things 3 style task views
+     *
+     * PERSPECTIVE OBJECT STRUCTURE:
+     * @typedef {Object} Perspective
+     * @property {string} id - Unique identifier
+     * @property {string} name - Display name
+     * @property {string} icon - SVG icon markup
+     * @property {string} color - Brand color (hex)
+     * @property {Object} filter - Filter rules for getFilteredTasks()
+     * @property {boolean} builtin - True = cannot be deleted
+     *
+     * FILTER LOGIC (implemented in getFilteredTasks):
+     * - inbox: status='inbox' AND no categoryId (unprocessed items)
+     * - today: status='today' OR dueToday OR overdue OR scheduled for today
+     * - upcoming: has future dueDate
+     * - anytime: status='anytime' (no deadline, available now)
+     * - someday: status='someday' (on hold for later)
+     * - logbook: completed=true (all completed items)
+     */
     const BUILTIN_PERSPECTIVES = [
       { id: 'inbox', name: 'Inbox', icon: THINGS3_ICONS.inbox, color: '#5598FE', filter: { status: 'inbox' }, builtin: true },
       { id: 'today', name: 'Today', icon: THINGS3_ICONS.today, color: '#FFCA28', filter: { status: 'today' }, builtin: true },
@@ -2359,16 +2471,37 @@
       { id: 'logbook', name: 'Logbook', icon: THINGS3_ICONS.logbook, color: '#66BB6A', filter: { completed: true }, builtin: true }
     ];
 
-    // Notes perspective (separate from task perspectives)
+    // Notes perspective (separate from task perspectives - uses outline/bullet style)
     const NOTES_PERSPECTIVE = { id: 'notes', name: 'Notes', icon: THINGS3_ICONS.notes, color: '#8B5CF6', filter: { notes: true }, builtin: true };
 
-    // Load tasks data
-    let tasksData = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
-    let taskCategories = JSON.parse(localStorage.getItem(TASK_CATEGORIES_KEY) || 'null') || DEFAULT_TASK_CATEGORIES;
-    let taskLabels = JSON.parse(localStorage.getItem(TASK_LABELS_KEY) || 'null') || DEFAULT_TASK_LABELS;
-    let taskPeople = JSON.parse(localStorage.getItem(TASK_PEOPLE_KEY) || 'null') || DEFAULT_TASK_PEOPLE;
-    let customPerspectives = JSON.parse(localStorage.getItem(PERSPECTIVES_KEY) || '[]');
-    let homeWidgets = JSON.parse(localStorage.getItem(HOME_WIDGETS_KEY) || 'null') || DEFAULT_HOME_WIDGETS;
+    // ============================================================================
+    // SECTION 5: TASK DATA INITIALIZATION
+    // ============================================================================
+    // Load tasks data with error handling for corrupted localStorage
+    // Uses try-catch to prevent app crash from malformed JSON
+
+    /**
+     * Safe JSON parse helper for localStorage reads
+     * @param {string} key - localStorage key
+     * @param {*} defaultValue - Fallback value if parse fails
+     * @returns {*} Parsed value or default
+     */
+    function safeJsonParse(key, defaultValue) {
+      try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : defaultValue;
+      } catch (e) {
+        console.error(`Failed to parse localStorage key "${key}":`, e);
+        return defaultValue;
+      }
+    }
+
+    let tasksData = safeJsonParse(TASKS_KEY, []);
+    let taskCategories = safeJsonParse(TASK_CATEGORIES_KEY, null) || DEFAULT_TASK_CATEGORIES;
+    let taskLabels = safeJsonParse(TASK_LABELS_KEY, null) || DEFAULT_TASK_LABELS;
+    let taskPeople = safeJsonParse(TASK_PEOPLE_KEY, null) || DEFAULT_TASK_PEOPLE;
+    let customPerspectives = safeJsonParse(PERSPECTIVES_KEY, []);
+    let homeWidgets = safeJsonParse(HOME_WIDGETS_KEY, null) || DEFAULT_HOME_WIDGETS;
     let editingHomeWidgets = false;
     let draggingWidgetId = null;
     let activePerspective = savedViewState.activePerspective || 'inbox';
@@ -3072,9 +3205,18 @@
       }
     }
 
-    // Task helper functions
+    // ============================================================================
+    // SECTION 6: TASK HELPER FUNCTIONS & CRUD OPERATIONS
+    // ============================================================================
+
+    /**
+     * Generate unique task ID using timestamp + random string
+     * Format: task_{timestamp}_{random9chars}
+     * @returns {string} Unique task identifier
+     */
     function generateTaskId() {
-      return 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      // Note: Using .slice() instead of deprecated .substr()
+      return 'task_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
     }
 
     function saveTasksData() {
@@ -3426,6 +3568,39 @@
       }
     }
 
+    /**
+     * Create a new task with full configuration options
+     *
+     * TASK OBJECT STRUCTURE:
+     * @typedef {Object} Task
+     * @property {string} id - Unique ID (task_{timestamp}_{random})
+     * @property {string} title - Task name/description
+     * @property {string} notes - Additional details/context
+     * @property {string} status - 'inbox'|'today'|'anytime'|'someday'
+     * @property {boolean} completed - Completion state
+     * @property {string|null} completedAt - ISO timestamp when completed
+     * @property {string|null} categoryId - Area/category assignment
+     * @property {string[]} labels - Array of label IDs (tags)
+     * @property {string[]} people - Array of person IDs (delegation)
+     * @property {string|null} deferDate - Start date (YYYY-MM-DD)
+     * @property {string|null} dueDate - Deadline (YYYY-MM-DD)
+     * @property {Object|null} repeat - Repeating config {type, interval, from}
+     * @property {boolean} isNote - True = outline note, False = task
+     * @property {string|null} parentId - Parent note ID for hierarchy
+     * @property {number} indent - Nesting level (0 = root)
+     * @property {string} createdAt - ISO creation timestamp
+     * @property {string} updatedAt - ISO last modified timestamp
+     *
+     * THINGS 3 BEHAVIOR:
+     * - Inbox tasks have no category
+     * - Assigning a category moves Inbox → Anytime
+     * - "Today" status means task is available now (defer date ≤ today)
+     * - "Someday" hides task from active views
+     *
+     * @param {string} title - Task title
+     * @param {Object} options - Optional properties (see typedef)
+     * @returns {Task} Created task object
+     */
     function createTask(title, options = {}) {
       const task = {
         id: generateTaskId(),
@@ -3451,7 +3626,15 @@
       return task;
     }
 
-    // ============ OUTLINER NOTES SYSTEM ============
+    // ============================================================================
+    // SECTION 8: OUTLINER NOTES SYSTEM
+    // ============================================================================
+    // Hierarchical notes structure similar to Workflowy/Roam/Logseq
+    // - Notes are tasks with isNote=true
+    // - Support parent-child relationships via parentId
+    // - Indent levels for visual hierarchy (max 5 levels)
+    // - Collapse/expand functionality
+    // - Fractional timestamps for insertion ordering
     let editingNoteId = null;
     let collapsedNotes = (function() {
       try {
@@ -3896,14 +4079,23 @@
       return date.toISOString().split('T')[0];
     }
 
-    // Create the next occurrence of a repeating task
+    /**
+     * Create the next occurrence of a repeating task
+     * Called when a repeating task is completed
+     *
+     * BUG FIX: Now properly copies people array (was missing before)
+     *
+     * @param {Task} completedTask - The task that was just completed
+     */
     function createNextRepeatOccurrence(completedTask) {
       const today = getLocalDateString();
       const baseDate = completedTask.repeat.from === 'due' && completedTask.dueDate
         ? completedTask.dueDate
         : today;
 
-      // Calculate new defer and due dates
+      // Calculate new defer and due dates based on repeat.from setting
+      // 'due' = calculate from original due date (fixed schedule)
+      // 'completion' = calculate from today (flexible schedule)
       let newDeferDate = null;
       let newDueDate = null;
 
@@ -3918,13 +4110,14 @@
         newDueDate = calculateNextRepeatDate(baseDate, completedTask.repeat);
       }
 
-      // Create new task with same properties
+      // Create new task with ALL same properties (including people!)
       // Keep the same status (Today tasks stay in Today with new date)
       createTask(completedTask.title, {
         notes: completedTask.notes,
         status: completedTask.status,
         categoryId: completedTask.categoryId,
         labels: [...(completedTask.labels || [])],
+        people: [...(completedTask.people || [])], // BUG FIX: Was missing - people now preserved
         deferDate: newDeferDate,
         dueDate: newDueDate,
         repeat: { ...completedTask.repeat }
@@ -4085,7 +4278,24 @@
       });
     }
 
-    // Initialize task orders if not set
+    // ============================================================================
+    // SECTION 9: TASK FILTERING & PERSPECTIVES
+    // ============================================================================
+    // Things 3-style perspective system with smart filtering
+    // BUILTIN PERSPECTIVES:
+    //   - Inbox: Unprocessed tasks (no area)
+    //   - Today: Due today + overdue + scheduled for today + "Next" tagged
+    //   - Upcoming: Future due dates
+    //   - Anytime: Available tasks without deadlines
+    //   - Someday: Deferred for later consideration
+    //   - Logbook: Completed tasks
+    // CUSTOM PERSPECTIVES: User-defined filters
+
+    /**
+     * Initialize task order values for drag-drop sorting
+     * Uses 1000-increment spacing to allow fractional insertions
+     * (e.g., inserting between 1000 and 2000 = 1500)
+     */
     function initializeTaskOrders() {
       let needsSave = false;
       tasksData.forEach((task, index) => {
@@ -4098,6 +4308,21 @@
     }
     initializeTaskOrders();
 
+    /**
+     * Get tasks filtered by perspective rules
+     * CRITICAL: This is the main filtering function for all task views
+     *
+     * PERSPECTIVE RULES:
+     * - inbox: status='inbox' AND no categoryId
+     * - today: status='today' OR dueDate=today OR overdue OR deferDate<=today
+     * - upcoming: has future dueDate
+     * - anytime: status='anytime' AND no future dueDate
+     * - someday: status='someday'
+     * - logbook: completed=true
+     *
+     * @param {string} perspectiveId - Perspective to filter by
+     * @returns {Task[]} Filtered and sorted task array
+     */
     function getFilteredTasks(perspectiveId) {
       // Notes perspective shows tasks marked as notes
       if (perspectiveId === 'notes') {
@@ -4508,6 +4733,26 @@
       render();
     }
 
+    // ============================================================================
+    // SECTION 7: SCORING CALCULATION ENGINE
+    // ============================================================================
+    // Multi-category gamification scoring system
+    // Target: ~100 points daily from 5 categories:
+    //   - Prayer: 30 pts (5 prayers + Quran)
+    //   - Diabetes: 25 pts (glucose avg + TIR + insulin)
+    //   - WHOOP: 25 pts (sleep + recovery + strain)
+    //   - Family: 5 pts (contact with family members)
+    //   - Habits: 15 pts (exercise, reading, vitamins, etc.)
+    //
+    // Uses memoization cache for performance (cleared on data changes)
+
+    /**
+     * Parse prayer value from X.Y format
+     * X = on-time prayers (0-1), Y = late prayers (0-9 in decimal)
+     * Example: 1.3 = 1 on-time + 3 late prayers
+     * @param {string|number} value - Prayer value in X.Y format
+     * @returns {{onTime: number, late: number}} Parsed prayer counts
+     */
     function parsePrayer(value) {
       if (!value && value !== 0) return { onTime: 0, late: 0 };
       const num = parseFloat(value) || 0;
@@ -4516,25 +4761,56 @@
       return { onTime, late };
     }
 
+    /**
+     * Calculate score for a single prayer
+     * @param {string|number} value - Prayer value in X.Y format
+     * @returns {number} Score for this prayer
+     */
     function calcPrayerScore(value) {
       const { onTime, late } = parsePrayer(value);
       return onTime * WEIGHTS.prayer.onTime + late * WEIGHTS.prayer.late;
     }
 
-    // Memoization cache for calculateScores - major performance optimization
+    // Memoization cache for calculateScores - MAJOR PERFORMANCE OPTIMIZATION
+    // Prevents recalculation when same data is passed multiple times
+    // Cache cleared when data changes via invalidateScoresCache()
     const scoresCache = new Map();
     let scoresCacheVersion = 0;
 
+    /**
+     * Clear the scores cache (call after any data change)
+     */
     function invalidateScoresCache() {
       scoresCache.clear();
       scoresCacheVersion++;
     }
 
+    /**
+     * Generate cache key from data object
+     * Uses JSON.stringify for simple but effective hashing
+     */
     function getCacheKey(data) {
-      // Simple hash based on stringified data
       return JSON.stringify(data);
     }
 
+    /**
+     * Calculate daily scores across all categories
+     * PERFORMANCE: Uses memoization to avoid redundant calculations
+     * CACHE LIMIT: Clears when > 500 entries (~100KB memory)
+     *
+     * @param {Object} data - Daily data object with prayers, glucose, whoop, family, habits
+     * @returns {Object} Scores: { prayer, diabetes, whoop, family, habit, total,
+     *                           details: { totalOnTime, totalLate, quranPages } }
+     *
+     * SCORING ALGORITHMS (see DEFAULT_WEIGHTS for exact values):
+     * - PRAYER: 5 × (onTime × 5pts + late × 2pts) + quranPages × 5pts
+     * - GLUCOSE: avg (progressive 0-10 scaled from 105 target) +
+     *            TIR (tirPerPoint × %) + insulin (base or penalty)
+     * - WHOOP: sleep thresholds (high:7, mid:4, low:2) +
+     *          recovery thresholds + strain matching bonus
+     * - FAMILY: sum of individual weights (6 members, 1pt each)
+     * - HABITS: sum of enabled habits with individual weights
+     */
     function calculateScores(data) {
       // Check cache first
       const cacheKey = getCacheKey(data);
@@ -5389,6 +5665,33 @@
       `;
     }
 
+    // ============================================================================
+    // SECTION 10: MAIN RENDER FUNCTION
+    // ============================================================================
+    // Full DOM replacement rendering (no virtual DOM)
+    // This function rebuilds the entire UI on every state change
+    //
+    // PERFORMANCE NOTE: While full DOM replacement is simpler, it can be slow.
+    // For optimization, consider:
+    // - Memoizing expensive calculations (done for scores)
+    // - Using requestAnimationFrame for animations
+    // - Debouncing rapid state changes
+    //
+    // TAB STRUCTURE:
+    // - Home: Dashboard widgets (weather, quick stats, today tasks)
+    // - Tasks (Workspace): Things 3-style task management
+    // - Life: Daily tracking + bulk entry + statistics
+    // - Settings: Theme, sync, scoring weights
+
+    /**
+     * Main render function - rebuilds entire UI
+     * Called on every state change (tab switch, data update, etc.)
+     *
+     * ARCHITECTURE: Full DOM replacement via innerHTML
+     * - Simple to reason about
+     * - No need to track DOM state
+     * - Trade-off: Slower than incremental updates
+     */
     function render() {
       try {
       const app = document.getElementById('app');
