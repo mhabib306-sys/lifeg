@@ -7389,8 +7389,8 @@
       ` : '';
 
       return `
-        <!-- Mobile Sidebar Drawer -->
-        <div id="mobile-sidebar-overlay" class="mobile-sidebar-overlay ${mobileDrawerOpen ? 'show' : ''}" onclick="if(event.target===this) closeMobileDrawer()">
+        <!-- Mobile Sidebar Drawer (hidden on desktop) -->
+        <div id="mobile-sidebar-overlay" class="mobile-sidebar-overlay md:hidden ${mobileDrawerOpen ? 'show' : ''}" onclick="if(event.target===this) closeMobileDrawer()">
           <div class="mobile-sidebar-drawer">
             <div class="p-4 border-b border-[var(--border-light)]">
               <h2 class="text-lg font-bold text-[var(--text-primary)]">Workspace</h2>
