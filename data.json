@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-07T09:20:40.986Z",
+  "lastUpdated": "2026-02-07T09:20:54.017Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1956,8 +1956,8 @@
       "title": "Send a thank you note to Omar Metwally",
       "notes": "",
       "status": "inbox",
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-07T09:20:51.767Z",
       "categoryId": null,
       "labels": [
         "label_1770020325388"
@@ -1967,7 +1967,7 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T23:28:26.419Z",
-      "updatedAt": "2026-02-06T19:44:25.798Z",
+      "updatedAt": "2026-02-07T09:20:51.767Z",
       "order": 4000
     },
     {
