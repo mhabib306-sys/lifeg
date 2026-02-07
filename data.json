@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-07T20:08:00.982Z",
+  "lastUpdated": "2026-02-07T21:31:52.560Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -8,7 +8,7 @@
         "asr": "1",
         "maghrib": "0.1",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": false,
@@ -21,8 +21,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -33,9 +31,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -45,9 +40,8 @@
         "reading": 0,
         "meditation": 0,
         "water": "",
-        "vitamins": "1",
-        "brushTeeth": 0,
-        "nop": "1"
+        "vitamins": false,
+        "brushTeeth": 0
       }
     },
     "2026-01-02": {
@@ -57,7 +51,7 @@
         "asr": "1",
         "maghrib": "1",
         "isha": "1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -70,8 +64,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -82,9 +74,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -94,9 +83,8 @@
         "reading": 0,
         "meditation": 0,
         "water": "",
-        "vitamins": "1",
-        "brushTeeth": 0,
-        "nop": "1"
+        "vitamins": false,
+        "brushTeeth": 0
       }
     },
     "2026-01-03": {
@@ -106,7 +94,7 @@
         "asr": "1",
         "maghrib": "0.1",
         "isha": "1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -119,8 +107,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -131,9 +117,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -143,9 +126,8 @@
         "reading": 0,
         "meditation": 0,
         "water": "",
-        "vitamins": "1",
-        "brushTeeth": 0,
-        "nop": "1"
+        "vitamins": false,
+        "brushTeeth": 0
       }
     },
     "2026-01-04": {
@@ -155,7 +137,7 @@
         "asr": "1",
         "maghrib": "1",
         "isha": "1",
-        "quran": "1"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -168,8 +150,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -180,9 +160,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -192,9 +169,8 @@
         "reading": 0,
         "meditation": 0,
         "water": "",
-        "vitamins": "1",
-        "brushTeeth": 0,
-        "nop": "1"
+        "vitamins": false,
+        "brushTeeth": 0
       }
     },
     "2026-01-05": {
@@ -204,7 +180,7 @@
         "asr": "0.1",
         "maghrib": "0.1",
         "isha": "1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": false,
@@ -217,8 +193,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -229,9 +203,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -242,8 +213,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-06": {
@@ -253,7 +223,7 @@
         "asr": "0.1",
         "maghrib": "0.1",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -266,8 +236,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -278,9 +246,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -291,8 +256,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-07": {
@@ -302,7 +266,7 @@
         "asr": "1",
         "maghrib": "1",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -315,8 +279,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -327,9 +289,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -340,8 +299,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-08": {
@@ -351,7 +309,7 @@
         "asr": "1",
         "maghrib": "0.1",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -364,8 +322,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -376,9 +332,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -389,8 +342,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-09": {
@@ -400,7 +352,7 @@
         "asr": "1",
         "maghrib": "1",
         "isha": "1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -413,8 +365,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -425,9 +375,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -438,8 +385,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-10": {
@@ -449,7 +395,7 @@
         "asr": "1",
         "maghrib": "1",
         "isha": "1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -462,8 +408,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -474,9 +418,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -487,8 +428,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-11": {
@@ -498,7 +438,7 @@
         "asr": "0.1",
         "maghrib": "1",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -511,8 +451,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -523,9 +461,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -536,18 +471,17 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-12": {
       "prayers": {
         "fajr": "0.1",
-        "dhuhr": "0",
+        "dhuhr": "",
         "asr": "0.1",
         "maghrib": "0.1",
         "isha": "1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": false,
@@ -560,8 +494,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -572,9 +504,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -585,18 +514,17 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-13": {
       "prayers": {
         "fajr": "0.1",
-        "dhuhr": "0",
-        "asr": "0",
+        "dhuhr": "",
+        "asr": "",
         "maghrib": "0.1",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -609,8 +537,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -621,9 +547,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -634,8 +557,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-14": {
@@ -645,7 +567,7 @@
         "asr": "0.1",
         "maghrib": "0.1",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -658,8 +580,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -670,9 +590,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -683,18 +600,17 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-15": {
       "prayers": {
         "fajr": "1",
-        "dhuhr": "0",
-        "asr": "0",
+        "dhuhr": "",
+        "asr": "",
         "maghrib": "0.1",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -707,8 +623,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -719,9 +633,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -732,18 +643,17 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-16": {
       "prayers": {
         "fajr": "1",
-        "dhuhr": "0",
-        "asr": "0",
-        "maghrib": "0",
+        "dhuhr": "",
+        "asr": "",
+        "maghrib": "",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -756,8 +666,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -768,9 +676,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -781,8 +686,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-17": {
@@ -792,7 +696,7 @@
         "asr": "1",
         "maghrib": "0.1",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -805,8 +709,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -817,9 +719,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -830,8 +729,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-18": {
@@ -841,7 +739,7 @@
         "asr": "0.1",
         "maghrib": "1",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -854,8 +752,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -866,9 +762,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -879,18 +772,17 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-19": {
       "prayers": {
         "fajr": "1",
-        "dhuhr": "0",
-        "asr": "0",
+        "dhuhr": "",
+        "asr": "",
         "maghrib": "1",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -903,8 +795,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -915,9 +805,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -928,18 +815,17 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-20": {
       "prayers": {
         "fajr": "1",
-        "dhuhr": "0",
-        "asr": "0",
-        "maghrib": "0",
+        "dhuhr": "",
+        "asr": "",
+        "maghrib": "",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -952,8 +838,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -964,9 +848,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -977,18 +858,17 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-21": {
       "prayers": {
         "fajr": "0.1",
-        "dhuhr": "0",
-        "asr": "0",
-        "maghrib": "0",
+        "dhuhr": "",
+        "asr": "",
+        "maghrib": "",
         "isha": "0.1",
-        "quran": "4"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -1001,8 +881,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -1013,9 +891,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -1026,18 +901,17 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-22": {
       "prayers": {
         "fajr": "1",
-        "dhuhr": "0",
-        "asr": "0",
-        "maghrib": "0",
+        "dhuhr": "",
+        "asr": "",
+        "maghrib": "",
         "isha": "0.1",
-        "quran": "0"
+        "quran": 0
       },
       "family": {
         "mom": true,
@@ -1050,8 +924,6 @@
       "glucose": {
         "avg": "",
         "tir": "",
-        "cv": "",
-        "hypos": "",
         "insulin": "",
         "nop": ""
       },
@@ -1062,9 +934,6 @@
         "hrv": "",
         "vo2max": "",
         "steps": "",
-        "hrZone13": "",
-        "hrZone45": "",
-        "strength": "",
         "recovery": "",
         "strain": "",
         "whoopAge": ""
@@ -1075,8 +944,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-27": {
@@ -1111,7 +979,7 @@
       },
       "family": {
         "mom": true,
-        "dad": true,
+        "dad": false,
         "jana": true,
         "tia": false,
         "ahmed": true,
@@ -1172,8 +1040,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-24": {
@@ -1221,8 +1088,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-25": {
@@ -1270,8 +1136,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "0"
+        "brushTeeth": 0
       }
     },
     "2026-01-26": {
@@ -1319,8 +1184,7 @@
         "meditation": 0,
         "water": "",
         "vitamins": false,
-        "brushTeeth": 0,
-        "nop": "1"
+        "brushTeeth": 0
       }
     },
     "2026-01-28": {
@@ -1333,31 +1197,31 @@
         "quran": 0
       },
       "glucose": {
-        "avg": "",
-        "tir": "",
-        "insulin": ""
+        "avg": "163",
+        "tir": "34",
+        "insulin": "44"
       },
       "whoop": {
-        "sleepPerf": "",
-        "recovery": "",
-        "strain": "",
+        "sleepPerf": "67",
+        "recovery": "28",
+        "strain": "4.2",
         "whoopAge": ""
       },
       "family": {
         "mom": true,
-        "dad": true,
+        "dad": false,
         "jana": true,
         "tia": false,
         "ahmed": true,
-        "eman": true
+        "eman": false
       },
       "habits": {
         "exercise": 0,
-        "reading": 0,
+        "reading": 1,
         "meditation": 0,
-        "water": "",
+        "water": "0.5",
         "vitamins": false,
-        "brushTeeth": 0,
+        "brushTeeth": 1,
         "nop": "1"
       }
     },
@@ -1373,7 +1237,7 @@
       "glucose": {
         "avg": "168",
         "tir": "32",
-        "insulin": ""
+        "insulin": "36"
       },
       "whoop": {
         "sleepPerf": "80",
@@ -1384,7 +1248,7 @@
       "family": {
         "mom": true,
         "dad": false,
-        "jana": true,
+        "jana": false,
         "tia": false,
         "ahmed": true,
         "eman": false
@@ -1396,7 +1260,7 @@
         "water": "",
         "vitamins": false,
         "brushTeeth": 0,
-        "nop": "1"
+        "nop": ""
       }
     },
     "2026-01-30": {
@@ -1434,7 +1298,7 @@
         "water": "",
         "vitamins": false,
         "brushTeeth": 0,
-        "nop": "1"
+        "nop": ""
       }
     },
     "2026-01-31": {
@@ -1472,7 +1336,7 @@
         "water": "",
         "vitamins": true,
         "brushTeeth": 0,
-        "nop": "0"
+        "nop": ""
       }
     },
     "2026-02-01": {
@@ -1520,7 +1384,7 @@
         "asr": "1",
         "maghrib": "1",
         "isha": "1",
-        "quran": "1"
+        "quran": "10"
       },
       "glucose": {
         "avg": "",
@@ -1554,11 +1418,11 @@
     "2026-02-03": {
       "prayers": {
         "fajr": "1",
-        "dhuhr": "1",
+        "dhuhr": "",
         "asr": "",
         "maghrib": "",
         "isha": "",
-        "quran": "1"
+        "quran": 0
       },
       "glucose": {
         "avg": "",
@@ -1670,7 +1534,7 @@
         "fajr": "0.1",
         "dhuhr": "1",
         "asr": "1",
-        "maghrib": true,
+        "maghrib": "",
         "isha": "",
         "quran": 0
       },
@@ -1706,7 +1570,7 @@
     "2026-02-07": {
       "prayers": {
         "fajr": "0.1",
-        "dhuhr": "1",
+        "dhuhr": "",
         "asr": "",
         "maghrib": "",
         "isha": "",
@@ -1715,7 +1579,7 @@
       "glucose": {
         "avg": "165",
         "tir": "35",
-        "insulin": "50"
+        "insulin": ""
       },
       "whoop": {
         "sleepPerf": "84",
@@ -1725,14 +1589,14 @@
       },
       "family": {
         "mom": false,
-        "dad": true,
+        "dad": false,
         "jana": false,
         "tia": false,
-        "ahmed": true,
-        "eman": true
+        "ahmed": false,
+        "eman": false
       },
       "habits": {
-        "exercise": false,
+        "exercise": 0,
         "reading": 0,
         "meditation": 0,
         "water": "",
