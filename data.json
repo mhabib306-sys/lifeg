@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-07T09:24:00.673Z",
+  "lastUpdated": "2026-02-07T09:24:13.787Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1732,7 +1732,7 @@
         "eman": false
       },
       "habits": {
-        "exercise": 0,
+        "exercise": false,
         "reading": 0,
         "meditation": 0,
         "water": "",
