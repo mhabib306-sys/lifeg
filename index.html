@@ -4827,25 +4827,25 @@
       const indentLevel = task.indent || 0;
       const indentPx = indentLevel * 24;
 
-      // Compact mode for widgets - single line with inline tags
+      // Compact mode for widgets - clean single line Things 3 style
       if (compact) {
         return `
-          <div class="task-item group relative hover:bg-[var(--bg-secondary)]/50 rounded-lg transition"
+          <div class="task-item group relative hover:bg-[var(--bg-secondary)]/50 rounded-lg transition cursor-pointer"
             onclick="showPerspectiveTasks('${task.status || 'anytime'}')">
-            <div class="flex items-center gap-3 px-3 py-2.5">
+            <div class="flex items-center h-11 px-3">
               ${task.isNote ? `
-                <div class="w-2 h-2 rounded-full bg-[#8B5CF6] flex-shrink-0"></div>
+                <div class="w-5 h-5 flex items-center justify-center flex-shrink-0">
+                  <div class="w-2 h-2 rounded-full bg-[#8B5CF6]"></div>
+                </div>
               ` : `
                 <button onclick="event.stopPropagation(); toggleTaskComplete('${task.id}')"
-                  class="task-checkbox w-[18px] h-[18px] rounded-full border-[1.5px] flex-shrink-0 flex items-center justify-center transition-all ${task.completed ? 'completed bg-[var(--accent)] border-[var(--accent)] text-white' : 'border-[var(--text-muted)] hover:border-[var(--accent)]'}">
+                  class="task-checkbox w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${task.completed ? 'completed bg-[var(--accent)] border-[var(--accent)] text-white' : 'border-charcoal/25 hover:border-[var(--accent)]'}">
                   ${task.completed ? '<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>' : ''}
                 </button>
               `}
-              <span class="flex-1 text-[14px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} truncate">${task.title}</span>
+              <span class="flex-1 ml-3 text-[14px] leading-tight ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} truncate">${task.title}</span>
               ${labels.length > 0 ? `
-                <div class="flex items-center gap-1.5 flex-shrink-0">
-                  ${labels.slice(0, 2).map(l => `<span class="text-[11px] px-1.5 py-0.5 rounded bg-[var(--bg-secondary)] text-[var(--text-muted)]">${l.name}</span>`).join('')}
-                </div>
+                <span class="ml-2 text-[11px] text-charcoal/40 flex-shrink-0">${labels[0].name}</span>
               ` : ''}
             </div>
           </div>
