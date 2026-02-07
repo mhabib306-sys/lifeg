@@ -401,46 +401,46 @@
 
     /* Home widgets */
     .widget {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease;
       position: relative;
     }
     .widget.dragging {
-      opacity: 0.7;
-      transform: scale(0.95) rotate(2deg);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      opacity: 0.4;
+      transform: scale(0.98);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       z-index: 1000;
     }
-    .widget.drag-over-top::before {
-      content: '';
-      position: absolute;
-      top: -4px;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--accent);
-      border-radius: 2px;
-      animation: dropIndicatorPulse 0.5s ease infinite alternate;
+    .widget.drag-over {
+      transform: scale(1.02);
     }
-    .widget.drag-over-bottom::after {
-      content: '';
+    .widget.drag-over::before {
+      content: 'Drop here';
       position: absolute;
-      bottom: -4px;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--accent);
-      border-radius: 2px;
-      animation: dropIndicatorPulse 0.5s ease infinite alternate;
+      inset: 0;
+      background: rgba(229, 83, 61, 0.15);
+      border: 3px dashed var(--accent);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 14px;
+      z-index: 10;
+      animation: dropZonePulse 0.8s ease infinite alternate;
     }
-    @keyframes dropIndicatorPulse {
-      from { opacity: 0.5; transform: scaleX(0.95); }
-      to { opacity: 1; transform: scaleX(1); }
+    @keyframes dropZonePulse {
+      from { background: rgba(229, 83, 61, 0.1); }
+      to { background: rgba(229, 83, 61, 0.2); }
     }
     .widget-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
     }
+    /* Widget sizes */
+    .widget.col-span-2 { grid-column: span 2; }
+    .widget.col-span-1 { grid-column: span 1; }
     .widget-placeholder {
       background: var(--accent-light);
       border: 2px dashed var(--accent);
@@ -450,6 +450,22 @@
       align-items: center;
       justify-content: center;
       color: var(--accent);
+      font-weight: 500;
+    }
+    /* Resize handle */
+    .widget-resize-btn {
+      transition: all 0.15s ease;
+    }
+    .widget-resize-btn:hover {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+    .widget-size-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      color: var(--text-secondary);
       font-weight: 500;
     }
 
@@ -1558,10 +1574,8 @@
     function toggleWidgetSize(widgetId) {
       const widget = homeWidgets.find(w => w.id === widgetId);
       if (widget) {
-        // Cycle through sizes: full -> half -> third -> full
-        if (widget.size === 'full') widget.size = 'half';
-        else if (widget.size === 'half') widget.size = 'third';
-        else widget.size = 'full';
+        // Toggle between full and half width
+        widget.size = widget.size === 'full' ? 'half' : 'full';
         saveHomeWidgets();
         render();
       }
@@ -1589,29 +1603,17 @@
       }
     }
 
-    let draggedWidgetElement = null;
-    let dropPosition = null; // 'before' or 'after'
-
     function handleWidgetDragStart(event, widgetId) {
       draggingWidgetId = widgetId;
-      draggedWidgetElement = event.target;
       event.dataTransfer.effectAllowed = 'move';
       event.dataTransfer.setData('text/plain', widgetId);
-
-      // Add dragging class after a slight delay for smooth animation
-      requestAnimationFrame(() => {
-        event.target.classList.add('dragging');
-      });
+      event.target.classList.add('dragging');
     }
 
     function handleWidgetDragEnd(event) {
       event.target.classList.remove('dragging');
-      document.querySelectorAll('.widget').forEach(el => {
-        el.classList.remove('drag-over-top', 'drag-over-bottom');
-      });
+      document.querySelectorAll('.widget').forEach(el => el.classList.remove('drag-over'));
       draggingWidgetId = null;
-      draggedWidgetElement = null;
-      dropPosition = null;
     }
 
     function handleWidgetDragOver(event, targetWidgetId) {
@@ -1620,39 +1622,21 @@
 
       if (!draggingWidgetId || draggingWidgetId === targetWidgetId) return;
 
-      const target = event.currentTarget;
-      const rect = target.getBoundingClientRect();
-      const midY = rect.top + rect.height / 2;
-
-      // Clear previous indicators
-      document.querySelectorAll('.widget').forEach(el => {
-        if (el !== target) {
-          el.classList.remove('drag-over-top', 'drag-over-bottom');
-        }
-      });
-
-      // Determine drop position based on mouse Y position
-      if (event.clientY < midY) {
-        target.classList.remove('drag-over-bottom');
-        target.classList.add('drag-over-top');
-        dropPosition = 'before';
-      } else {
-        target.classList.remove('drag-over-top');
-        target.classList.add('drag-over-bottom');
-        dropPosition = 'after';
-      }
+      // Clear all drag-over states first
+      document.querySelectorAll('.widget').forEach(el => el.classList.remove('drag-over'));
+      // Add to current target
+      event.currentTarget.classList.add('drag-over');
     }
 
     function handleWidgetDragLeave(event) {
-      // Only remove if actually leaving the element (not entering a child)
       if (!event.currentTarget.contains(event.relatedTarget)) {
-        event.currentTarget.classList.remove('drag-over-top', 'drag-over-bottom');
+        event.currentTarget.classList.remove('drag-over');
       }
     }
 
     function handleWidgetDrop(event, targetWidgetId) {
       event.preventDefault();
-      event.currentTarget.classList.remove('drag-over-top', 'drag-over-bottom');
+      event.currentTarget.classList.remove('drag-over');
 
       if (!draggingWidgetId || draggingWidgetId === targetWidgetId) {
         draggingWidgetId = null;
@@ -1660,32 +1644,18 @@
       }
 
       const dragIdx = homeWidgets.findIndex(w => w.id === draggingWidgetId);
-      let targetIdx = homeWidgets.findIndex(w => w.id === targetWidgetId);
+      const targetIdx = homeWidgets.findIndex(w => w.id === targetWidgetId);
 
       if (dragIdx !== -1 && targetIdx !== -1) {
-        // Remove the dragged widget
+        // Swap positions
         const [draggedWidget] = homeWidgets.splice(dragIdx, 1);
-
-        // Adjust target index if needed (because we removed an item)
-        if (dragIdx < targetIdx) {
-          targetIdx--;
-        }
-
-        // Insert at correct position
-        if (dropPosition === 'after') {
-          targetIdx++;
-        }
-
         homeWidgets.splice(targetIdx, 0, draggedWidget);
-
-        // Update order numbers
         homeWidgets.forEach((w, i) => w.order = i);
         saveHomeWidgets();
         render();
       }
 
       draggingWidgetId = null;
-      dropPosition = null;
     }
 
     function resetHomeWidgets() {
@@ -1709,19 +1679,24 @@
       // Size class mapping
       const sizeClass = widget.size === 'full' ? 'col-span-2' : widget.size === 'half' ? 'col-span-1' : 'col-span-1';
 
+      // Size labels for display
+      const sizeLabels = { full: 'Full', half: 'Half', third: 'Third' };
+      const nextSize = { full: 'half', half: 'full' }; // Simplified to just full/half
+
       // Edit controls shown in edit mode
       const editControls = isEditing ? `
         <div class="flex items-center gap-1 ml-auto">
-          <button onclick="event.stopPropagation(); toggleWidgetSize('${widget.id}')" class="p-1 text-charcoal/40 hover:text-charcoal rounded transition" title="Change size (${widget.size})">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg>
+          <button onclick="event.stopPropagation(); toggleWidgetSize('${widget.id}')"
+            class="widget-resize-btn flex items-center gap-1.5 px-2 py-1 text-charcoal/60 hover:text-coral rounded transition border border-charcoal/10 hover:border-coral/30"
+            title="Click to resize">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              ${widget.size === 'full'
+                ? '<rect x="3" y="3" width="18" height="18" rx="2"/>'
+                : '<rect x="3" y="3" width="8" height="18" rx="2"/><rect x="13" y="3" width="8" height="18" rx="2" opacity="0.3"/>'}
+            </svg>
+            <span class="text-[10px] font-medium uppercase">${sizeLabels[widget.size] || 'Half'}</span>
           </button>
-          <button onclick="event.stopPropagation(); moveWidgetUp('${widget.id}')" class="p-1 text-charcoal/40 hover:text-charcoal rounded transition" title="Move up">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-          </button>
-          <button onclick="event.stopPropagation(); moveWidgetDown('${widget.id}')" class="p-1 text-charcoal/40 hover:text-charcoal rounded transition" title="Move down">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-          </button>
-          <button onclick="event.stopPropagation(); toggleWidgetVisibility('${widget.id}')" class="p-1 text-charcoal/40 hover:text-red-500 rounded transition" title="Hide widget">
+          <button onclick="event.stopPropagation(); toggleWidgetVisibility('${widget.id}')" class="p-1.5 text-charcoal/40 hover:text-red-500 hover:bg-red-50 rounded transition" title="Hide widget">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
         </div>
