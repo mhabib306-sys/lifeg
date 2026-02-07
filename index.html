@@ -4899,7 +4899,7 @@
       }
 
       // Insulin scoring: base points if ≤threshold, flat penalty if >threshold
-      const insulinThreshold = WEIGHTS.glucose.insulinThreshold || 40;
+      const insulinThreshold = (WEIGHTS.glucose && WEIGHTS.glucose.insulinThreshold) || 40;
       if (glucose.insulin !== '' && glucose.insulin !== undefined && insulin > 0) {
         if (insulin <= insulinThreshold) {
           diabetesScore += WEIGHTS.glucose.insulinBase;
@@ -5292,7 +5292,7 @@
         </div>
       `;
 
-      const insulinThreshold = WEIGHTS.glucose.insulinThreshold || 40;
+      const insulinThreshold = (WEIGHTS.glucose && WEIGHTS.glucose.insulinThreshold) || 40;
       const glucoseContent = `
         <div class="flex gap-3">
           ${createNumberInput('Avg Glucose', data.glucose.avg, 'glucose', 'avg', '105', 'mg/dL', '105=10pts')}
@@ -5738,7 +5738,7 @@
               </button>
             ` : ''}
           </div>
-          <h1 class="text-[17px] font-bold text-[var(--text-primary)]">${activeTab === 'home' ? 'Home' : activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi.name; })() : activeTab === 'life' ? 'Life Score' : 'Settings'}</h1>
+          <h1 class="text-[17px] font-bold text-[var(--text-primary)]">${activeTab === 'home' ? 'Home' : activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : activeTab === 'life' ? 'Life Score' : 'Settings'}</h1>
           <div class="flex items-center gap-2">
             ${activeTab === 'tasks' ? `
               <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[#147EFB] text-white flex items-center justify-center shadow-sm" aria-label="New task">
