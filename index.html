@@ -5060,7 +5060,29 @@
       const dateDisplay = new Date(currentDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
       app.innerHTML = `
-        <header class="border-b border-softborder" style="background: var(--bg-primary);">
+        <!-- Mobile Header - clean minimal design -->
+        <header class="mobile-header-compact border-b border-softborder/50 bg-white/95 backdrop-blur-xl sticky top-0 z-50" style="display: none;">
+          <div class="flex items-center gap-3">
+            <svg class="w-8 h-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs><linearGradient id="mobileGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color: var(--accent)"/><stop offset="100%" style="stop-color: #D4402E"/></linearGradient></defs>
+              <circle cx="50" cy="50" r="45" fill="url(#mobileGrad)"/><circle cx="50" cy="50" r="18" fill="white"/><circle cx="50" cy="50" r="8" fill="var(--accent)"/>
+            </svg>
+            <div>
+              <div class="text-base font-semibold text-charcoal">${activeTab === 'home' ? 'Home' : activeTab === 'tasks' ? 'Workspace' : activeTab === 'life' ? 'Life Score' : 'Settings'}</div>
+              <div class="text-[11px] text-charcoal/50">${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 rounded-full ${getGithubToken() ? 'bg-green-500' : 'bg-charcoal/20'}"></div>
+              <span class="text-[10px] text-charcoal/40">${getGithubToken() ? 'Synced' : 'Local'}</span>
+            </div>
+            <button onclick="setToday()" class="text-xs font-semibold px-2.5 py-1 bg-coral/10 text-coral rounded-lg">Today</button>
+          </div>
+        </header>
+
+        <!-- Desktop Header - hidden on mobile -->
+        <header class="border-b border-softborder desktop-header-content" style="background: var(--bg-primary);">
           <div class="max-w-6xl mx-auto px-6 py-6">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-4">
@@ -5101,8 +5123,8 @@
           </div>
         </header>
 
-        <!-- Main Navigation -->
-        <nav class="border-b border-charcoal/10 bg-white/60">
+        <!-- Main Navigation - Desktop only -->
+        <nav class="desktop-nav border-b border-charcoal/10 bg-white/60">
           <div class="max-w-6xl mx-auto px-6">
             <div class="flex gap-0">
               <button onclick="switchTab('home')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'home' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
