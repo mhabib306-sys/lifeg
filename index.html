@@ -286,6 +286,7 @@
       opacity: 0;
       cursor: grab;
       transition: opacity 0.12s ease;
+      touch-action: none;
     }
     .sidebar-item:hover .drag-handle {
       opacity: 0.4;
@@ -544,6 +545,7 @@
       -webkit-user-select: none;
       user-select: none;
       position: relative;
+      touch-action: none;
     }
     .draggable-item:active {
       cursor: grabbing;
@@ -1132,6 +1134,39 @@
         min-width: 20px;
         min-height: 20px;
       }
+
+      /* Icon buttons need larger hit areas */
+      button.p-1, button.p-1\\.5 {
+        min-width: 44px !important;
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      /* Modal close buttons */
+      .modal-enhanced button[onclick*="Modal=false"],
+      .modal-enhanced button[onclick*="editingHome"] {
+        min-width: 44px !important;
+        min-height: 44px !important;
+      }
+
+      /* Widget action buttons */
+      .widget-actions button {
+        min-width: 44px !important;
+        min-height: 44px !important;
+      }
+
+      /* Bottom nav items */
+      .mobile-nav-item {
+        min-height: 48px !important;
+        padding: 10px 16px !important;
+      }
+
+      /* Quick stat items */
+      .quick-stat-item {
+        min-height: 48px !important;
+      }
     }
 
     /* iOS safe areas */
@@ -1150,10 +1185,10 @@
     }
     .autocomplete-input {
       width: 100%;
-      padding: 10px 36px 10px 12px;
+      padding: 12px 36px 12px 14px;
       border: 1px solid var(--border);
       border-radius: 10px;
-      font-size: 14px;
+      font-size: 16px;
       background: var(--bg-input);
       color: var(--text-primary);
       transition: all 0.2s ease;
@@ -1341,7 +1376,7 @@
       margin-bottom: 0;
     }
     .modal-section-label {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -2239,14 +2274,14 @@
     function startInlineEdit(taskId) {
       inlineEditingTaskId = taskId;
       render();
-      // Focus the input after render
+      // Focus the input after render - use 100ms for reliable iOS keyboard appearance
       setTimeout(() => {
         const input = document.getElementById('inline-edit-input');
         if (input) {
           input.focus();
           input.select();
         }
-      }, 10);
+      }, 100);
     }
 
     function saveInlineEdit(taskId) {
@@ -2539,7 +2574,7 @@
                 ? '<rect x="3" y="3" width="18" height="18" rx="2"/>'
                 : '<rect x="3" y="3" width="8" height="18" rx="2"/><rect x="13" y="3" width="8" height="18" rx="2" opacity="0.3"/>'}
             </svg>
-            <span class="text-[10px] font-medium uppercase">${sizeLabels[widget.size] || 'Half'}</span>
+            <span class="text-[11px] font-medium uppercase">${sizeLabels[widget.size] || 'Half'}</span>
           </button>
           <button onclick="event.stopPropagation(); toggleWidgetVisibility('${widget.id}')" class="p-1.5 text-charcoal/40 hover:text-red-500 hover:bg-red-50 rounded transition" title="Hide widget">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
@@ -2568,19 +2603,19 @@
             <div class="grid grid-cols-4 gap-2 sm:gap-3">
               <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('today')">
                 <div class="text-xl sm:text-2xl font-bold text-charcoal">${todayTasksCount}</div>
-                <div class="text-[10px] sm:text-xs text-charcoal/50 mt-1">Due Today</div>
+                <div class="text-[11px] sm:text-xs text-charcoal/50 mt-1">Due Today</div>
               </button>
               <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="${nextLabel ? `showLabelTasks('${nextLabel.id}')` : 'void(0)'}">
                 <div class="text-xl sm:text-2xl font-bold text-[#8B5CF6]">${nextTasksCount}</div>
-                <div class="text-[10px] sm:text-xs text-charcoal/50 mt-1">Tagged Next</div>
+                <div class="text-[11px] sm:text-xs text-charcoal/50 mt-1">Tagged Next</div>
               </button>
               <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('logbook')">
                 <div class="text-xl sm:text-2xl font-bold text-green-600">${completedToday}</div>
-                <div class="text-[10px] sm:text-xs text-charcoal/50 mt-1">Done Today</div>
+                <div class="text-[11px] sm:text-xs text-charcoal/50 mt-1">Done Today</div>
               </button>
               <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('inbox')">
                 <div class="text-xl sm:text-2xl font-bold ${inboxCount > 0 ? 'text-blue-500' : 'text-charcoal'}">${inboxCount}</div>
-                <div class="text-[10px] sm:text-xs text-charcoal/50 mt-1">In Inbox</div>
+                <div class="text-[11px] sm:text-xs text-charcoal/50 mt-1">In Inbox</div>
               </button>
             </div>
           `;
@@ -5059,7 +5094,7 @@
                 <input type="text" id="inline-edit-input" value="${task.title.replace(/"/g, '&quot;')}"
                   onkeydown="handleInlineEditKeydown(event, '${task.id}')"
                   onblur="saveInlineEdit('${task.id}')"
-                  class="w-full text-[15px] text-[var(--text-primary)] bg-white border border-[var(--accent)] rounded-lg px-3 py-1 outline-none focus:ring-2 focus:ring-[var(--accent-light)]">
+                  class="w-full text-[16px] text-[var(--text-primary)] bg-white border border-[var(--accent)] rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-light)]">
               ` : `
                 <span ondblclick="event.stopPropagation(); startInlineEdit('${task.id}')"
                   class="text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug transition cursor-text">${task.title}</span>
@@ -6127,7 +6162,7 @@
                   </div>
                   <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
                   <div class="px-4 py-2 border-t border-charcoal/5">
-                    <button onclick="createTask('', { status: 'today', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'today' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 50);"
+                    <button onclick="createTask('', { status: 'today', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'today' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                       class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-500 hover:text-amber-600 hover:bg-amber-50/50 rounded-lg transition text-left">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                       Add to Today...
@@ -6156,7 +6191,7 @@
                   </div>
                   <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
                   <div class="px-4 py-2 border-t border-charcoal/5">
-                    <button onclick="createTask('', { status: 'inbox', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 50);"
+                    <button onclick="createTask('', { status: 'inbox', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                       class="flex items-center gap-2 px-3 py-2 w-full text-sm text-blue-500 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition text-left">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                       Add to Inbox...
@@ -6174,7 +6209,7 @@
                   </div>
                   <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
                   <div class="px-4 py-2 border-t border-charcoal/5">
-                    <button onclick="createTask('', { status: 'anytime', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 50);"
+                    <button onclick="createTask('', { status: 'anytime', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                       class="flex items-center gap-2 px-3 py-2 w-full text-sm text-teal-500 hover:text-teal-600 hover:bg-teal-50/50 rounded-lg transition text-left">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                       Add to Anytime...
@@ -6192,7 +6227,7 @@
                   </div>
                   <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
                   <div class="px-4 py-2 border-t border-charcoal/5">
-                    <button onclick="createTask('', { status: 'someday', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'someday' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 50);"
+                    <button onclick="createTask('', { status: 'someday', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'someday' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                       class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-600 hover:text-amber-700 hover:bg-amber-50/50 rounded-lg transition text-left">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                       Add to Someday...
@@ -6209,7 +6244,7 @@
                     <span class="text-sm font-semibold text-charcoal">Notes</span>
                     <span class="text-xs text-charcoal/40 ml-1">${noteItems.length}</span>
                   </div>
-                  <button onclick="createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { startInlineEdit(notes[notes.length-1].id); } }, 50);"
+                  <button onclick="createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { startInlineEdit(notes[notes.length-1].id); } }, 100);"
                     class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-purple-600 hover:bg-purple-50 rounded-lg transition">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                     Add Note
@@ -6218,7 +6253,7 @@
                 ${noteItems.length > 0 ? `
                   <div class="task-list">${noteItems.map(task => renderTaskItem(task)).join('')}</div>
                   <div class="px-4 py-2 border-t border-charcoal/5">
-                    <button onclick="createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { startInlineEdit(notes[notes.length-1].id); } }, 50);"
+                    <button onclick="createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { startInlineEdit(notes[notes.length-1].id); } }, 100);"
                       class="flex items-center gap-2 px-3 py-2 w-full text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50/50 rounded-lg transition text-left">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                       Add another note...
@@ -6227,7 +6262,7 @@
                 ` : `
                   <div class="px-4 py-8 text-center">
                     <p class="text-sm text-charcoal/40 mb-3">No notes in this area yet</p>
-                    <button onclick="createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { startInlineEdit(notes[notes.length-1].id); } }, 50);"
+                    <button onclick="createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { startInlineEdit(notes[notes.length-1].id); } }, 100);"
                       class="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-600 text-sm font-medium rounded-lg hover:bg-purple-100 transition">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                       Create your first note
@@ -6391,7 +6426,7 @@
                   <div class="py-2">
                     ${renderNotesOutliner(activeCategoryFilter)}
                     <div class="px-3 py-2">
-                      <button onclick="createTask('', { isNote: true, categoryId: activeCategoryFilter, status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && !t.completed); if (notes.length) focusNote(notes[notes.length-1].id); }, 50);"
+                      <button onclick="createTask('', { isNote: true, categoryId: activeCategoryFilter, status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && !t.completed); if (notes.length) focusNote(notes[notes.length-1].id); }, 100);"
                         class="flex items-center gap-2 px-3 py-2 w-full text-left text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                         Add new note
@@ -6952,6 +6987,8 @@
             input.value = '';
           }
         } else if (e.key === 'Escape') {
+          e.preventDefault();
+          e.stopPropagation();
           dropdown.classList.remove('show');
         }
       });
@@ -7373,14 +7410,17 @@
         }
       }
 
-      // Escape: Close any open modal
+      // Escape: Close any open modal (in priority order - most specific first)
       if (e.key === 'Escape') {
-        if (showTaskModal) { showTaskModal = false; editingTaskId = null; render(); }
-        if (showPerspectiveModal) { showPerspectiveModal = false; editingPerspectiveId = null; render(); }
-        if (showCategoryModal) { showCategoryModal = false; editingCategoryId = null; render(); }
-        if (showLabelModal) { showLabelModal = false; editingLabelId = null; render(); }
-        if (showPersonModal) { showPersonModal = false; editingPersonId = null; render(); }
-        if (editingHomeWidgets) { editingHomeWidgets = false; render(); }
+        e.preventDefault();
+        let modalClosed = false;
+        if (showTaskModal) { showTaskModal = false; editingTaskId = null; modalClosed = true; }
+        else if (showPerspectiveModal) { showPerspectiveModal = false; editingPerspectiveId = null; modalClosed = true; }
+        else if (showCategoryModal) { showCategoryModal = false; editingCategoryId = null; modalClosed = true; }
+        else if (showLabelModal) { showLabelModal = false; editingLabelId = null; modalClosed = true; }
+        else if (showPersonModal) { showPersonModal = false; editingPersonId = null; modalClosed = true; }
+        else if (editingHomeWidgets) { editingHomeWidgets = false; modalClosed = true; }
+        if (modalClosed) render();
       }
     });
 
