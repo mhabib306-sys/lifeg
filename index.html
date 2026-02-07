@@ -717,8 +717,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 2px;
       padding: 8px 16px;
+      min-height: 52px;
       border-radius: 12px;
       color: var(--text-muted);
       transition: all 0.2s ease;
@@ -730,7 +732,7 @@
     }
 
     .mobile-nav-item span {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 500;
     }
 
@@ -1030,11 +1032,12 @@
       }
 
       .mobile-nav-item {
-        padding: 6px 12px;
+        padding: 6px 10px;
+        min-height: 48px;
       }
 
       .mobile-nav-item span {
-        font-size: 9px;
+        font-size: 10px;
       }
     }
 
@@ -6520,7 +6523,7 @@
       const editingTask = editingTaskId ? tasksData.find(t => t.id === editingTaskId) : null;
       if (showTaskModal) initModalState(editingTask);
       const taskModalHtml = showTaskModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50" onclick="if(event.target===this){showTaskModal=false; editingTaskId=null; render()}">
+        <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showTaskModal=false; editingTaskId=null; render()}">
           <div class="modal-enhanced w-full max-w-xl mx-4" onclick="event.stopPropagation()">
             <!-- Header -->
             <div class="modal-header-enhanced">
@@ -6669,7 +6672,7 @@
       // Perspective Modal
       const editingPerspective = editingPerspectiveId ? customPerspectives.find(p => p.id === editingPerspectiveId) : null;
       const perspectiveModalHtml = showPerspectiveModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showPerspectiveModal=false; editingPerspectiveId=null; render()}" onkeydown="if(event.key==='Escape'){showPerspectiveModal=false; editingPerspectiveId=null; render();}">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showPerspectiveModal=false; editingPerspectiveId=null; render()}" onkeydown="if(event.key==='Escape'){showPerspectiveModal=false; editingPerspectiveId=null; render();}">
           <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-md mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">${editingPerspective ? 'Edit Custom View' : 'New Custom View'}</h3>
@@ -6741,7 +6744,7 @@
       // Category Modal
       const editingCategory = editingCategoryId ? taskCategories.find(c => c.id === editingCategoryId) : null;
       const categoryModalHtml = showCategoryModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showCategoryModal=false; editingCategoryId=null; render()}" onkeydown="if(event.key==='Escape'){showCategoryModal=false; editingCategoryId=null; render();}">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showCategoryModal=false; editingCategoryId=null; render()}" onkeydown="if(event.key==='Escape'){showCategoryModal=false; editingCategoryId=null; render();}">
           <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">${editingCategory ? 'Edit Area' : 'New Area'}</h3>
@@ -6776,7 +6779,7 @@
       // Tag Modal (formerly Label)
       const editingLabel = editingLabelId ? taskLabels.find(l => l.id === editingLabelId) : null;
       const labelModalHtml = showLabelModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}" onkeydown="if(event.key==='Escape'){showLabelModal=false; editingLabelId=null; render();}">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}" onkeydown="if(event.key==='Escape'){showLabelModal=false; editingLabelId=null; render();}">
           <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">${editingLabel ? 'Edit Tag' : 'New Tag'}</h3>
@@ -6816,7 +6819,7 @@
       // Person Modal
       const editingPerson = editingPersonId ? taskPeople.find(p => p.id === editingPersonId) : null;
       const personModalHtml = showPersonModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}" onkeydown="if(event.key==='Escape'){showPersonModal=false; editingPersonId=null; render();}">
+        <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}" onkeydown="if(event.key==='Escape'){showPersonModal=false; editingPersonId=null; render();}">
           <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 class="font-semibold text-charcoal">${editingPerson ? 'Edit Person' : 'New Person'}</h3>
