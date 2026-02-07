@@ -2371,6 +2371,7 @@
       activeLabelFilter = null;
       saveViewState();
       render();
+      scrollToContent();
     }
 
     // Switch to label view
@@ -2380,6 +2381,7 @@
       activeCategoryFilter = null;
       saveViewState();
       render();
+      scrollToContent();
     }
 
     // Open new task modal with context
@@ -2488,6 +2490,21 @@
       activeLabelFilter = null;
       saveViewState();
       render();
+      scrollToContent();
+    }
+
+    // Auto-scroll to content on mobile after navigation
+    function scrollToContent() {
+      if (window.matchMedia('(hover: none)').matches || window.innerWidth <= 768) {
+        setTimeout(() => {
+          const mainContent = document.querySelector('.main-content') || document.querySelector('main');
+          if (mainContent) {
+            mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }, 50);
+      }
     }
 
     // ============ HOME WIDGET MANAGEMENT ============
@@ -3171,6 +3188,7 @@
       activeLabelFilter = null;
       saveViewState();
       render();
+      scrollToContent();
     }
 
     // Inline Tag creation in modal
@@ -5345,7 +5363,7 @@
       }
     }
 
-    function switchTab(tab) { activeTab = tab; saveViewState(); render(); }
+    function switchTab(tab) { activeTab = tab; saveViewState(); render(); scrollToContent(); }
     function setToday() { currentDate = new Date().toISOString().split('T')[0]; render(); }
 
     function setBulkMonth(month, year) {
