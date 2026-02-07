@@ -1227,7 +1227,7 @@
       notes: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><circle cx="4" cy="6" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="4" cy="18" r="2"/><rect x="8" y="5" width="14" height="2" rx="1"/><rect x="8" y="11" width="14" height="2" rx="1"/><rect x="8" y="17" width="14" height="2" rx="1"/></svg>`,
       // Tab icons - Things 3 style
       lifeScore: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3v-8zm4-4h2v12H7V9zm4-4h2v16h-2V5zm4 8h2v8h-2v-8zm4-4h2v12h-2V9z"/></svg>`,
-      items: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/><circle cx="3" cy="5" r="1.5"/><circle cx="3" cy="12" r="1.5"/><circle cx="3" cy="19" r="1.5"/></svg>`,
+      workspace: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm2 0v12h12V6H6zm2 2h8v2H8V8zm0 4h8v2H8v-2zm0 4h5v2H8v-2z"/></svg>`,
       settings: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>`
     };
 
@@ -2146,12 +2146,48 @@
         dueDate: options.dueDate || null,     // Deadline
         repeat: options.repeat || null,       // { type: 'daily'|'weekly'|'monthly'|'yearly', interval: 1, from: 'completion'|'due' }
         isNote: options.isNote || false,      // If true, displays as note (bullet) instead of task (checkbox)
+        parentId: options.parentId || null,   // For nested notes - parent note ID
+        indent: options.indent || 0,          // Nesting level (0 = root, 1 = first child, etc.)
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
       tasksData.push(task);
       saveTasksData();
       return task;
+    }
+
+    // Indent a note (make it a child of the previous sibling)
+    function indentNote(noteId) {
+      const noteIdx = tasksData.findIndex(t => t.id === noteId);
+      if (noteIdx <= 0) return;
+
+      const note = tasksData[noteIdx];
+      if (!note.isNote) return;
+
+      // Find previous sibling at same or lower indent level
+      for (let i = noteIdx - 1; i >= 0; i--) {
+        const prev = tasksData[i];
+        if (prev.isNote && prev.categoryId === note.categoryId && prev.indent <= note.indent) {
+          note.parentId = prev.id;
+          note.indent = (note.indent || 0) + 1;
+          note.updatedAt = new Date().toISOString();
+          saveTasksData();
+          render();
+          return;
+        }
+      }
+    }
+
+    // Outdent a note (move it up one level)
+    function outdentNote(noteId) {
+      const note = tasksData.find(t => t.id === noteId);
+      if (!note || !note.isNote || !note.indent || note.indent <= 0) return;
+
+      note.indent = note.indent - 1;
+      if (note.indent === 0) note.parentId = null;
+      note.updatedAt = new Date().toISOString();
+      saveTasksData();
+      render();
     }
 
     function updateTask(taskId, updates) {
@@ -3544,6 +3580,8 @@
       const isOverdue = task.dueDate && task.dueDate < today && !task.completed;
       const hasMetadata = category || labels.length > 0 || (showDueDate && task.dueDate) || task.deferDate || (task.repeat && task.repeat.type !== 'none') || task.notes;
       const isInlineEditing = inlineEditingTaskId === task.id;
+      const indentLevel = task.indent || 0;
+      const indentPx = indentLevel * 24; // 24px per indent level
 
       return `
         <div class="task-item group relative"
@@ -3553,9 +3591,9 @@
           ondragover="handleDragOver(event, '${task.id}')"
           ondragleave="handleDragLeave(event)"
           ondrop="handleDrop(event, '${task.id}')">
-          <div class="flex items-start gap-3 px-4 py-2">
+          <div class="flex items-start gap-3 px-4 py-2" style="${indentLevel > 0 ? `padding-left: ${16 + indentPx}px` : ''}">
             ${task.isNote ? `
-              <div class="mt-1.5 w-2 h-2 rounded-full bg-[#8B5CF6] flex-shrink-0"></div>
+              <div class="mt-1.5 w-2 h-2 rounded-full ${indentLevel > 0 ? 'bg-[#8B5CF6]/50' : 'bg-[#8B5CF6]'} flex-shrink-0"></div>
             ` : `
               <button onclick="event.stopPropagation(); toggleTaskComplete('${task.id}')"
                 class="task-checkbox mt-0.5 w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${task.completed ? 'completed bg-coral border-coral text-white' : 'border-charcoal/25 hover:border-coral/50'}">
@@ -3584,7 +3622,17 @@
               ` : ''}
             </div>
             <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded px-1" onclick="event.stopPropagation()">
-              ${!task.completed ? `
+              ${task.isNote && !task.completed ? `
+                <button onclick="event.stopPropagation(); outdentNote('${task.id}')"
+                  class="p-0.5 text-charcoal/40 hover:text-charcoal hover:bg-charcoal/5 rounded transition ${indentLevel === 0 ? 'opacity-30 cursor-not-allowed' : ''}" title="Outdent (Shift+Tab)">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 17l-5-5 5-5M18 7v10"/></svg>
+                </button>
+                <button onclick="event.stopPropagation(); indentNote('${task.id}')"
+                  class="p-0.5 text-charcoal/40 hover:text-charcoal hover:bg-charcoal/5 rounded transition" title="Indent (Tab)">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 7l5 5-5 5M6 7v10"/></svg>
+                </button>
+              ` : ''}
+              ${!task.completed && !task.isNote ? `
                 <select onchange="inlineEditingTaskId=null; moveTaskTo('${task.id}', this.value); this.value=''"
                   onclick="event.stopPropagation()"
                   class="text-[11px] px-2 py-0.5 border border-softborder rounded bg-white text-charcoal/60 cursor-pointer hover:border-charcoal/30 transition h-[22px]">
@@ -3656,11 +3704,11 @@
               <button onclick="switchTab('home')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'home' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 ${THINGS3_ICONS.home.replace('w-5 h-5', 'w-4 h-4')} Home
               </button>
+              <button onclick="switchTab('tasks')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'tasks' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+                ${THINGS3_ICONS.workspace} Workspace
+              </button>
               <button onclick="switchTab('life')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'life' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 ${THINGS3_ICONS.lifeScore} Life Score
-              </button>
-              <button onclick="switchTab('tasks')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'tasks' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
-                ${THINGS3_ICONS.items} Items
               </button>
               <button onclick="switchTab('settings')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${activeTab === 'settings' ? 'border-coral text-charcoal' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
                 ${THINGS3_ICONS.settings} Settings
@@ -4463,8 +4511,205 @@
         </div>
       `;
 
-      // Build task list
-      const taskListHtml = `
+      // Check if viewing an area (category) - render special area view
+      const isAreaView = activeFilterType === 'category' && activeCategoryFilter;
+      const currentCategory = isAreaView ? getCategoryById(activeCategoryFilter) : null;
+
+      // Build area-specific task list with world-class UI
+      const buildAreaTaskListHtml = () => {
+        if (!currentCategory) return '';
+
+        const areaTasks = filteredTasks;
+        const totalTasks = areaTasks.length;
+        const completedTasks = tasksData.filter(t => t.categoryId === activeCategoryFilter && t.completed && !t.isNote).length;
+        const activeTasks = areaTasks.filter(t => !t.isNote).length;
+        const noteItems = areaTasks.filter(t => t.isNote);
+        const taskItems = areaTasks.filter(t => !t.isNote);
+        const overdueTasks = taskItems.filter(t => t.dueDate && t.dueDate < todayDate);
+        const todayTasks = taskItems.filter(t => t.status === 'today' || t.dueDate === todayDate);
+        const upcomingTasks = taskItems.filter(t => t.dueDate && t.dueDate > todayDate && t.status !== 'today');
+        const anytimeTasks = taskItems.filter(t => t.status === 'anytime' && !t.dueDate);
+        const somedayTasks = taskItems.filter(t => t.status === 'someday');
+        const inboxTasks = taskItems.filter(t => t.status === 'inbox');
+
+        const completionRate = activeTasks + completedTasks > 0 ? Math.round((completedTasks / (activeTasks + completedTasks)) * 100) : 0;
+        const categoryColor = currentCategory.color || '#6366F1';
+
+        return `
+          <div class="flex-1 space-y-6">
+            <!-- Area Hero Header -->
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-charcoal/[0.06]">
+              <div class="relative h-32 flex items-end p-6" style="background: linear-gradient(135deg, ${categoryColor}15 0%, ${categoryColor}08 100%);">
+                <div class="absolute top-4 right-4 opacity-10" style="color: ${categoryColor}">
+                  <svg class="w-24 h-24" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
+                </div>
+                <div class="flex items-center gap-4 relative z-10">
+                  <div class="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg" style="background: ${categoryColor}">
+                    <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                  </div>
+                  <div>
+                    <h1 class="text-2xl font-bold text-charcoal">${currentCategory.name}</h1>
+                    <p class="text-charcoal/50 text-sm mt-0.5">${totalTasks} item${totalTasks !== 1 ? 's' : ''} · ${completedTasks} completed</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stats Bar -->
+              <div class="px-6 py-4 border-t border-charcoal/[0.06] bg-warmgray/30">
+                <div class="flex items-center gap-6">
+                  <div class="flex items-center gap-3">
+                    <div class="relative w-12 h-12">
+                      <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="16" fill="none" stroke="#E5E7EB" stroke-width="3"/>
+                        <circle cx="18" cy="18" r="16" fill="none" stroke="${categoryColor}" stroke-width="3"
+                          stroke-dasharray="${completionRate} 100" stroke-linecap="round"/>
+                      </svg>
+                      <span class="absolute inset-0 flex items-center justify-center text-xs font-bold text-charcoal">${completionRate}%</span>
+                    </div>
+                    <div>
+                      <div class="text-sm font-medium text-charcoal">Progress</div>
+                      <div class="text-xs text-charcoal/50">${completedTasks} of ${activeTasks + completedTasks} tasks</div>
+                    </div>
+                  </div>
+                  ${overdueTasks.length > 0 ? `
+                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 border border-red-100">
+                      <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                      <span class="text-sm font-medium text-red-600">${overdueTasks.length} overdue</span>
+                    </div>
+                  ` : ''}
+                  ${todayTasks.length > 0 ? `
+                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-100">
+                      <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
+                      <span class="text-sm font-medium text-amber-600">${todayTasks.length} today</span>
+                    </div>
+                  ` : ''}
+                  <div class="flex-1"></div>
+                  <button onclick="openNewTaskModal()"
+                    class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${categoryColor}">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                    Add Task
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Add -->
+            <div class="bg-white rounded-xl border border-charcoal/[0.06] px-4 py-3">
+              <div class="flex items-center gap-3">
+                <div class="w-5 h-5 rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${categoryColor}40"></div>
+                <input type="text" id="quick-add-input"
+                  placeholder="Quick add to ${currentCategory.name}... (press Enter)"
+                  onkeydown="handleQuickAddKeydown(event, this)"
+                  class="flex-1 text-[15px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none focus:ring-0">
+                <button onclick="quickAddTask(document.getElementById('quick-add-input'))"
+                  class="text-charcoal/30 hover:opacity-70 transition p-1" style="color: ${categoryColor}">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Task Sections -->
+            <div class="space-y-4">
+              ${overdueTasks.length > 0 ? `
+                <div class="bg-white rounded-xl border border-red-100 overflow-hidden">
+                  <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span class="text-sm font-semibold text-red-700">Overdue</span>
+                    <span class="text-xs text-red-400 ml-1">${overdueTasks.length}</span>
+                  </div>
+                  <div class="task-list">${overdueTasks.map(task => renderTaskItem(task)).join('')}</div>
+                </div>
+              ` : ''}
+
+              ${todayTasks.length > 0 ? `
+                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
+                  <div class="px-4 py-3 bg-amber-50/50 border-b border-charcoal/[0.06] flex items-center gap-2">
+                    <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
+                    <span class="text-sm font-semibold text-charcoal">Today</span>
+                    <span class="text-xs text-charcoal/40 ml-1">${todayTasks.length}</span>
+                  </div>
+                  <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
+                </div>
+              ` : ''}
+
+              ${upcomingTasks.length > 0 ? `
+                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
+                  <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
+                    <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+                    <span class="text-sm font-semibold text-charcoal">Upcoming</span>
+                    <span class="text-xs text-charcoal/40 ml-1">${upcomingTasks.length}</span>
+                  </div>
+                  <div class="task-list">${upcomingTasks.map(task => renderTaskItem(task)).join('')}</div>
+                </div>
+              ` : ''}
+
+              ${inboxTasks.length > 0 ? `
+                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
+                  <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5v-3h3.56c.69 1.19 1.97 2 3.44 2s2.75-.81 3.44-2H19v3zm0-5h-4.99c0 1.1-.9 2-2.01 2s-2-.9-2-2H5V5h14v9z"/></svg>
+                    <span class="text-sm font-semibold text-charcoal">Inbox</span>
+                    <span class="text-xs text-charcoal/40 ml-1">${inboxTasks.length}</span>
+                  </div>
+                  <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
+                </div>
+              ` : ''}
+
+              ${anytimeTasks.length > 0 ? `
+                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
+                  <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
+                    <svg class="w-4 h-4 text-teal-500" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="5" rx="1"/><rect x="3" y="10" width="18" height="5" rx="1" opacity="0.7"/><rect x="3" y="17" width="18" height="5" rx="1" opacity="0.4"/></svg>
+                    <span class="text-sm font-semibold text-charcoal">Anytime</span>
+                    <span class="text-xs text-charcoal/40 ml-1">${anytimeTasks.length}</span>
+                  </div>
+                  <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
+                </div>
+              ` : ''}
+
+              ${somedayTasks.length > 0 ? `
+                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
+                  <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
+                    <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v3c0 .55.45 1 1 1h1v11c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8h1c.55 0 1-.45 1-1V4c0-1.1-.9-2-2-2zm-5 12h-6v-2h6v2zm5-7H4V4h16v3z"/></svg>
+                    <span class="text-sm font-semibold text-charcoal">Someday</span>
+                    <span class="text-xs text-charcoal/40 ml-1">${somedayTasks.length}</span>
+                  </div>
+                  <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
+                </div>
+              ` : ''}
+
+              ${noteItems.length > 0 ? `
+                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
+                  <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
+                    <svg class="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><circle cx="4" cy="6" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="4" cy="18" r="2"/><rect x="8" y="5" width="14" height="2" rx="1"/><rect x="8" y="11" width="14" height="2" rx="1"/><rect x="8" y="17" width="14" height="2" rx="1"/></svg>
+                    <span class="text-sm font-semibold text-charcoal">Notes</span>
+                    <span class="text-xs text-charcoal/40 ml-1">${noteItems.length}</span>
+                  </div>
+                  <div class="task-list">${noteItems.map(task => renderTaskItem(task)).join('')}</div>
+                </div>
+              ` : ''}
+
+              ${totalTasks === 0 ? `
+                <div class="bg-white rounded-xl border border-charcoal/[0.06] py-16">
+                  <div class="flex flex-col items-center justify-center text-charcoal/30">
+                    <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style="background: ${categoryColor}10">
+                      <svg class="w-10 h-10" style="color: ${categoryColor}" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                    </div>
+                    <p class="text-lg font-medium text-charcoal/50 mb-1">No items yet</p>
+                    <p class="text-sm text-charcoal/30 mb-4">Add your first task or note to ${currentCategory.name}</p>
+                    <button onclick="openNewTaskModal()"
+                      class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${categoryColor}">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                      Add First Item
+                    </button>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      };
+
+      // Build task list (default view for non-area views)
+      const taskListHtml = isAreaView ? buildAreaTaskListHtml() : `
         <div class="flex-1">
           <div class="bg-white rounded-xl">
             <div class="px-5 py-4 flex items-center justify-between">
