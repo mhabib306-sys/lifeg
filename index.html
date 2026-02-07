@@ -1932,7 +1932,11 @@
           customPerspectives: customPerspectives
         };
 
-        const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+        // Modern UTF-8 safe base64 encoding (replaces deprecated unescape)
+        const jsonString = JSON.stringify(payload, null, 2);
+        const bytes = new TextEncoder().encode(jsonString);
+        const binString = Array.from(bytes, byte => String.fromCodePoint(byte)).join('');
+        const content = btoa(binString);
 
         // Update file via GitHub API
         const updateResponse = await fetch(
@@ -1988,7 +1992,18 @@
 
           if (response.ok) {
             const fileData = await response.json();
-            const cloudData = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
+            // Modern UTF-8 safe base64 decoding (replaces deprecated escape)
+            const binString = atob(fileData.content);
+            const bytes = Uint8Array.from(binString, char => char.codePointAt(0));
+            const jsonString = new TextDecoder().decode(bytes);
+            let cloudData;
+            try {
+              cloudData = JSON.parse(jsonString);
+            } catch (parseError) {
+              console.error('Failed to parse cloud data:', parseError);
+              updateSyncStatus('error', 'Corrupted cloud data');
+              return;
+            }
 
             if (cloudData.data) {
               // Merge cloud data with local
@@ -2212,7 +2227,15 @@
     // Save merged data
     localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
 
-    let currentDate = new Date().toISOString().split('T')[0];
+    // Helper function for timezone-safe local date (YYYY-MM-DD format)
+    function getLocalDateString(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    let currentDate = getLocalDateString();
     let weekChart = null;
     let breakdownChart = null;
 
@@ -2679,7 +2702,7 @@
 
     // Render a single widget based on its type
     function renderHomeWidget(widget, isEditing) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
 
       // Size class mapping
@@ -2998,7 +3021,7 @@
 
     // Toggle daily field (checkbox style)
     function toggleDailyField(category, field) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       if (!allData[today]) allData[today] = {};
       if (!allData[today][category]) allData[today][category] = {};
       allData[today][category][field] = !allData[today][category][field];
@@ -3009,7 +3032,7 @@
 
     // Update daily field (numeric)
     function updateDailyField(category, field, value) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       if (!allData[today]) allData[today] = {};
       if (!allData[today][category]) allData[today][category] = {};
       allData[today][category][field] = value === '' ? null : parseFloat(value) || value;
@@ -3168,6 +3191,10 @@
     // Setup sidebar drag and drop using event delegation (called after render)
     function setupSidebarDragDrop() {
       document.querySelectorAll('.draggable-item').forEach(item => {
+        // Skip if already initialized to prevent duplicate event listeners
+        if (item.dataset.dragInitialized) return;
+        item.dataset.dragInitialized = 'true';
+
         item.addEventListener('dragstart', function(e) {
           const id = this.dataset.id;
           const type = this.dataset.type;
@@ -3262,7 +3289,7 @@
     }
 
     function getTasksByPerson(personId) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       return tasksData.filter(task => {
         if (!task.people || !task.people.includes(personId)) return false;
         if (task.completed) return false;
@@ -3871,7 +3898,7 @@
 
     // Create the next occurrence of a repeating task
     function createNextRepeatOccurrence(completedTask) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       const baseDate = completedTask.repeat.from === 'due' && completedTask.dueDate
         ? completedTask.dueDate
         : today;
@@ -4082,7 +4109,7 @@
       const perspective = allPerspectives.find(p => p.id === perspectiveId);
       if (!perspective) return [];
 
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
 
       return tasksData.filter(task => {
         // Notes don't appear in regular task perspectives (except logbook which shows all completed)
@@ -4247,7 +4274,7 @@
 
     // Get tasks by category
     function getTasksByCategory(categoryId) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       return tasksData.filter(task => {
         if (task.categoryId !== categoryId) return false;
         if (task.completed) return false;
@@ -4264,7 +4291,7 @@
 
     // Get tasks by label
     function getTasksByLabel(labelId) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       return tasksData.filter(task => {
         if (!(task.labels || []).includes(labelId)) return false;
         if (task.completed) return false;
@@ -4375,9 +4402,10 @@
         totalDaysLogged: dates.length
       };
 
-      // Calculate streaks and daily bests
+      // Single iteration for all calculations (optimized from double iteration)
       let currentStreakCount = 0;
       let lastDate = null;
+      const weekScores = {};
 
       dates.forEach(date => {
         const dayData = allData[date] || {};
@@ -4432,24 +4460,22 @@
         }
 
         lastDate = date;
+
+        // Weekly scores (combined into single iteration - reuse scores.total)
+        const d = new Date(date);
+        const weekStart = new Date(d.setDate(d.getDate() - d.getDay())).toISOString().split('T')[0];
+        if (!weekScores[weekStart]) weekScores[weekStart] = 0;
+        weekScores[weekStart] += scores.total;
       });
 
       // Check if current streak is active (last entry was today or yesterday)
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
       if (lastDate === today || lastDate === yesterday) {
         bests.currentStreak = currentStreakCount;
       }
 
-      // Weekly scores
-      const weekScores = {};
-      dates.forEach(date => {
-        const d = new Date(date);
-        const weekStart = new Date(d.setDate(d.getDate() - d.getDay())).toISOString().split('T')[0];
-        if (!weekScores[weekStart]) weekScores[weekStart] = 0;
-        weekScores[weekStart] += calculateScores(allData[date]).total;
-      });
-
+      // Find highest week score
       Object.entries(weekScores).forEach(([weekStart, score]) => {
         if (score > bests.highestWeekScore.value) {
           bests.highestWeekScore = { value: Math.round(score), weekStart };
@@ -4807,7 +4833,7 @@
 
     // ============ HOME TAB (Customizable Widget Dashboard) ============
     function renderHomeTab() {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       const todayData = allData[today] || JSON.parse(JSON.stringify(defaultDayData));
       const rawScores = calculateScores(todayData);
       // Safe defaults for all score properties
@@ -5244,7 +5270,7 @@
     function renderTaskItem(task, showDueDate = true, compact = false) {
       const category = getCategoryById(task.categoryId);
       const labels = (task.labels || []).map(lid => getLabelById(lid)).filter(Boolean);
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       const isOverdue = task.dueDate && task.dueDate < today && !task.completed;
       const hasMetadata = !compact && (category || labels.length > 0 || (showDueDate && task.dueDate) || task.deferDate || (task.repeat && task.repeat.type !== 'none') || task.notes);
       const isInlineEditing = inlineEditingTaskId === task.id;
@@ -5506,7 +5532,7 @@
     }
 
     function switchTab(tab) { activeTab = tab; saveViewState(); render(); scrollToContent(); }
-    function setToday() { currentDate = new Date().toISOString().split('T')[0]; render(); }
+    function setToday() { currentDate = getLocalDateString(); render(); }
 
     function setBulkMonth(month, year) {
       bulkMonth = parseInt(month);
@@ -5607,7 +5633,7 @@
         const dayData = allData[dateStr] || JSON.parse(JSON.stringify(defaultDayData));
         const dayOfWeek = new Date(bulkYear, bulkMonth, day).toLocaleDateString('en-US', { weekday: 'short' });
         const isWeekend = [0, 6].includes(new Date(bulkYear, bulkMonth, day).getDay());
-        const isToday = dateStr === new Date().toISOString().split('T')[0];
+        const isToday = dateStr === getLocalDateString();
         const scores = calculateScores(dayData);
 
         let cells = '';
@@ -6069,7 +6095,7 @@
 
       // Count tasks per perspective
       const taskCounts = {};
-      const todayDate = new Date().toISOString().split('T')[0];
+      const todayDate = getLocalDateString();
       BUILTIN_PERSPECTIVES.forEach(p => {
         if (p.id === 'today') {
           // Today count shows only dated tasks (not Next-tagged tasks)
@@ -6591,7 +6617,7 @@
                 </div>
               ` : (activePerspective === 'today' ? (() => {
                 // Today view: Split into dated tasks and Next-tagged tasks
-                const today = new Date().toISOString().split('T')[0];
+                const today = getLocalDateString();
                 const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
 
                 // Dated tasks: tasks with status 'today', due today, overdue, or scheduled for today
@@ -7105,7 +7131,7 @@
     let modalRepeatEnabled = false;
 
     function initModalState(editingTask) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       if (editingTask) {
         modalSelectedArea = editingTask.categoryId || null;
         // Things 3 logic: If task has deferDate <= today, show as "Today"
@@ -7250,7 +7276,7 @@
       // Things 3 logic: When "Today" is selected, auto-set start date to today
       const deferInput = document.getElementById('task-defer');
       if (status === 'today' && deferInput && !deferInput.value) {
-        deferInput.value = new Date().toISOString().split('T')[0];
+        deferInput.value = getLocalDateString();
       }
     }
 
@@ -7466,7 +7492,7 @@
         };
       }
 
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       let deferDateValue = document.getElementById('task-defer')?.value || null;
 
       // Things 3 logic: "Today" means task has start date of today
@@ -7560,7 +7586,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'life-gamification-backup-' + new Date().toISOString().split('T')[0] + '.json';
+      a.download = 'life-gamification-backup-' + getLocalDateString() + '.json';
       a.click();
       URL.revokeObjectURL(url);
     }
