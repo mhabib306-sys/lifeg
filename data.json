@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-07T09:25:02.619Z",
+  "lastUpdated": "2026-02-07T09:25:09.799Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2283,7 +2283,7 @@
       "id": "task_1770456275105_ylqx33576",
       "title": "Finish the tomb registration thing",
       "notes": "",
-      "status": "inbox",
+      "status": "today",
       "completed": false,
       "completedAt": null,
       "categoryId": null,
@@ -2296,7 +2296,7 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-07T09:24:35.106Z",
-      "updatedAt": "2026-02-07T09:25:00.267Z"
+      "updatedAt": "2026-02-07T09:25:07.564Z"
     }
   ],
   "taskCategories": [
