@@ -4547,6 +4547,10 @@
             </div>
             <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-[var(--modal-bg)]/95 backdrop-blur-sm rounded-lg px-1.5 py-1 shadow-sm" onclick="event.stopPropagation()">
               ${task.isNote && !task.completed ? `
+                <button onclick="event.stopPropagation(); createChildNote('${task.id}')"
+                  class="p-1 text-purple-400 hover:text-purple-600 hover:bg-purple-50 rounded-md transition" title="Add child note">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
                 <button onclick="event.stopPropagation(); outdentNote('${task.id}')"
                   class="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-md transition ${indentLevel === 0 ? 'opacity-30 cursor-not-allowed' : ''}" title="Outdent (Shift+Tab)">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 17l-5-5 5-5M18 7v10"/></svg>
@@ -5612,16 +5616,40 @@
                 </div>
               ` : ''}
 
-              ${noteItems.length > 0 ? `
-                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
-                  <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
-                    <svg class="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><circle cx="4" cy="6" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="4" cy="18" r="2"/><rect x="8" y="5" width="14" height="2" rx="1"/><rect x="8" y="11" width="14" height="2" rx="1"/><rect x="8" y="17" width="14" height="2" rx="1"/></svg>
+              <!-- Notes Section (always show) -->
+              <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
+                <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>
                     <span class="text-sm font-semibold text-charcoal">Notes</span>
                     <span class="text-xs text-charcoal/40 ml-1">${noteItems.length}</span>
                   </div>
-                  <div class="task-list">${noteItems.map(task => renderTaskItem(task)).join('')}</div>
+                  <button onclick="createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { startInlineEdit(notes[notes.length-1].id); } }, 50);"
+                    class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-purple-600 hover:bg-purple-50 rounded-lg transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                    Add Note
+                  </button>
                 </div>
-              ` : ''}
+                ${noteItems.length > 0 ? `
+                  <div class="task-list">${noteItems.map(task => renderTaskItem(task)).join('')}</div>
+                  <div class="px-4 py-2 border-t border-charcoal/5">
+                    <button onclick="createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { startInlineEdit(notes[notes.length-1].id); } }, 50);"
+                      class="flex items-center gap-2 px-3 py-2 w-full text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50/50 rounded-lg transition text-left">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                      Add another note...
+                    </button>
+                  </div>
+                ` : `
+                  <div class="px-4 py-8 text-center">
+                    <p class="text-sm text-charcoal/40 mb-3">No notes in this area yet</p>
+                    <button onclick="createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { startInlineEdit(notes[notes.length-1].id); } }, 50);"
+                      class="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-600 text-sm font-medium rounded-lg hover:bg-purple-100 transition">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                      Create your first note
+                    </button>
+                  </div>
+                `}
+              </div>
 
               ${totalTasks === 0 ? `
                 <div class="bg-white rounded-xl border border-charcoal/[0.06] py-16">
