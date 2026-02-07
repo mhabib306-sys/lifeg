@@ -4685,6 +4685,11 @@
       if (activeTab === 'tasks') {
         setupSidebarDragDrop();
       }
+
+      // Initialize autocomplete for task modal if it's open
+      if (showTaskModal) {
+        initModalAutocomplete();
+      }
       } catch (err) {
         console.error('Render error:', err);
         document.getElementById('app').innerHTML = '<div style="padding:20px;color:red;font-family:monospace;">Render error: ' + err.message + '<br><br>Stack: ' + err.stack + '</div>';
@@ -5936,7 +5941,6 @@
             </div>
           </div>
         </div>
-        <script>initModalAutocomplete();</script>
       ` : '';
 
       // Perspective Modal
