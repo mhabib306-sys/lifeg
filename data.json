@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-07T18:51:39.373Z",
+  "lastUpdated": "2026-02-07T18:51:50.026Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2365,20 +2365,22 @@
       "id": "task_1770490285825_vgowyp7kn",
       "title": "Discuss what happened today with N.",
       "notes": "",
-      "status": "today",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
       "categoryId": null,
       "labels": [],
-      "people": [],
-      "deferDate": null,
+      "people": [
+        "person-1770490296950"
+      ],
+      "deferDate": "2026-02-07",
       "dueDate": null,
       "repeat": null,
       "isNote": false,
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-07T18:51:25.826Z",
-      "updatedAt": "2026-02-07T18:51:25.826Z"
+      "updatedAt": "2026-02-07T18:51:47.596Z"
     }
   ],
   "taskCategories": [
