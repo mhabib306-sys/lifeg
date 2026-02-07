@@ -1719,10 +1719,15 @@
         // Check cache first (cache for 30 minutes)
         const cached = localStorage.getItem(WEATHER_CACHE_KEY);
         if (cached) {
-          const { data, timestamp } = JSON.parse(cached);
-          if (Date.now() - timestamp < 30 * 60 * 1000) {
-            weatherData = data;
-            return;
+          try {
+            const { data, timestamp } = JSON.parse(cached);
+            if (data && timestamp && Date.now() - timestamp < 30 * 60 * 1000) {
+              weatherData = data;
+              return;
+            }
+          } catch (cacheError) {
+            console.warn('Corrupted weather cache, clearing:', cacheError);
+            localStorage.removeItem(WEATHER_CACHE_KEY);
           }
         }
 
@@ -1767,6 +1772,8 @@
         render();
       } catch (error) {
         console.error('Weather fetch error:', error);
+        // Still render even if fetch fails - show stale data or empty state
+        render();
       }
     }
 
@@ -2086,18 +2093,25 @@
 
     // Load weights and merge with defaults to ensure new keys are always present
     function loadWeights() {
-      const saved = JSON.parse(localStorage.getItem(WEIGHTS_KEY));
-      if (!saved) return JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
-      // Deep merge: ensure all default keys exist
-      const merged = JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
-      Object.keys(merged).forEach(category => {
-        if (saved[category]) {
-          Object.keys(merged[category]).forEach(key => {
-            if (saved[category][key] !== undefined) merged[category][key] = saved[category][key];
-          });
-        }
-      });
-      return merged;
+      try {
+        const stored = localStorage.getItem(WEIGHTS_KEY);
+        if (!stored) return JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
+        const saved = JSON.parse(stored);
+        if (!saved || typeof saved !== 'object') return JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
+        // Deep merge: ensure all default keys exist
+        const merged = JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
+        Object.keys(merged).forEach(category => {
+          if (saved[category]) {
+            Object.keys(merged[category]).forEach(key => {
+              if (saved[category][key] !== undefined) merged[category][key] = saved[category][key];
+            });
+          }
+        });
+        return merged;
+      } catch (e) {
+        console.error('Error loading weights:', e);
+        return JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
+      }
     }
     let WEIGHTS = loadWeights();
 
@@ -2114,9 +2128,16 @@
     const MAX_SCORES_KEY = 'lifeGamificationMaxScores';
 
     function loadMaxScores() {
-      const saved = JSON.parse(localStorage.getItem(MAX_SCORES_KEY));
-      if (!saved) return JSON.parse(JSON.stringify(DEFAULT_MAX_SCORES));
-      return { ...DEFAULT_MAX_SCORES, ...saved };
+      try {
+        const stored = localStorage.getItem(MAX_SCORES_KEY);
+        if (!stored) return JSON.parse(JSON.stringify(DEFAULT_MAX_SCORES));
+        const saved = JSON.parse(stored);
+        if (!saved || typeof saved !== 'object') return JSON.parse(JSON.stringify(DEFAULT_MAX_SCORES));
+        return { ...DEFAULT_MAX_SCORES, ...saved };
+      } catch (e) {
+        console.error('Error loading max scores:', e);
+        return JSON.parse(JSON.stringify(DEFAULT_MAX_SCORES));
+      }
     }
     let MAX_SCORES = loadMaxScores();
 
@@ -3404,7 +3425,16 @@
 
     // ============ OUTLINER NOTES SYSTEM ============
     let editingNoteId = null;
-    let collapsedNotes = new Set(JSON.parse(localStorage.getItem('collapsedNotes') || '[]'));
+    let collapsedNotes = (function() {
+      try {
+        const stored = localStorage.getItem('collapsedNotes');
+        return new Set(stored ? JSON.parse(stored) : []);
+      } catch (e) {
+        console.error('Error loading collapsed notes:', e);
+        localStorage.removeItem('collapsedNotes');
+        return new Set();
+      }
+    })();
 
     function saveCollapsedNotes() {
       localStorage.setItem('collapsedNotes', JSON.stringify([...collapsedNotes]));
@@ -4436,6 +4466,10 @@
 
     function updateData(category, field, value) {
       const todayData = getTodayData();
+      // Ensure category object exists before setting field
+      if (!todayData[category]) {
+        todayData[category] = {};
+      }
       todayData[category][field] = value;
       allData[currentDate] = todayData;
       saveData();
@@ -6636,6 +6670,7 @@
               <div class="modal-section">
                 <input type="text" id="task-title" value="${editingTask?.title || ''}"
                   placeholder="${modalIsNote ? 'What do you want to capture?' : 'What needs to be done?'}"
+                  maxlength="500"
                   onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();saveTaskFromModal();}"
                   class="modal-input-enhanced title-input">
               </div>
@@ -6768,7 +6803,7 @@
             <div class="p-6 space-y-4">
               <div>
                 <label class="text-sm text-charcoal/70 block mb-1">Name</label>
-                <input type="text" id="perspective-name" placeholder="e.g., Work Projects" autofocus
+                <input type="text" id="perspective-name" placeholder="e.g., Work Projects" autofocus maxlength="100"
                   onkeydown="if(event.key==='Enter'){event.preventDefault();savePerspectiveFromModal();}"
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
               </div>
@@ -6841,7 +6876,7 @@
               <div>
                 <label class="text-sm text-charcoal/70 block mb-1">Name</label>
                 <input type="text" id="category-name" value="${editingCategory?.name || ''}"
-                  placeholder="e.g., Work, Personal, Health" autofocus
+                  placeholder="e.g., Work, Personal, Health" autofocus maxlength="100"
                   onkeydown="if(event.key==='Enter'){event.preventDefault();saveCategoryFromModal();}"
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
               </div>
@@ -6876,7 +6911,7 @@
               <div>
                 <label class="text-sm text-charcoal/70 block mb-1">Name</label>
                 <input type="text" id="label-name" value="${editingLabel?.name || ''}"
-                  placeholder="e.g., Important" autofocus
+                  placeholder="e.g., Important" autofocus maxlength="50"
                   onkeydown="if(event.key==='Enter'){event.preventDefault();saveLabelFromModal();}"
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
               </div>
@@ -6916,7 +6951,7 @@
               <div>
                 <label class="text-sm text-charcoal/70 block mb-1">Name</label>
                 <input type="text" id="person-name" value="${editingPerson?.name || ''}"
-                  placeholder="e.g., John Doe" autofocus
+                  placeholder="e.g., John Doe" autofocus maxlength="100"
                   onkeydown="if(event.key==='Enter'){event.preventDefault();savePersonFromModal();}"
                   class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
               </div>
