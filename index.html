@@ -6,9 +6,8 @@
   <meta name="theme-color" content="#E5533D">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Nucleus</title>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
+  <!-- Allow browser caching for better performance -->
+  <meta http-equiv="Cache-Control" content="public, max-age=3600, must-revalidate">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23E5533D'/><stop offset='100%25' stop-color='%23D4402E'/></linearGradient></defs><circle cx='50' cy='50' r='45' fill='url(%23g)'/><circle cx='50' cy='50' r='18' fill='white'/><circle cx='50' cy='50' r='8' fill='%23E5533D'/><circle cx='30' cy='35' r='6' fill='white' opacity='0.6'/><circle cx='70' cy='65' r='5' fill='white' opacity='0.5'/><circle cx='35' cy='68' r='4' fill='white' opacity='0.4'/></svg>">
   <!-- Inter font - closest match to SF Pro -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,7 +33,7 @@
       }
     }
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" defer></script>
   <style>
     /* Theme: SimpleBits (default) */
     :root, [data-theme="simplebits"] {
@@ -147,7 +146,7 @@
     .sb-btn {
       background: var(--btn-bg);
       color: white;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
       border-radius: var(--border-radius);
     }
     .sb-btn:hover {
@@ -254,7 +253,7 @@
 
     /* Checkbox - Things 3 style (thin circle, smooth animations) */
     .task-checkbox {
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease, background 0.2s ease;
       cursor: pointer;
       border-radius: 9999px !important;
       -webkit-border-radius: 9999px !important;
@@ -279,7 +278,7 @@
 
     /* Sidebar item interactions - Things 3 style */
     .sidebar-item {
-      transition: all 0.1s ease-out;
+      transition: background 0.1s ease-out, transform 0.1s ease-out;
       border-radius: 8px;
     }
     .sidebar-item:hover {
@@ -4472,6 +4471,7 @@
       }
       todayData[category][field] = value;
       allData[currentDate] = todayData;
+      invalidateScoresCache(); // Clear memoization cache when data changes
       saveData();
       debouncedSaveToGithub(); // Auto-save to GitHub
       render();
@@ -4490,7 +4490,26 @@
       return onTime * WEIGHTS.prayer.onTime + late * WEIGHTS.prayer.late;
     }
 
+    // Memoization cache for calculateScores - major performance optimization
+    const scoresCache = new Map();
+    let scoresCacheVersion = 0;
+
+    function invalidateScoresCache() {
+      scoresCache.clear();
+      scoresCacheVersion++;
+    }
+
+    function getCacheKey(data) {
+      // Simple hash based on stringified data
+      return JSON.stringify(data);
+    }
+
     function calculateScores(data) {
+      // Check cache first
+      const cacheKey = getCacheKey(data);
+      if (scoresCache.has(cacheKey)) {
+        return scoresCache.get(cacheKey);
+      }
       // Ensure data has required structure with safe defaults
       if (!data || typeof data !== 'object') {
         data = JSON.parse(JSON.stringify(defaultDayData));
@@ -4614,7 +4633,7 @@
         else if (parseInt(nop) === 0) habitScore += (WEIGHTS.habits.nopNo || -3);
       }
 
-      return {
+      const result = {
         prayer: prayerScore,
         prayerOnTime: totalOnTime,
         prayerLate: totalLate,
@@ -4624,6 +4643,12 @@
         habit: habitScore,
         total: Math.round((prayerScore + diabetesScore + whoopScore + familyScore + habitScore) * 10) / 10
       };
+
+      // Cache the result (limit cache size to prevent memory issues)
+      if (scoresCache.size > 500) scoresCache.clear();
+      scoresCache.set(cacheKey, result);
+
+      return result;
     }
 
     function getLast30DaysData() {
