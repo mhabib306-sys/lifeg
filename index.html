@@ -2393,6 +2393,10 @@
       activeFilterType = 'category';
       activeCategoryFilter = categoryId;
       activeLabelFilter = null;
+      // Switch to tasks tab when navigating from Quick Stats or other widgets
+      if (activeTab !== 'tasks') {
+        activeTab = 'tasks';
+      }
       saveViewState();
       render();
       scrollToContent();
@@ -2403,6 +2407,10 @@
       activeFilterType = 'label';
       activeLabelFilter = labelId;
       activeCategoryFilter = null;
+      // Switch to tasks tab when navigating from Quick Stats or other widgets
+      if (activeTab !== 'tasks') {
+        activeTab = 'tasks';
+      }
       saveViewState();
       render();
       scrollToContent();
@@ -2512,6 +2520,10 @@
       activePerspective = perspectiveId;
       activeCategoryFilter = null;
       activeLabelFilter = null;
+      // Switch to tasks tab when navigating from Quick Stats or other widgets
+      if (activeTab !== 'tasks') {
+        activeTab = 'tasks';
+      }
       saveViewState();
       render();
       scrollToContent();
@@ -3244,6 +3256,10 @@
       activePerspective = null;
       activeCategoryFilter = null;
       activeLabelFilter = null;
+      // Switch to tasks tab when navigating from Quick Stats or other widgets
+      if (activeTab !== 'tasks') {
+        activeTab = 'tasks';
+      }
       saveViewState();
       render();
       scrollToContent();
