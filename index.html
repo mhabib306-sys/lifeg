@@ -5569,6 +5569,13 @@
                     <span class="text-xs text-charcoal/40 ml-1">${todayTasks.length}</span>
                   </div>
                   <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
+                  <div class="px-4 py-2 border-t border-charcoal/5">
+                    <button onclick="createTask('', { status: 'today', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'today' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 50);"
+                      class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-500 hover:text-amber-600 hover:bg-amber-50/50 rounded-lg transition text-left">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                      Add to Today...
+                    </button>
+                  </div>
                 </div>
               ` : ''}
 
@@ -5586,33 +5593,54 @@
               ${inboxTasks.length > 0 ? `
                 <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
                   <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
-                    <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5v-3h3.56c.69 1.19 1.97 2 3.44 2s2.75-.81 3.44-2H19v3zm0-5h-4.99c0 1.1-.9 2-2.01 2s-2-.9-2-2H5V5h14v9z"/></svg>
+                    <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h4.18c.26 1.7 1.74 3 3.57 3h2.5c1.83 0 3.31-1.3 3.57-3H21v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6zm0-2l3-7h12l3 7h-4.18c-.26-1.7-1.74-3-3.57-3h-2.5c-1.83 0-3.31 1.3-3.57 3H3z"/></svg>
                     <span class="text-sm font-semibold text-charcoal">Inbox</span>
                     <span class="text-xs text-charcoal/40 ml-1">${inboxTasks.length}</span>
                   </div>
                   <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
+                  <div class="px-4 py-2 border-t border-charcoal/5">
+                    <button onclick="createTask('', { status: 'inbox', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 50);"
+                      class="flex items-center gap-2 px-3 py-2 w-full text-sm text-blue-500 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition text-left">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                      Add to Inbox...
+                    </button>
+                  </div>
                 </div>
               ` : ''}
 
               ${anytimeTasks.length > 0 ? `
                 <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
                   <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
-                    <svg class="w-4 h-4 text-teal-500" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="5" rx="1"/><rect x="3" y="10" width="18" height="5" rx="1" opacity="0.7"/><rect x="3" y="17" width="18" height="5" rx="1" opacity="0.4"/></svg>
+                    <svg class="w-4 h-4 text-teal-500" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="2"/><rect x="3" y="10" width="18" height="4" rx="2"/><rect x="3" y="16" width="18" height="4" rx="2"/></svg>
                     <span class="text-sm font-semibold text-charcoal">Anytime</span>
                     <span class="text-xs text-charcoal/40 ml-1">${anytimeTasks.length}</span>
                   </div>
                   <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
+                  <div class="px-4 py-2 border-t border-charcoal/5">
+                    <button onclick="createTask('', { status: 'anytime', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 50);"
+                      class="flex items-center gap-2 px-3 py-2 w-full text-sm text-teal-500 hover:text-teal-600 hover:bg-teal-50/50 rounded-lg transition text-left">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                      Add to Anytime...
+                    </button>
+                  </div>
                 </div>
               ` : ''}
 
               ${somedayTasks.length > 0 ? `
                 <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
                   <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
-                    <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v3c0 .55.45 1 1 1h1v11c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8h1c.55 0 1-.45 1-1V4c0-1.1-.9-2-2-2zm-5 12h-6v-2h6v2zm5-7H4V4h16v3z"/></svg>
+                    <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h18v4H3V3zm1 5h16v13a1 1 0 01-1 1H5a1 1 0 01-1-1V8zm5 3v2h6v-2H9z"/></svg>
                     <span class="text-sm font-semibold text-charcoal">Someday</span>
                     <span class="text-xs text-charcoal/40 ml-1">${somedayTasks.length}</span>
                   </div>
                   <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
+                  <div class="px-4 py-2 border-t border-charcoal/5">
+                    <button onclick="createTask('', { status: 'someday', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'someday' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 50);"
+                      class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-600 hover:text-amber-700 hover:bg-amber-50/50 rounded-lg transition text-left">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                      Add to Someday...
+                    </button>
+                  </div>
                 </div>
               ` : ''}
 
