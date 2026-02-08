@@ -29,7 +29,7 @@ export function initializeTaskOrders() {
  * - inbox: status='inbox' AND no categoryId
  * - today: status='today' OR dueDate=today OR overdue OR deferDate<=today
  * - upcoming: has future dueDate
- * - anytime: status='anytime' AND no future dueDate
+ * - anytime: status='anytime' OR status='today' AND no future dueDate
  * - someday: status='someday'
  * - logbook: completed=true
  *
@@ -94,9 +94,9 @@ export function getFilteredTasks(perspectiveId) {
     }
 
     // Anytime: Tasks available to do anytime (no specific schedule)
-    // Excludes tasks that are in Today or have a future due date
+    // Today tasks should still appear in Anytime (Things 3 behavior)
     if (perspectiveId === 'anytime') {
-      if (task.status !== 'anytime') return false;
+      if (task.status !== 'anytime' && task.status !== 'today') return false;
       // If it has a due date in the future, it shows in Upcoming instead
       if (task.dueDate && task.dueDate > today) return false;
       // Deferred tasks are not yet available
