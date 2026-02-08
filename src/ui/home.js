@@ -490,7 +490,7 @@ export function renderHomeTab() {
       ` : ''}
 
       <!-- Widget Grid -->
-      <div class="grid grid-cols-2 gap-4">
+      <div class="widget-grid grid grid-cols-2 gap-4">
         ${visibleWidgets.map(widget => renderHomeWidget(widget, state.editingHomeWidgets)).join('')}
       </div>
 

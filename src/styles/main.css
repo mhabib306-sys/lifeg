@@ -871,7 +871,7 @@ input[type="checkbox"]:focus {
   /* Widget cards */
   .widget {
     border-radius: 16px;
-    margin: 0 16px 12px;
+    margin: 0;
   }
 
   /* Modal - fullscreen on mobile */
@@ -1032,10 +1032,6 @@ input[type="checkbox"]:focus {
     padding: 10px 12px;
   }
 
-  .widget {
-    margin: 0 12px 10px;
-  }
-
   .task-item {
     padding: 12px;
   }
@@ -1059,7 +1055,6 @@ input[type="checkbox"]:focus {
 @media (min-width: 390px) and (max-width: 768px) {
   /* Generous spacing for large screens */
   .widget {
-    margin: 0 20px 16px;
     border-radius: 20px;
   }
 
