@@ -232,6 +232,33 @@ export function debouncedSaveToGithub() {
 export async function loadCloudData() {
   const token = getGithubToken();
 
+  function shouldUseCloud(cloudUpdated) {
+    const localUpdatedRaw = localStorage.getItem('lastUpdated');
+    if (!cloudUpdated) return false;
+    const localUpdated = localUpdatedRaw ? new Date(parseInt(localUpdatedRaw, 10)) : null;
+    const cloudDate = new Date(cloudUpdated);
+    if (!localUpdated || isNaN(localUpdated.getTime())) return true;
+    return cloudDate > localUpdated;
+  }
+
+  function mergeLifeData(cloudData) {
+    if (!cloudData?.data) return;
+    const localData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    if (shouldUseCloud(cloudData.lastUpdated)) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData.data));
+      state.allData = cloudData.data;
+      localStorage.setItem('lastUpdated', new Date(cloudData.lastUpdated).getTime().toString());
+      return;
+    }
+    Object.keys(cloudData.data).forEach(date => {
+      if (!localData[date]) {
+        localData[date] = cloudData.data[date];
+      }
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
+    state.allData = localData;
+  }
+
   try {
     // Try GitHub API first if token exists
     if (token) {
@@ -255,17 +282,7 @@ export async function loadCloudData() {
           return;
         }
 
-        if (cloudData.data) {
-          // Merge cloud data with local
-          const localData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-          Object.keys(cloudData.data).forEach(date => {
-            if (!localData[date]) {
-              localData[date] = cloudData.data[date];
-            }
-          });
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
-          state.allData = localData;
-        }
+        mergeLifeData(cloudData);
         if (cloudData.weights) {
           state.WEIGHTS = cloudData.weights;
           localStorage.setItem(WEIGHTS_KEY, JSON.stringify(state.WEIGHTS));
@@ -310,15 +327,7 @@ export async function loadCloudData() {
       const cloudData = await response.json();
       const localData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 
-      if (cloudData.data) {
-        Object.keys(cloudData.data).forEach(date => {
-          if (!localData[date]) {
-            localData[date] = cloudData.data[date];
-          }
-        });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
-        state.allData = localData;
-      }
+      mergeLifeData(cloudData);
       if (cloudData.weights) {
         state.WEIGHTS = cloudData.weights;
         localStorage.setItem(WEIGHTS_KEY, JSON.stringify(state.WEIGHTS));
