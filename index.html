@@ -779,6 +779,13 @@
         align-items: center;
         justify-content: space-between;
         padding: 12px 16px;
+        padding-top: max(12px, env(safe-area-inset-top));
+      }
+
+      /* Active press feedback for nav items */
+      .mobile-nav-item:active {
+        transform: scale(0.9);
+        opacity: 0.7;
       }
 
       /* Header adjustments */
@@ -841,7 +848,7 @@
         border-right: none !important;
       }
 
-      /* Things 3 flat task items on mobile */
+      /* Things 3 flat task items */
       [data-theme="things3"] .task-item {
         border-radius: 0;
         margin: 0;
@@ -849,6 +856,35 @@
       }
       [data-theme="things3"] .task-item:last-child {
         border-bottom: none;
+      }
+
+      /* Hide task list header on mobile (info is in mobile header bar) */
+      .task-list-header-desktop {
+        display: none;
+      }
+
+      /* Reduce main content padding on mobile */
+      main.max-w-6xl {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        padding-top: 16px !important;
+      }
+
+      /* Hide footer on mobile - bottom nav is there */
+      footer {
+        display: none !important;
+      }
+
+      /* Quick-add separator line */
+      .quick-add-section {
+        border-top: 1px solid var(--border-light);
+        border-bottom: 1px solid var(--border-light);
+      }
+
+      /* Life Score sub-nav mobile */
+      .life-sub-nav {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
       }
 
       /* Task items - larger touch targets */
@@ -935,10 +971,12 @@
         font-size: 1.25rem !important;
       }
 
-      /* Quick add input */
+      /* Quick add input - override mobile form input padding */
       #home-quick-add-input,
       #quick-add-input {
         font-size: 16px !important;
+        padding: 8px 0 !important;
+        border-radius: 0 !important;
       }
 
       /* Hide some elements on mobile */
@@ -1064,8 +1102,9 @@
         min-height: 48px;
       }
 
-      .mobile-nav-item span {
-        font-size: 10px;
+      .mobile-nav-item svg {
+        width: 22px;
+        height: 22px;
       }
     }
 
@@ -2533,8 +2572,16 @@
     let editingPersonId = null;
 
     // Mobile drawer functions
-    function openMobileDrawer() { mobileDrawerOpen = true; renderMobileDrawer(); }
-    function closeMobileDrawer() { mobileDrawerOpen = false; renderMobileDrawer(); }
+    function openMobileDrawer() {
+      mobileDrawerOpen = true;
+      document.body.style.overflow = 'hidden';
+      renderMobileDrawer();
+    }
+    function closeMobileDrawer() {
+      mobileDrawerOpen = false;
+      document.body.style.overflow = '';
+      renderMobileDrawer();
+    }
     function renderMobileDrawer() {
       const overlay = document.getElementById('mobile-sidebar-overlay');
       if (!overlay) return;
@@ -5171,9 +5218,9 @@
                 ` : ''}
               </div>
               <div class="flex items-center gap-3 mt-1">
-                <p class="text-charcoal/50 text-sm">${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-                <span class="text-charcoal/30">•</span>
-                <p class="text-charcoal/40 text-xs">Press <kbd class="px-1.5 py-0.5 bg-charcoal/10 rounded text-[11px] font-mono">⌘K</kbd> to quick add</p>
+                <p class="text-[var(--text-secondary)] text-sm">${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+                <span class="text-[var(--text-muted)] hidden md:inline">•</span>
+                <p class="text-[var(--text-muted)] text-xs hidden md:block">Press <kbd class="px-1.5 py-0.5 bg-[var(--bg-secondary)] rounded text-[11px] font-mono">⌘K</kbd> to quick add</p>
               </div>
             </div>
             <div class="flex items-center gap-3">
@@ -5478,12 +5525,12 @@
             </div>
           </div>
 
-          <div class="sb-card rounded-lg p-6 bg-white">
+          <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
             <h3 class="font-semibold text-charcoal mb-4">Last 30 Days <span class="text-coral">→</span></h3>
             <div class="h-72"><canvas id="weekChart"></canvas></div>
           </div>
 
-          <div class="sb-card rounded-lg p-6 bg-white">
+          <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
             <h3 class="font-semibold text-charcoal mb-4">Score Breakdown <span class="text-coral">→</span></h3>
             <div class="h-72"><canvas id="breakdownChart"></canvas></div>
           </div>
@@ -5493,22 +5540,22 @@
           <div class="sb-card rounded-lg p-6 bg-warmgray border-2 border-coral/20">
             <h3 class="font-semibold text-charcoal mb-4">Personal Bests <span class="text-coral">→</span></h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div class="bg-white rounded-lg p-4 border border-softborder">
+              <div class="bg-[var(--bg-card)] rounded-lg p-4 border border-[var(--border)]">
                 <div class="text-3xl font-bold text-coral">${fmt(bests.highestDayScore.value)}</div>
                 <div class="text-sm text-charcoal/70 mt-1">Best Day Score</div>
                 <div class="text-xs text-charcoal/40 mt-1">${bests.highestDayScore.date ? new Date(bests.highestDayScore.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</div>
               </div>
-              <div class="bg-white rounded-lg p-4 border border-softborder">
+              <div class="bg-[var(--bg-card)] rounded-lg p-4 border border-[var(--border)]">
                 <div class="text-3xl font-bold text-coral">${fmt(bests.highestWeekScore.value)}</div>
                 <div class="text-sm text-charcoal/70 mt-1">Best Week Score</div>
                 <div class="text-xs text-charcoal/40 mt-1">${bests.highestWeekScore.weekStart ? 'Week of ' + new Date(bests.highestWeekScore.weekStart).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</div>
               </div>
-              <div class="bg-white rounded-lg p-4 border border-softborder">
+              <div class="bg-[var(--bg-card)] rounded-lg p-4 border border-[var(--border)]">
                 <div class="text-3xl font-bold text-coral">${fmt(bests.longestStreak.value)}</div>
                 <div class="text-sm text-charcoal/70 mt-1">Longest Streak</div>
                 <div class="text-xs text-charcoal/40 mt-1">${bests.longestStreak.value > 0 ? 'days in a row' : '—'}</div>
               </div>
-              <div class="bg-white rounded-lg p-4 border border-softborder">
+              <div class="bg-[var(--bg-card)] rounded-lg p-4 border border-[var(--border)]">
                 <div class="text-3xl font-bold text-coral flex items-center gap-2">${fmt(bests.currentStreak)} ${bests.currentStreak > 0 ? '🔥' : ''}</div>
                 <div class="text-sm text-charcoal/70 mt-1">Current Streak</div>
                 <div class="text-xs text-charcoal/40 mt-1">${bests.currentStreak > 0 ? 'Keep it going!' : 'Log today to start!'}</div>
@@ -5517,7 +5564,7 @@
           </div>
 
           <div class="grid md:grid-cols-2 gap-6">
-            <div class="sb-card rounded-lg p-6 bg-white">
+            <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
               <h3 class="font-semibold text-charcoal mb-4">Category Records <span class="text-coral">→</span></h3>
               <div class="space-y-3">
                 <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
@@ -5544,7 +5591,7 @@
               </div>
             </div>
 
-            <div class="sb-card rounded-lg p-6 bg-white">
+            <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
               <h3 class="font-semibold text-charcoal mb-4">Lifetime Stats <span class="text-coral">→</span></h3>
               <div class="space-y-3">
                 <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
@@ -5563,7 +5610,7 @@
             </div>
           </div>
           ` : `
-          <div class="sb-card rounded-lg p-8 bg-white text-center">
+          <div class="sb-card rounded-lg p-8 bg-[var(--bg-card)] text-center">
             <div class="text-4xl mb-4">🎮</div>
             <h3 class="font-semibold text-charcoal mb-2">Start Your Journey!</h3>
             <p class="text-charcoal/50 text-sm">Log your first day to start tracking personal bests.</p>
@@ -5638,7 +5685,7 @@
                 <input type="text" id="inline-edit-input" value="${task.title.replace(/"/g, '&quot;')}"
                   onkeydown="handleInlineEditKeydown(event, '${task.id}')"
                   onblur="saveInlineEdit('${task.id}')"
-                  class="w-full text-[16px] text-[var(--text-primary)] bg-white border border-[var(--accent)] rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-light)]">
+                  class="w-full text-[16px] text-[var(--text-primary)] bg-[var(--bg-input)] border border-[var(--accent)] rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-light)]">
               ` : `
                 <span ondblclick="event.stopPropagation(); startInlineEdit('${task.id}')"
                   class="text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug transition cursor-text">${escapeHtml(task.title)}</span>
@@ -5731,21 +5778,21 @@
       app.innerHTML = `
         <!-- Mobile Header - Things 3 style -->
         <header class="mobile-header-compact border-b border-[var(--border-light)] bg-[var(--bg-card)] sticky top-0 z-50" style="display: none;">
-          <div class="flex items-center gap-3">
+          <div class="w-10 flex items-center justify-start">
             ${activeTab === 'tasks' ? `
-              <button onclick="openMobileDrawer()" class="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] transition" aria-label="Open sidebar">
+              <button onclick="openMobileDrawer()" class="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-secondary)] active:bg-[var(--bg-secondary)] transition" aria-label="Open sidebar">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
               </button>
             ` : ''}
           </div>
-          <h1 class="text-[17px] font-bold text-[var(--text-primary)]">${activeTab === 'home' ? 'Home' : activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : activeTab === 'life' ? 'Life Score' : 'Settings'}</h1>
-          <div class="flex items-center gap-2">
+          <h1 class="text-[17px] font-bold text-[var(--text-primary)] truncate">${activeTab === 'home' ? 'Home' : activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : activeTab === 'life' ? 'Life Score' : 'Settings'}</h1>
+          <div class="w-10 flex items-center justify-end">
             ${activeTab === 'tasks' ? `
-              <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[#147EFB] text-white flex items-center justify-center shadow-sm" aria-label="New task">
+              <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center shadow-sm active:opacity-80 transition" aria-label="New task">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
               </button>
             ` : `
-              <button onclick="setToday()" class="text-xs font-semibold px-3 py-1.5 text-[var(--accent)] rounded-lg">Today</button>
+              <button onclick="setToday()" class="text-[13px] font-semibold text-[var(--accent)] active:opacity-60">Today</button>
             `}
           </div>
         </header>
@@ -5784,7 +5831,7 @@
                 </div>
                 <input type="date" id="dateInput" value="${currentDate}"
                   onclick="this.showPicker()"
-                  class="px-3 py-2 rounded-lg text-sm border border-softborder bg-white focus:border-coral focus:outline-none">
+                  class="px-3 py-2 rounded-lg text-sm border border-softborder bg-[var(--bg-input)] focus:border-coral focus:outline-none">
                 <button onclick="setToday()" class="sb-btn px-4 py-2 rounded-lg text-sm font-medium">Today</button>
               </div>
             </div>
@@ -5814,16 +5861,16 @@
 
         ${activeTab === 'life' ? `
         <!-- Sub Navigation for Life Score -->
-        <div class="bg-warmgray/30 border-b border-charcoal/5">
-          <div class="max-w-6xl mx-auto px-6">
+        <div class="bg-[var(--bg-secondary)]/50 border-b border-[var(--border-light)]">
+          <div class="life-sub-nav max-w-6xl mx-auto px-6">
             <div class="flex gap-1 py-2">
-              <button onclick="switchSubTab('daily')" class="px-4 py-1.5 text-sm rounded-lg transition ${activeSubTab === 'daily' ? 'bg-white shadow-sm text-charcoal font-medium' : 'text-charcoal/60 hover:text-charcoal hover:bg-white/50'}">
+              <button onclick="switchSubTab('daily')" class="px-4 py-1.5 text-sm rounded-lg transition ${activeSubTab === 'daily' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
                 Daily Entry
               </button>
-              <button onclick="switchSubTab('bulk')" class="px-4 py-1.5 text-sm rounded-lg transition ${activeSubTab === 'bulk' ? 'bg-white shadow-sm text-charcoal font-medium' : 'text-charcoal/60 hover:text-charcoal hover:bg-white/50'}">
+              <button onclick="switchSubTab('bulk')" class="px-4 py-1.5 text-sm rounded-lg transition ${activeSubTab === 'bulk' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
                 Bulk Entry
               </button>
-              <button onclick="switchSubTab('dashboard')" class="px-4 py-1.5 text-sm rounded-lg transition ${activeSubTab === 'dashboard' ? 'bg-white shadow-sm text-charcoal font-medium' : 'text-charcoal/60 hover:text-charcoal hover:bg-white/50'}">
+              <button onclick="switchSubTab('dashboard')" class="px-4 py-1.5 text-sm rounded-lg transition ${activeSubTab === 'dashboard' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
                 Dashboard
               </button>
             </div>
@@ -6065,7 +6112,7 @@
           '<div class="px-5 py-3 bg-warmgray" style="border-bottom: 3px solid ' + getAccentColor() + '">' +
             '<h3 class="font-semibold text-charcoal">📅 Bulk Entry</h3>' +
           '</div>' +
-          '<div class="p-5 bg-white">' +
+          '<div class="p-5 bg-[var(--bg-card)]">' +
             '<div class="flex flex-wrap items-center gap-4">' +
               '<div>' +
                 '<label class="text-sm text-charcoal/60 block mb-1">Month</label>' +
@@ -6105,7 +6152,7 @@
           '<div class="px-5 py-3 bg-warmgray" style="border-bottom: 3px solid ' + getAccentColor() + '">' +
             '<h3 class="font-semibold text-charcoal flex items-center gap-2">' + THINGS3_ICONS.lifeScore + ' ' + monthName + ' Summary</h3>' +
           '</div>' +
-          '<div class="p-5 bg-white">' +
+          '<div class="p-5 bg-[var(--bg-card)]">' +
             '<div class="grid grid-cols-2 md:grid-cols-4 gap-4">' +
               '<div class="bg-warmgray rounded-lg p-3 text-center">' +
                 '<div id="bulk-days-logged" class="text-2xl font-bold text-charcoal">' + fmt(daysWithData) + '</div>' +
@@ -6143,7 +6190,7 @@
     function renderSettingsTab() {
       return `
         <div class="space-y-8">
-          <div class="sb-card rounded-lg p-6 bg-white">
+          <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
             <div class="flex justify-between items-center mb-4">
               <h3 class="font-semibold text-charcoal">Scoring Weights <span class="text-coral">→</span></h3>
               <button onclick="resetWeights()" class="px-4 py-2 bg-coral/10 text-coral rounded text-sm font-medium hover:bg-coral/20 transition">
@@ -6212,7 +6259,7 @@
             </div>
           </div>
 
-          <div class="sb-card rounded-lg p-6 bg-white">
+          <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
             <div class="flex justify-between items-center mb-4">
               <h3 class="font-semibold text-charcoal">Perfect Day Targets <span class="text-coral">→</span></h3>
               <button onclick="resetMaxScores()" class="px-4 py-2 bg-coral/10 text-coral rounded text-sm font-medium hover:bg-coral/20 transition">
@@ -6267,7 +6314,7 @@
             </div>
           </div>
 
-          <div class="sb-card rounded-lg p-6 bg-white">
+          <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
             <h3 class="font-semibold text-charcoal mb-4">Theme <span class="text-coral">→</span></h3>
             <p class="text-sm text-charcoal/50 mb-4">Choose your preferred visual style. Changes apply immediately.</p>
 
@@ -6298,7 +6345,7 @@
             </div>
           </div>
 
-          <div class="sb-card rounded-lg p-6 bg-white">
+          <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
             <h3 class="font-semibold text-charcoal mb-4">Cloud Sync <span class="text-coral">→</span></h3>
             <p class="text-sm text-charcoal/50 mb-4">Enable automatic sync to GitHub. Your data will be saved to the cloud on every change.</p>
 
@@ -6332,7 +6379,7 @@
             </div>
           </div>
 
-          <div class="sb-card rounded-lg p-6 bg-white">
+          <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
             <h3 class="font-semibold text-charcoal mb-4">Data Management <span class="text-coral">→</span></h3>
             <div class="flex flex-wrap gap-3">
               <button onclick="exportData()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
@@ -6691,7 +6738,7 @@
               </div>
 
               <!-- Stats Bar -->
-              <div class="px-6 py-4 border-t border-charcoal/[0.06] bg-warmgray/30">
+              <div class="px-6 py-4 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/30">
                 <div class="flex items-center gap-6">
                   <div class="flex items-center gap-3">
                     <div class="relative w-12 h-12">
@@ -6900,10 +6947,10 @@
       const taskListHtml = isAreaView ? buildAreaTaskListHtml() : `
         <div class="flex-1">
           <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
-            <div class="px-5 py-4 flex items-center justify-between">
+            <div class="task-list-header-desktop px-5 py-4 flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <span class="text-2xl" ${viewInfo.color ? `style="color: ${viewInfo.color}"` : ''}>${viewInfo.icon}</span>
-                <h2 class="text-xl font-semibold text-charcoal">${viewInfo.name}</h2>
+                <h2 class="text-xl font-semibold text-[var(--text-primary)]">${viewInfo.name}</h2>
               </div>
               <button onclick="openNewTaskModal()"
                 class="w-8 h-8 rounded-full bg-[#147EFB] text-white flex items-center justify-center hover:bg-[#0E6AD8] transition shadow-sm" title="${activePerspective === 'notes' ? 'Add Note' : 'Add Task'}">
@@ -6913,19 +6960,19 @@
 
             ${activePerspective !== 'upcoming' ? `
             <!-- Quick Add Input -->
-            <div class="px-4 py-3">
+            <div class="quick-add-section px-4 py-3 border-b border-[var(--border-light)]">
               <div class="flex items-center gap-3">
                 ${activePerspective === 'notes' ? `
                   <div class="w-2 h-2 rounded-full border-2 border-dashed border-[#8B5CF6]/40 flex-shrink-0 ml-1.5"></div>
                 ` : `
-                  <div class="w-5 h-5 rounded-full border-2 border-dashed border-charcoal/20 flex-shrink-0"></div>
+                  <div class="w-5 h-5 rounded-full border-2 border-dashed border-[var(--text-muted)]/30 flex-shrink-0"></div>
                 `}
                 <input type="text" id="quick-add-input"
                   placeholder="${activePerspective === 'notes' ? 'New Note' : 'New To-Do'}"
                   onkeydown="handleQuickAddKeydown(event, this)"
-                  class="flex-1 text-[15px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none focus:ring-0">
+                  class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)]/50 bg-transparent border-0 outline-none focus:ring-0">
                 <button onclick="quickAddTask(document.getElementById('quick-add-input'))"
-                  class="text-charcoal/30 hover:text-coral transition p-1" title="${activePerspective === 'notes' ? 'Add Note' : 'Add to ' + viewInfo.name}">
+                  class="text-[var(--text-muted)] hover:text-[var(--accent)] transition p-1" title="${activePerspective === 'notes' ? 'Add Note' : 'Add to ' + viewInfo.name}">
                   <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </button>
               </div>
@@ -6934,10 +6981,10 @@
 
             <div class="min-h-[400px] task-list">
               ${filteredTasks.length === 0 ? `
-                <div class="empty-state flex flex-col items-center justify-center py-20 text-charcoal/30">
-                  <div class="w-16 h-16 mb-4 flex items-center justify-center opacity-50">${viewInfo.icon}</div>
+                <div class="empty-state flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
+                  <div class="w-16 h-16 mb-4 flex items-center justify-center opacity-40">${viewInfo.icon}</div>
                   <p class="text-[15px] font-medium">No tasks in ${viewInfo.name}</p>
-                  ${activePerspective === 'inbox' ? '<p class="text-[13px] mt-1 text-charcoal/25">Add a task to get started</p>' : ''}
+                  ${activePerspective === 'inbox' ? '<p class="text-[13px] mt-1 text-[var(--text-muted)]/60">Add a task to get started</p>' : ''}
                 </div>
               ` : (activePerspective === 'upcoming' ? `
                 <!-- Upcoming view grouped by date -->
@@ -7210,7 +7257,7 @@
       const editingPerspective = editingPerspectiveId ? customPerspectives.find(p => p.id === editingPerspectiveId) : null;
       const perspectiveModalHtml = showPerspectiveModal ? `
         <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showPerspectiveModal=false; editingPerspectiveId=null; render()}" onkeydown="if(event.key==='Escape'){showPerspectiveModal=false; editingPerspectiveId=null; render();}" role="dialog" aria-modal="true" aria-labelledby="perspective-modal-title">
-          <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-md mx-4" onclick="event.stopPropagation()">
+          <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-md mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 id="perspective-modal-title" class="font-semibold text-charcoal">${editingPerspective ? 'Edit Custom View' : 'New Custom View'}</h3>
               <button onclick="showPerspectiveModal=false; editingPerspectiveId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
@@ -7282,7 +7329,7 @@
       const editingCategory = editingCategoryId ? taskCategories.find(c => c.id === editingCategoryId) : null;
       const categoryModalHtml = showCategoryModal ? `
         <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showCategoryModal=false; editingCategoryId=null; render()}" onkeydown="if(event.key==='Escape'){showCategoryModal=false; editingCategoryId=null; render();}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
-          <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+          <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 id="category-modal-title" class="font-semibold text-charcoal">${editingCategory ? 'Edit Area' : 'New Area'}</h3>
               <button onclick="showCategoryModal=false; editingCategoryId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
@@ -7317,7 +7364,7 @@
       const editingLabel = editingLabelId ? taskLabels.find(l => l.id === editingLabelId) : null;
       const labelModalHtml = showLabelModal ? `
         <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}" onkeydown="if(event.key==='Escape'){showLabelModal=false; editingLabelId=null; render();}" role="dialog" aria-modal="true" aria-labelledby="label-modal-title">
-          <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+          <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 id="label-modal-title" class="font-semibold text-charcoal">${editingLabel ? 'Edit Tag' : 'New Tag'}</h3>
               <button onclick="showLabelModal=false; editingLabelId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
@@ -7357,7 +7404,7 @@
       const editingPerson = editingPersonId ? taskPeople.find(p => p.id === editingPersonId) : null;
       const personModalHtml = showPersonModal ? `
         <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}" onkeydown="if(event.key==='Escape'){showPersonModal=false; editingPersonId=null; render();}" role="dialog" aria-modal="true" aria-labelledby="person-modal-title">
-          <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+          <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
             <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
               <h3 id="person-modal-title" class="font-semibold text-charcoal">${editingPerson ? 'Edit Person' : 'New Person'}</h3>
               <button onclick="showPersonModal=false; editingPersonId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
@@ -7392,8 +7439,11 @@
         <!-- Mobile Sidebar Drawer (hidden on desktop) -->
         <div id="mobile-sidebar-overlay" class="mobile-sidebar-overlay md:hidden ${mobileDrawerOpen ? 'show' : ''}" onclick="if(event.target===this) closeMobileDrawer()">
           <div class="mobile-sidebar-drawer">
-            <div class="p-4 border-b border-[var(--border-light)]">
+            <div class="p-4 border-b border-[var(--border-light)] flex items-center justify-between" style="padding-top: max(16px, env(safe-area-inset-top));">
               <h2 class="text-lg font-bold text-[var(--text-primary)]">Workspace</h2>
+              <button onclick="closeMobileDrawer()" class="w-8 h-8 flex items-center justify-center rounded-full text-[var(--text-muted)] active:bg-[var(--bg-secondary)] transition" aria-label="Close sidebar">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
             </div>
             ${sidebarHtml.replace('w-full md:w-64', 'w-full')}
           </div>
