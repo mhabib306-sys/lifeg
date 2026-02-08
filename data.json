@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T08:46:55.072Z",
+  "lastUpdated": "2026-02-08T08:49:12.123Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1744,7 +1744,11 @@
     "2026-02-08": {
       "habits": {
         "exercise": false
-      }
+      },
+      "prayers": {},
+      "glucose": {},
+      "whoop": {},
+      "family": {}
     }
   },
   "weights": {
