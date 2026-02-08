@@ -99,8 +99,11 @@ export async function checkWhoopStatus() {
 
 /**
  * Write WHOOP data into a specific date's allData entry.
+ * Strain is only written if the WHOOP cycle started on the target date,
+ * preventing yesterday's final strain from leaking into today's entry
+ * during the midnight→wake-up window.
  * @param {string} dateKey - YYYY-MM-DD
- * @param {Object} data - { sleepPerf, recovery, strain }
+ * @param {Object} data - { sleepPerf, recovery, strain, cycleStartDate }
  */
 function writeWhoopToDate(dateKey, data) {
   if (!state.allData[dateKey]) {
@@ -110,14 +113,25 @@ function writeWhoopToDate(dateKey, data) {
     state.allData[dateKey].whoop = {};
   }
 
+  // Sleep perf and recovery are always safe to write — they reflect
+  // last night's sleep which is the correct data point for the new day.
   if (data.sleepPerf !== null && data.sleepPerf !== undefined) {
     state.allData[dateKey].whoop.sleepPerf = data.sleepPerf;
   }
   if (data.recovery !== null && data.recovery !== undefined) {
     state.allData[dateKey].whoop.recovery = data.recovery;
   }
+
+  // Strain: only write if the cycle belongs to this date.
+  // Between midnight and wake-up, the latest cycle is still yesterday's —
+  // writing that strain to today would be wrong.
+  const cycleDate = data.cycleStartDate; // YYYY-MM-DD from worker
   if (data.strain !== null && data.strain !== undefined) {
-    state.allData[dateKey].whoop.strain = data.strain;
+    if (!cycleDate || cycleDate === dateKey) {
+      state.allData[dateKey].whoop.strain = data.strain;
+    } else {
+      console.log(`WHOOP: skipping strain (cycle from ${cycleDate}, target ${dateKey})`);
+    }
   }
 }
 
