@@ -8,6 +8,7 @@ import { state } from '../state.js';
 import { fmt } from '../utils.js';
 import { getLast30DaysData, getLast30DaysStats, getPersonalBests } from '../features/scoring.js';
 import { getAccentColor } from '../data/github-sync.js';
+import Chart from 'chart.js/auto';
 
 /**
  * Render the dashboard tab with 30-day overview, charts,

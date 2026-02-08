@@ -94,11 +94,11 @@ export async function fetchWeather() {
       timestamp: Date.now()
     }));
 
-    state.render();
+    window.render();
   } catch (error) {
     console.error('Weather fetch error:', error);
     // Still render even if fetch fails - show stale data or empty state
-    state.render();
+    window.render();
   }
 }
 

@@ -1,6 +1,7 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
 import { getLocalDateString } from '../utils.js';
+import { BUILTIN_PERSPECTIVES } from '../constants.js';
 import { getTasksByPerson, getCategoryById, getLabelById, getPersonById } from './categories.js';
 
 /**
@@ -42,7 +43,7 @@ export function getFilteredTasks(perspectiveId) {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   }
 
-  const allPerspectives = [...state.BUILTIN_PERSPECTIVES, ...state.customPerspectives];
+  const allPerspectives = [...BUILTIN_PERSPECTIVES, ...state.customPerspectives];
   const perspective = allPerspectives.find(p => p.id === perspectiveId);
   if (!perspective) return [];
 
@@ -277,8 +278,8 @@ export function getCurrentViewInfo() {
     const person = getPersonById(state.activePersonFilter);
     return { icon: '\u{1F464}', name: person?.name || 'Person', color: person?.color };
   } else {
-    const allPerspectives = [...state.BUILTIN_PERSPECTIVES, ...state.customPerspectives];
-    const p = allPerspectives.find(p => p.id === state.activePerspective) || state.BUILTIN_PERSPECTIVES[0];
+    const allPerspectives = [...BUILTIN_PERSPECTIVES, ...state.customPerspectives];
+    const p = allPerspectives.find(p => p.id === state.activePerspective) || BUILTIN_PERSPECTIVES[0];
     return { icon: p.icon, name: p.name };
   }
 }
