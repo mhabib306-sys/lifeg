@@ -39,7 +39,12 @@ import { generateTaskId, getLocalDateString } from '../utils.js';
  * @returns {Task} Created task object
  */
 export function createTask(title, options = {}) {
-  const normalizedStatus = options.status === 'today' ? 'anytime' : (options.status || 'inbox');
+  let normalizedStatus = options.status === 'today' ? 'anytime' : (options.status || 'inbox');
+  const hasCategory = !!options.categoryId;
+  // Things 3 logic: assigning an Area to an Inbox task moves it to Anytime
+  if (!options.isNote && normalizedStatus === 'inbox' && hasCategory) {
+    normalizedStatus = 'anytime';
+  }
   const task = {
     id: generateTaskId(),
     title: title,
