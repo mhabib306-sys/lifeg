@@ -1710,6 +1710,15 @@ input[type="checkbox"]:focus {
 }
 
 /* Multi-select tags */
+#tags-input-container,
+#people-input-container {
+  position: relative;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
 .tag-input-container {
   display: flex;
   flex-wrap: wrap;
@@ -1901,6 +1910,9 @@ input[type="checkbox"]:focus {
   gap: 8px;
 }
 .status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 14px;
   border-radius: 20px;
   font-size: 13px;
@@ -1924,7 +1936,8 @@ input[type="checkbox"]:focus {
   outline-offset: 2px;
 }
 .status-pill .status-icon {
-  margin-right: 6px;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* Date row styling */
