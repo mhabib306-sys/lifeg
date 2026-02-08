@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T22:09:07.901Z",
+  "lastUpdated": "2026-02-08T22:09:25.544Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2675,6 +2675,28 @@
       "order": 42000,
       "createdAt": "2026-02-08T18:51:44.364Z",
       "updatedAt": "2026-02-08T18:52:16.552Z"
+    },
+    {
+      "id": "task_1770588562749_har98muot",
+      "title": "Send Tawfik Magdy resume from Mostafa to Manal Ameen",
+      "notes": "",
+      "status": "inbox",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 43000,
+      "createdAt": "2026-02-08T22:09:22.749Z",
+      "updatedAt": "2026-02-08T22:09:22.749Z"
     }
   ],
   "taskCategories": [
