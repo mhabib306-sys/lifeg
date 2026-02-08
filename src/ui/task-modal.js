@@ -629,8 +629,14 @@ export function setModalType(isNote) {
 export function setModalStatus(status) {
   if (status === 'today') {
     state.modalSelectedToday = !state.modalSelectedToday;
+    if (state.modalSelectedToday && state.modalSelectedStatus === 'inbox') {
+      state.modalSelectedStatus = 'anytime';
+    }
   } else {
     state.modalSelectedStatus = status;
+    if (status === 'inbox' || status === 'someday') {
+      state.modalSelectedToday = false;
+    }
   }
   document.querySelectorAll('.status-pill').forEach(pill => {
     if (pill.dataset.status === 'today') {
@@ -1011,6 +1017,10 @@ export function saveTaskFromModal() {
 
   // Things 3 logic: Assigning an Area to an Inbox task moves it to Anytime (not for notes)
   if (!state.modalIsNote && taskData.status === 'inbox' && taskData.categoryId) {
+    taskData.status = 'anytime';
+  }
+  // Today flag implies availability (not Inbox/Someday)
+  if (!state.modalIsNote && taskData.status === 'inbox' && taskData.today) {
     taskData.status = 'anytime';
   }
 

@@ -10,6 +10,7 @@ power of OmniFocus-style availability.
 - **Today**: A flag indicating explicit focus today (non-exclusive).
 - **Flagged**: A separate importance flag (OmniFocus-style).
 - **Someday**: Hidden from active lists.
+Today implies availability; setting Today moves Inbox items to Anytime.
 
 ## Date Semantics
 - **Defer (Start)** controls availability. If `deferDate > today`, the task is not available.

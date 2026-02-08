@@ -41,8 +41,9 @@ import { generateTaskId, getLocalDateString } from '../utils.js';
 export function createTask(title, options = {}) {
   let normalizedStatus = options.status === 'today' ? 'anytime' : (options.status || 'inbox');
   const hasCategory = !!options.categoryId;
+  const isToday = !!options.today;
   // Things 3 logic: assigning an Area to an Inbox task moves it to Anytime
-  if (!options.isNote && normalizedStatus === 'inbox' && hasCategory) {
+  if (!options.isNote && normalizedStatus === 'inbox' && (hasCategory || isToday)) {
     normalizedStatus = 'anytime';
   }
   const task = {
@@ -82,6 +83,11 @@ export function updateTask(taskId, updates) {
     }
     // Things 3 logic: Assigning Area to Inbox task moves it to Anytime
     if (task.status === 'inbox' && updates.categoryId && !task.categoryId) {
+      updates.status = 'anytime';
+    }
+    const nextStatus = updates.status ?? task.status;
+    const nextToday = updates.today ?? task.today;
+    if (!task.isNote && nextStatus === 'inbox' && nextToday) {
       updates.status = 'anytime';
     }
     state.tasksData[idx] = { ...task, ...updates, updatedAt: new Date().toISOString() };
