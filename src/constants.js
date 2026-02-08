@@ -97,9 +97,10 @@ export const VIEW_STATE_KEY = 'lifeGamificationViewState';
 export const DEFAULT_HOME_WIDGETS = [
   { id: 'quick-stats', type: 'stats', title: 'Quick Stats', size: 'full', order: 0, visible: true },
   { id: 'quick-add', type: 'quick-add', title: 'Quick Add Task', size: 'full', order: 1, visible: true },
-  { id: 'today-tasks', type: 'today-tasks', title: 'Today', size: 'half', order: 2, visible: true },
-  { id: 'next-tasks', type: 'next-tasks', title: 'Next', size: 'half', order: 3, visible: true },
-  { id: 'daily-entry', type: 'daily-entry', title: 'Daily Entry', size: 'full', order: 4, visible: true }
+  { id: 'weather', type: 'weather', title: 'Weather', size: 'half', order: 2, visible: true },
+  { id: 'today-tasks', type: 'today-tasks', title: 'Today', size: 'half', order: 3, visible: true },
+  { id: 'next-tasks', type: 'next-tasks', title: 'Next', size: 'half', order: 4, visible: true },
+  { id: 'daily-entry', type: 'daily-entry', title: 'Daily Entry', size: 'full', order: 5, visible: true }
 ];
 
 // Default categories (Areas)

@@ -6,7 +6,7 @@
 
 import { state } from '../state.js';
 import { getLocalDateString } from '../utils.js';
-import { THINGS3_ICONS, WEATHER_ICONS, defaultDayData } from '../constants.js';
+import { THINGS3_ICONS, WEATHER_ICONS, WEATHER_DESCRIPTIONS, defaultDayData } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // External function references — these will be replaced with proper module
@@ -335,6 +335,73 @@ export function renderHomeWidget(widget, isEditing) {
       break;
     }
 
+    case 'weather': {
+      const w = state.weatherData;
+      if (!w) {
+        content = `<div class="py-6 text-center text-[var(--text-muted)] text-sm">Loading weather...</div>`;
+      } else {
+        const desc = WEATHER_DESCRIPTIONS[w.weatherCode] || 'Unknown';
+        const icon = WEATHER_ICONS[w.weatherCode] || '\uD83C\uDF21\uFE0F';
+        const humidityBar = Math.min(w.humidity, 100);
+        const windDesc = w.windSpeed < 10 ? 'Calm' : w.windSpeed < 25 ? 'Breezy' : 'Windy';
+
+        content = `
+          <div class="flex items-start gap-4">
+            <!-- Left: current conditions -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-3">
+                <span class="text-4xl leading-none">${icon}</span>
+                <div>
+                  <div class="text-3xl font-bold text-[var(--text-primary)] leading-none">${w.temp}\u00B0</div>
+                  <div class="text-sm text-[var(--text-secondary)] mt-0.5">${desc}</div>
+                </div>
+              </div>
+              <div class="text-xs text-[var(--text-muted)] mt-2">${w.city}</div>
+            </div>
+            <!-- Right: high/low -->
+            <div class="text-right flex-shrink-0">
+              <div class="flex items-center justify-end gap-1.5">
+                <svg class="w-3 h-3 text-orange-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.09 8.26L21 9.27L16 13.97L17.18 20.02L12 17.77L6.82 20.02L8 13.97L3 9.27L9.91 8.26L12 2Z"/></svg>
+                <span class="text-sm font-semibold text-[var(--text-primary)]">${w.tempMax}\u00B0</span>
+                <span class="text-[10px] text-[var(--text-muted)]">${w.maxHour}</span>
+              </div>
+              <div class="flex items-center justify-end gap-1.5 mt-1">
+                <svg class="w-3 h-3 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22q-2.075 0-3.537-1.462Q7 19.075 7 17q0-1.3.612-2.4T9 12.55V5q0-1.25.875-2.125T12 2q1.25 0 2.125.875T15 5v7.55q.775.95 1.388 2.05T17 17q0 2.075-1.463 3.538Q14.075 22 12 22Z"/></svg>
+                <span class="text-sm font-semibold text-[var(--text-primary)]">${w.tempMin}\u00B0</span>
+                <span class="text-[10px] text-[var(--text-muted)]">${w.minHour}</span>
+              </div>
+            </div>
+          </div>
+          <!-- Detail pills -->
+          <div class="grid grid-cols-2 gap-2 mt-4">
+            <div class="bg-[var(--bg-secondary)] rounded-lg px-3 py-2">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+                <span class="text-[11px] text-[var(--text-muted)]">Humidity</span>
+              </div>
+              <div class="flex items-center gap-2 mt-1.5">
+                <div class="flex-1 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
+                  <div class="h-full bg-blue-400 rounded-full" style="width: ${humidityBar}%"></div>
+                </div>
+                <span class="text-xs font-semibold text-[var(--text-primary)]">${w.humidity}%</span>
+              </div>
+            </div>
+            <div class="bg-[var(--bg-secondary)] rounded-lg px-3 py-2">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-teal-400" viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 17c0 1.65-1.35 3-3 3s-3-1.35-3-3c0-1.17.67-2.18 1.65-2.67L9.5 2h4l-.65 12.33c.98.49 1.65 1.5 1.65 2.67z"/></svg>
+                <span class="text-[11px] text-[var(--text-muted)]">Wind</span>
+              </div>
+              <div class="mt-1.5">
+                <span class="text-xs font-semibold text-[var(--text-primary)]">${w.windSpeed} km/h</span>
+                <span class="text-[10px] text-[var(--text-muted)] ml-1">${windDesc}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      break;
+    }
+
     default:
       content = '<div class="py-4 text-center text-charcoal/30">Unknown widget type</div>';
   }
@@ -345,7 +412,8 @@ export function renderHomeWidget(widget, isEditing) {
     'quick-add': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>',
     'today-tasks': THINGS3_ICONS.today,
     'next-tasks': THINGS3_ICONS.next,
-    'daily-entry': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>'
+    'daily-entry': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>',
+    'weather': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>'
   };
 
   const widgetColors = {
@@ -353,7 +421,8 @@ export function renderHomeWidget(widget, isEditing) {
     'quick-add': '#147EFB',
     'today-tasks': '#FFCA28',
     'next-tasks': '#8B5CF6',
-    'daily-entry': '#F97316'
+    'daily-entry': '#F97316',
+    'weather': '#F59E0B'
   };
 
   // Quick-add widget has minimal styling (no border, no background, no header)
