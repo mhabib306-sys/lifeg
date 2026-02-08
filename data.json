@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T11:26:01.414Z",
+  "lastUpdated": "2026-02-08T11:26:10.203Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1752,6 +1752,11 @@
       "whoop": {
         "sleepPerf": 84,
         "recovery": 74
+      },
+      "prayers": {},
+      "family": {
+        "mom": true,
+        "ahmed": true
       }
     }
   },
