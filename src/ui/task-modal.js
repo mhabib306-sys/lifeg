@@ -693,21 +693,29 @@ export function clearDateField(type) {
  * @param {number|null} offsetDays - days from today, or null to clear
  */
 export function setQuickDate(type, offsetDays) {
-  const input = document.getElementById(type === 'defer' ? 'task-defer' : 'task-due');
-  if (!input) return;
+  const inputId = type === 'defer' ? 'task-defer' : 'task-due';
+  const input = document.getElementById(inputId);
+  const display = document.getElementById(type + '-display');
+  const clearBtn = document.getElementById(type + '-clear-btn');
+
   if (offsetDays === null) {
-    input.value = '';
-    updateDateDisplay(type);
+    if (input) input.value = '';
+    if (display) display.textContent = 'None';
+    if (clearBtn) clearBtn.classList.add('hidden');
     return;
   }
+
   const d = new Date();
   d.setHours(0, 0, 0, 0);
   d.setDate(d.getDate() + offsetDays);
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
-  input.value = `${y}-${m}-${dd}`;
-  updateDateDisplay(type);
+  const dateStr = `${y}-${m}-${dd}`;
+
+  if (input) input.value = dateStr;
+  if (display) display.textContent = formatSmartDate(dateStr);
+  if (clearBtn) clearBtn.classList.remove('hidden');
 }
 
 /**
@@ -1230,10 +1238,10 @@ export function renderTaskModalHtml() {
               </button>
             </div>
             <div class="date-quick-row mb-3">
-              <button class="date-quick-pill" onclick="setQuickDate('defer', 0)">Today</button>
-              <button class="date-quick-pill" onclick="setQuickDate('defer', 1)">Tomorrow</button>
-              <button class="date-quick-pill" onclick="setQuickDate('defer', 7)">Next Week</button>
-              <button class="date-quick-pill ghost" onclick="setQuickDate('defer', null)">Clear</button>
+              <button type="button" class="date-quick-pill" onclick="event.stopPropagation(); setQuickDate('defer', 0)">Today</button>
+              <button type="button" class="date-quick-pill" onclick="event.stopPropagation(); setQuickDate('defer', 1)">Tomorrow</button>
+              <button type="button" class="date-quick-pill" onclick="event.stopPropagation(); setQuickDate('defer', 7)">Next Week</button>
+              <button type="button" class="date-quick-pill ghost" onclick="event.stopPropagation(); setQuickDate('defer', null)">Clear</button>
             </div>
             <!-- Due -->
             <div class="date-row" onclick="openDatePicker('due')">
@@ -1250,10 +1258,10 @@ export function renderTaskModalHtml() {
               </button>
             </div>
             <div class="date-quick-row">
-              <button class="date-quick-pill" onclick="setQuickDate('due', 0)">Today</button>
-              <button class="date-quick-pill" onclick="setQuickDate('due', 1)">Tomorrow</button>
-              <button class="date-quick-pill" onclick="setQuickDate('due', 7)">Next Week</button>
-              <button class="date-quick-pill ghost" onclick="setQuickDate('due', null)">Clear</button>
+              <button type="button" class="date-quick-pill" onclick="event.stopPropagation(); setQuickDate('due', 0)">Today</button>
+              <button type="button" class="date-quick-pill" onclick="event.stopPropagation(); setQuickDate('due', 1)">Tomorrow</button>
+              <button type="button" class="date-quick-pill" onclick="event.stopPropagation(); setQuickDate('due', 7)">Next Week</button>
+              <button type="button" class="date-quick-pill ghost" onclick="event.stopPropagation(); setQuickDate('due', null)">Clear</button>
             </div>
           </div>
 
