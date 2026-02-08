@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T18:51:46.908Z",
+  "lastUpdated": "2026-02-08T18:52:06.174Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2657,7 +2657,9 @@
       "completed": false,
       "completedAt": null,
       "categoryId": null,
-      "labels": [],
+      "labels": [
+        "label_1770020325388"
+      ],
       "people": [
         "person_1770576686684",
         "person-1770510421604"
@@ -2670,7 +2672,7 @@
       "indent": 0,
       "order": 42000,
       "createdAt": "2026-02-08T18:51:44.364Z",
-      "updatedAt": "2026-02-08T18:51:44.364Z"
+      "updatedAt": "2026-02-08T18:52:03.576Z"
     }
   ],
   "taskCategories": [
