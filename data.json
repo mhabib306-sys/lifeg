@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T23:19:23.407Z",
+  "lastUpdated": "2026-02-08T23:58:18.645Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2384,8 +2384,8 @@
       "title": "Take B12",
       "notes": "",
       "status": "anytime",
-      "completed": true,
-      "completedAt": "2026-02-08T23:18:42.106Z",
+      "completed": false,
+      "completedAt": null,
       "categoryId": "personal",
       "labels": [],
       "people": [],
@@ -2400,7 +2400,7 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-08T08:02:59.625Z",
-      "updatedAt": "2026-02-08T23:18:42.106Z",
+      "updatedAt": "2026-02-08T14:45:58.772Z",
       "order": 9000
     },
     {
@@ -2805,58 +2805,6 @@
       "today": false,
       "flagged": false,
       "order": 30000
-    },
-    {
-      "id": "task_1770592722106_144o5yfb9",
-      "title": "Take B12",
-      "notes": "",
-      "status": "anytime",
-      "today": false,
-      "flagged": false,
-      "completed": true,
-      "completedAt": "2026-02-08T23:18:55.859Z",
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": "2026-02-09",
-      "dueDate": null,
-      "repeat": {
-        "type": "daily",
-        "interval": 1,
-        "from": "due"
-      },
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "order": 46000,
-      "createdAt": "2026-02-08T23:18:42.106Z",
-      "updatedAt": "2026-02-08T23:18:55.859Z"
-    },
-    {
-      "id": "task_1770592735859_ebdpx9o0y",
-      "title": "Take B12",
-      "notes": "",
-      "status": "anytime",
-      "today": false,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": "2026-02-10",
-      "dueDate": null,
-      "repeat": {
-        "type": "daily",
-        "interval": 1,
-        "from": "due"
-      },
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "order": 46000,
-      "createdAt": "2026-02-08T23:18:55.859Z",
-      "updatedAt": "2026-02-08T23:18:55.859Z"
     }
   ],
   "taskCategories": [
@@ -3011,18 +2959,18 @@
   ],
   "homeWidgets": [
     {
-      "id": "quick-stats",
-      "type": "stats",
-      "title": "Quick Stats",
+      "id": "quick-add",
+      "type": "quick-add",
+      "title": "Quick Add Task",
       "size": "full",
       "order": 0,
       "visible": true
     },
     {
-      "id": "quick-add",
-      "type": "quick-add",
-      "title": "Quick Add Task",
-      "size": "full",
+      "id": "today-tasks",
+      "type": "today-tasks",
+      "title": "Today",
+      "size": "half",
       "order": 1,
       "visible": true
     },
@@ -3035,17 +2983,17 @@
       "visible": true
     },
     {
-      "id": "todays-score",
-      "type": "score",
-      "title": "Today's Score",
+      "id": "quick-stats",
+      "type": "stats",
+      "title": "Quick Stats",
       "size": "half",
       "order": 3,
       "visible": true
     },
     {
-      "id": "today-tasks",
-      "type": "today-tasks",
-      "title": "Today",
+      "id": "todays-score",
+      "type": "score",
+      "title": "Today's Score",
       "size": "half",
       "order": 4,
       "visible": true
@@ -3062,7 +3010,7 @@
       "id": "daily-entry",
       "type": "daily-entry",
       "title": "Daily Entry",
-      "size": "full",
+      "size": "half",
       "order": 6,
       "visible": true
     }
