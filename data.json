@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T08:02:48.667Z",
+  "lastUpdated": "2026-02-08T08:03:02.068Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2471,6 +2471,25 @@
       "indent": 0,
       "createdAt": "2026-02-08T00:27:07.575Z",
       "updatedAt": "2026-02-08T00:27:07.575Z"
+    },
+    {
+      "id": "task_1770537779625_2gz2y5err",
+      "title": "Take B12",
+      "notes": "",
+      "status": "inbox",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "createdAt": "2026-02-08T08:02:59.625Z",
+      "updatedAt": "2026-02-08T08:02:59.625Z"
     }
   ],
   "taskCategories": [
