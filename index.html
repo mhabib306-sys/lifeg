@@ -1930,7 +1930,7 @@
      *    - Home, Tasks, Track, Bulk, Dashboard tabs
      *
      * @author Muhammad Habib
-     * @version 3.3.1
+     * @version 3.4.0
      * @license MIT
      */
 
@@ -1942,7 +1942,7 @@
     // MAJOR: New major features (Home view, Next perspective, etc.)
     // MINOR: Enhancements and improvements
     // PATCH: Bug fixes and small tweaks
-    const APP_VERSION = '3.3.1 cli';
+    const APP_VERSION = '3.4.0 cli';
 
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -3265,7 +3265,8 @@
             if (t.completed || t.isNote) return false;
             const isDueToday = t.dueDate === today;
             const isOverdue = t.dueDate && t.dueDate < today;
-            return t.status === 'today' || isDueToday || isOverdue;
+            const isScheduledForToday = t.deferDate && t.deferDate <= today;
+            return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
           }).length;
           const nextTasksCount = nextLabel ? tasksData.filter(t => {
             if (t.completed || t.isNote) return false;
@@ -3314,24 +3315,53 @@
           break;
 
         case 'today-tasks': {
-          const todayTasks = tasksData.filter(t => {
+          const allTodayTasks = tasksData.filter(t => {
             if (t.completed || t.isNote) return false;
             const isDueToday = t.dueDate === today;
             const isOverdue = t.dueDate && t.dueDate < today;
-            return t.status === 'today' || isDueToday || isOverdue;
-          }).sort((a, b) => {
-            if (a.dueDate && !b.dueDate) return -1;
-            if (!a.dueDate && b.dueDate) return 1;
-            if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
-            return 0;
+            const isScheduledForToday = t.deferDate && t.deferDate <= today;
+            return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
           });
+          // Due tasks: overdue + due today (shown first)
+          const dueTasks = allTodayTasks.filter(t => (t.dueDate && t.dueDate <= today)).sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+          // Starting tasks: deferred to today but NOT due today/overdue
+          const startingTasks = allTodayTasks.filter(t => {
+            const isDueOrOverdue = t.dueDate && t.dueDate <= today;
+            const isScheduled = t.deferDate && t.deferDate <= today;
+            return isScheduled && !isDueOrOverdue;
+          });
+          // Remaining today-status tasks (no due or defer date relevance)
+          const otherTodayTasks = allTodayTasks.filter(t => !dueTasks.includes(t) && !startingTasks.includes(t));
+          const totalCount = allTodayTasks.length;
 
-          content = todayTasks.length === 0 ? `
-            <div class="py-8 text-center text-[var(--text-muted)] text-sm">No tasks due today</div>
+          content = totalCount === 0 ? `
+            <div class="py-8 text-center text-[var(--text-muted)] text-sm">No tasks for today</div>
           ` : `
-            <div class="space-y-0.5 max-h-[300px] overflow-y-auto px-1">
-              ${todayTasks.slice(0, 8).map(task => renderTaskItem(task, false, true)).join('')}
-              ${todayTasks.length > 8 ? '<div class="px-3 py-3 text-center"><button onclick="showPerspectiveTasks(\'today\')" class="text-sm text-[var(--accent)] hover:underline font-medium">View all ' + todayTasks.length + ' tasks →</button></div>' : ''}
+            <div class="max-h-[300px] overflow-y-auto px-1">
+              ${dueTasks.length > 0 ? `
+                <div class="px-3 pt-2 pb-1">
+                  <div class="flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M18.7 12.4a6.06 6.06 0 00-.86-3.16l4.56-3.56L20.16 2l-4.13 4.15A7.94 7.94 0 0012 5a8 8 0 00-8 8c0 4.42 3.58 8 8 8a7.98 7.98 0 007.43-5.1l4.15 1.83.57-3.66-6.45 1.33zM12 19a6 6 0 116-6 6 6 0 01-6 6z"/><path d="M12.5 8H11v6l4.75 2.85.75-1.23-4-2.37z"/></svg>
+                    <span class="text-[11px] font-semibold text-red-500 uppercase tracking-wider">Due</span>
+                    <span class="text-[10px] text-red-400">${dueTasks.length}</span>
+                  </div>
+                </div>
+                <div class="space-y-0.5">${dueTasks.slice(0, 4).map(task => renderTaskItem(task, false, true)).join('')}</div>
+              ` : ''}
+              ${otherTodayTasks.length > 0 ? `
+                <div class="space-y-0.5">${otherTodayTasks.slice(0, dueTasks.length > 0 ? 3 : 6).map(task => renderTaskItem(task, false, true)).join('')}</div>
+              ` : ''}
+              ${startingTasks.length > 0 ? `
+                <div class="px-3 pt-2 pb-1 ${dueTasks.length > 0 || otherTodayTasks.length > 0 ? 'mt-1 border-t border-[var(--border-light)]' : ''}">
+                  <div class="flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    <span class="text-[11px] font-semibold text-blue-500 uppercase tracking-wider">Starting</span>
+                    <span class="text-[10px] text-blue-400">${startingTasks.length}</span>
+                  </div>
+                </div>
+                <div class="space-y-0.5">${startingTasks.slice(0, 3).map(task => renderTaskItem(task, false, true)).join('')}</div>
+              ` : ''}
+              ${totalCount > 8 ? '<div class="px-3 py-3 text-center"><button onclick="showPerspectiveTasks(\'today\')" class="text-sm text-[var(--accent)] hover:underline font-medium">View all ' + totalCount + ' tasks →</button></div>' : ''}
             </div>
           `;
           break;
@@ -7616,17 +7646,27 @@
                   `).join('')}
                 </div>
               ` : (activePerspective === 'today' ? (() => {
-                // Today view: Split into dated tasks and Next-tagged tasks
+                // Today view: Split into Due, Today, Starting, and Next sections
                 const today = getLocalDateString();
                 const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
 
-                // Dated tasks: tasks with status 'today', due today, overdue, or scheduled for today
-                const datedTasks = filteredTasks.filter(t => {
+                // All dated tasks (not Next-only)
+                const allDated = filteredTasks.filter(t => {
                   const isDueToday = t.dueDate === today;
                   const isOverdue = t.dueDate && t.dueDate < today;
                   const isScheduledForToday = t.deferDate && t.deferDate <= today;
                   return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
                 });
+
+                // Split into sections: Due (overdue + due today), Starting (deferred today), Other (status=today)
+                const dueTasks = allDated.filter(t => t.dueDate && t.dueDate <= today)
+                  .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+                const startingTasks = allDated.filter(t => {
+                  const isDueOrOverdue = t.dueDate && t.dueDate <= today;
+                  const isScheduled = t.deferDate && t.deferDate <= today;
+                  return isScheduled && !isDueOrOverdue;
+                });
+                const todayStatusTasks = allDated.filter(t => !dueTasks.includes(t) && !startingTasks.includes(t));
 
                 // Next tasks: tasks tagged with "next" label (not already in dated)
                 const nextTasks = nextLabel ? filteredTasks.filter(t => {
@@ -7636,26 +7676,38 @@
                   return isNextTagged && !isDatedTask;
                 }) : [];
 
+                const totalTasks = allDated.length + nextTasks.length;
+
+                // Helper to render a section with header
+                const renderSection = (tasks, icon, label, color, extraClass = '') => tasks.length > 0 ? `
+                  <div class="${extraClass}">
+                    <div class="px-5 py-2 sticky top-0 bg-[var(--bg-card)]">
+                      <div class="flex items-center gap-2">
+                        <span class="text-${color}">${icon}</span>
+                        <span class="text-[13px] font-semibold text-charcoal/50 uppercase tracking-wider">${label}</span>
+                        <span class="text-xs text-charcoal/30">${tasks.length}</span>
+                      </div>
+                    </div>
+                    ${tasks.map(task => renderTaskItem(task)).join('')}
+                  </div>
+                ` : '';
+
                 return `
                 <div class="task-list">
-                  ${datedTasks.length > 0 ? `
-                    <div class="dated-tasks-section">
-                      ${datedTasks.map(task => renderTaskItem(task)).join('')}
+                  ${renderSection(dueTasks,
+                    '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.7 12.4a6.06 6.06 0 00-.86-3.16l4.56-3.56L20.16 2l-4.13 4.15A7.94 7.94 0 0012 5a8 8 0 00-8 8c0 4.42 3.58 8 8 8a7.98 7.98 0 007.43-5.1l4.15 1.83.57-3.66-6.45 1.33zM12 19a6 6 0 116-6 6 6 0 01-6 6z"/><path d="M12.5 8H11v6l4.75 2.85.75-1.23-4-2.37z"/></svg>',
+                    'Due', 'red-500')}
+                  ${todayStatusTasks.length > 0 ? `
+                    <div class="${dueTasks.length > 0 ? 'mt-2' : ''}">
+                      ${todayStatusTasks.map(task => renderTaskItem(task)).join('')}
                     </div>
                   ` : ''}
-                  ${nextTasks.length > 0 ? `
-                    <div class="next-tasks-section mt-4">
-                      <div class="px-5 py-2 sticky top-0 bg-[var(--bg-card)]">
-                        <div class="flex items-center gap-2">
-                          <span class="text-[#8B5CF6]">${THINGS3_ICONS.next}</span>
-                          <span class="text-[13px] font-semibold text-charcoal/50 uppercase tracking-wider">Next</span>
-                          <span class="text-xs text-charcoal/30">${nextTasks.length}</span>
-                        </div>
-                      </div>
-                      ${nextTasks.map(task => renderTaskItem(task)).join('')}
-                    </div>
-                  ` : ''}
-                  ${datedTasks.length === 0 && nextTasks.length === 0 ? `
+                  ${renderSection(startingTasks,
+                    '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>',
+                    'Starting', 'blue-500', dueTasks.length > 0 || todayStatusTasks.length > 0 ? 'mt-2' : '')}
+                  ${renderSection(nextTasks, THINGS3_ICONS.next, 'Next', '[#8B5CF6]',
+                    allDated.length > 0 ? 'mt-4' : '')}
+                  ${totalTasks === 0 ? `
                     <div class="empty-state flex flex-col items-center justify-center py-20 text-charcoal/30">
                       <div class="w-16 h-16 mb-4 flex items-center justify-center opacity-50">${viewInfo.icon}</div>
                       <p class="text-[15px] font-medium">No tasks in ${viewInfo.name}</p>
