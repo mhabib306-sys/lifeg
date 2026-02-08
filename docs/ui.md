@@ -24,5 +24,5 @@ Home widgets are single-column on phones for readability.
 
 ## Calendar
 - Calendar grid uses fixed row heights so empty days match filled days.
-- Task lines show in minimal text with per-line due/start tag.
+- Task lines show in minimal text and rely on color for due/start/overdue.
 - Visual styling matches Things 3: lighter gridlines, soft header caps, and compact day labels.

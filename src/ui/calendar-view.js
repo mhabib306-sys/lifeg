@@ -102,10 +102,14 @@ export function renderCalendarView() {
                 const isDue = t.dueDate === cell.dateStr;
                 const isOver = isDue && t.dueDate < today;
                 const cls = isOver ? 'overdue' : isDue ? 'due' : 'defer';
-                const label = isDue ? 'Due' : 'Start';
-                return `<div class="calendar-task-line ${cls}"><span class="calendar-task-tag">${label}</span>${escapeHtml(t.title)}</div>`;
+                return `<div class="calendar-task-line ${cls}">${escapeHtml(t.title)}</div>`;
               }).join('')}
-              ${cellTasks.length > 3 ? `<div class="calendar-task-more">+${cellTasks.length - 3} more</div>` : ''}
+              ${cellTasks.length > 3 ? cellTasks.slice(3).map(t => {
+                const isDue = t.dueDate === cell.dateStr;
+                const isOver = isDue && t.dueDate < today;
+                const cls = isOver ? 'overdue' : isDue ? 'due' : 'defer';
+                return `<div class="calendar-task-line ${cls}">${escapeHtml(t.title)}</div>`;
+              }).join('') : ''}
             </div>
           ` : ''}
         </div>`;
