@@ -51,7 +51,7 @@ export function renderHomeWidget(widget, isEditing) {
   const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
   const isMobileView = typeof window !== 'undefined'
     && typeof window.matchMedia === 'function'
-    && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
+    && window.matchMedia('(max-width: 1024px), (hover: none) and (pointer: coarse)').matches;
 
   // Size class mapping
   const sizeClass = isMobileView
@@ -441,7 +441,7 @@ export function renderHomeTab() {
   const sortedWidgets = [...state.homeWidgets].sort((a, b) => a.order - b.order);
   const isMobileView = typeof window !== 'undefined'
     && typeof window.matchMedia === 'function'
-    && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
+    && window.matchMedia('(max-width: 1024px), (hover: none) and (pointer: coarse)').matches;
 
   // On mobile, always render all widgets in the configured order so critical cards
   // (like Today) and any hidden cards remain accessible.

@@ -752,7 +752,7 @@ input[type="checkbox"]:focus {
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   /* Show bottom nav, hide top nav */
   .mobile-bottom-nav {
     display: block;
@@ -1204,7 +1204,7 @@ input[type="checkbox"]:focus {
 }
 
 /* Large phones (iPhone Pro Max, iPhone 17 Pro Max - 430px+ width) */
-@media (min-width: 390px) and (max-width: 768px) {
+@media (min-width: 390px) and (max-width: 1024px) {
   /* Generous spacing for large screens */
   .widget {
     border-radius: 20px;
