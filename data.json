@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T10:20:54.530Z",
+  "lastUpdated": "2026-02-08T10:21:09.804Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2135,7 +2135,7 @@
       "id": "task_1770456058835_o9bav1rjn",
       "title": "Get a gift for Omar Metwally?",
       "notes": "",
-      "status": "inbox",
+      "status": "today",
       "completed": false,
       "completedAt": null,
       "categoryId": null,
@@ -2148,7 +2148,7 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-07T09:20:58.835Z",
-      "updatedAt": "2026-02-08T08:09:09.257Z",
+      "updatedAt": "2026-02-08T10:21:07.431Z",
       "order": 5000
     },
     {
