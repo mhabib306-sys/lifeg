@@ -773,6 +773,20 @@ input[type="checkbox"]:focus {
     padding-top: max(12px, env(safe-area-inset-top));
   }
 
+  .mobile-header-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .mobile-version {
+    line-height: 1;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
   .mobile-header-title {
     font-size: 19px !important;
     font-weight: 700 !important;

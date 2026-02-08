@@ -119,7 +119,10 @@ export function render() {
             </button>
           ` : ''}
         </div>
-        <h1 class="mobile-header-title text-[17px] font-bold text-[var(--text-primary)] truncate">${state.activeTab === 'home' ? 'Home' : state.activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : state.activeTab === 'life' ? 'Life Score' : 'Settings'}</h1>
+        <div class="mobile-header-center">
+          <h1 class="mobile-header-title text-[17px] font-bold text-[var(--text-primary)] truncate">${state.activeTab === 'home' ? 'Home' : state.activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : state.activeTab === 'life' ? 'Life Score' : 'Settings'}</h1>
+          <span class="mobile-version text-[10px] font-semibold text-[var(--text-muted)]">v${APP_VERSION}</span>
+        </div>
         <div class="w-10 flex items-center justify-end">
           ${state.activeTab === 'tasks' ? `
             <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center shadow-sm active:opacity-80 transition" aria-label="New task">
