@@ -1787,20 +1787,39 @@
       margin-right: 6px;
     }
 
-    /* Date input styling */
-    .date-input-wrapper {
-      position: relative;
+    /* Date row styling */
+    .date-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s;
     }
-    .date-input-wrapper input {
-      padding-right: 36px;
+    .date-row:hover {
+      background: var(--bg-secondary);
     }
-    .date-input-icon {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
+    .date-row .date-row-icon {
       color: var(--text-muted);
-      pointer-events: none;
+      flex-shrink: 0;
+    }
+    .date-row .date-row-clear {
+      flex-shrink: 0;
+      padding: 4px;
+      border-radius: 6px;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+    }
+    .date-row .date-row-clear:hover {
+      color: #EF4444;
+      background: rgba(239, 68, 68, 0.1);
     }
 
     /* Repeat section */
@@ -3183,8 +3202,7 @@
             if (t.completed || t.isNote) return false;
             const isDueToday = t.dueDate === today;
             const isOverdue = t.dueDate && t.dueDate < today;
-            const isScheduledForToday = t.deferDate && t.deferDate <= today;
-            return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
+            return t.status === 'today' || isDueToday || isOverdue;
           }).length;
           const nextTasksCount = nextLabel ? tasksData.filter(t => {
             if (t.completed || t.isNote) return false;
@@ -3237,8 +3255,7 @@
             if (t.completed || t.isNote) return false;
             const isDueToday = t.dueDate === today;
             const isOverdue = t.dueDate && t.dueDate < today;
-            const isScheduledForToday = t.deferDate && t.deferDate <= today;
-            return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
+            return t.status === 'today' || isDueToday || isOverdue;
           }).sort((a, b) => {
             if (a.dueDate && !b.dueDate) return -1;
             if (!a.dueDate && b.dueDate) return 1;
@@ -4683,17 +4700,16 @@
         // Other perspectives show only non-completed tasks
         if (task.completed) return false;
 
-        // Things 3 logic for Today:
+        // OmniFocus model for Today:
         // - Tasks explicitly marked as 'today'
         // - Tasks with today's due date
         // - Overdue tasks (due date in the past)
-        // - Tasks scheduled for today or earlier (deferDate)
         // - "Next" tasks: tasks tagged with a "next" label
+        // Note: Defer date controls availability, NOT perspective membership
         if (perspectiveId === 'today') {
           const isDueToday = task.dueDate === today;
           const isOverdue = task.dueDate && task.dueDate < today;
-          const isScheduledForToday = task.deferDate && task.deferDate <= today;
-          const isTodayTask = task.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
+          const isTodayTask = task.status === 'today' || isDueToday || isOverdue;
 
           // Include tasks tagged with "next" label
           const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
@@ -4720,6 +4736,8 @@
           if (task.status !== 'anytime') return false;
           // If it has a due date in the future, it shows in Upcoming instead
           if (task.dueDate && task.dueDate > today) return false;
+          // Deferred tasks are not yet available
+          if (task.deferDate && task.deferDate > today) return false;
           return true;
         }
 
@@ -6116,6 +6134,10 @@
       const today = getLocalDateString();
       const isOverdue = task.dueDate && task.dueDate < today && !task.completed;
       const isDueToday = task.dueDate === today;
+      const isDueSoon = task.dueDate && !isDueToday && !isOverdue && (() => {
+        const diff = (new Date(task.dueDate + 'T00:00:00') - new Date(today + 'T00:00:00')) / 86400000;
+        return diff > 0 && diff <= 2;
+      })();
       const hasMetadata = !compact && (category || labels.length > 0 || people.length > 0 || (showDueDate && task.dueDate) || task.deferDate || (task.repeat && task.repeat.type !== 'none') || task.notes);
       const isInlineEditing = inlineEditingTaskId === task.id;
       const indentLevel = task.indent || 0;
@@ -6141,7 +6163,7 @@
               <span class="flex-1 ml-3 text-[14px] leading-snug truncate ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">${escapeHtml(task.title)}</span>
               <div class="flex items-center gap-2 ml-2 flex-shrink-0 text-[11px]">
                 ${category ? `<span class="text-[var(--text-muted)] truncate max-w-[80px]">${escapeHtml(category.name)}</span>` : ''}
-                ${task.dueDate ? `<span class="${isOverdue ? 'text-red-500 font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : 'text-[var(--text-muted)]'}">${formatSmartDate(task.dueDate)}</span>` : ''}
+                ${task.dueDate ? `<span class="${isOverdue ? 'text-red-500 font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : isDueSoon ? 'text-amber-500 font-medium' : 'text-[var(--text-muted)]'}">${formatSmartDate(task.dueDate)}</span>` : ''}
                 ${task.repeat && task.repeat.type !== 'none' ? `<span class="text-[var(--text-muted)]" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8A5.87 5.87 0 0 1 6 12c0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></span>` : ''}
               </div>
             </div>
@@ -6183,7 +6205,7 @@
                   ${labels.map(l => `<span onclick="event.stopPropagation(); showLabelTasks('${l.id}')" class="px-1.5 rounded cursor-pointer bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">${escapeHtml(l.name)}</span>`).join('')}
                   ${people.length > 0 ? `<span onclick="event.stopPropagation(); showPersonTasks('${people[0].id}')" class="flex items-center gap-1 cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>${people.map(p => escapeHtml(p.name.split(' ')[0])).join(', ')}</span>` : ''}
                   ${task.deferDate ? `<span class="flex items-center gap-1 text-[var(--text-secondary)]"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5V19L19 12z"/></svg>${formatSmartDate(task.deferDate)}</span>` : ''}
-                  ${showDueDate && task.dueDate ? `<span class="flex items-center gap-1 ${isOverdue ? 'text-red-500 font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : 'text-[var(--text-muted)]'}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>${formatSmartDate(task.dueDate)}</span>` : ''}
+                  ${showDueDate && task.dueDate ? `<span class="flex items-center gap-1 ${isOverdue ? 'text-red-500 font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : isDueSoon ? 'text-amber-500 font-medium' : 'text-[var(--text-muted)]'}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>${formatSmartDate(task.dueDate)}</span>` : ''}
                   ${task.repeat && task.repeat.type !== 'none' ? `<span class="text-[var(--text-muted)]" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8A5.87 5.87 0 0 1 6 12c0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></span>` : ''}
                   ${task.notes ? `<span class="text-[var(--text-muted)]" title="${escapeHtml(task.notes.substring(0, 200))}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h12v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z"/></svg></span>` : ''}
                 </div>
@@ -7200,9 +7222,17 @@
         const noteItems = areaTasks.filter(t => t.isNote);
         const taskItems = areaTasks.filter(t => !t.isNote);
         const overdueTasks = taskItems.filter(t => t.dueDate && t.dueDate < todayDate);
-        const todayTasks = taskItems.filter(t => t.status === 'today' || t.dueDate === todayDate || (t.deferDate && t.deferDate <= todayDate));
-        const upcomingTasks = taskItems.filter(t => t.dueDate && t.dueDate > todayDate && t.status !== 'today' && !(t.deferDate && t.deferDate <= todayDate));
-        const anytimeTasks = taskItems.filter(t => t.status === 'anytime' && !t.dueDate && !(t.deferDate && t.deferDate <= todayDate));
+        const todayTasks = taskItems.filter(t =>
+          !overdueTasks.includes(t) && (t.status === 'today' || t.dueDate === todayDate));
+        const upcomingTasks = taskItems.filter(t =>
+          t.dueDate && t.dueDate > todayDate && !todayTasks.includes(t));
+        const deferredTasks = taskItems.filter(t =>
+          t.deferDate && t.deferDate > todayDate &&
+          !overdueTasks.includes(t) && !upcomingTasks.includes(t));
+        const anytimeTasks = taskItems.filter(t =>
+          t.status === 'anytime' && !overdueTasks.includes(t) &&
+          !todayTasks.includes(t) && !upcomingTasks.includes(t) &&
+          !deferredTasks.includes(t));
         const somedayTasks = taskItems.filter(t => t.status === 'someday');
         const inboxTasks = taskItems.filter(t => t.status === 'inbox');
 
@@ -7321,6 +7351,17 @@
                     <span class="text-xs text-charcoal/40 ml-1">${upcomingTasks.length}</span>
                   </div>
                   <div class="task-list">${upcomingTasks.map(task => renderTaskItem(task)).join('')}</div>
+                </div>
+              ` : ''}
+
+              ${deferredTasks.length > 0 ? `
+                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden opacity-75">
+                  <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
+                    <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
+                    <span class="text-sm font-semibold text-[var(--text-muted)]">Deferred</span>
+                    <span class="text-xs text-charcoal/40 ml-1">${deferredTasks.length}</span>
+                  </div>
+                  <div class="task-list">${deferredTasks.map(task => renderTaskItem(task)).join('')}</div>
                 </div>
               ` : ''}
 
@@ -7667,21 +7708,33 @@
               ${!modalIsNote ? `
               <div class="modal-section">
                 <label class="modal-section-label">Schedule</label>
-                <div class="grid grid-cols-2 gap-4">
-                  <div class="date-input-wrapper">
-                    <input type="date" id="task-defer" value="${editingTask?.deferDate || ''}"
-                      onclick="this.showPicker()" placeholder="Defer until..."
-                      class="modal-input-enhanced text-sm">
-                    <svg class="date-input-icon w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
-                    <span class="text-[11px] text-[var(--text-muted)] mt-1 block">Start date</span>
+                <!-- Defer Until -->
+                <div class="date-row mb-2" onclick="document.getElementById('task-defer').showPicker()">
+                  <svg class="date-row-icon w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5V19L19 12z"/></svg>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-[11px] font-medium uppercase tracking-wide text-[var(--text-muted)]">Defer Until</div>
+                    <div class="text-sm text-[var(--text-primary)]" id="defer-display">${editingTask?.deferDate ? formatSmartDate(editingTask.deferDate) : 'None'}</div>
                   </div>
-                  <div class="date-input-wrapper">
-                    <input type="date" id="task-due" value="${editingTask?.dueDate || ''}"
-                      onclick="this.showPicker()" placeholder="Due date..."
-                      class="modal-input-enhanced text-sm">
-                    <svg class="date-input-icon w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
-                    <span class="text-[11px] text-[var(--text-muted)] mt-1 block">Deadline</span>
+                  <input type="date" id="task-defer" value="${editingTask?.deferDate || ''}"
+                    class="sr-only" onchange="updateDateDisplay('defer')">
+                  <button type="button" class="date-row-clear ${editingTask?.deferDate ? '' : 'hidden'}" id="defer-clear-btn"
+                    onclick="event.stopPropagation(); clearDateField('defer')">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                  </button>
+                </div>
+                <!-- Due -->
+                <div class="date-row" onclick="document.getElementById('task-due').showPicker()">
+                  <svg class="date-row-icon w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-[11px] font-medium uppercase tracking-wide text-[var(--text-muted)]">Due</div>
+                    <div class="text-sm text-[var(--text-primary)]" id="due-display">${editingTask?.dueDate ? formatSmartDate(editingTask.dueDate) : 'None'}</div>
                   </div>
+                  <input type="date" id="task-due" value="${editingTask?.dueDate || ''}"
+                    class="sr-only" onchange="updateDateDisplay('due')">
+                  <button type="button" class="date-row-clear ${editingTask?.dueDate ? '' : 'hidden'}" id="due-clear-btn"
+                    onclick="event.stopPropagation(); clearDateField('due')">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                  </button>
                 </div>
               </div>
 
@@ -8020,15 +8073,9 @@
     let modalRepeatEnabled = false;
 
     function initModalState(editingTask) {
-      const today = getLocalDateString();
       if (editingTask) {
         modalSelectedArea = editingTask.categoryId || null;
-        // Things 3 logic: If task has deferDate <= today, show as "Today"
-        if (editingTask.deferDate && editingTask.deferDate <= today) {
-          modalSelectedStatus = 'today';
-        } else {
-          modalSelectedStatus = editingTask.status || 'inbox';
-        }
+        modalSelectedStatus = editingTask.status || 'inbox';
         modalSelectedTags = [...(editingTask.labels || [])];
         modalSelectedPeople = [...(editingTask.people || [])];
         modalIsNote = editingTask.isNote || false;
@@ -8161,12 +8208,29 @@
       document.querySelectorAll('.status-pill').forEach(pill => {
         pill.classList.toggle('selected', pill.dataset.status === status);
       });
+    }
 
-      // Things 3 logic: When "Today" is selected, auto-set start date to today
-      const deferInput = document.getElementById('task-defer');
-      if (status === 'today' && deferInput && !deferInput.value) {
-        deferInput.value = getLocalDateString();
+    function updateDateDisplay(type) {
+      const input = document.getElementById(type === 'defer' ? 'task-defer' : 'task-due');
+      const display = document.getElementById(type + '-display');
+      const clearBtn = document.getElementById(type + '-clear-btn');
+      if (!input || !display) return;
+      if (input.value) {
+        display.textContent = formatSmartDate(input.value);
+        if (clearBtn) clearBtn.classList.remove('hidden');
+      } else {
+        display.textContent = 'None';
+        if (clearBtn) clearBtn.classList.add('hidden');
       }
+    }
+
+    function clearDateField(type) {
+      const input = document.getElementById(type === 'defer' ? 'task-defer' : 'task-due');
+      const display = document.getElementById(type + '-display');
+      const clearBtn = document.getElementById(type + '-clear-btn');
+      if (input) input.value = '';
+      if (display) display.textContent = 'None';
+      if (clearBtn) clearBtn.classList.add('hidden');
     }
 
     function selectArea(area) {
@@ -8716,14 +8780,7 @@
         };
       }
 
-      const today = getLocalDateString();
       let deferDateValue = document.getElementById('task-defer')?.value || null;
-
-      // Things 3 logic: "Today" means task has start date of today
-      // If user selected Today but didn't set a date, auto-set deferDate to today
-      if (modalSelectedStatus === 'today' && !deferDateValue) {
-        deferDateValue = today;
-      }
 
       const taskData = {
         title: title,
