@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T15:46:53.946Z",
+  "lastUpdated": "2026-02-08T15:47:05.288Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2154,6 +2154,24 @@
       "order": 19000
     },
     {
+      "id": "task_1770565622726_me9fzmv6a",
+      "title": "",
+      "notes": "",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "indent": 0,
+      "createdAt": "2026-02-07T00:48:04.858Z",
+      "updatedAt": "2026-02-08T15:47:02.726Z"
+    },
+    {
       "id": "task_1770452185946_qf81xc7bb",
       "title": "",
       "notes": "",
@@ -2210,6 +2228,24 @@
       "createdAt": "2026-02-06T19:45:18.912Z",
       "updatedAt": "2026-02-07T08:51:17.825Z",
       "order": 20000
+    },
+    {
+      "id": "task_1770565625126_xw49t8h9v",
+      "title": "",
+      "notes": "",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "indent": 0,
+      "createdAt": "2026-02-07T17:46:12.519Z",
+      "updatedAt": "2026-02-08T15:47:05.126Z"
     },
     {
       "id": "task_1770419495459_db8m1al68",
