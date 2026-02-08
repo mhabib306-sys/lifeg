@@ -841,6 +841,19 @@ export function renderTasksTab() {
   `;
 
   return `
+    <!-- Mobile Sidebar Drawer (hidden on desktop) -->
+    <div id="mobile-sidebar-overlay" class="mobile-sidebar-overlay md:hidden ${state.mobileDrawerOpen ? 'show' : ''}" onclick="if(event.target===this) closeMobileDrawer()">
+      <div class="mobile-sidebar-drawer">
+        <div class="p-4 border-b border-[var(--border-light)] flex items-center justify-between" style="padding-top: max(16px, env(safe-area-inset-top));">
+          <h2 class="text-lg font-bold text-[var(--text-primary)]">Workspace</h2>
+          <button onclick="closeMobileDrawer()" class="w-8 h-8 flex items-center justify-center rounded-full text-[var(--text-muted)] active:bg-[var(--bg-secondary)] transition" aria-label="Close sidebar">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
+        </div>
+        ${sidebarHtml.replace('w-full md:w-64', 'w-full')}
+      </div>
+    </div>
+
     <div class="flex flex-col md:flex-row gap-6">
       <div class="hidden md:block">${sidebarHtml}</div>
       ${taskListHtml}

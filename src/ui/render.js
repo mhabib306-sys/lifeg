@@ -45,6 +45,31 @@ function renderMobileDrawer() {
   if (typeof window.renderMobileDrawer === 'function') return window.renderMobileDrawer();
 }
 
+function renderTaskModalHtml() {
+  if (typeof window.renderTaskModalHtml === 'function') return window.renderTaskModalHtml();
+  return '';
+}
+
+function renderPerspectiveModalHtml() {
+  if (typeof window.renderPerspectiveModalHtml === 'function') return window.renderPerspectiveModalHtml();
+  return '';
+}
+
+function renderCategoryModalHtml() {
+  if (typeof window.renderCategoryModalHtml === 'function') return window.renderCategoryModalHtml();
+  return '';
+}
+
+function renderLabelModalHtml() {
+  if (typeof window.renderLabelModalHtml === 'function') return window.renderLabelModalHtml();
+  return '';
+}
+
+function renderPersonModalHtml() {
+  if (typeof window.renderPersonModalHtml === 'function') return window.renderPersonModalHtml();
+  return '';
+}
+
 function setupSidebarDragDrop() {
   if (typeof window.setupSidebarDragDrop === 'function') return window.setupSidebarDragDrop();
 }
@@ -215,6 +240,12 @@ export function render() {
           </button>
         </div>
       </nav>
+
+      ${renderTaskModalHtml()}
+      ${renderPerspectiveModalHtml()}
+      ${renderCategoryModalHtml()}
+      ${renderLabelModalHtml()}
+      ${renderPersonModalHtml()}
     `;
 
     // Setup date input handler (with cleanup to prevent memory leak)

@@ -116,6 +116,7 @@ import {
   toggleRepeat, initModalAutocomplete,
   closeTaskModal, saveTaskFromModal, savePerspectiveFromModal,
   renderTaskModalHtml,
+  renderPerspectiveModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml,
   parseDateQuery, setupInlineAutocomplete, renderInlineChips,
   removeInlineMeta, cleanupInlineAutocomplete
 } from './ui/task-modal.js';
@@ -225,6 +226,7 @@ Object.assign(window, {
   toggleRepeat, initModalAutocomplete,
   closeTaskModal, saveTaskFromModal, savePerspectiveFromModal,
   renderTaskModalHtml,
+  renderPerspectiveModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml,
   parseDateQuery, setupInlineAutocomplete, renderInlineChips,
   removeInlineMeta, cleanupInlineAutocomplete,
 });

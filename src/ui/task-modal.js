@@ -1707,3 +1707,221 @@ export function cleanupInlineAutocomplete(inputId) {
   // Remove any open popup
   document.querySelectorAll('.inline-autocomplete-popup').forEach(p => p.remove());
 }
+
+// ============================================================================
+// ENTITY MODAL RENDERERS (Perspective, Category, Label, Person)
+// ============================================================================
+
+/**
+ * Render the perspective (custom view) create/edit modal.
+ * @returns {string} HTML string, or '' if modal is closed
+ */
+export function renderPerspectiveModalHtml() {
+  if (!state.showPerspectiveModal) return '';
+  const editingPerspective = state.editingPerspectiveId
+    ? (state.customPerspectives || []).find(p => p.id === state.editingPerspectiveId)
+    : null;
+  return `
+    <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showPerspectiveModal=false; editingPerspectiveId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="perspective-modal-title">
+      <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-md mx-4" onclick="event.stopPropagation()">
+        <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
+          <h3 id="perspective-modal-title" class="font-semibold text-charcoal">${editingPerspective ? 'Edit Custom View' : 'New Custom View'}</h3>
+          <button onclick="showPerspectiveModal=false; editingPerspectiveId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+        </div>
+        <div class="p-6 space-y-4">
+          <div>
+            <label class="text-sm text-charcoal/70 block mb-1">Name</label>
+            <input type="text" id="perspective-name" placeholder="e.g., Work Projects" autofocus maxlength="100"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();savePerspectiveFromModal();}"
+              class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+          </div>
+          <div>
+            <label class="text-sm text-charcoal/70 block mb-1">Icon (emoji)</label>
+            <input type="text" id="perspective-icon" value="📌" maxlength="2"
+              class="w-20 px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-center text-xl">
+          </div>
+          <div>
+            <label class="text-sm text-charcoal/70 block mb-1">Filter by Area</label>
+            <select id="perspective-category" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              <option value="">Any category</option>
+              ${(state.taskCategories || []).map(cat => `<option value="${cat.id}">${escapeHtml(cat.name)}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="text-sm text-charcoal/70 block mb-1">Filter by Status</label>
+            <select id="perspective-status" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              <option value="">Any status</option>
+              <option value="inbox">Inbox</option>
+              <option value="today">Today</option>
+              <option value="anytime">Anytime</option>
+              <option value="someday">Someday</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm text-charcoal/70 block mb-1">Filter by Tags</label>
+            <div class="border border-softborder rounded p-2 max-h-32 overflow-y-auto space-y-1">
+              ${(state.taskLabels || []).length > 0 ? state.taskLabels.map(label => `
+                <label class="flex items-center gap-2 px-2 py-1 rounded hover:bg-warmgray cursor-pointer">
+                  <input type="checkbox" class="perspective-tag-checkbox rounded border-softborder" value="${label.id}">
+                  <span class="w-2 h-2 rounded-full" style="background-color: ${label.color}"></span>
+                  <span class="text-sm text-charcoal/80">${escapeHtml(label.name)}</span>
+                </label>
+              `).join('') : '<p class="text-sm text-charcoal/40 text-center py-2">No tags created yet</p>'}
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="perspective-due" class="rounded border-softborder">
+            <label for="perspective-due" class="text-sm text-charcoal/70">Only show tasks with due dates</label>
+          </div>
+        </div>
+        <div class="px-6 py-4 border-t border-softborder flex justify-between">
+          ${editingPerspective ? `
+            <button onclick="if(confirm('Delete this custom view?')){deletePerspective('${editingPerspective.id}'); showPerspectiveModal=false; editingPerspectiveId=null; render();}"
+              class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
+          ` : '<div></div>'}
+          <div class="flex gap-3">
+            <button onclick="showPerspectiveModal=false; editingPerspectiveId=null; render()"
+              class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
+            <button onclick="savePerspectiveFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+              ${editingPerspective ? 'Save' : 'Create'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render the category (area) create/edit modal.
+ * @returns {string} HTML string, or '' if modal is closed
+ */
+export function renderCategoryModalHtml() {
+  if (!state.showCategoryModal) return '';
+  const editingCategory = state.editingCategoryId
+    ? (state.taskCategories || []).find(c => c.id === state.editingCategoryId)
+    : null;
+  return `
+    <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showCategoryModal=false; editingCategoryId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+      <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+        <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
+          <h3 id="category-modal-title" class="font-semibold text-charcoal">${editingCategory ? 'Edit Area' : 'New Area'}</h3>
+          <button onclick="showCategoryModal=false; editingCategoryId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+        </div>
+        <div class="p-6 space-y-4">
+          <div>
+            <label class="text-sm text-charcoal/70 block mb-1">Name</label>
+            <input type="text" id="category-name" value="${editingCategory?.name ? escapeHtml(editingCategory.name) : ''}"
+              placeholder="e.g., Work, Personal, Health" autofocus maxlength="100"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();saveCategoryFromModal();}"
+              class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+          </div>
+        </div>
+        <div class="px-6 py-4 border-t border-softborder flex justify-between">
+          ${editingCategory ? `
+            <button onclick="if(confirm('Delete this area?')){deleteCategory('${editingCategory.id}'); showCategoryModal=false; editingCategoryId=null; render();}"
+              class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
+          ` : '<div></div>'}
+          <div class="flex gap-3">
+            <button onclick="showCategoryModal=false; editingCategoryId=null; render()"
+              class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
+            <button onclick="saveCategoryFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+              ${editingCategory ? 'Save' : 'Create'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render the label (tag) create/edit modal with color picker.
+ * @returns {string} HTML string, or '' if modal is closed
+ */
+export function renderLabelModalHtml() {
+  if (!state.showLabelModal) return '';
+  const editingLabel = state.editingLabelId
+    ? (state.taskLabels || []).find(l => l.id === state.editingLabelId)
+    : null;
+  return `
+    <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="label-modal-title">
+      <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+        <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
+          <h3 id="label-modal-title" class="font-semibold text-charcoal">${editingLabel ? 'Edit Tag' : 'New Tag'}</h3>
+          <button onclick="showLabelModal=false; editingLabelId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+        </div>
+        <div class="p-6 space-y-4">
+          <div>
+            <label class="text-sm text-charcoal/70 block mb-1">Name</label>
+            <input type="text" id="label-name" value="${editingLabel?.name ? escapeHtml(editingLabel.name) : ''}"
+              placeholder="e.g., Important" autofocus maxlength="50"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();saveLabelFromModal();}"
+              class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+          </div>
+          <div>
+            <label class="text-sm text-charcoal/70 block mb-1">Color</label>
+            <input type="color" id="label-color" value="${editingLabel?.color || '#6B7280'}"
+              class="w-full h-10 rounded border border-softborder cursor-pointer">
+          </div>
+        </div>
+        <div class="px-6 py-4 border-t border-softborder flex justify-between">
+          ${editingLabel ? `
+            <button onclick="if(confirm('Delete this tag?')){deleteLabel('${editingLabel.id}'); showLabelModal=false; editingLabelId=null; render();}"
+              class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
+          ` : '<div></div>'}
+          <div class="flex gap-3">
+            <button onclick="showLabelModal=false; editingLabelId=null; render()"
+              class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
+            <button onclick="saveLabelFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+              ${editingLabel ? 'Save' : 'Create'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render the person create/edit modal.
+ * @returns {string} HTML string, or '' if modal is closed
+ */
+export function renderPersonModalHtml() {
+  if (!state.showPersonModal) return '';
+  const editingPerson = state.editingPersonId
+    ? (state.taskPeople || []).find(p => p.id === state.editingPersonId)
+    : null;
+  return `
+    <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="person-modal-title">
+      <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+        <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
+          <h3 id="person-modal-title" class="font-semibold text-charcoal">${editingPerson ? 'Edit Person' : 'New Person'}</h3>
+          <button onclick="showPersonModal=false; editingPersonId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+        </div>
+        <div class="p-6 space-y-4">
+          <div>
+            <label class="text-sm text-charcoal/70 block mb-1">Name</label>
+            <input type="text" id="person-name" value="${editingPerson?.name ? escapeHtml(editingPerson.name) : ''}"
+              placeholder="e.g., John Doe" autofocus maxlength="100"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();savePersonFromModal();}"
+              class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+          </div>
+        </div>
+        <div class="px-6 py-4 border-t border-softborder flex justify-between">
+          ${editingPerson ? `
+            <button onclick="if(confirm('Delete this person?')){deletePerson('${editingPerson.id}'); showPersonModal=false; editingPersonId=null; render();}"
+              class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
+          ` : '<div></div>'}
+          <div class="flex gap-3">
+            <button onclick="showPersonModal=false; editingPersonId=null; render()"
+              class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
+            <button onclick="savePersonFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+              ${editingPerson ? 'Save' : 'Create'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
