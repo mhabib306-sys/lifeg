@@ -4220,7 +4220,7 @@
         t.isNote && !t.completed &&
         t.parentId === note.parentId &&
         t.categoryId === note.categoryId
-      );
+      ).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
       const siblingIdx = siblings.findIndex(s => s.id === noteId);
       const nextSibling = siblings[siblingIdx + 1];
 
@@ -4250,7 +4250,12 @@
         updatedAt: new Date().toISOString()
       };
 
-      tasksData.push(newNote);
+      const insertIdx = tasksData.findIndex(t => t.id === noteId);
+      if (insertIdx >= 0) {
+        tasksData.splice(insertIdx + 1, 0, newNote);
+      } else {
+        tasksData.push(newNote);
+      }
       saveTasksData();
       render();
       setTimeout(() => focusNote(newNote.id), 50);
