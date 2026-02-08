@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T08:59:26.739Z",
+  "lastUpdated": "2026-02-08T08:59:31.883Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2431,7 +2431,7 @@
     },
     {
       "id": "task_1770509824799_akuyht7yj",
-      "title": "quick win tag task",
+      "title": "Quick win tag task",
       "notes": "",
       "status": "inbox",
       "completed": false,
@@ -2448,7 +2448,7 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-08T00:17:04.799Z",
-      "updatedAt": "2026-02-08T08:09:11.124Z",
+      "updatedAt": "2026-02-08T08:59:29.534Z",
       "order": 1000
     },
     {
