@@ -11,7 +11,9 @@ import { HOME_WIDGETS_KEY, DEFAULT_HOME_WIDGETS } from '../constants.js';
 
 export function saveHomeWidgets() {
   localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
-  window.debouncedSaveToGithub();
+  if (typeof window.debouncedSaveToGithub === 'function') {
+    window.debouncedSaveToGithub();
+  }
 }
 
 // ---- Integrity / Migration ----
@@ -43,6 +45,8 @@ export function ensureHomeWidgets() {
   // Ensure critical widgets stay visible
   const todayWidget = merged.find(w => w.id === 'today-tasks');
   if (todayWidget) todayWidget.visible = true;
+  const scoreWidget = merged.find(w => w.id === 'todays-score');
+  if (scoreWidget) scoreWidget.visible = true;
 
   state.homeWidgets = merged;
   saveHomeWidgets();
@@ -53,6 +57,9 @@ export function ensureHomeWidgets() {
 export function toggleWidgetVisibility(widgetId) {
   const widget = state.homeWidgets.find(w => w.id === widgetId);
   if (widget) {
+    if ((widget.id === 'today-tasks' || widget.id === 'todays-score') && widget.visible) {
+      return;
+    }
     widget.visible = !widget.visible;
     saveHomeWidgets();
     window.render();

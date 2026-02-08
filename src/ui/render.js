@@ -296,6 +296,11 @@ export function render() {
 export function switchTab(tab) {
   // Cleanup any open inline autocomplete popups
   document.querySelectorAll('.inline-autocomplete-popup').forEach(p => p.remove());
+  if (state.mobileDrawerOpen) {
+    state.mobileDrawerOpen = false;
+    document.body.style.overflow = '';
+    document.body.classList.remove('drawer-open');
+  }
   state.activeTab = tab;
   saveViewState();
   render();

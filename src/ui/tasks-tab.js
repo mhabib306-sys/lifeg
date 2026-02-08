@@ -54,7 +54,9 @@ function renderNotesOutliner(categoryId) {
  * @returns {string} HTML string for the task item
  */
 export function renderTaskItem(task, showDueDate = true, compact = false) {
-  const isTouch = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none)').matches;
+  const isTouch = typeof window !== 'undefined'
+    && window.matchMedia
+    && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   const category = getCategoryById(task.categoryId);
   const labels = (task.labels || []).map(lid => getLabelById(lid)).filter(Boolean);
   const people = (task.people || []).map(pid => getPersonById(pid)).filter(Boolean);
@@ -117,7 +119,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
       ondragover="window.handleDragOver(event, '${task.id}')"
       ondragleave="window.handleDragLeave(event)"
       ondrop="window.handleDrop(event, '${task.id}')"`}
-      onclick="if(window.matchMedia('(hover: none)').matches && !event.target.closest('.task-checkbox')) { window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render(); }">
+      onclick="if(window.matchMedia('(hover: none) and (pointer: coarse)').matches && !event.target.closest('.task-checkbox') && !event.target.closest('button')) { window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render(); }">
       <div class="task-row flex items-start gap-3 px-4 py-2.5" style="${indentLevel > 0 ? `padding-left: ${16 + indentPx}px` : ''}">
         ${task.isNote ? `
           <div class="mt-2 w-1.5 h-1.5 rounded-full ${indentLevel > 0 ? 'bg-[var(--notes-accent)]/50' : 'bg-[var(--notes-accent)]'} flex-shrink-0"></div>
@@ -218,7 +220,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
   return `
     <div class="flex-1 space-y-6">
       <!-- Area Hero Header -->
-      <div class="bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+      <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
         <div class="relative h-32 flex items-end p-6" style="background: var(--bg-secondary);">
           <div class="absolute top-4 right-4 opacity-10" style="color: ${categoryColor}">
             <svg class="w-24 h-24" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
@@ -235,8 +237,8 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
         </div>
 
         <!-- Stats Bar -->
-        <div class="px-6 py-4 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/30">
-          <div class="flex items-center gap-6">
+        <div class="area-stats-bar px-6 py-4 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/30">
+          <div class="area-stats-row flex items-center gap-6">
             <div class="flex items-center gap-3">
               <div class="relative w-12 h-12">
                 <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
@@ -778,7 +780,7 @@ export function renderTasksTab() {
             // Helper to render a section with header
             const renderSection = (tasks, icon, label, color, extraClass = '') => tasks.length > 0 ? `
               <div class="${extraClass}">
-                <div class="px-5 py-2 sticky top-0 bg-[var(--bg-card)]">
+                <div class="px-5 py-2 bg-[var(--bg-card)]">
                   <div class="flex items-center gap-2">
                     <span style="color: ${color}">${icon}</span>
                     <span class="text-[13px] font-semibold text-charcoal/50 uppercase tracking-wider">${label}</span>
@@ -829,7 +831,7 @@ export function renderTasksTab() {
               <div class="py-2">
                 ${renderNotesOutliner(state.activeCategoryFilter)}
                 <div class="px-4 py-2">
-                  <button onclick="window.createTask('', { isNote: true, categoryId: window.activeCategoryFilter, status: 'anytime' }); setTimeout(() => { const notes = window.tasksData.filter(t => t.isNote && !t.completed); if (notes.length) window.focusNote(notes[notes.length-1].id); }, 100);"
+                  <button onclick="window.createTask('', { isNote: true, categoryId: ${state.activeCategoryFilter ? `'${state.activeCategoryFilter}'` : 'null'}, status: 'anytime' }); setTimeout(() => { const notes = window.tasksData.filter(t => t.isNote && !t.completed); if (notes.length) window.focusNote(notes[notes.length-1].id); }, 100);"
                     class="flex items-center gap-2 py-2 w-full text-left text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                     Add new note

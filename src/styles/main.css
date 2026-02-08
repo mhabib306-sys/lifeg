@@ -17,6 +17,11 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   transition: background 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+#app {
+  min-width: 0;
 }
 
 button,
@@ -752,7 +757,7 @@ input[type="checkbox"]:focus {
   display: none;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   /* Show bottom nav, hide top nav */
   .mobile-bottom-nav {
     display: block;
@@ -844,8 +849,8 @@ input[type="checkbox"]:focus {
     top: 0;
     left: 0;
     bottom: 0;
-    width: 85%;
-    max-width: 320px;
+    width: 92%;
+    max-width: 360px;
     background: var(--bg-primary);
     z-index: 201;
     transform: translate3d(-100%, 0, 0);
@@ -883,11 +888,17 @@ input[type="checkbox"]:focus {
     display: none;
   }
 
+  /* Prevent stacked sticky section headers overlapping mobile app header */
+  .task-list .sticky {
+    position: static !important;
+  }
+
   /* Reduce main content padding on mobile */
   main.max-w-6xl {
     padding-left: 16px !important;
     padding-right: 16px !important;
     padding-top: 16px !important;
+    min-width: 0;
   }
 
   /* Hide footer on mobile - bottom nav is there */
@@ -905,6 +916,17 @@ input[type="checkbox"]:focus {
   .life-sub-nav {
     padding-left: 16px !important;
     padding-right: 16px !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .life-sub-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .life-sub-nav .flex {
+    width: max-content;
   }
 
   /* Task items - larger touch targets */
@@ -1044,6 +1066,7 @@ input[type="checkbox"]:focus {
   .home-header-actions button {
     padding: 8px 12px !important;
     font-size: 13px !important;
+    min-height: 40px;
   }
 
   /* Widget grid - single column on small screens */
@@ -1074,6 +1097,11 @@ input[type="checkbox"]:focus {
     font-size: 14px !important;
   }
 
+  .widget .task-item {
+    margin: 0 !important;
+    border-radius: 8px !important;
+  }
+
   .weather-inline {
     flex-wrap: wrap !important;
     row-gap: 4px !important;
@@ -1092,6 +1120,16 @@ input[type="checkbox"]:focus {
 
   .area-hero h2 {
     font-size: 1.5rem !important;
+  }
+
+  .area-stats-row {
+    flex-wrap: wrap;
+    gap: 10px !important;
+    align-items: flex-start !important;
+  }
+
+  .area-stats-bar {
+    padding: 12px 16px !important;
   }
 
   /* Progress ring smaller */
@@ -1201,10 +1239,27 @@ input[type="checkbox"]:focus {
   .mobile-nav-label {
     font-size: 9px;
   }
+
+  .mobile-version {
+    display: none;
+  }
+
+  .weather-widget-content {
+    flex-direction: column;
+    gap: 10px !important;
+  }
+
+  .weather-widget-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .widget-body {
+    padding: 12px !important;
+  }
 }
 
 /* Large phones (iPhone Pro Max, iPhone 17 Pro Max - 430px+ width) */
-@media (min-width: 390px) and (max-width: 1024px) {
+@media (min-width: 390px) and (max-width: 768px) {
   /* Generous spacing for large screens */
   .widget {
     border-radius: 20px;
@@ -1259,6 +1314,7 @@ input[type="checkbox"]:focus {
   }
 
   .score-grid {
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
   }
 }
@@ -1330,9 +1386,7 @@ input[type="checkbox"]:focus {
   /* MOBILE TASK LIST - Clean Things 3 style */
   /* Hide ALL task actions on touch devices - tap row to edit */
   .task-item .absolute,
-  .task-item [class*="group-hover"],
-  .task-item select,
-  .task-item .opacity-0 {
+  .task-item [class*="group-hover"] {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
@@ -1376,9 +1430,21 @@ input[type="checkbox"]:focus {
   }
 
   /* Task row padding for mobile */
-  .task-item > div {
+  .task-item .task-row {
     padding: 6px 10px !important;
     gap: 8px !important;
+  }
+
+  .widget input[type="checkbox"] {
+    min-width: 24px;
+    min-height: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .quick-stat-item .text-xs {
+    white-space: normal;
+    line-height: 1.2;
   }
 }
 

@@ -51,7 +51,7 @@ export function renderHomeWidget(widget, isEditing) {
   const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
   const isMobileView = typeof window !== 'undefined'
     && typeof window.matchMedia === 'function'
-    && window.matchMedia('(max-width: 1024px), (hover: none) and (pointer: coarse)').matches;
+    && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
 
   // Size class mapping
   const sizeClass = isMobileView
@@ -60,7 +60,6 @@ export function renderHomeWidget(widget, isEditing) {
 
   // Size labels for display
   const sizeLabels = { full: 'Full', half: 'Half', third: 'Third' };
-  const nextSize = { full: 'half', half: 'full' }; // Simplified to just full/half
 
   // Edit controls shown in edit mode
   const editControls = isEditing ? `
@@ -94,7 +93,10 @@ export function renderHomeWidget(widget, isEditing) {
       }).length;
       const nextTasksCount = nextLabel ? state.tasksData.filter(t => {
         if (t.completed || t.isNote) return false;
-        return (t.labels || []).includes(nextLabel.id);
+        const isNextTagged = (t.labels || []).includes(nextLabel.id);
+        if (!isNextTagged) return false;
+        const isDatedTask = t.today || t.dueDate === today || (t.dueDate && t.dueDate < today) || (t.deferDate && t.deferDate <= today);
+        return !isDatedTask;
       }).length : 0;
       const completedToday = state.tasksData.filter(t => t.completed && t.completedAt && t.completedAt.startsWith(today)).length;
       const inboxCount = state.tasksData.filter(t => !t.completed && !t.isNote && t.status === 'inbox' && !t.categoryId).length;
@@ -196,7 +198,7 @@ export function renderHomeWidget(widget, isEditing) {
         if (t.completed || t.isNote) return false;
         const isNextTagged = (t.labels || []).includes(nextLabel.id);
         if (!isNextTagged) return false;
-        const isDatedTask = t.today || t.dueDate === today || (t.dueDate && t.dueDate < today);
+        const isDatedTask = t.today || t.dueDate === today || (t.dueDate && t.dueDate < today) || (t.deferDate && t.deferDate <= today);
         return !isDatedTask;
       }) : [];
 
@@ -346,7 +348,8 @@ export function renderHomeWidget(widget, isEditing) {
         family: rawScores2?.family ?? 0,
         habit: rawScores2?.habit ?? 0
       };
-      const pct = Math.round((s.total / state.MAX_SCORES.total) * 100);
+      const totalMax = Math.max(Number(state.MAX_SCORES?.total) || 0, 1);
+      const pct = Math.max(0, Math.min(100, Math.round((s.total / totalMax) * 100)));
 
       content = `
         <div class="flex items-center justify-between">
@@ -358,7 +361,7 @@ export function renderHomeWidget(widget, isEditing) {
           </div>
         </div>
         <div class="h-2 bg-[var(--bg-secondary)] rounded-full mt-3 overflow-hidden">
-          <div class="h-full bg-[var(--accent)] rounded-full transition-all duration-500" style="width: ${Math.min(pct, 100)}%"></div>
+          <div class="h-full bg-[var(--accent)] rounded-full transition-all duration-500" style="width: ${pct}%"></div>
         </div>
         <div class="score-grid grid grid-cols-5 gap-2 mt-3">
           <div class="text-center">
@@ -391,40 +394,48 @@ export function renderHomeWidget(widget, isEditing) {
       if (!w) {
         content = `<div class="py-6 text-center text-[var(--text-muted)] text-sm">Loading weather...</div>`;
       } else {
-        const desc = WEATHER_DESCRIPTIONS[w.weatherCode] || 'Unknown';
+        const desc = WEATHER_DESCRIPTIONS[w.weatherCode] || 'Weather';
         const icon = WEATHER_ICONS[w.weatherCode] || '\uD83C\uDF21\uFE0F';
-        const humidityBar = Math.min(w.humidity, 100);
-        const windDesc = w.windSpeed < 10 ? 'Calm' : w.windSpeed < 25 ? 'Breezy' : 'Windy';
+        const temp = Number.isFinite(Number(w.temp)) ? Math.round(Number(w.temp)) : '--';
+        const tempMax = Number.isFinite(Number(w.tempMax)) ? Math.round(Number(w.tempMax)) : '--';
+        const tempMin = Number.isFinite(Number(w.tempMin)) ? Math.round(Number(w.tempMin)) : '--';
+        const humidity = Number.isFinite(Number(w.humidity)) ? Math.max(0, Math.min(100, Math.round(Number(w.humidity)))) : 0;
+        const windSpeed = Number.isFinite(Number(w.windSpeed)) ? Math.max(0, Math.round(Number(w.windSpeed))) : 0;
+        const city = w.city || 'Current location';
+        const maxHour = w.maxHour || '';
+        const minHour = w.minHour || '';
+        const humidityBar = humidity;
+        const windDesc = windSpeed < 10 ? 'Calm' : windSpeed < 25 ? 'Breezy' : 'Windy';
 
         content = `
-          <div class="flex items-start gap-4">
+          <div class="weather-widget-content flex items-start gap-4">
             <!-- Left: current conditions -->
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-3">
                 <span class="text-4xl leading-none">${icon}</span>
                 <div>
-                  <div class="text-3xl font-bold text-[var(--text-primary)] leading-none">${w.temp}\u00B0</div>
+                  <div class="text-3xl font-bold text-[var(--text-primary)] leading-none">${temp}\u00B0</div>
                   <div class="text-sm text-[var(--text-secondary)] mt-0.5">${desc}</div>
                 </div>
               </div>
-              <div class="text-xs text-[var(--text-muted)] mt-2">${w.city}</div>
+              <div class="text-xs text-[var(--text-muted)] mt-2">${city}</div>
             </div>
             <!-- Right: high/low -->
             <div class="text-right flex-shrink-0">
               <div class="flex items-center justify-end gap-1.5">
                 <svg class="w-3 h-3 text-orange-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.09 8.26L21 9.27L16 13.97L17.18 20.02L12 17.77L6.82 20.02L8 13.97L3 9.27L9.91 8.26L12 2Z"/></svg>
-                <span class="text-sm font-semibold text-[var(--text-primary)]">${w.tempMax}\u00B0</span>
-                <span class="text-[10px] text-[var(--text-muted)]">${w.maxHour}</span>
+                <span class="text-sm font-semibold text-[var(--text-primary)]">${tempMax}\u00B0</span>
+                <span class="text-[10px] text-[var(--text-muted)]">${maxHour}</span>
               </div>
               <div class="flex items-center justify-end gap-1.5 mt-1">
                 <svg class="w-3 h-3 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22q-2.075 0-3.537-1.462Q7 19.075 7 17q0-1.3.612-2.4T9 12.55V5q0-1.25.875-2.125T12 2q1.25 0 2.125.875T15 5v7.55q.775.95 1.388 2.05T17 17q0 2.075-1.463 3.538Q14.075 22 12 22Z"/></svg>
-                <span class="text-sm font-semibold text-[var(--text-primary)]">${w.tempMin}\u00B0</span>
-                <span class="text-[10px] text-[var(--text-muted)]">${w.minHour}</span>
+                <span class="text-sm font-semibold text-[var(--text-primary)]">${tempMin}\u00B0</span>
+                <span class="text-[10px] text-[var(--text-muted)]">${minHour}</span>
               </div>
             </div>
           </div>
           <!-- Detail pills -->
-          <div class="grid grid-cols-2 gap-2 mt-4">
+          <div class="weather-widget-detail-grid grid grid-cols-2 gap-2 mt-4">
             <div class="bg-[var(--bg-secondary)] rounded-lg px-3 py-2">
               <div class="flex items-center gap-1.5">
                 <svg class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
@@ -434,7 +445,7 @@ export function renderHomeWidget(widget, isEditing) {
                 <div class="flex-1 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
                   <div class="h-full bg-blue-400 rounded-full" style="width: ${humidityBar}%"></div>
                 </div>
-                <span class="text-xs font-semibold text-[var(--text-primary)]">${w.humidity}%</span>
+                <span class="text-xs font-semibold text-[var(--text-primary)]">${humidity}%</span>
               </div>
             </div>
             <div class="bg-[var(--bg-secondary)] rounded-lg px-3 py-2">
@@ -443,7 +454,7 @@ export function renderHomeWidget(widget, isEditing) {
                 <span class="text-[11px] text-[var(--text-muted)]">Wind</span>
               </div>
               <div class="mt-1.5">
-                <span class="text-xs font-semibold text-[var(--text-primary)]">${w.windSpeed} km/h</span>
+                <span class="text-xs font-semibold text-[var(--text-primary)]">${windSpeed} km/h</span>
                 <span class="text-[10px] text-[var(--text-muted)] ml-1">${windDesc}</span>
               </div>
             </div>
@@ -550,7 +561,7 @@ export function renderHomeTab() {
   const sortedWidgets = [...state.homeWidgets].sort((a, b) => a.order - b.order);
   const isMobileView = typeof window !== 'undefined'
     && typeof window.matchMedia === 'function'
-    && window.matchMedia('(max-width: 1024px), (hover: none) and (pointer: coarse)').matches;
+    && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
 
   // On mobile, always render all widgets in the configured order so critical cards
   // (like Today) and any hidden cards remain accessible.
@@ -563,7 +574,7 @@ export function renderHomeTab() {
       <div class="flex items-start justify-between flex-wrap gap-4">
         <div>
           <div class="home-greeting-row flex items-center gap-3">
-            <h1 class="text-2xl font-bold text-charcoal">Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, Muhammad</h1>
+            <h1 class="text-2xl font-bold text-charcoal">Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}</h1>
             ${state.weatherData ? `
               <div class="weather-inline flex items-center gap-2 text-charcoal/70" title="${state.weatherData.city}">
                 <span class="text-base">${WEATHER_ICONS[state.weatherData.weatherCode] || '\uD83C\uDF21\uFE0F'}</span>
