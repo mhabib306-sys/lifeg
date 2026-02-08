@@ -5,9 +5,13 @@ import { getLocalDateString } from '../utils.js';
 // ============ CATEGORY CRUD ============
 
 export function createCategory(name) {
+  const colors = ['#4A90A4', '#6B8E5A', '#E5533D', '#C4943D', '#7C6B8E', '#6366F1', '#0EA5E9'];
+  const nextColor = colors[state.taskCategories.length % colors.length];
   const category = {
     id: 'cat_' + Date.now(),
-    name: name
+    name: name,
+    color: nextColor,
+    icon: '\uD83D\uDCC1'
   };
   state.taskCategories.push(category);
   saveTasksData();

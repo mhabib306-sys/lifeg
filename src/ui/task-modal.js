@@ -1915,6 +1915,7 @@ export function renderPerspectiveModalHtml() {
               <select id="perspective-status" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
                 <option value="">Any status</option>
                 <option value="inbox">Inbox</option>
+                <option value="today">Today</option>
                 <option value="anytime">Anytime</option>
                 <option value="someday">Someday</option>
               </select>
