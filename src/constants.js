@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.2.16 - Pulse';
+export const APP_VERSION = '4.2.17 - Gear';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -156,7 +156,7 @@ export const THINGS3_ICONS = {
   // Tab icons - Things 3 style
   lifeScore: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3v-8zm4-4h2v12H7V9zm4-4h2v16h-2V5zm4 8h2v8h-2v-8zm4-4h2v12h-2V9z"/></svg>`,
   workspace: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 012-2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v16h12V4H6zm2 3h8v2H8V7zm0 4h8v2H8v-2zm0 4h5v2H8v-2z"/></svg>`,
-  settings: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.25"/><path d="M19.4 12.9a7.4 7.4 0 000-1.8l2.02-1.56-1.5-2.6-2.46.98a7.7 7.7 0 00-1.56-.9l-.38-2.58h-3l-.38 2.58a7.7 7.7 0 00-1.56.9l-2.46-.98-1.5 2.6 2.02 1.56a7.4 7.4 0 000 1.8L3.62 14.46l1.5 2.6 2.46-.98c.49.38 1.01.68 1.56.9l.38 2.58h3l.38-2.58c.55-.22 1.07-.52 1.56-.9l2.46.98 1.5-2.6-2.02-1.56z"/></svg>`
+  settings: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.5 12a7.5 7.5 0 0 0-.12-1.32l2-1.54-1.6-2.76-2.4.96a7.3 7.3 0 0 0-2.3-1.34l-.36-2.58h-3.24l-.36 2.58a7.3 7.3 0 0 0-2.3 1.34l-2.4-.96-1.6 2.76 2 1.54A7.5 7.5 0 0 0 4.5 12c0 .46.04.9.12 1.32l-2 1.54 1.6 2.76 2.4-.96a7.3 7.3 0 0 0 2.3 1.34l.36 2.58h3.24l.36-2.58a7.3 7.3 0 0 0 2.3-1.34l2.4.96 1.6-2.76-2-1.54c.08-.42.12-.86.12-1.32z"/></svg>`
 };
 
 /**
