@@ -8,8 +8,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.svg'],
       manifest: {
-        name: 'Nucleus - Life Gamification',
-        short_name: 'Nucleus',
+        name: 'Homebase - Life Gamification',
+        short_name: 'Homebase',
         description: 'Life gamification & task management',
         display: 'standalone',
         orientation: 'portrait',

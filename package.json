@@ -1,7 +1,7 @@
 {
-  "name": "nucleus",
-  "version": "4.3.0",
-  "description": "Nucleus - Life Gamification & Task Management",
+  "name": "homebase",
+  "version": "4.4.0",
+  "description": "Homebase - Life Gamification & Task Management",
   "type": "module",
   "scripts": {
     "dev": "vite",

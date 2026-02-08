@@ -1,11 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#E5533D"/>
-  <g transform="translate(128, 128) scale(2.56)">
-    <circle cx="50" cy="50" r="45" fill="#D4402E"/>
-    <circle cx="50" cy="50" r="18" fill="white"/>
-    <circle cx="50" cy="50" r="8" fill="#E5533D"/>
-    <circle cx="30" cy="35" r="6" fill="white" opacity="0.6"/>
-    <circle cx="70" cy="65" r="5" fill="white" opacity="0.5"/>
-    <circle cx="35" cy="68" r="4" fill="white" opacity="0.4"/>
-  </g>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+  </defs>
+  <!-- Full-bleed amber background for maskable safe zone -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <!-- House silhouette centered in safe zone -->
+  <path d="M256 102 L398 214 V390 H114 V214 Z" fill="white" opacity="0.25"/>
+  <!-- Flame centered -->
+  <path d="M256 163 C256 163 317 244 317 295 C317 331 290 356 256 356 C222 356 195 331 195 295 C195 244 256 163 256 163Z" fill="white"/>
+  <path d="M256 229 C256 229 287 270 287 295 C287 315 273 328 256 328 C239 328 225 315 225 295 C225 270 256 229 256 229Z" fill="#F59E0B"/>
 </svg>

@@ -1,6 +1,6 @@
 # Documentation
 
-This folder contains full project documentation for Nucleus.
+This folder contains full project documentation for Homebase.
 
 ## Contents
 - `architecture.md` — System architecture and module boundaries

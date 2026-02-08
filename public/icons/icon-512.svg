@@ -1,14 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 100 100">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 100 100">
   <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#E5533D"/>
-      <stop offset="100%" stop-color="#D4402E"/>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
     </linearGradient>
   </defs>
-  <circle cx="50" cy="50" r="45" fill="url(#g)"/>
-  <circle cx="50" cy="50" r="18" fill="white"/>
-  <circle cx="50" cy="50" r="8" fill="#E5533D"/>
-  <circle cx="30" cy="35" r="6" fill="white" opacity="0.6"/>
-  <circle cx="70" cy="65" r="5" fill="white" opacity="0.5"/>
-  <circle cx="35" cy="68" r="4" fill="white" opacity="0.4"/>
+  <!-- Warm amber rounded square -->
+  <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#bg)"/>
+  <!-- House silhouette -->
+  <path d="M50 20 L78 42 V78 H22 V42 Z" fill="white" opacity="0.25"/>
+  <!-- Flame -->
+  <path d="M50 32 C50 32 62 48 62 58 C62 65 56.5 70 50 70 C43.5 70 38 65 38 58 C38 48 50 32 50 32Z" fill="white"/>
+  <path d="M50 45 C50 45 56 53 56 58 C56 62 53.3 64.5 50 64.5 C46.7 64.5 44 62 44 58 C44 53 50 45 50 45Z" fill="#F59E0B"/>
 </svg>

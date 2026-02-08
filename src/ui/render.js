@@ -141,24 +141,22 @@ export function render() {
             <div class="flex items-center gap-4">
               <svg class="w-12 h-12 app-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                  <linearGradient id="nucleusGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color: var(--accent)"/>
-                    <stop offset="100%" style="stop-color: var(--accent-dark)"/>
+                  <linearGradient id="homebaseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#F59E0B"/>
+                    <stop offset="100%" stop-color="#D97706"/>
                   </linearGradient>
                 </defs>
-                <circle cx="50" cy="50" r="45" fill="url(#nucleusGrad)"/>
-                <circle cx="50" cy="50" r="18" fill="var(--bg-primary)"/>
-                <circle cx="50" cy="50" r="8" fill="var(--accent)"/>
-                <circle cx="30" cy="35" r="6" fill="var(--bg-primary)" opacity="0.7"/>
-                <circle cx="70" cy="65" r="5" fill="var(--bg-primary)" opacity="0.6"/>
-                <circle cx="35" cy="68" r="4" fill="var(--bg-primary)" opacity="0.5"/>
+                <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#homebaseGrad)"/>
+                <path d="M50 20 L78 42 V78 H22 V42 Z" fill="white" opacity="0.25"/>
+                <path d="M50 32 C50 32 62 48 62 58 C62 65 56.5 70 50 70 C43.5 70 38 65 38 58 C38 48 50 32 50 32Z" fill="white"/>
+                <path d="M50 45 C50 45 56 53 56 58 C56 62 53.3 64.5 50 64.5 C46.7 64.5 44 62 44 58 C44 53 50 45 50 45Z" fill="#F59E0B"/>
               </svg>
               <div>
                 <div class="flex items-center gap-2">
-                  <h1 class="text-2xl font-bold tracking-tight text-charcoal">Nucleus</h1>
+                  <h1 class="text-2xl font-bold tracking-tight text-charcoal">Homebase</h1>
                   <span class="text-[11px] font-medium text-charcoal/40 bg-charcoal/5 px-1.5 py-0.5 rounded">v${APP_VERSION}</span>
                 </div>
-                <p class="text-sm text-charcoal/60 mt-0.5">The core of your life <span class="text-coral">\u2022</span> habits, health, productivity</p>
+                <p class="text-sm text-charcoal/60 mt-0.5">Your life, all in one place <span class="text-coral">\u2022</span> habits, health, productivity</p>
               </div>
             </div>
             <div class="flex items-center gap-4">
@@ -223,7 +221,7 @@ export function render() {
       </main>
 
       <footer class="border-t border-softborder py-8 mt-12">
-        <p class="text-center text-charcoal/40 text-sm">${getGithubToken() ? 'Data synced to GitHub' : 'Data saved locally'} <span class="text-coral">\u2022</span> Nucleus</p>
+        <p class="text-center text-charcoal/40 text-sm">${getGithubToken() ? 'Data synced to GitHub' : 'Data saved locally'} <span class="text-coral">\u2022</span> Homebase</p>
       </footer>
 
       <!-- Mobile Bottom Navigation (all tabs) -->

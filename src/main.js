@@ -1,5 +1,5 @@
 // ============================================================================
-// MAIN ENTRY POINT — Nucleus App
+// MAIN ENTRY POINT — Homebase App
 // ============================================================================
 // This file is the Vite entry point. It:
 // 1. Imports styles (triggers Tailwind/PostCSS processing)
@@ -95,7 +95,7 @@ function initApp() {
     console.log('Offline — changes saved locally');
   });
 
-  console.log('Nucleus initialized');
+  console.log('Homebase initialized');
 }
 
 // Start when DOM is ready

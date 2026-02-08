@@ -1,5 +1,5 @@
 /**
- * state.js — Centralized mutable state for the Nucleus app.
+ * state.js — Centralized mutable state for the Homebase app.
  *
  * Every global `let` variable from index.html is collected here into a single
  * exported `state` object. This is the single source of truth for all runtime

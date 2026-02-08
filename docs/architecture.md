@@ -1,6 +1,6 @@
 # Architecture
 
-Nucleus is a modular Vite app with a single render loop. The UI is rendered
+Homebase is a modular Vite app with a single render loop. The UI is rendered
 via full DOM replacement from `render()`, and all side-effectful behavior is
 performed via state updates followed by `render()`.
 
