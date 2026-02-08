@@ -1,0 +1,33 @@
+{
+  "name": "nucleus",
+  "version": "4.0.0",
+  "description": "Nucleus - Life Gamification & Task Management",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhabib306-sys/lifeg.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mhabib306-sys/lifeg/issues"
+  },
+  "homepage": "https://github.com/mhabib306-sys/lifeg#readme",
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
+    "autoprefixer": "^10.4.24",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18",
+    "vite": "^7.3.1",
+    "vite-plugin-pwa": "^1.2.0"
+  },
+  "dependencies": {
+    "chart.js": "^4.5.1"
+  }
+}
