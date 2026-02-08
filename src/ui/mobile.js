@@ -20,6 +20,7 @@ import { THINGS3_ICONS } from '../constants.js';
 export function openMobileDrawer() {
   state.mobileDrawerOpen = true;
   document.body.style.overflow = 'hidden';
+  document.body.classList.add('drawer-open');
   renderMobileDrawer();
 }
 
@@ -30,6 +31,7 @@ export function openMobileDrawer() {
 export function closeMobileDrawer() {
   state.mobileDrawerOpen = false;
   document.body.style.overflow = '';
+  document.body.classList.remove('drawer-open');
   renderMobileDrawer();
 }
 
@@ -93,7 +95,7 @@ export function showCategoryTasks(categoryId) {
   state.activeCategoryFilter = categoryId;
   state.activeLabelFilter = null;
   state.activePersonFilter = null;
-  state.mobileDrawerOpen = false;
+  closeMobileDrawer();
   // Switch to tasks tab when navigating from Quick Stats or other widgets
   if (state.activeTab !== 'tasks') {
     state.activeTab = 'tasks';
@@ -114,7 +116,7 @@ export function showLabelTasks(labelId) {
   state.activeLabelFilter = labelId;
   state.activeCategoryFilter = null;
   state.activePersonFilter = null;
-  state.mobileDrawerOpen = false;
+  closeMobileDrawer();
   // Switch to tasks tab when navigating from Quick Stats or other widgets
   if (state.activeTab !== 'tasks') {
     state.activeTab = 'tasks';
@@ -136,7 +138,7 @@ export function showPerspectiveTasks(perspectiveId) {
   state.activeCategoryFilter = null;
   state.activeLabelFilter = null;
   state.activePersonFilter = null;
-  state.mobileDrawerOpen = false;
+  closeMobileDrawer();
   // Switch to tasks tab when navigating from Quick Stats or other widgets
   if (state.activeTab !== 'tasks') {
     state.activeTab = 'tasks';
@@ -158,7 +160,7 @@ export function showPersonTasks(personId) {
   state.activePerspective = null;
   state.activeCategoryFilter = null;
   state.activeLabelFilter = null;
-  state.mobileDrawerOpen = false;
+  closeMobileDrawer();
   // Switch to tasks tab when navigating from Quick Stats or other widgets
   if (state.activeTab !== 'tasks') {
     state.activeTab = 'tasks';

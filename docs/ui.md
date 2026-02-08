@@ -9,6 +9,7 @@
 - Bottom nav always visible with labels.
 - Compact header on mobile with version badge.
 - Task rows are tightly spaced for high density.
+- Drawer respects safe-area insets and always restores body scroll when closed.
 
 ## Task Row Layout
 - Title wraps on mobile for full visibility.

@@ -851,6 +851,8 @@ input[type="checkbox"]:focus {
     will-change: transform;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 
   .mobile-sidebar-overlay.show .mobile-sidebar-drawer {
