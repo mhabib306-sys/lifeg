@@ -48,7 +48,22 @@ export function editCustomPerspective(perspectiveId) {
       document.getElementById('perspective-icon').value = p.icon;
       if (p.filter.categoryId) document.getElementById('perspective-category').value = p.filter.categoryId;
       if (p.filter.status) document.getElementById('perspective-status').value = p.filter.status;
+      if (p.filter.logic) document.getElementById('perspective-logic').value = p.filter.logic;
+      if (p.filter.availability) document.getElementById('perspective-availability').value = p.filter.availability;
+      if (p.filter.statusRule) document.getElementById('perspective-status-rule').value = p.filter.statusRule;
+      if (p.filter.personId) document.getElementById('perspective-person').value = p.filter.personId;
+      if (p.filter.tagMatch) document.getElementById('perspective-tags-mode').value = p.filter.tagMatch;
       if (p.filter.hasDueDate) document.getElementById('perspective-due').checked = true;
+      if (p.filter.hasDeferDate) document.getElementById('perspective-defer').checked = true;
+      if (p.filter.isRepeating) document.getElementById('perspective-repeat').checked = true;
+      if (p.filter.isUntagged) document.getElementById('perspective-untagged').checked = true;
+      if (p.filter.inboxOnly) document.getElementById('perspective-inbox').checked = true;
+      if (p.filter.dateRange) {
+        if (p.filter.dateRange.type) document.getElementById('perspective-range-type').value = p.filter.dateRange.type;
+        if (p.filter.dateRange.start) document.getElementById('perspective-range-start').value = p.filter.dateRange.start;
+        if (p.filter.dateRange.end) document.getElementById('perspective-range-end').value = p.filter.dateRange.end;
+      }
+      if (p.filter.searchTerms) document.getElementById('perspective-search').value = p.filter.searchTerms;
       if (p.filter.labelIds) {
         p.filter.labelIds.forEach(lid => {
           const cb = document.querySelector(`.perspective-tag-checkbox[value="${lid}"]`);

@@ -8,6 +8,7 @@
   notes: string,
   status: 'inbox' | 'anytime' | 'someday',
   today: boolean,
+  flagged: boolean,
   completed: boolean,
   completedAt: string | null,
   categoryId: string | null,

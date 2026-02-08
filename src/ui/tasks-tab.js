@@ -95,7 +95,10 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
               ${task.completed ? '<svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>' : ''}
             </button>
           `}
-          <span class="flex-1 ml-3 text-[14px] leading-snug truncate ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">${escapeHtml(task.title)}</span>
+          <span class="flex-1 ml-3 text-[14px] leading-snug truncate ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">
+            ${task.flagged ? `<span class="inline-flex items-center text-amber-500 mr-1.5">${THINGS3_ICONS.flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
+            ${escapeHtml(task.title)}
+          </span>
           <div class="flex items-center gap-2 ml-2 flex-shrink-0 text-[11px]">
             ${category ? `<span class="text-[var(--text-muted)] truncate max-w-[80px]">${escapeHtml(category.name)}</span>` : ''}
             ${task.dueDate ? `<span class="${isOverdue ? 'text-red-500 font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : isDueSoon ? 'text-amber-500 font-medium' : 'text-[var(--text-muted)]'}">${formatSmartDate(task.dueDate)}</span>` : ''}
@@ -133,7 +136,10 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
               class="w-full text-[16px] text-[var(--text-primary)] bg-[var(--bg-input)] border border-[var(--accent)] rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-light)]">
           ` : `
             <span ondblclick="event.stopPropagation(); window.startInlineEdit('${task.id}')"
-              class="task-title text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug transition cursor-text">${escapeHtml(task.title)}</span>
+              class="task-title text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug transition cursor-text">
+              ${task.flagged ? `<span class="inline-flex items-center text-amber-500 mr-1.5">${THINGS3_ICONS.flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
+              ${escapeHtml(task.title)}
+            </span>
           `}
           ${hasMetadata && metaParts.length ? `
             <div class="task-meta-inline">${metaParts.join(' • ')}</div>

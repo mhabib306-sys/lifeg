@@ -241,6 +241,7 @@ export const state = {
   modalSelectedArea: null,
   modalSelectedStatus: 'inbox',
   modalSelectedToday: false,
+  modalSelectedFlagged: false,
   modalSelectedTags: [],
   modalSelectedPeople: [],
   modalIsNote: false,

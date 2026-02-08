@@ -28,6 +28,7 @@ export function initializeTaskOrders() {
  * PERSPECTIVE RULES:
  * - inbox: status='inbox' AND no categoryId
  * - today: today=true OR dueDate=today OR overdue OR deferDate<=today
+ * - flagged: flagged=true
  * - upcoming: has future dueDate
  * - anytime: status='anytime' (today flag does not exclude) AND no future dueDate
  * - someday: status='someday'
@@ -48,17 +49,25 @@ export function getFilteredTasks(perspectiveId) {
   if (!perspective) return [];
 
   const today = getLocalDateString();
+  const isCustom = !perspective.builtin;
 
   return state.tasksData.filter(task => {
-    // Notes don't appear in regular task perspectives (except logbook which shows all completed)
-    if (task.isNote && !perspective.filter.completed) return false;
+    const availability = perspective.filter.availability || '';
+    const wantsCompleted = availability === 'completed';
+
+    // Notes don't appear in regular task perspectives (except completed views)
+    if (task.isNote && !wantsCompleted && !perspective.filter.completed) return false;
 
     // Logbook (completed) shows all completed tasks (including notes)
     if (perspective.filter.completed) {
       return task.completed;
     }
-    // Other perspectives show only non-completed tasks
-    if (task.completed) return false;
+    // Completed filtering for custom perspectives (OmniFocus-style availability)
+    if (wantsCompleted) {
+      if (!task.completed) return false;
+    } else if (task.completed) {
+      return false;
+    }
 
     // OmniFocus model for Today:
     // - Tasks flagged for today
@@ -127,22 +136,94 @@ export function getFilteredTasks(perspectiveId) {
       return task.status === 'inbox' && !task.categoryId;
     }
 
+    // Flagged: OmniFocus-style flagged items
+    if (perspectiveId === 'flagged') {
+      return !!task.flagged;
+    }
+
     // Custom perspectives
-    if (perspective.filter.status && task.status !== perspective.filter.status) return false;
-    if (perspective.filter.categoryId && task.categoryId !== perspective.filter.categoryId) return false;
-    if (perspective.filter.hasLabel && !(task.labels || []).some(l => l === perspective.filter.hasLabel)) return false;
-    if (perspective.filter.labelIds && perspective.filter.labelIds.length > 0) {
-      // Task must have at least one of the selected tags
-      if (!(task.labels || []).some(l => perspective.filter.labelIds.includes(l))) return false;
+    if (isCustom) {
+      const filter = perspective.filter || {};
+      const rules = [];
+
+      if (filter.status) {
+        if (filter.status === 'today') rules.push(!!task.today);
+        else rules.push(task.status === filter.status);
+      }
+      if (filter.categoryId) rules.push(task.categoryId === filter.categoryId);
+      if (filter.personId) rules.push((task.people || []).includes(filter.personId));
+      if (filter.inboxOnly) rules.push(task.status === 'inbox' && !task.categoryId);
+      if (filter.hasLabel) rules.push((task.labels || []).some(l => l === filter.hasLabel));
+
+      if (filter.labelIds && filter.labelIds.length > 0) {
+        const tagMatch = filter.tagMatch || 'any';
+        const matches = tagMatch === 'all'
+          ? filter.labelIds.every(l => (task.labels || []).includes(l))
+          : (task.labels || []).some(l => filter.labelIds.includes(l));
+        rules.push(matches);
+      }
+
+      if (filter.isUntagged) rules.push(!(task.labels || []).length);
+      if (filter.hasDueDate) rules.push(!!task.dueDate);
+      if (filter.hasDeferDate) rules.push(!!task.deferDate);
+      if (filter.isRepeating) rules.push(!!(task.repeat && task.repeat.type !== 'none'));
+
+      const dueSoonRule = filter.statusRule === 'dueSoon' || filter.dueSoon;
+      if (dueSoonRule) {
+        if (!task.dueDate) rules.push(false);
+        else {
+          const due = new Date(task.dueDate + 'T00:00:00');
+          const now = new Date(today + 'T00:00:00');
+          const diffDays = (due - now) / 86400000;
+          rules.push(diffDays >= 0 && diffDays <= 7);
+        }
+      }
+
+      const flaggedRule = filter.statusRule === 'flagged' || filter.flagged;
+      if (flaggedRule) rules.push(!!task.flagged);
+
+      if (filter.availability) {
+        const available = !task.completed && (!task.deferDate || task.deferDate <= today);
+        const remaining = !task.completed;
+        const matches = filter.availability === 'available' || filter.availability === 'firstAvailable'
+          ? available
+          : filter.availability === 'remaining'
+            ? remaining
+            : filter.availability === 'completed'
+              ? task.completed
+              : true;
+        rules.push(matches);
+      }
+
+      if (filter.dateRange && (filter.dateRange.start || filter.dateRange.end)) {
+        const rangeStart = filter.dateRange.start || null;
+        const rangeEnd = filter.dateRange.end || null;
+        const rangeType = filter.dateRange.type || 'either';
+        const dates = [];
+        if (rangeType === 'due' || rangeType === 'either') dates.push(task.dueDate);
+        if (rangeType === 'defer' || rangeType === 'either') dates.push(task.deferDate);
+        const matchesRange = dates.some(date => {
+          if (!date) return false;
+          if (rangeStart && date < rangeStart) return false;
+          if (rangeEnd && date > rangeEnd) return false;
+          return true;
+        });
+        rules.push(matchesRange);
+      }
+
+      if (filter.searchTerms) {
+        const term = filter.searchTerms.toLowerCase();
+        const hay = `${task.title || ''} ${task.notes || ''}`.toLowerCase();
+        rules.push(hay.includes(term));
+      }
+
+      if (rules.length === 0) return true;
+      const logic = filter.logic || 'all';
+      if (logic === 'any') return rules.some(Boolean);
+      if (logic === 'none') return rules.every(r => !r);
+      return rules.every(Boolean);
     }
-    if (perspective.filter.hasDueDate && !task.dueDate) return false;
-    if (perspective.filter.dueSoon) {
-      if (!task.dueDate) return false;
-      const due = new Date(task.dueDate);
-      const now = new Date();
-      const diffDays = (due - now) / (1000 * 60 * 60 * 24);
-      if (diffDays > 7 || diffDays < 0) return false;
-    }
+
     return true;
   }).sort((a, b) => {
     // Sort by manual order first if available

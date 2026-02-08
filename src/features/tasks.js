@@ -12,6 +12,7 @@ import { generateTaskId, getLocalDateString } from '../utils.js';
  * @property {string} notes - Additional details/context
  * @property {string} status - 'inbox'|'anytime'|'someday'
  * @property {boolean} today - True if flagged for Today
+ * @property {boolean} flagged - True if flagged (OmniFocus-style)
  * @property {boolean} completed - Completion state
  * @property {string|null} completedAt - ISO timestamp when completed
  * @property {string|null} categoryId - Area/category assignment
@@ -30,6 +31,7 @@ import { generateTaskId, getLocalDateString } from '../utils.js';
  * - Inbox tasks have no category
  * - Assigning a category moves Inbox -> Anytime
  * - "Today" is a flag (non-exclusive) and does not replace status
+ * - "Flagged" is a separate boolean (OmniFocus-style)
  * - "Someday" hides task from active views
  *
  * @param {string} title - Task title
@@ -44,6 +46,7 @@ export function createTask(title, options = {}) {
     notes: options.notes || '',
     status: normalizedStatus, // inbox, anytime, someday
     today: options.today || options.status === 'today' || false,
+    flagged: options.flagged || false,
     completed: false,
     completedAt: null,
     categoryId: options.categoryId || null,
@@ -92,6 +95,10 @@ export function migrateTodayFlag() {
     }
     if (typeof task.today !== 'boolean') {
       task.today = false;
+      changed = true;
+    }
+    if (typeof task.flagged !== 'boolean') {
+      task.flagged = false;
       changed = true;
     }
   });

@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents (Claude Code, Codex, etc.) when 
 
 ## Project Overview
 
-**Nucleus** (v4.2.8 - Tactile) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
+**Nucleus** (v4.2.9 - Vector) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
 
 ## Git Workflow
 
@@ -163,6 +163,7 @@ When adding a new function that will be called from `onclick` handlers in HTML s
 ## Task Logic (Things 3 / OmniFocus Hybrid)
 
 - Today is **non-exclusive**: Today tasks also appear in Anytime.
+- Flagged is a **separate** boolean (OmniFocus-style).
 - Defer date controls availability; due date is a deadline signal.
 - Anytime excludes tasks with future due dates or deferred to the future.
 

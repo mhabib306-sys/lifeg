@@ -136,12 +136,16 @@ export function openNewTaskModal() {
     const customPerspective = state.customPerspectives.find(p => p.id === state.activePerspective);
     if (customPerspective && customPerspective.filter) {
       // Apply custom perspective filter rules
+      const customStatus = customPerspective.filter.status === 'today' ? 'anytime' : (customPerspective.filter.status || 'inbox');
+      const customToday = customPerspective.filter.status === 'today';
       state.newTaskContext = {
         categoryId: customPerspective.filter.categoryId || null,
         labelId: null,
         labelIds: customPerspective.filter.labelIds || null,
         personId: null,
-        status: customPerspective.filter.status || 'inbox'
+        status: customStatus,
+        today: customToday,
+        flagged: customPerspective.filter.statusRule === 'flagged'
       };
     } else {
       // Built-in perspective - set status based on perspective
@@ -152,7 +156,8 @@ export function openNewTaskModal() {
         labelIds: null,
         personId: null,
         status: statusMap[state.activePerspective] || 'inbox',
-        today: state.activePerspective === 'today'
+        today: state.activePerspective === 'today',
+        flagged: state.activePerspective === 'flagged'
       };
     }
   } else {
@@ -201,17 +206,26 @@ export function quickAddTask(inputElement) {
     const customPerspective = state.customPerspectives.find(p => p.id === state.activePerspective);
     if (customPerspective && customPerspective.filter) {
       // Apply custom perspective filter rules
-      if (customPerspective.filter.status) options.status = customPerspective.filter.status;
+      if (customPerspective.filter.status) {
+        if (customPerspective.filter.status === 'today') {
+          options.status = 'anytime';
+          options.today = true;
+        } else {
+          options.status = customPerspective.filter.status;
+        }
+      }
       if (customPerspective.filter.categoryId) options.categoryId = customPerspective.filter.categoryId;
       if (customPerspective.filter.labelIds && customPerspective.filter.labelIds.length > 0) {
         options.labels = customPerspective.filter.labelIds;
       }
+      if (customPerspective.filter.statusRule === 'flagged') options.flagged = true;
     } else {
       // Built-in perspective - set status based on perspective
       const statusMap = { inbox: 'inbox', today: 'anytime', anytime: 'anytime', someday: 'someday' };
       if (statusMap[state.activePerspective]) {
         options.status = statusMap[state.activePerspective];
         if (state.activePerspective === 'today') options.today = true;
+        if (state.activePerspective === 'flagged') options.flagged = true;
       }
     }
   }
@@ -575,6 +589,7 @@ export function initModalState(editingTask) {
     state.modalSelectedArea = editingTask.categoryId || null;
     state.modalSelectedStatus = editingTask.status || 'inbox';
     state.modalSelectedToday = !!editingTask.today;
+    state.modalSelectedFlagged = !!editingTask.flagged;
     state.modalSelectedTags = [...(editingTask.labels || [])];
     state.modalSelectedPeople = [...(editingTask.people || [])];
     state.modalIsNote = editingTask.isNote || false;
@@ -583,6 +598,7 @@ export function initModalState(editingTask) {
     state.modalSelectedArea = state.newTaskContext.categoryId || null;
     state.modalSelectedStatus = state.newTaskContext.status || 'inbox';
     state.modalSelectedToday = !!state.newTaskContext.today;
+    state.modalSelectedFlagged = !!state.newTaskContext.flagged;
     state.modalSelectedTags = state.newTaskContext.labelIds ? [...state.newTaskContext.labelIds] : (state.newTaskContext.labelId ? [state.newTaskContext.labelId] : []);
     state.modalSelectedPeople = state.newTaskContext.personId ? [state.newTaskContext.personId] : [];
     state.modalIsNote = state.activePerspective === 'notes';
@@ -623,6 +639,15 @@ export function setModalStatus(status) {
       pill.classList.toggle('selected', pill.dataset.status === state.modalSelectedStatus);
     }
   });
+}
+
+/**
+ * Toggle the modal flagged state.
+ */
+export function toggleModalFlagged() {
+  state.modalSelectedFlagged = !state.modalSelectedFlagged;
+  const flagPill = document.querySelector('.status-pill[data-status="flagged"]');
+  if (flagPill) flagPill.classList.toggle('selected', state.modalSelectedFlagged);
 }
 
 /**
@@ -903,7 +928,13 @@ export function initModalAutocomplete() {
 
     // Set initial status
     document.querySelectorAll('.status-pill').forEach(pill => {
-      pill.classList.toggle('selected', pill.dataset.status === state.modalSelectedStatus);
+      if (pill.dataset.status === 'today') {
+        pill.classList.toggle('selected', state.modalSelectedToday);
+      } else if (pill.dataset.status === 'flagged') {
+        pill.classList.toggle('selected', state.modalSelectedFlagged);
+      } else {
+        pill.classList.toggle('selected', pill.dataset.status === state.modalSelectedStatus);
+      }
     });
 
     // Set initial type
@@ -968,6 +999,7 @@ export function saveTaskFromModal() {
     notes: document.getElementById('task-notes')?.value.trim() || '',
     status: state.modalSelectedStatus,
     today: state.modalSelectedToday,
+    flagged: state.modalSelectedFlagged,
     categoryId: state.modalSelectedArea,
     deferDate: deferDateValue,
     dueDate: document.getElementById('task-due')?.value || null,
@@ -1012,19 +1044,46 @@ export function savePerspectiveFromModal() {
   const icon = document.getElementById('perspective-icon').value || '\uD83D\uDCCC';
   const filter = {};
 
+  const logic = document.getElementById('perspective-logic')?.value || 'all';
+  if (logic) filter.logic = logic;
+
   const categoryId = document.getElementById('perspective-category').value;
   if (categoryId) filter.categoryId = categoryId;
 
   const status = document.getElementById('perspective-status').value;
   if (status) filter.status = status;
 
+  const availability = document.getElementById('perspective-availability')?.value;
+  if (availability) filter.availability = availability;
+
+  const statusRule = document.getElementById('perspective-status-rule')?.value;
+  if (statusRule) filter.statusRule = statusRule;
+
+  const personId = document.getElementById('perspective-person')?.value;
+  if (personId) filter.personId = personId;
+
+  const tagMatch = document.getElementById('perspective-tags-mode')?.value || 'any';
+  if (tagMatch) filter.tagMatch = tagMatch;
+
   // Collect selected tags
   const selectedTags = Array.from(document.querySelectorAll('.perspective-tag-checkbox:checked')).map(cb => cb.value);
   if (selectedTags.length > 0) filter.labelIds = selectedTags;
 
-  if (document.getElementById('perspective-due').checked) {
-    filter.hasDueDate = true;
+  if (document.getElementById('perspective-due').checked) filter.hasDueDate = true;
+  if (document.getElementById('perspective-defer').checked) filter.hasDeferDate = true;
+  if (document.getElementById('perspective-repeat').checked) filter.isRepeating = true;
+  if (document.getElementById('perspective-untagged').checked) filter.isUntagged = true;
+  if (document.getElementById('perspective-inbox').checked) filter.inboxOnly = true;
+
+  const rangeType = document.getElementById('perspective-range-type')?.value || 'either';
+  const rangeStart = document.getElementById('perspective-range-start')?.value || '';
+  const rangeEnd = document.getElementById('perspective-range-end')?.value || '';
+  if (rangeStart || rangeEnd) {
+    filter.dateRange = { type: rangeType, start: rangeStart || null, end: rangeEnd || null };
   }
+
+  const searchTerms = document.getElementById('perspective-search')?.value?.trim() || '';
+  if (searchTerms) filter.searchTerms = searchTerms;
 
   if (state.editingPerspectiveId) {
     // Update existing perspective
@@ -1122,6 +1181,9 @@ export function renderTaskModalHtml() {
               </div>
               <div class="status-pill ${state.modalSelectedToday ? 'selected' : ''}" data-status="today" onclick="setModalStatus('today')">
                 <span class="status-icon">${THINGS3_ICONS.today.replace('w-5 h-5', 'w-4 h-4')}</span>Today
+              </div>
+              <div class="status-pill ${state.modalSelectedFlagged ? 'selected' : ''}" data-status="flagged" onclick="toggleModalFlagged()">
+                <span class="status-icon">${THINGS3_ICONS.flagged.replace('w-5 h-5', 'w-4 h-4')}</span>Flag
               </div>
               <div class="status-pill ${state.modalSelectedStatus === 'anytime' ? 'selected' : ''}" data-status="anytime" onclick="setModalStatus('anytime')">
                 <span class="status-icon">${THINGS3_ICONS.anytime.replace('w-5 h-5', 'w-4 h-4')}</span>Anytime
@@ -1806,30 +1868,71 @@ export function renderPerspectiveModalHtml() {
               onkeydown="if(event.key==='Enter'){event.preventDefault();savePerspectiveFromModal();}"
               class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
           </div>
+          <div class="flex items-center gap-4">
+            <div class="flex-1">
+              <label class="text-sm text-charcoal/70 block mb-1">Icon (emoji)</label>
+              <input type="text" id="perspective-icon" value="📌" maxlength="2"
+                class="w-20 px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-center text-xl">
+            </div>
+            <div class="flex-1">
+              <label class="text-sm text-charcoal/70 block mb-1">Match</label>
+              <select id="perspective-logic" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+                <option value="all">All rules</option>
+                <option value="any">Any rule</option>
+                <option value="none">No rules</option>
+              </select>
+            </div>
+          </div>
           <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Icon (emoji)</label>
-            <input type="text" id="perspective-icon" value="📌" maxlength="2"
-              class="w-20 px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-center text-xl">
+            <label class="text-sm text-charcoal/70 block mb-1">Availability (OmniFocus-style)</label>
+            <select id="perspective-availability" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              <option value="">Any availability</option>
+              <option value="available">Available</option>
+              <option value="remaining">Remaining</option>
+              <option value="completed">Completed</option>
+            </select>
           </div>
           <div>
             <label class="text-sm text-charcoal/70 block mb-1">Filter by Area</label>
             <select id="perspective-category" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
-              <option value="">Any category</option>
+              <option value="">Any area</option>
               ${(state.taskCategories || []).map(cat => `<option value="${cat.id}">${escapeHtml(cat.name)}</option>`).join('')}
             </select>
           </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-sm text-charcoal/70 block mb-1">Filter by Status</label>
+              <select id="perspective-status" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+                <option value="">Any status</option>
+                <option value="inbox">Inbox</option>
+                <option value="anytime">Anytime</option>
+                <option value="someday">Someday</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm text-charcoal/70 block mb-1">Special Status</label>
+              <select id="perspective-status-rule" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+                <option value="">None</option>
+                <option value="flagged">Flagged</option>
+                <option value="dueSoon">Due Soon (next 7 days)</option>
+              </select>
+            </div>
+          </div>
           <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Filter by Status</label>
-            <select id="perspective-status" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
-              <option value="">Any status</option>
-              <option value="inbox">Inbox</option>
-              <option value="today">Today</option>
-              <option value="anytime">Anytime</option>
-              <option value="someday">Someday</option>
+            <label class="text-sm text-charcoal/70 block mb-1">Filter by Person</label>
+            <select id="perspective-person" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              <option value="">Any person</option>
+              ${(state.taskPeople || []).map(person => `<option value="${person.id}">${escapeHtml(person.name)}</option>`).join('')}
             </select>
           </div>
           <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Filter by Tags</label>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-sm text-charcoal/70">Filter by Tags</label>
+              <select id="perspective-tags-mode" class="px-2 py-1 text-xs border border-softborder rounded">
+                <option value="any">Match any</option>
+                <option value="all">Match all</option>
+              </select>
+            </div>
             <div class="border border-softborder rounded p-2 max-h-32 overflow-y-auto space-y-1">
               ${(state.taskLabels || []).length > 0 ? state.taskLabels.map(label => `
                 <label class="flex items-center gap-2 px-2 py-1 rounded hover:bg-warmgray cursor-pointer">
@@ -1840,9 +1943,44 @@ export function renderPerspectiveModalHtml() {
               `).join('') : '<p class="text-sm text-charcoal/40 text-center py-2">No tags created yet</p>'}
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <input type="checkbox" id="perspective-due" class="rounded border-softborder">
-            <label for="perspective-due" class="text-sm text-charcoal/70">Only show tasks with due dates</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 text-sm text-charcoal/70">
+              <input type="checkbox" id="perspective-due" class="rounded border-softborder">
+              Has due date
+            </label>
+            <label class="flex items-center gap-2 text-sm text-charcoal/70">
+              <input type="checkbox" id="perspective-defer" class="rounded border-softborder">
+              Has defer date
+            </label>
+            <label class="flex items-center gap-2 text-sm text-charcoal/70">
+              <input type="checkbox" id="perspective-repeat" class="rounded border-softborder">
+              Repeating
+            </label>
+            <label class="flex items-center gap-2 text-sm text-charcoal/70">
+              <input type="checkbox" id="perspective-untagged" class="rounded border-softborder">
+              Untagged
+            </label>
+            <label class="flex items-center gap-2 text-sm text-charcoal/70">
+              <input type="checkbox" id="perspective-inbox" class="rounded border-softborder">
+              Inbox only
+            </label>
+          </div>
+          <div>
+            <label class="text-sm text-charcoal/70 block mb-1">Date Range</label>
+            <div class="grid grid-cols-3 gap-2">
+              <select id="perspective-range-type" class="px-2 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-sm">
+                <option value="either">Due or Defer</option>
+                <option value="due">Due only</option>
+                <option value="defer">Defer only</option>
+              </select>
+              <input type="date" id="perspective-range-start" class="px-2 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-sm">
+              <input type="date" id="perspective-range-end" class="px-2 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-sm">
+            </div>
+          </div>
+          <div>
+            <label class="text-sm text-charcoal/70 block mb-1">Search Terms</label>
+            <input type="text" id="perspective-search" placeholder="Title or notes contains..."
+              class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
           </div>
         </div>
         <div class="px-6 py-4 border-t border-softborder flex justify-between">

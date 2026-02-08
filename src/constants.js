@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.2.8 - Tactile';
+export const APP_VERSION = '4.2.9 - Vector';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -133,6 +133,8 @@ export const THINGS3_ICONS = {
   inbox: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm0 10v4h16v-4h-4a4 4 0 01-8 0H4z"/></svg>`,
   // Today - Things 3 style: filled 5-point star
   today: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.94 5.95 6.57.96-4.76 4.63 1.12 6.56L12 17.27l-5.87 3.09 1.12-6.56-4.76-4.63 6.57-.96z"/></svg>`,
+  // Flagged - OmniFocus style: simple flag
+  flagged: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h2v2h8l-1 3 3 3H8v10H6V2z"/></svg>`,
   // Upcoming - Things 3 style: calendar with date marker
   upcoming: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 2v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-1V2h-2v2H8V2H6zm13 18H5V9h14v11z"/><rect x="7" y="11" width="3" height="3" rx="0.5"/></svg>`,
   // Anytime - Things 3 style: 3 horizontal bars stacked
@@ -172,6 +174,7 @@ export const THINGS3_ICONS = {
  * FILTER LOGIC (implemented in getFilteredTasks):
  * - inbox: status='inbox' AND no categoryId (unprocessed items)
  * - today: today=true OR dueToday OR overdue OR scheduled for today
+ * - flagged: flagged=true (OmniFocus-style flag)
  * - upcoming: has future dueDate
  * - anytime: status='anytime' (no deadline, available now)
  * - someday: status='someday' (on hold for later)
@@ -180,6 +183,7 @@ export const THINGS3_ICONS = {
 export const BUILTIN_PERSPECTIVES = [
   { id: 'inbox', name: 'Inbox', icon: THINGS3_ICONS.inbox, color: '#5598FE', filter: { status: 'inbox' }, builtin: true },
   { id: 'today', name: 'Today', icon: THINGS3_ICONS.today, color: '#FFCA28', filter: { today: true }, builtin: true },
+  { id: 'flagged', name: 'Flagged', icon: THINGS3_ICONS.flagged, color: '#FB8C00', filter: { flagged: true }, builtin: true },
   { id: 'upcoming', name: 'Upcoming', icon: THINGS3_ICONS.upcoming, color: '#EF5350', filter: { upcoming: true }, builtin: true },
   { id: 'calendar', name: 'Calendar', icon: THINGS3_ICONS.calendar, color: '#8B5CF6', filter: { calendar: true }, builtin: true },
   { id: 'anytime', name: 'Anytime', icon: THINGS3_ICONS.anytime, color: '#26A69A', filter: { status: 'anytime' }, builtin: true },

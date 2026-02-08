@@ -32,3 +32,7 @@ Home widgets are single-column on phones for readability.
 - Task lines show in minimal text and rely on color for due/start/overdue.
 - Visual styling matches Things 3: lighter gridlines, soft header caps, and compact day labels.
 - When Today is selected, the calendar day list shows a Today section with a Next section underneath.
+
+## Perspectives
+- Custom perspectives support OmniFocus-style availability and rule matching (All/Any/None).
+- Special rules include Flagged and Due Soon, plus date range filters.
