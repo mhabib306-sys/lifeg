@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T20:13:11.705Z",
+  "lastUpdated": "2026-02-08T20:32:02.870Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1610,7 +1610,9 @@
         "exercise": false
       },
       "prayers": {
-        "maghrib": 1
+        "maghrib": 1,
+        "isha": 1,
+        "quran": 1
       },
       "glucose": {},
       "whoop": {},
