@@ -818,7 +818,7 @@ input[type="checkbox"]:focus {
 
   /* Main content padding for bottom nav */
   main, .main-content {
-    padding-bottom: 80px !important;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
   }
 
   /* Sidebar becomes full-screen overlay on mobile */
@@ -914,15 +914,18 @@ input[type="checkbox"]:focus {
   .task-title {
     font-size: 14px !important;
     line-height: 1.2 !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
   }
 
   .task-meta-inline {
     margin-top: 2px !important;
     font-size: 10px !important;
     line-height: 1.05 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   /* Checkbox - force perfect circle */

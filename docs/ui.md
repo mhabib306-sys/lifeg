@@ -11,7 +11,7 @@
 - Task rows are tightly spaced for high density.
 
 ## Task Row Layout
-- Title is single-line on mobile (ellipsis if long).
+- Title wraps on mobile for full visibility.
 - Metadata is a single, truncated line.
 - Checkbox aligned to title center when metadata is absent.
 
