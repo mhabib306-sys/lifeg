@@ -1747,7 +1747,7 @@ input[type="checkbox"]:focus {
   background: var(--modal-bg);
 }
 .modal-body-enhanced {
-  padding: 24px;
+  padding: 20px 22px 22px;
   overflow-y: auto;
   flex: 1;
 }
@@ -1760,7 +1760,7 @@ input[type="checkbox"]:focus {
   background: var(--bg-secondary);
 }
 .modal-section {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 .modal-section:last-child {
   margin-bottom: 0;
@@ -1792,6 +1792,27 @@ input[type="checkbox"]:focus {
   font-size: 18px;
   font-weight: 500;
   padding: 14px 16px;
+}
+.modal-hint-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+}
+.modal-hint-chip {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+}
+.modal-hint-text {
+  font-size: 11px;
+  color: var(--text-muted);
 }
 .modal-textarea-enhanced {
   width: 100%;
@@ -1880,6 +1901,30 @@ input[type="checkbox"]:focus {
   border: 1px solid var(--border);
   cursor: pointer;
   transition: background 0.15s;
+}
+.date-quick-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.date-quick-pill {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.date-quick-pill:hover {
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+}
+.date-quick-pill.ghost {
+  background: transparent;
+  color: var(--text-muted);
 }
 .date-row:hover {
   background: var(--bg-secondary);

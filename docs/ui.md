@@ -15,6 +15,11 @@
 - Metadata is a single, truncated line.
 - Checkbox aligned to title center when metadata is absent.
 
+## Task Modal
+- Title field supports inline shortcuts: `#` area, `@` tag, `&` person, `!` defer date.
+- Quick schedule pills set Defer/Due to Today, Tomorrow, or Next Week.
+- Cmd/Ctrl+Enter from notes saves the task.
+
 ## Today Flag
 - Today is a separate flag (not a status).
 - Tasks can be Today and still appear in Anytime.

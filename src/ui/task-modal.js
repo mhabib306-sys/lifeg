@@ -657,6 +657,38 @@ export function clearDateField(type) {
 }
 
 /**
+ * Set a quick date value on a date field.
+ * @param {string} type - 'defer' or 'due'
+ * @param {number|null} offsetDays - days from today, or null to clear
+ */
+export function setQuickDate(type, offsetDays) {
+  const input = document.getElementById(type === 'defer' ? 'task-defer' : 'task-due');
+  if (!input) return;
+  if (offsetDays === null) {
+    input.value = '';
+    updateDateDisplay(type);
+    return;
+  }
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + offsetDays);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  input.value = `${y}-${m}-${dd}`;
+  updateDateDisplay(type);
+}
+
+/**
+ * Open the native date picker for a field.
+ * @param {string} type - 'defer' or 'due'
+ */
+export function openDatePicker(type) {
+  const input = document.getElementById(type === 'defer' ? 'task-defer' : 'task-due');
+  if (input?.showPicker) input.showPicker();
+}
+
+/**
  * Select an area in the modal and update its display.
  * @param {object|null} area - Area object or null to clear
  */
@@ -1063,12 +1095,20 @@ export function renderTaskModalHtml() {
               maxlength="500"
               onkeydown="if(event._inlineAcHandled)return;if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();saveTaskFromModal();}"
               class="modal-input-enhanced title-input">
+            <div class="modal-hint-row">
+              <span class="modal-hint-chip"># Area</span>
+              <span class="modal-hint-chip">@ Tag</span>
+              <span class="modal-hint-chip">&amp; Person</span>
+              <span class="modal-hint-chip">! Defer</span>
+              <span class="modal-hint-text">Enter to save • Cmd/Ctrl+Enter from notes</span>
+            </div>
           </div>
 
           <!-- Notes/Details -->
           <div class="modal-section">
             <label class="modal-section-label">Notes</label>
             <textarea id="task-notes" placeholder="Add details, links, or context..."
+              onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();saveTaskFromModal();}"
               class="modal-textarea-enhanced">${editingTask?.notes || ''}</textarea>
           </div>
 
@@ -1104,7 +1144,7 @@ export function renderTaskModalHtml() {
           <div class="modal-section">
             <label class="modal-section-label">Schedule</label>
             <!-- Defer Until -->
-            <div class="date-row mb-2" onclick="document.getElementById('task-defer').showPicker()">
+            <div class="date-row mb-2" onclick="openDatePicker('defer')">
               <svg class="date-row-icon w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5V19L19 12z"/></svg>
               <div class="flex-1 min-w-0">
                 <div class="text-[11px] font-medium uppercase tracking-wide text-[var(--text-muted)]">Defer Until</div>
@@ -1117,8 +1157,14 @@ export function renderTaskModalHtml() {
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
               </button>
             </div>
+            <div class="date-quick-row mb-3">
+              <button class="date-quick-pill" onclick="setQuickDate('defer', 0)">Today</button>
+              <button class="date-quick-pill" onclick="setQuickDate('defer', 1)">Tomorrow</button>
+              <button class="date-quick-pill" onclick="setQuickDate('defer', 7)">Next Week</button>
+              <button class="date-quick-pill ghost" onclick="setQuickDate('defer', null)">Clear</button>
+            </div>
             <!-- Due -->
-            <div class="date-row" onclick="document.getElementById('task-due').showPicker()">
+            <div class="date-row" onclick="openDatePicker('due')">
               <svg class="date-row-icon w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
               <div class="flex-1 min-w-0">
                 <div class="text-[11px] font-medium uppercase tracking-wide text-[var(--text-muted)]">Due</div>
@@ -1130,6 +1176,12 @@ export function renderTaskModalHtml() {
                 onclick="event.stopPropagation(); clearDateField('due')">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
               </button>
+            </div>
+            <div class="date-quick-row">
+              <button class="date-quick-pill" onclick="setQuickDate('due', 0)">Today</button>
+              <button class="date-quick-pill" onclick="setQuickDate('due', 1)">Tomorrow</button>
+              <button class="date-quick-pill" onclick="setQuickDate('due', 7)">Next Week</button>
+              <button class="date-quick-pill ghost" onclick="setQuickDate('due', null)">Clear</button>
             </div>
           </div>
 
