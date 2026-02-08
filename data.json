@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T08:09:13.527Z",
+  "lastUpdated": "2026-02-08T08:28:43.929Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2568,6 +2568,46 @@
       "id": "label-1770510417167",
       "name": "portfolio",
       "color": "#3b82f6"
+    }
+  ],
+  "taskPeople": [
+    {
+      "id": "self",
+      "name": "Self",
+      "color": "#4A90A4"
+    },
+    {
+      "id": "person_1769977441169",
+      "name": "Seif Ghallab",
+      "color": "#6b7280"
+    },
+    {
+      "id": "person_1769988307264",
+      "name": "Mostafa Amin"
+    },
+    {
+      "id": "person_1769988593103",
+      "name": "Jana"
+    },
+    {
+      "id": "person_1769988596657",
+      "name": "Tia"
+    },
+    {
+      "id": "person_1770019362229",
+      "name": "Omar Metwally"
+    },
+    {
+      "id": "person_1770450952169",
+      "name": "Ahmed Habib"
+    },
+    {
+      "id": "person-1770490296950",
+      "name": "Nancy"
+    },
+    {
+      "id": "person-1770510421604",
+      "name": "Ali Refaai"
     }
   ],
   "customPerspectives": [
