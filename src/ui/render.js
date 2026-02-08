@@ -119,14 +119,14 @@ export function render() {
             </button>
           ` : ''}
         </div>
-        <h1 class="text-[17px] font-bold text-[var(--text-primary)] truncate">${state.activeTab === 'home' ? 'Home' : state.activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : state.activeTab === 'life' ? 'Life Score' : 'Settings'}</h1>
+        <h1 class="mobile-header-title text-[17px] font-bold text-[var(--text-primary)] truncate">${state.activeTab === 'home' ? 'Home' : state.activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : state.activeTab === 'life' ? 'Life Score' : 'Settings'}</h1>
         <div class="w-10 flex items-center justify-end">
           ${state.activeTab === 'tasks' ? `
             <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center shadow-sm active:opacity-80 transition" aria-label="New task">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             </button>
           ` : `
-            <button onclick="setToday()" class="text-[13px] font-semibold text-[var(--accent)] active:opacity-60">Today</button>
+            <button onclick="setToday()" class="mobile-header-action text-[13px] font-semibold text-[var(--accent)] active:opacity-60">Today</button>
           `}
         </div>
       </header>
@@ -228,15 +228,19 @@ export function render() {
         <div class="mobile-bottom-nav-inner" role="tablist">
           <button onclick="switchTab('home')" class="mobile-nav-item ${state.activeTab === 'home' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'home'}">
             ${THINGS3_ICONS.home}
+            <span class="mobile-nav-label">Home</span>
           </button>
           <button onclick="switchTab('tasks')" class="mobile-nav-item ${state.activeTab === 'tasks' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'tasks'}">
             ${THINGS3_ICONS.workspace}
+            <span class="mobile-nav-label">Tasks</span>
           </button>
           <button onclick="switchTab('life')" class="mobile-nav-item ${state.activeTab === 'life' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'life'}">
             ${THINGS3_ICONS.lifeScore}
+            <span class="mobile-nav-label">Life</span>
           </button>
           <button onclick="switchTab('settings')" class="mobile-nav-item ${state.activeTab === 'settings' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'settings'}">
             ${THINGS3_ICONS.settings}
+            <span class="mobile-nav-label">Settings</span>
           </button>
         </div>
       </nav>

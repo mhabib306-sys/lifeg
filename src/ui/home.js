@@ -365,13 +365,13 @@ export function renderHomeWidget(widget, isEditing) {
   return `
     <div class="widget ${sizeClass} bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden widget-drop-target ${isEditing ? 'cursor-grab' : ''}"
       ${isEditing ? `draggable="true" ondragstart="handleWidgetDragStart(event, '${widget.id}')" ondragend="handleWidgetDragEnd(event)" ondragover="handleWidgetDragOver(event, '${widget.id}')" ondragleave="handleWidgetDragLeave(event)" ondrop="handleWidgetDrop(event, '${widget.id}')"` : ''}>
-      <div class="px-4 py-2 border-b border-[var(--border-light)] flex items-center gap-2">
+      <div class="widget-header px-4 py-2 border-b border-[var(--border-light)] flex items-center gap-2">
         ${isEditing ? '<div class="text-[var(--text-muted)]/30 cursor-grab"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg></div>' : ''}
         <span style="color: ${widgetColors[widget.type] || '#6B7280'}">${widgetIcons[widget.type] || ''}</span>
-        <h3 class="text-sm font-medium text-[var(--text-primary)]">${widget.title}</h3>
+        <h3 class="widget-title text-sm font-medium text-[var(--text-primary)]">${widget.title}</h3>
         ${editControls}
       </div>
-      <div class="p-4">
+      <div class="widget-body p-4">
         ${content}
       </div>
     </div>
@@ -459,7 +459,7 @@ export function renderHomeTab() {
             <p class="text-[var(--text-muted)] text-xs hidden md:block">Press <kbd class="px-1.5 py-0.5 bg-[var(--bg-secondary)] rounded text-[11px] font-mono">\u2318K</kbd> to quick add</p>
           </div>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="home-header-actions flex items-center gap-3">
           ${state.editingHomeWidgets ? `
             <button onclick="resetHomeWidgets()" class="text-sm text-charcoal/50 hover:text-charcoal px-3 py-1.5 rounded-lg hover:bg-charcoal/5 transition">
               Reset Layout
