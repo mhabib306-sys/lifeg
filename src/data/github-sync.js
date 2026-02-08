@@ -127,6 +127,52 @@ export function updateSyncStatus(status, message = '') {
 }
 
 // ---------------------------------------------------------------------------
+// Pull-merge helper: merge cloud allData into local state before pushing
+// ---------------------------------------------------------------------------
+
+/**
+ * Merge cloud daily tracking data into state.allData.
+ * For each date+category+field: if local is empty/default but cloud has
+ * a value, adopt the cloud value. This preserves edits made on other
+ * devices without overwriting local changes.
+ */
+function mergeCloudAllData(cloudAllData) {
+  const categories = ['prayers', 'glucose', 'whoop', 'family', 'habits'];
+
+  function isEmptyVal(v) {
+    return v === '' || v === null || v === undefined;
+  }
+
+  Object.keys(cloudAllData).forEach(date => {
+    if (!state.allData[date]) {
+      // Date only exists in cloud — adopt it wholesale
+      state.allData[date] = cloudAllData[date];
+      return;
+    }
+
+    const local = state.allData[date];
+    const cloud = cloudAllData[date];
+
+    categories.forEach(cat => {
+      if (!cloud[cat]) return;
+
+      if (!local[cat]) {
+        // Category only in cloud — adopt it
+        local[cat] = cloud[cat];
+        return;
+      }
+
+      // Per-field merge: cloud fills gaps in local
+      Object.keys(cloud[cat]).forEach(field => {
+        if (isEmptyVal(local[cat][field]) && !isEmptyVal(cloud[cat][field])) {
+          local[cat][field] = cloud[cat][field];
+        }
+      });
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Save to GitHub
 // ---------------------------------------------------------------------------
 
@@ -144,7 +190,7 @@ export async function saveToGithub() {
   updateSyncStatus('syncing', 'Saving to GitHub...');
 
   try {
-    // Get current file SHA (needed for updates)
+    // Get current file SHA + content (needed for merge + update)
     const getResponse = await fetch(
       `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`,
       { headers: { 'Authorization': `token ${token}` } }
@@ -154,6 +200,21 @@ export async function saveToGithub() {
     if (getResponse.ok) {
       const fileData = await getResponse.json();
       sha = fileData.sha;
+
+      // Pull-merge: incorporate changes from other devices before pushing.
+      // Without this, a push from this device would overwrite edits made
+      // on another device (e.g., mobile life score data lost by laptop push).
+      try {
+        const binString = atob(fileData.content);
+        const bytes = Uint8Array.from(binString, char => char.codePointAt(0));
+        const cloudJson = new TextDecoder().decode(bytes);
+        const cloudData = JSON.parse(cloudJson);
+        if (cloudData?.data) {
+          mergeCloudAllData(cloudData.data);
+        }
+      } catch (mergeErr) {
+        console.warn('Cloud merge skipped:', mergeErr.message);
+      }
     }
 
     // Prepare data payload
@@ -243,20 +304,17 @@ export async function loadCloudData() {
 
   function mergeLifeData(cloudData) {
     if (!cloudData?.data) return;
-    const localData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     if (shouldUseCloud(cloudData.lastUpdated)) {
+      // Cloud is strictly newer — wholesale replace
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData.data));
       state.allData = cloudData.data;
       localStorage.setItem('lastUpdated', new Date(cloudData.lastUpdated).getTime().toString());
       return;
     }
-    Object.keys(cloudData.data).forEach(date => {
-      if (!localData[date]) {
-        localData[date] = cloudData.data[date];
-      }
-    });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
-    state.allData = localData;
+    // Local is newer or equal — still merge cloud data into local
+    // so edits from other devices aren't lost
+    mergeCloudAllData(cloudData.data);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.allData));
   }
 
   try {

@@ -42,21 +42,23 @@ function initApp() {
   // Initial render
   render();
 
-  // Load cloud data (non-blocking)
+  // Load cloud data, then initialize WHOOP sync
+  // WHOOP sync must wait for cloud data to avoid race condition:
+  // without this, WHOOP sync bumps lastUpdated before cloud loads,
+  // causing shouldUseCloud() to skip cloud data from other devices.
   loadCloudData()
     .then(() => {
       ensureHomeWidgets();
       render();
+      initWhoopSync();
     })
     .catch(err => {
       console.warn('Cloud data load failed (will use local):', err.message);
+      initWhoopSync();
     });
 
   // Initialize weather
   initWeather();
-
-  // Initialize WHOOP sync
-  initWhoopSync();
 
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
