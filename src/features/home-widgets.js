@@ -11,6 +11,7 @@ import { HOME_WIDGETS_KEY, DEFAULT_HOME_WIDGETS } from '../constants.js';
 
 export function saveHomeWidgets() {
   localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+  window.debouncedSaveToGithub();
 }
 
 // ---- Integrity / Migration ----
