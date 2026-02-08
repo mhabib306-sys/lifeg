@@ -892,31 +892,34 @@ input[type="checkbox"]:focus {
 
   /* Task items - larger touch targets */
   .task-item {
-    padding: 8px 12px;
-    min-height: 44px;
+    padding: 6px 10px;
+    min-height: 40px;
   }
 
   .task-title {
     font-size: 14px !important;
-    line-height: 1.25 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   .task-meta-inline {
-    margin-top: 3px !important;
+    margin-top: 2px !important;
     font-size: 10px !important;
-    line-height: 1.1 !important;
+    line-height: 1.05 !important;
   }
 
   /* Checkbox - force perfect circle */
   .task-checkbox,
   .task-item .task-checkbox,
   button.task-checkbox {
-    width: 20px !important;
-    height: 20px !important;
-    min-width: 20px !important;
-    min-height: 20px !important;
-    max-width: 20px !important;
-    max-height: 20px !important;
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    max-width: 18px !important;
+    max-height: 18px !important;
     border-radius: 50% !important;
     -webkit-border-radius: 50% !important;
     flex-shrink: 0 !important;
