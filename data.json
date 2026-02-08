@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T08:28:43.929Z",
+  "lastUpdated": "2026-02-08T08:32:14.225Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2494,6 +2494,26 @@
       "indent": 0,
       "createdAt": "2026-02-08T08:02:59.625Z",
       "updatedAt": "2026-02-08T08:03:25.421Z"
+    },
+    {
+      "id": "task_1770539531712_1uj5n1q1j",
+      "title": "Schedule time with Omar Badr to go through the slides",
+      "notes": "",
+      "status": "inbox",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 30000,
+      "createdAt": "2026-02-08T08:32:11.712Z",
+      "updatedAt": "2026-02-08T08:32:11.712Z"
     }
   ],
   "taskCategories": [
