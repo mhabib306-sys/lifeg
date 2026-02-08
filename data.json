@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T18:50:01.094Z",
+  "lastUpdated": "2026-02-08T18:51:29.223Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2760,6 +2760,11 @@
     {
       "id": "person-1770510421604",
       "name": "Ali Refaai"
+    },
+    {
+      "id": "person_1770576686684",
+      "name": "Joehnny",
+      "color": "#7C6B8E"
     }
   ],
   "customPerspectives": [
