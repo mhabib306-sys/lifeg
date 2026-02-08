@@ -1930,7 +1930,7 @@
      *    - Home, Tasks, Track, Bulk, Dashboard tabs
      *
      * @author Muhammad Habib
-     * @version 3.4.2
+     * @version 3.5.0
      * @license MIT
      */
 
@@ -1942,7 +1942,7 @@
     // MAJOR: New major features (Home view, Next perspective, etc.)
     // MINOR: Enhancements and improvements
     // PATCH: Bug fixes and small tweaks
-    const APP_VERSION = '3.4.2';
+    const APP_VERSION = '3.5.0';
 
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -2915,6 +2915,7 @@
             if (inlineMeta.categoryId !== undefined) updates.categoryId = inlineMeta.categoryId;
             if (inlineMeta.labels) updates.labels = inlineMeta.labels;
             if (inlineMeta.people) updates.people = inlineMeta.people;
+            if (inlineMeta.deferDate) updates.deferDate = inlineMeta.deferDate;
           }
           updateTask(taskId, updates);
         }
@@ -3058,6 +3059,7 @@
         if (inlineMeta.categoryId) options.categoryId = inlineMeta.categoryId;
         if (inlineMeta.labels && inlineMeta.labels.length) options.labels = [...(options.labels || []), ...inlineMeta.labels.filter(l => !(options.labels || []).includes(l))];
         if (inlineMeta.people && inlineMeta.people.length) options.people = [...(options.people || []), ...inlineMeta.people.filter(p => !(options.people || []).includes(p))];
+        if (inlineMeta.deferDate) options.deferDate = inlineMeta.deferDate;
       }
 
       createTask(title, options);
@@ -3571,6 +3573,7 @@
         if (inlineMeta.categoryId) options.categoryId = inlineMeta.categoryId;
         if (inlineMeta.labels && inlineMeta.labels.length) options.labels = inlineMeta.labels;
         if (inlineMeta.people && inlineMeta.people.length) options.people = inlineMeta.people;
+        if (inlineMeta.deferDate) options.deferDate = inlineMeta.deferDate;
       }
       createTask(title, options);
       inputElement.value = '';
@@ -4375,7 +4378,7 @@
 
       return `
         <div class="note-item ${isCollapsed ? 'note-collapsed' : ''}" data-note-id="${note.id}" style="padding-left: ${indentPx}px;">
-          <div class="flex items-start gap-2 py-1.5 px-3 group">
+          <div class="flex items-start gap-2 py-1.5 px-4 group">
             <button onclick="event.stopPropagation(); ${hasChildren ? `toggleNoteCollapse('${note.id}')` : `createChildNote('${note.id}')`}"
               class="note-bullet mt-1.5 ${hasChildren ? (isCollapsed ? 'collapsed' : 'has-children') : ''}"
               title="${hasChildren ? (isCollapsed ? 'Expand' : 'Collapse') : 'Add child note'}">
@@ -4391,6 +4394,10 @@
               <button onclick="event.stopPropagation(); createNoteAfter('${note.id}')"
                 class="p-1 text-charcoal/30 hover:text-purple-500 rounded" title="Add note below (Enter)">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              </button>
+              <button onclick="event.stopPropagation(); editingTaskId='${note.id}'; showTaskModal=true; render()"
+                class="p-1 text-charcoal/30 hover:text-blue-500 rounded" title="Edit note details">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
               </button>
               <button onclick="event.stopPropagation(); deleteNote('${note.id}')"
                 class="p-1 text-charcoal/30 hover:text-red-500 rounded" title="Delete note">
@@ -7731,9 +7738,9 @@
                   </div>
                   <div class="py-2">
                     ${renderNotesOutliner(activeCategoryFilter)}
-                    <div class="px-3 py-2">
+                    <div class="px-4 py-2">
                       <button onclick="createTask('', { isNote: true, categoryId: activeCategoryFilter, status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && !t.completed); if (notes.length) focusNote(notes[notes.length-1].id); }, 100);"
-                        class="flex items-center gap-2 px-3 py-2 w-full text-left text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition">
+                        class="flex items-center gap-2 py-2 w-full text-left text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                         Add new note
                       </button>
@@ -8552,7 +8559,121 @@
       }, 50);
     }
 
-    // ============ INLINE AUTOCOMPLETE (Todoist-style #, @, &) ============
+    // ============ DATE QUERY PARSER (for ! trigger) ============
+    function parseDateQuery(query) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      function fmtDate(d) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${dd}`;
+      }
+      function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
+      function getNextWeekday(from, dayIdx) {
+        const d = new Date(from);
+        const diff = (dayIdx - d.getDay() + 7) % 7;
+        d.setDate(d.getDate() + (diff === 0 ? 7 : diff));
+        return d;
+      }
+
+      const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+      const dayShort = ['sun','mon','tue','wed','thu','fri','sat'];
+      const monthNames = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+      const monthShort = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+
+      const q = (query || '').trim().toLowerCase();
+
+      // Default suggestions when empty
+      if (!q) {
+        const nextMon = getNextWeekday(today, 1);
+        return [
+          { name: 'Today', date: fmtDate(today) },
+          { name: 'Tomorrow', date: fmtDate(addDays(today, 1)) },
+          { name: 'Next Monday', date: fmtDate(nextMon) },
+          { name: 'In 1 Week', date: fmtDate(addDays(today, 7)) }
+        ];
+      }
+
+      const results = [];
+
+      // today / tod
+      if ('today'.startsWith(q) || q === 'tod') {
+        results.push({ name: 'Today', date: fmtDate(today) });
+      }
+      // tomorrow / tmr
+      if ('tomorrow'.startsWith(q) || 'tmr'.startsWith(q)) {
+        results.push({ name: 'Tomorrow', date: fmtDate(addDays(today, 1)) });
+      }
+
+      // "next <day>" pattern
+      const nextMatch = q.match(/^next\s+(.+)$/);
+      if (nextMatch) {
+        const dayQ = nextMatch[1];
+        dayNames.forEach((name, idx) => {
+          if (name.startsWith(dayQ) || dayShort[idx].startsWith(dayQ)) {
+            const d = getNextWeekday(addDays(today, 7 - ((today.getDay() - idx + 7) % 7 || 7)), idx);
+            // Always skip to next week
+            const nextWeekDay = getNextWeekday(today, idx);
+            const skipDay = addDays(nextWeekDay, nextWeekDay > today ? 0 : 7);
+            results.push({ name: 'Next ' + name.charAt(0).toUpperCase() + name.slice(1), date: fmtDate(getNextWeekday(addDays(today, 1), idx)) });
+          }
+        });
+      }
+
+      // Day names (without "next")
+      if (!nextMatch) {
+        dayNames.forEach((name, idx) => {
+          if (name.startsWith(q) || dayShort[idx].startsWith(q)) {
+            results.push({ name: name.charAt(0).toUpperCase() + name.slice(1), date: fmtDate(getNextWeekday(today, idx)) });
+          }
+        });
+      }
+
+      // "in N day(s)/week(s)/month(s)"
+      const inMatch = q.match(/^in\s+(\d+)\s*(d|day|days|w|week|weeks|m|month|months)?\s*$/);
+      if (inMatch) {
+        const n = parseInt(inMatch[1]);
+        const unit = (inMatch[2] || 'd')[0];
+        if (unit === 'd') {
+          results.push({ name: `In ${n} day${n !== 1 ? 's' : ''}`, date: fmtDate(addDays(today, n)) });
+        } else if (unit === 'w') {
+          results.push({ name: `In ${n} week${n !== 1 ? 's' : ''}`, date: fmtDate(addDays(today, n * 7)) });
+        } else if (unit === 'm') {
+          const d = new Date(today); d.setMonth(d.getMonth() + n);
+          results.push({ name: `In ${n} month${n !== 1 ? 's' : ''}`, date: fmtDate(d) });
+        }
+      }
+      // Partial "in" with just number: "in 3" → suggest days/weeks/months
+      const inPartial = q.match(/^in\s+(\d+)\s*$/);
+      if (inPartial && !inMatch) {
+        const n = parseInt(inPartial[1]);
+        results.push({ name: `In ${n} day${n !== 1 ? 's' : ''}`, date: fmtDate(addDays(today, n)) });
+        results.push({ name: `In ${n} week${n !== 1 ? 's' : ''}`, date: fmtDate(addDays(today, n * 7)) });
+        const dm = new Date(today); dm.setMonth(dm.getMonth() + n);
+        results.push({ name: `In ${n} month${n !== 1 ? 's' : ''}`, date: fmtDate(dm) });
+      }
+
+      // Month + day: "jan 15", "feb 3"
+      const monthDayMatch = q.match(/^([a-z]+)\s+(\d{1,2})$/);
+      if (monthDayMatch) {
+        const mq = monthDayMatch[1];
+        const day = parseInt(monthDayMatch[2]);
+        monthNames.forEach((name, idx) => {
+          if (name.startsWith(mq) || monthShort[idx] === mq) {
+            let d = new Date(today.getFullYear(), idx, day);
+            if (d < today) d = new Date(today.getFullYear() + 1, idx, day);
+            const label = monthShort[idx].charAt(0).toUpperCase() + monthShort[idx].slice(1) + ' ' + day;
+            results.push({ name: label, date: fmtDate(d) });
+          }
+        });
+      }
+
+      return results.slice(0, 5);
+    }
+
+    // ============ INLINE AUTOCOMPLETE (Todoist-style #, @, &, !) ============
     function setupInlineAutocomplete(inputId, config = {}) {
       const input = document.getElementById(inputId);
       if (!input || input.dataset.inlineAcAttached) return;
@@ -8563,7 +8684,8 @@
         inlineAutocompleteMeta.set(inputId, {
           categoryId: config.initialMeta?.categoryId || null,
           labels: config.initialMeta?.labels ? [...config.initialMeta.labels] : [],
-          people: config.initialMeta?.people ? [...config.initialMeta.people] : []
+          people: config.initialMeta?.people ? [...config.initialMeta.people] : [],
+          deferDate: config.initialMeta?.deferDate || null
         });
       }
 
@@ -8573,8 +8695,8 @@
       let triggerPos = -1;
 
       function getMeta() {
-        if (isModal) return { categoryId: modalSelectedArea, labels: modalSelectedTags, people: modalSelectedPeople };
-        return inlineAutocompleteMeta.get(inputId) || { categoryId: null, labels: [], people: [] };
+        if (isModal) return { categoryId: modalSelectedArea, labels: modalSelectedTags, people: modalSelectedPeople, deferDate: document.getElementById('task-defer')?.value || null };
+        return inlineAutocompleteMeta.get(inputId) || { categoryId: null, labels: [], people: [], deferDate: null };
       }
 
       function setMeta(key, value) {
@@ -8582,6 +8704,10 @@
           if (key === 'categoryId') { modalSelectedArea = value; renderAreaInput(); }
           else if (key === 'labels') { modalSelectedTags = value; renderTagsInput(); }
           else if (key === 'people') { modalSelectedPeople = value; renderPeopleInput(); }
+          else if (key === 'deferDate') {
+            const deferInput = document.getElementById('task-defer');
+            if (deferInput) { deferInput.value = value || ''; updateDateDisplay('defer'); }
+          }
         } else {
           const meta = getMeta();
           meta[key] = value;
@@ -8591,11 +8717,12 @@
         }
       }
 
-      function getItems() {
+      function getItems(query) {
         const meta = getMeta();
         if (triggerChar === '#') return taskCategories;
         if (triggerChar === '@') return taskLabels.filter(l => !(meta.labels || []).includes(l.id));
         if (triggerChar === '&') return taskPeople.filter(p => !(meta.people || []).includes(p.id));
+        if (triggerChar === '!') return parseDateQuery(query || '');
         return [];
       }
 
@@ -8649,6 +8776,8 @@
           const people = [...(meta.people || [])];
           if (!people.includes(item.id)) people.push(item.id);
           setMeta('people', people);
+        } else if (triggerChar === '!') {
+          setMeta('deferDate', item.date);
         }
         dismissPopup();
         input.focus();
@@ -8683,25 +8812,32 @@
           popup.style.top = 'auto';
         }
 
-        const filtered = items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));
-        const hasExactMatch = items.some(i => i.name.toLowerCase() === query.toLowerCase());
-        const showCreate = query.length > 0 && !hasExactMatch;
+        const isDate = triggerChar === '!';
+        const filtered = isDate ? items : items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));
+        const hasExactMatch = isDate ? true : items.some(i => i.name.toLowerCase() === query.toLowerCase());
+        const showCreate = !isDate && query.length > 0 && !hasExactMatch;
         const totalItems = filtered.length + (showCreate ? 1 : 0);
 
         if (totalItems === 0) { dismissPopup(); return; }
         if (activeIndex >= totalItems) activeIndex = totalItems - 1;
         if (activeIndex < 0) activeIndex = 0;
 
-        const typeLabel = triggerChar === '#' ? 'Area' : triggerChar === '@' ? 'Tag' : 'Person';
+        const typeLabel = triggerChar === '#' ? 'Area' : triggerChar === '@' ? 'Tag' : triggerChar === '!' ? 'Date' : 'Person';
         let html = '';
         filtered.forEach((item, idx) => {
           const isActive = idx === activeIndex ? ' active' : '';
-          const icon = triggerChar === '#'
-            ? `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">${item.icon || '📁'}</span>`
-            : triggerChar === '@'
-            ? `<span class="w-3 h-3 rounded-full inline-block flex-shrink-0" style="background:${item.color}"></span>`
-            : `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">👤</span>`;
-          html += `<div class="inline-ac-option${isActive}" data-idx="${idx}">${icon}<span>${escapeHtml(item.name)}</span></div>`;
+          let icon;
+          if (isDate) {
+            icon = `<span class="ac-icon" style="background:#8b5cf620;color:#8b5cf6"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg></span>`;
+          } else if (triggerChar === '#') {
+            icon = `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">${item.icon || '📁'}</span>`;
+          } else if (triggerChar === '@') {
+            icon = `<span class="w-3 h-3 rounded-full inline-block flex-shrink-0" style="background:${item.color}"></span>`;
+          } else {
+            icon = `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">👤</span>`;
+          }
+          const dateLabel = isDate ? `<span style="margin-left:auto;font-size:11px;color:var(--text-muted)">${formatSmartDate(item.date)}</span>` : '';
+          html += `<div class="inline-ac-option${isActive}" data-idx="${idx}" style="${isDate ? 'justify-content:space-between' : ''}">${icon}<span>${escapeHtml(item.name)}</span>${dateLabel}</div>`;
         });
         if (showCreate) {
           const createIdx = filtered.length;
@@ -8733,12 +8869,39 @@
         // Scan backwards from caret for trigger char
         for (let i = caret - 1; i >= 0; i--) {
           const ch = val[i];
-          if (ch === ' ' || ch === '\n') { dismissPopup(); return; }
+          if (ch === '\n') { dismissPopup(); return; }
+          if (ch === ' ') {
+            // For ! trigger, allow spaces (multi-word queries like "!next monday")
+            // Continue scanning backwards to find a ! trigger
+            for (let j = i - 1; j >= 0; j--) {
+              const ch2 = val[j];
+              if (ch2 === '\n' || ch2 === '#' || ch2 === '@' || ch2 === '&') break;
+              if (ch2 === '!' && (j === 0 || val[j-1] === ' ')) {
+                triggerChar = '!';
+                triggerPos = j;
+                const query = val.substring(j + 1, caret);
+                const items = getItems(query);
+                activeIndex = 0;
+                renderPopup(items, query);
+                return;
+              }
+            }
+            dismissPopup(); return;
+          }
           if ((ch === '#' || ch === '@' || ch === '&') && (i === 0 || val[i-1] === ' ')) {
             triggerChar = ch;
             triggerPos = i;
             const query = val.substring(i + 1, caret);
-            const items = getItems();
+            const items = getItems(query);
+            activeIndex = 0;
+            renderPopup(items, query);
+            return;
+          }
+          if (ch === '!' && (i === 0 || val[i-1] === ' ')) {
+            triggerChar = '!';
+            triggerPos = i;
+            const query = val.substring(i + 1, caret);
+            const items = getItems(query);
             activeIndex = 0;
             renderPopup(items, query);
             return;
@@ -8752,13 +8915,14 @@
       // Use capture phase so this fires BEFORE onkeydown attribute handlers
       input.addEventListener('keydown', (e) => {
         if (!popup) return;
-        const items = getItems();
         const val = input.value;
         const caret = input.selectionStart;
         const query = val.substring(triggerPos + 1, caret);
-        const filtered = items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));
-        const hasExactMatch = items.some(i => i.name.toLowerCase() === query.toLowerCase());
-        const showCreate = query.length > 0 && !hasExactMatch;
+        const isDate = triggerChar === '!';
+        const items = getItems(query);
+        const filtered = isDate ? items : items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));
+        const hasExactMatch = isDate ? true : items.some(i => i.name.toLowerCase() === query.toLowerCase());
+        const showCreate = !isDate && query.length > 0 && !hasExactMatch;
         const totalItems = filtered.length + (showCreate ? 1 : 0);
 
         if (e.key === 'ArrowDown') {
@@ -8856,6 +9020,16 @@
           </span>`;
         }
       });
+      // Defer date chip
+      if (meta.deferDate) {
+        html += `<span class="inline-meta-chip" style="background:#8b5cf620;color:#8b5cf6">
+          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+          ${formatSmartDate(meta.deferDate)}
+          <span class="inline-meta-chip-remove" onclick="removeInlineMeta('${inputId}','deferDate','')">
+            <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </span>
+        </span>`;
+      }
       chipsEl.innerHTML = html;
     }
 
@@ -8865,6 +9039,7 @@
       if (type === 'category') meta.categoryId = null;
       else if (type === 'label') meta.labels = (meta.labels || []).filter(l => l !== id);
       else if (type === 'person') meta.people = (meta.people || []).filter(p => p !== id);
+      else if (type === 'deferDate') meta.deferDate = null;
       inlineAutocompleteMeta.set(inputId, meta);
       renderInlineChips(inputId);
     }
