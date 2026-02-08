@@ -28,6 +28,12 @@ import {
   TASK_PEOPLE_KEY
 } from '../constants.js';
 
+function debouncedSaveToGithub() {
+  if (typeof window.debouncedSaveToGithub === 'function') {
+    window.debouncedSaveToGithub();
+  }
+}
+
 // ============================================================================
 // INLINE EDITING (Task list inline rename)
 // ============================================================================
@@ -278,9 +284,9 @@ export function toggleInlineTagInput() {
   if (container) {
     if (state.showInlineTagInput) {
       container.innerHTML = `
-        <div class="flex items-center gap-2 mt-2 p-2 bg-warmgray/30 rounded-lg">
+        <div class="modal-inline-form flex items-center gap-2 mt-2 p-2 bg-warmgray/30 rounded-lg">
           <input type="text" id="inline-tag-name" placeholder="Tag name"
-            class="flex-1 px-2 py-1.5 text-sm border border-softborder rounded focus:border-coral focus:outline-none"
+            class="modal-inline-input flex-1 px-2 py-1.5 text-sm border border-softborder rounded focus:border-coral focus:outline-none"
             onkeydown="if(event.key==='Enter'){event.preventDefault();addInlineTag();}">
           <input type="color" id="inline-tag-color" value="#6B7280" class="w-8 h-8 rounded cursor-pointer border-0">
           <button onclick="addInlineTag()" class="px-3 py-1.5 text-sm bg-coral text-white rounded hover:bg-coralDark">Add</button>
@@ -340,9 +346,9 @@ export function toggleInlinePersonInput() {
   if (container) {
     if (state.showInlinePersonInput) {
       container.innerHTML = `
-        <div class="flex items-center gap-2 mt-2 p-2 bg-warmgray/30 rounded-lg">
+        <div class="modal-inline-form flex items-center gap-2 mt-2 p-2 bg-warmgray/30 rounded-lg">
           <input type="text" id="inline-person-name" placeholder="Person name"
-            class="flex-1 px-2 py-1.5 text-sm border border-softborder rounded focus:border-coral focus:outline-none"
+            class="modal-inline-input flex-1 px-2 py-1.5 text-sm border border-softborder rounded focus:border-coral focus:outline-none"
             onkeydown="if(event.key==='Enter'){event.preventDefault();addInlinePerson();}">
           <button onclick="addInlinePerson()" class="px-3 py-1.5 text-sm bg-coral text-white rounded hover:bg-coralDark">Add</button>
           <button onclick="toggleInlinePersonInput()" class="px-2 py-1.5 text-sm text-charcoal/50 hover:text-charcoal">&times;</button>
@@ -786,7 +792,7 @@ export function renderAreaInput() {
       const newCat = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '\uD83D\uDCC1' };
       state.taskCategories.push(newCat);
       localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
-      window.debouncedSaveToGithub();
+      debouncedSaveToGithub();
       selectArea(newCat);
       renderAreaInput();
     }
@@ -823,16 +829,18 @@ export function renderTagsInput() {
   const selectedTagObjects = state.modalSelectedTags.map(id => state.taskLabels.find(l => l.id === id)).filter(Boolean);
 
   container.innerHTML = `
-    <div class="tag-input-container" onclick="document.getElementById('tags-search').focus()">
-      ${selectedTagObjects.map(tag => `
-        <span class="tag-pill" style="background: ${tag.color}20; color: ${tag.color}">
-          ${escapeHtml(tag.name)}
-          <span class="tag-pill-remove" onclick="event.stopPropagation(); removeTag('${tag.id}');">
-            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    <div class="modal-token-shell">
+      <div class="tag-input-container" onclick="document.getElementById('tags-search').focus()">
+        ${selectedTagObjects.map(tag => `
+          <span class="tag-pill" style="background: ${tag.color}20; color: ${tag.color}">
+            ${escapeHtml(tag.name)}
+            <span class="tag-pill-remove" onclick="event.stopPropagation(); removeTag('${tag.id}');">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </span>
           </span>
-        </span>
-      `).join('')}
-      <input type="text" id="tags-search" class="tag-input-field" placeholder="${selectedTagObjects.length ? '' : 'Add tags...'}">
+        `).join('')}
+        <input type="text" id="tags-search" class="tag-input-field" placeholder="${selectedTagObjects.length ? '' : 'Add tags...'}">
+      </div>
     </div>
     <div id="tags-dropdown" class="autocomplete-dropdown"></div>
   `;
@@ -850,7 +858,7 @@ export function renderTagsInput() {
       const newTag = { id: 'label_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
       state.taskLabels.push(newTag);
       localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
-      window.debouncedSaveToGithub();
+      debouncedSaveToGithub();
       addTag(newTag);
     }
   );
@@ -886,17 +894,19 @@ export function renderPeopleInput() {
   const selectedPeopleObjects = state.modalSelectedPeople.map(id => state.taskPeople.find(p => p.id === id)).filter(Boolean);
 
   container.innerHTML = `
-    <div class="tag-input-container" onclick="document.getElementById('people-search').focus()">
-      ${selectedPeopleObjects.map(person => `
-        <span class="tag-pill" style="background: var(--accent-light); color: var(--accent)">
-          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          ${escapeHtml(person.name)}
-          <span class="tag-pill-remove" onclick="event.stopPropagation(); removePerson('${person.id}');">
-            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    <div class="modal-token-shell">
+      <div class="tag-input-container" onclick="document.getElementById('people-search').focus()">
+        ${selectedPeopleObjects.map(person => `
+          <span class="tag-pill" style="background: var(--accent-light); color: var(--accent)">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            ${escapeHtml(person.name)}
+            <span class="tag-pill-remove" onclick="event.stopPropagation(); removePerson('${person.id}');">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </span>
           </span>
-        </span>
-      `).join('')}
-      <input type="text" id="people-search" class="tag-input-field" placeholder="${selectedPeopleObjects.length ? '' : 'Add people...'}">
+        `).join('')}
+        <input type="text" id="people-search" class="tag-input-field" placeholder="${selectedPeopleObjects.length ? '' : 'Add people...'}">
+      </div>
     </div>
     <div id="people-dropdown" class="autocomplete-dropdown"></div>
   `;
@@ -913,7 +923,7 @@ export function renderPeopleInput() {
       const newPerson = { id: 'person_' + Date.now(), name };
       state.taskPeople.push(newPerson);
       localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
-      window.debouncedSaveToGithub();
+      debouncedSaveToGithub();
       addPerson(newPerson);
     }
   );
@@ -1520,7 +1530,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
       const c = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '\uD83D\uDCC1' };
       state.taskCategories.push(c);
       localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
-      window.debouncedSaveToGithub();
+      debouncedSaveToGithub();
       return c;
     };
     if (triggerChar === '@') return (name) => {
@@ -1528,7 +1538,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
       const l = { id: 'label_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
       state.taskLabels.push(l);
       localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
-      window.debouncedSaveToGithub();
+      debouncedSaveToGithub();
       return l;
     };
     if (triggerChar === '&') return (name) => {
@@ -1536,7 +1546,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
       const p = { id: 'person_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
       state.taskPeople.push(p);
       localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
-      window.debouncedSaveToGithub();
+      debouncedSaveToGithub();
       return p;
     };
     return null;
