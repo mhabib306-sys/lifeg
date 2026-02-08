@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T11:25:37.444Z",
+  "lastUpdated": "2026-02-08T11:25:44.924Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1746,7 +1746,8 @@
         "exercise": false
       },
       "glucose": {
-        "tir": 35
+        "tir": 35,
+        "avg": 163
       }
     }
   },
