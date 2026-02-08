@@ -198,6 +198,47 @@
       background: var(--bg-input);
     }
 
+    /* Things 3 consistency overrides */
+    [data-theme="things3"] body {
+      background: var(--bg-secondary);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    [data-theme="things3"] .sb-card {
+      background: var(--bg-card);
+      border-color: var(--border-light);
+      box-shadow: none;
+    }
+    [data-theme="things3"] .sb-btn {
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: none;
+      transform: none;
+    }
+    [data-theme="things3"] .sb-btn:hover,
+    [data-theme="things3"] .sb-btn:active {
+      transform: none;
+      box-shadow: none;
+    }
+    [data-theme="things3"] .sb-link {
+      text-decoration: none;
+      font-weight: 500;
+    }
+    [data-theme="things3"] input[type="number"],
+    [data-theme="things3"] input[type="text"],
+    [data-theme="things3"] textarea,
+    [data-theme="things3"] select {
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    [data-theme="things3"] input[type="number"]:focus,
+    [data-theme="things3"] input[type="text"]:focus,
+    [data-theme="things3"] textarea:focus,
+    [data-theme="things3"] select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-light);
+    }
+
     /* All text inputs - clean borders with focus states */
     input, textarea {
       border: none;
@@ -5135,7 +5176,7 @@
                 <h2 class="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
               </div>
               <button onclick="openNewTaskModal()"
-                class="w-8 h-8 rounded-full bg-[#147EFB] text-white flex items-center justify-center hover:bg-[#0E6AD8] transition shadow-sm" title="Add Task">
+                class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Task">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
               </button>
             </div>
@@ -6954,7 +6995,7 @@
                     ` : `
                       <div class="w-6 h-6 rounded-full bg-[#FFFFFF] border border-[var(--border)]" title="Background"></div>
                       <div class="w-6 h-6 rounded-full bg-[#F5F5F7] border border-[var(--border)]" title="Card"></div>
-                      <div class="w-6 h-6 rounded-full bg-[#4A90D9]" title="Accent"></div>
+                      <div class="w-6 h-6 rounded-full bg-[#147EFB]" title="Accent"></div>
                       <div class="w-6 h-6 rounded-full bg-[#1D1D1F]" title="Text"></div>
                     `}
                   </div>
@@ -7591,7 +7632,7 @@
                 <h2 class="text-xl font-semibold text-[var(--text-primary)]">${viewInfo.name}</h2>
               </div>
               <button onclick="openNewTaskModal()"
-                class="w-8 h-8 rounded-full bg-[#147EFB] text-white flex items-center justify-center hover:bg-[#0E6AD8] transition shadow-sm" title="${activePerspective === 'notes' ? 'Add Note' : 'Add Task'}">
+                class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="${activePerspective === 'notes' ? 'Add Note' : 'Add Task'}">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
               </button>
             </div>
