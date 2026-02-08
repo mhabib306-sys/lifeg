@@ -4,6 +4,11 @@
 // Auto-syncs WHOOP metrics (sleepPerf, recovery, strain) via Cloudflare Worker proxy.
 // Follows the weather.js pattern: external API + localStorage caching.
 // Uses window.saveData(), window.debouncedSaveToGithub(), window.render() via bridge.
+//
+// Sync schedule:
+//   - On app load (if >6h stale)
+//   - Every 6 hours while app is open
+//   - Final snapshot at 23:59 local time daily
 
 import { state } from '../state.js';
 import { getLocalDateString } from '../utils.js';
@@ -14,7 +19,11 @@ const LS_API_KEY = 'nucleusWhoopApiKey';
 const LS_LAST_SYNC = 'nucleusWhoopLastSync';
 const LS_CONNECTED = 'nucleusWhoopConnected';
 
-const STALE_MS = 3 * 60 * 60 * 1000; // 3 hours
+const STALE_MS = 6 * 60 * 60 * 1000; // 6 hours
+const SYNC_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+let syncIntervalId = null;
+let endOfDayTimeoutId = null;
 
 // ---- Config getters/setters ----
 
@@ -88,34 +97,43 @@ export async function checkWhoopStatus() {
 
 // ---- Sync logic ----
 
+/**
+ * Write WHOOP data into a specific date's allData entry.
+ * @param {string} dateKey - YYYY-MM-DD
+ * @param {Object} data - { sleepPerf, recovery, strain }
+ */
+function writeWhoopToDate(dateKey, data) {
+  if (!state.allData[dateKey]) {
+    state.allData[dateKey] = JSON.parse(JSON.stringify(defaultDayData));
+  }
+  if (!state.allData[dateKey].whoop) {
+    state.allData[dateKey].whoop = {};
+  }
+
+  if (data.sleepPerf !== null && data.sleepPerf !== undefined) {
+    state.allData[dateKey].whoop.sleepPerf = data.sleepPerf;
+  }
+  if (data.recovery !== null && data.recovery !== undefined) {
+    state.allData[dateKey].whoop.recovery = data.recovery;
+  }
+  if (data.strain !== null && data.strain !== undefined) {
+    state.allData[dateKey].whoop.strain = data.strain;
+  }
+}
+
 export async function syncWhoopNow() {
   const data = await fetchWhoopData();
   if (!data) return;
 
   const today = getLocalDateString();
-  if (!state.allData[today]) {
-    state.allData[today] = JSON.parse(JSON.stringify(defaultDayData));
-  }
-  if (!state.allData[today].whoop) {
-    state.allData[today].whoop = {};
-  }
-
-  // Only overwrite fields that came back non-null
-  if (data.sleepPerf !== null && data.sleepPerf !== undefined) {
-    state.allData[today].whoop.sleepPerf = data.sleepPerf;
-  }
-  if (data.recovery !== null && data.recovery !== undefined) {
-    state.allData[today].whoop.recovery = data.recovery;
-  }
-  if (data.strain !== null && data.strain !== undefined) {
-    state.allData[today].whoop.strain = data.strain;
-  }
+  writeWhoopToDate(today, data);
 
   localStorage.setItem(LS_LAST_SYNC, String(Date.now()));
 
   window.saveData();
   window.debouncedSaveToGithub();
   window.render();
+  console.log(`WHOOP synced: sleep ${data.sleepPerf}%, recovery ${data.recovery}%, strain ${data.strain}`);
 }
 
 export async function checkAndSyncWhoop() {
@@ -126,6 +144,58 @@ export async function checkAndSyncWhoop() {
   if (lastSync && Date.now() - lastSync < STALE_MS) return;
 
   await syncWhoopNow();
+}
+
+// ---- End-of-day snapshot ----
+
+/**
+ * Calculate ms until 23:59:00 local time today.
+ * If already past 23:59, returns ms until 23:59 tomorrow.
+ */
+function msUntilEndOfDay() {
+  const now = new Date();
+  const target = new Date(now);
+  target.setHours(23, 59, 0, 0);
+
+  let ms = target - now;
+  if (ms <= 0) {
+    // Already past 23:59, schedule for tomorrow
+    target.setDate(target.getDate() + 1);
+    ms = target - now;
+  }
+  return ms;
+}
+
+async function endOfDaySync() {
+  console.log('WHOOP end-of-day sync triggered');
+  await syncWhoopNow();
+  // Schedule next day's end-of-day sync
+  scheduleEndOfDaySync();
+}
+
+function scheduleEndOfDaySync() {
+  if (endOfDayTimeoutId) clearTimeout(endOfDayTimeoutId);
+
+  if (!isWhoopConnected()) return;
+
+  const ms = msUntilEndOfDay();
+  const hours = Math.floor(ms / 3600000);
+  const mins = Math.floor((ms % 3600000) / 60000);
+  console.log(`WHOOP end-of-day sync scheduled in ${hours}h ${mins}m`);
+
+  endOfDayTimeoutId = setTimeout(endOfDaySync, ms);
+}
+
+// ---- Periodic sync ----
+
+function startSyncInterval() {
+  if (syncIntervalId) clearInterval(syncIntervalId);
+  syncIntervalId = setInterval(checkAndSyncWhoop, SYNC_INTERVAL_MS);
+}
+
+function stopSyncTimers() {
+  if (syncIntervalId) { clearInterval(syncIntervalId); syncIntervalId = null; }
+  if (endOfDayTimeoutId) { clearTimeout(endOfDayTimeoutId); endOfDayTimeoutId = null; }
 }
 
 // ---- Connect / Disconnect ----
@@ -139,6 +209,7 @@ export function connectWhoop() {
 export function disconnectWhoop() {
   localStorage.removeItem(LS_CONNECTED);
   localStorage.removeItem(LS_LAST_SYNC);
+  stopSyncTimers();
   window.render();
 }
 
@@ -154,5 +225,14 @@ export function initWhoopSync() {
     window.history.replaceState({}, '', cleanUrl);
   }
 
+  if (!isWhoopConnected()) return;
+
+  // Sync on load if stale
   checkAndSyncWhoop();
+
+  // Recurring 6h sync
+  startSyncInterval();
+
+  // Daily 23:59 final snapshot
+  scheduleEndOfDaySync();
 }
