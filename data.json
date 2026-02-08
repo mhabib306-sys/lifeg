@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T11:33:44.296Z",
+  "lastUpdated": "2026-02-08T11:34:15.938Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2323,26 +2323,6 @@
       "order": 8000
     },
     {
-      "id": "task_1770458480825_ol7x9os6a",
-      "title": "I learned how she felt sorry for not acting to the abuse I received as a child. This was big to me.",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "createdAt": "2026-02-07T10:01:20.825Z",
-      "updatedAt": "2026-02-07T10:01:44.437Z",
-      "order": 10000
-    },
-    {
       "id": "task_1770458513599_4ld7hzilp",
       "title": "I don't think Eman realized how big this was to me.",
       "notes": "",
@@ -2356,8 +2336,8 @@
       "dueDate": null,
       "repeat": null,
       "isNote": true,
-      "parentId": "task_1770458480825_ol7x9os6a",
-      "indent": 1,
+      "parentId": null,
+      "indent": 0,
       "createdAt": "2026-02-07T10:01:53.599Z",
       "updatedAt": "2026-02-07T10:02:19.548Z",
       "order": 15000
