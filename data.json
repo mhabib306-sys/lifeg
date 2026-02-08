@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T18:52:06.174Z",
+  "lastUpdated": "2026-02-08T18:52:19.136Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2651,12 +2651,12 @@
       "id": "task_1770576704363_panfyf0jg",
       "title": "Make sure Joehnny and Ali are aligned on the cashback performance assessment",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "today": false,
       "flagged": false,
       "completed": false,
       "completedAt": null,
-      "categoryId": null,
+      "categoryId": "work",
       "labels": [
         "label_1770020325388"
       ],
@@ -2672,7 +2672,7 @@
       "indent": 0,
       "order": 42000,
       "createdAt": "2026-02-08T18:51:44.364Z",
-      "updatedAt": "2026-02-08T18:52:03.576Z"
+      "updatedAt": "2026-02-08T18:52:16.552Z"
     }
   ],
   "taskCategories": [
