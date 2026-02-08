@@ -896,8 +896,10 @@ input[type="checkbox"]:focus {
 
   /* Task items - larger touch targets */
   .task-item {
-    padding: 6px 10px;
-    min-height: 40px;
+    padding: 4px 8px;
+    min-height: 36px;
+    margin: 0 !important;
+    border-radius: 0 !important;
   }
 
   .task-title {
@@ -1333,7 +1335,8 @@ input[type="checkbox"]:focus {
 
   /* Task row padding for mobile */
   .task-item > div {
-    padding: 8px 12px !important;
+    padding: 6px 10px !important;
+    gap: 8px !important;
   }
 }
 
