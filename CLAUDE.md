@@ -4,11 +4,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Nucleus** (v3.2.3) — A single-file life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring.
+**Nucleus** (v3.3.0) — A single-file life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring.
 
 ## Git Workflow
 
 This is a git repo with a GitHub remote. **Every change must be committed and pushed.** After completing any modification, commit with a descriptive message and `git push`. If the remote is ahead, `git pull --rebase` first.
+
+## Versioning
+
+**Always bump the version after making changes.** Update all 3 locations:
+1. `@version` in the JSDoc comment (~line 1933)
+2. `APP_VERSION` constant (~line 1945)
+3. Version in this file's Project Overview section
+
+Use semantic versioning (MAJOR.MINOR.PATCH):
+- **PATCH** (e.g. 3.3.0 → 3.3.1): Bug fixes, small tweaks
+- **MINOR** (e.g. 3.3.0 → 3.4.0): New features, enhancements, UI overhauls
+- **MAJOR** (e.g. 3.3.0 → 4.0.0): Breaking changes, major new systems
+
+Mention the new version number when reporting completed work.
 
 ## Architecture
 
