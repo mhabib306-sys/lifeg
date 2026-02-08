@@ -88,9 +88,7 @@ export function renderCalendarView() {
         const tasks = dateTaskMap[cell.dateStr] || [];
         const isCellToday = cell.dateStr === today;
         const isSelected = cell.dateStr === state.calendarSelectedDate;
-        const hasDue = tasks.some(t => t.dueDate === cell.dateStr);
-        const hasDefer = tasks.some(t => t.deferDate === cell.dateStr);
-        const hasOverdue = tasks.some(t => t.dueDate === cell.dateStr && t.dueDate < today);
+        const cellTasks = tasks.filter(t => t.dueDate === cell.dateStr || t.deferDate === cell.dateStr);
         const classes = ['calendar-day'];
         if (cell.outside) classes.push('outside');
         if (isCellToday) classes.push('today');
@@ -98,16 +96,17 @@ export function renderCalendarView() {
 
         return `<div class="${classes.join(' ')}" onclick="calendarSelectDate('${cell.dateStr}')">
           <div class="calendar-day-num">${cell.day}</div>
-          ${tasks.length > 0 ? `
-            <div class="calendar-dots">
-              ${tasks.slice(0, 5).map(t => {
-                const cls = (t.dueDate === cell.dateStr && t.dueDate < today) ? 'overdue' :
-                            t.dueDate === cell.dateStr ? 'due' : 'defer';
-                return '<div class="calendar-dot ' + cls + '"></div>';
+          ${cellTasks.length > 0 ? `
+            <div class="calendar-task-list">
+              ${cellTasks.slice(0, 3).map(t => {
+                const isDue = t.dueDate === cell.dateStr;
+                const isOver = isDue && t.dueDate < today;
+                const cls = isOver ? 'overdue' : isDue ? 'due' : 'defer';
+                const label = isDue ? 'Due' : 'Start';
+                return `<div class="calendar-task-line ${cls}"><span class="calendar-task-tag">${label}</span>${escapeHtml(t.title)}</div>`;
               }).join('')}
-              ${tasks.length > 5 ? '<span style="font-size:9px;color:var(--text-muted)">+' + (tasks.length - 5) + '</span>' : ''}
+              ${cellTasks.length > 3 ? `<div class="calendar-task-more">+${cellTasks.length - 3} more</div>` : ''}
             </div>
-            ${!cell.outside && tasks.length > 0 ? `<div class="calendar-task-preview">${escapeHtml(tasks[0].title)}</div>` : ''}
           ` : ''}
         </div>`;
       }).join('')}
