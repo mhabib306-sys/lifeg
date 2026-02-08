@@ -69,30 +69,14 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
   const isInlineEditing = state.inlineEditingTaskId === task.id;
   const indentLevel = task.indent || 0;
   const indentPx = indentLevel * 24;
-  const metaItems = [];
-  if (category) {
-    metaItems.push(`<span onclick="event.stopPropagation(); window.showCategoryTasks('${category.id}')" class="task-meta-item"><span class="w-[6px] h-[6px] rounded-full flex-shrink-0" style="background:${category.color || 'var(--text-muted)'}"></span>${escapeHtml(category.name)}</span>`);
-  }
-  if (labels.length > 0) {
-    labels.forEach(l => {
-      metaItems.push(`<span onclick="event.stopPropagation(); window.showLabelTasks('${l.id}')" class="task-meta-item">${escapeHtml(l.name)}</span>`);
-    });
-  }
-  if (people.length > 0) {
-    metaItems.push(`<span onclick="event.stopPropagation(); window.showPersonTasks('${people[0].id}')" class="task-meta-item"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>${people.map(p => escapeHtml(p.name.split(' ')[0])).join(', ')}</span>`);
-  }
-  if (task.deferDate) {
-    metaItems.push(`<span class="task-meta-item"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5V19L19 12z"/></svg>${formatSmartDate(task.deferDate)}</span>`);
-  }
-  if (showDueDate && task.dueDate) {
-    metaItems.push(`<span class="task-meta-item ${isOverdue ? 'text-red-500' : isDueToday ? 'text-[var(--accent)]' : isDueSoon ? 'text-amber-500' : ''}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>${formatSmartDate(task.dueDate)}</span>`);
-  }
-  if (task.repeat && task.repeat.type !== 'none') {
-    metaItems.push(`<span class="task-meta-item" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8A5.87 5.87 0 0 1 6 12c0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg>Repeats</span>`);
-  }
-  if (task.notes) {
-    metaItems.push(`<span class="task-meta-item" title="${escapeHtml(task.notes.substring(0, 200))}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h12v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z"/></svg>Notes</span>`);
-  }
+  const metaParts = [];
+  if (category) metaParts.push(escapeHtml(category.name));
+  if (labels.length > 0) metaParts.push(labels.map(l => escapeHtml(l.name)).join(', '));
+  if (people.length > 0) metaParts.push(people.map(p => escapeHtml(p.name.split(' ')[0])).join(', '));
+  if (task.deferDate) metaParts.push(`Start ${formatSmartDate(task.deferDate)}`);
+  if (showDueDate && task.dueDate) metaParts.push(`Due ${formatSmartDate(task.dueDate)}`);
+  if (task.repeat && task.repeat.type !== 'none') metaParts.push('Repeats');
+  if (task.notes) metaParts.push('Notes');
 
   // Compact mode for widgets - clean single line Things 3 style
   if (compact) {
@@ -151,8 +135,8 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
             <span ondblclick="event.stopPropagation(); window.startInlineEdit('${task.id}')"
               class="task-title text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug transition cursor-text">${escapeHtml(task.title)}</span>
           `}
-          ${hasMetadata && metaItems.length ? `
-            <div class="task-meta-inline">${metaItems.join('<span class="task-meta-sep">•</span>')}</div>
+          ${hasMetadata && metaParts.length ? `
+            <div class="task-meta-inline">${metaParts.join(' • ')}</div>
           ` : ''}
         </div>
         <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-[var(--modal-bg)]/95 backdrop-blur-sm rounded-lg px-1.5 py-1 shadow-sm" onclick="event.stopPropagation()">
