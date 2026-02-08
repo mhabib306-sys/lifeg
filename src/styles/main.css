@@ -1556,6 +1556,7 @@ input[type="checkbox"]:focus {
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--border-light, var(--border));
+  align-items: stretch;
 }
 .calendar-header-cell {
   background: var(--bg-secondary);
@@ -1567,6 +1568,7 @@ input[type="checkbox"]:focus {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   border-bottom: 1px solid var(--border-light);
+  min-width: 0;
 }
 .calendar-day {
   background: var(--bg-card, var(--bg-primary));
@@ -1579,6 +1581,9 @@ input[type="checkbox"]:focus {
   flex-direction: column;
   border-right: 1px solid var(--border-light);
   border-bottom: 1px solid var(--border-light);
+  min-width: 0;
+  height: 100%;
+  align-self: stretch;
 }
 .calendar-day:nth-child(7n + 0) {
   border-right: none;
@@ -1624,14 +1629,17 @@ input[type="checkbox"]:focus {
   flex-direction: column;
   gap: 3px;
   margin-top: 0;
+  min-width: 0;
 }
 .calendar-task-line {
   font-size: 10px;
   line-height: 1.15;
   color: var(--text-secondary);
+  display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 .calendar-task-line.due { color: #EF5350; }
 .calendar-task-line.defer { color: #42A5F5; }
