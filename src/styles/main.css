@@ -18,6 +18,13 @@ body {
   color: var(--text-primary);
   transition: background 0.3s ease, color 0.3s ease;
 }
+
+button,
+button:hover,
+[role="button"],
+[role="button"]:hover {
+  cursor: pointer;
+}
 .sb-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
