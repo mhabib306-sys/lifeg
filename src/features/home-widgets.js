@@ -13,6 +13,36 @@ export function saveHomeWidgets() {
   localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
 }
 
+// ---- Integrity / Migration ----
+
+export function ensureHomeWidgets() {
+  const defaultsById = new Map(DEFAULT_HOME_WIDGETS.map(w => [w.id, w]));
+  const existingById = new Map((state.homeWidgets || []).map(w => [w.id, w]));
+
+  const merged = [];
+  DEFAULT_HOME_WIDGETS.forEach((def, idx) => {
+    const existing = existingById.get(def.id);
+    merged.push({
+      ...def,
+      ...existing,
+      visible: existing?.visible ?? def.visible,
+      order: existing?.order ?? idx
+    });
+  });
+
+  // Preserve any unknown/custom widgets
+  (state.homeWidgets || []).forEach((w) => {
+    if (!defaultsById.has(w.id)) merged.push(w);
+  });
+
+  // Normalize order
+  merged.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  merged.forEach((w, i) => { w.order = i; });
+
+  state.homeWidgets = merged;
+  saveHomeWidgets();
+}
+
 // ---- Visibility & Sizing ----
 
 export function toggleWidgetVisibility(widgetId) {

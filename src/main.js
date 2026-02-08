@@ -20,6 +20,7 @@ import { initializeTaskOrders } from './features/task-filter.js';
 import { initWeather } from './features/weather.js';
 import { applyStoredTheme, loadCloudData, debouncedSaveToGithub } from './data/github-sync.js';
 import { render } from './ui/render.js';
+import { ensureHomeWidgets } from './features/home-widgets.js';
 
 // ============================================================================
 // App Initialization
@@ -32,13 +33,21 @@ function initApp() {
   // Initialize task ordering
   initializeTaskOrders();
 
+  // Ensure home widgets are complete
+  ensureHomeWidgets();
+
   // Initial render
   render();
 
   // Load cloud data (non-blocking)
-  loadCloudData().catch(err => {
-    console.warn('Cloud data load failed (will use local):', err.message);
-  });
+  loadCloudData()
+    .then(() => {
+      ensureHomeWidgets();
+      render();
+    })
+    .catch(err => {
+      console.warn('Cloud data load failed (will use local):', err.message);
+    });
 
   // Initialize weather
   initWeather();

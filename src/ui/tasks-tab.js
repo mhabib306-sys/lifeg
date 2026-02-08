@@ -54,6 +54,7 @@ function renderNotesOutliner(categoryId) {
  * @returns {string} HTML string for the task item
  */
 export function renderTaskItem(task, showDueDate = true, compact = false) {
+  const isTouch = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none)').matches;
   const category = getCategoryById(task.categoryId);
   const labels = (task.labels || []).map(lid => getLabelById(lid)).filter(Boolean);
   const people = (task.people || []).map(pid => getPersonById(pid)).filter(Boolean);
@@ -99,12 +100,13 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
 
   return `
     <div class="task-item group relative"
-      draggable="${isInlineEditing ? 'false' : 'true'}"
-      ondragstart="window.handleDragStart(event, '${task.id}')"
+      draggable="${isInlineEditing || isTouch ? 'false' : 'true'}"
+      ${isInlineEditing || isTouch ? '' : `ondragstart="window.handleDragStart(event, '${task.id}')"
       ondragend="window.handleDragEnd(event)"
       ondragover="window.handleDragOver(event, '${task.id}')"
       ondragleave="window.handleDragLeave(event)"
-      ondrop="window.handleDrop(event, '${task.id}')" onclick="if(window.matchMedia('(hover: none)').matches && !event.target.closest('.task-checkbox')) { window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render(); }">
+      ondrop="window.handleDrop(event, '${task.id}')"`}
+      onclick="if(window.matchMedia('(hover: none)').matches && !event.target.closest('.task-checkbox')) { window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render(); }">
       <div class="flex items-start gap-3 px-4 py-2.5" style="${indentLevel > 0 ? `padding-left: ${16 + indentPx}px` : ''}">
         ${task.isNote ? `
           <div class="mt-2 w-1.5 h-1.5 rounded-full ${indentLevel > 0 ? 'bg-[var(--notes-accent)]/50' : 'bg-[var(--notes-accent)]'} flex-shrink-0"></div>
@@ -123,17 +125,17 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
               class="w-full text-[16px] text-[var(--text-primary)] bg-[var(--bg-input)] border border-[var(--accent)] rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-light)]">
           ` : `
             <span ondblclick="event.stopPropagation(); window.startInlineEdit('${task.id}')"
-              class="text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug transition cursor-text">${escapeHtml(task.title)}</span>
+              class="task-title text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug transition cursor-text">${escapeHtml(task.title)}</span>
           `}
           ${hasMetadata ? `
-            <div class="flex items-center gap-2 mt-1 flex-wrap text-[11px]">
-              ${category ? `<span onclick="event.stopPropagation(); window.showCategoryTasks('${category.id}')" class="flex items-center gap-1 cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"><span class="w-[6px] h-[6px] rounded-full flex-shrink-0" style="background:${category.color || 'var(--text-muted)'}"></span>${escapeHtml(category.name)}</span>` : ''}
-              ${labels.map(l => `<span onclick="event.stopPropagation(); window.showLabelTasks('${l.id}')" class="px-1.5 rounded cursor-pointer bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">${escapeHtml(l.name)}</span>`).join('')}
-              ${people.length > 0 ? `<span onclick="event.stopPropagation(); window.showPersonTasks('${people[0].id}')" class="flex items-center gap-1 cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>${people.map(p => escapeHtml(p.name.split(' ')[0])).join(', ')}</span>` : ''}
-              ${task.deferDate ? `<span class="flex items-center gap-1 text-[var(--text-secondary)]"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5V19L19 12z"/></svg>${formatSmartDate(task.deferDate)}</span>` : ''}
-              ${showDueDate && task.dueDate ? `<span class="flex items-center gap-1 ${isOverdue ? 'text-red-500 font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : isDueSoon ? 'text-amber-500 font-medium' : 'text-[var(--text-muted)]'}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>${formatSmartDate(task.dueDate)}</span>` : ''}
-              ${task.repeat && task.repeat.type !== 'none' ? `<span class="text-[var(--text-muted)]" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8A5.87 5.87 0 0 1 6 12c0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></span>` : ''}
-              ${task.notes ? `<span class="text-[var(--text-muted)]" title="${escapeHtml(task.notes.substring(0, 200))}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h12v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z"/></svg></span>` : ''}
+            <div class="task-meta flex items-center gap-2 mt-1 flex-wrap text-[11px]">
+              ${category ? `<span onclick="event.stopPropagation(); window.showCategoryTasks('${category.id}')" class="task-chip task-chip-category"><span class="w-[6px] h-[6px] rounded-full flex-shrink-0" style="background:${category.color || 'var(--text-muted)'}"></span>${escapeHtml(category.name)}</span>` : ''}
+              ${labels.map(l => `<span onclick="event.stopPropagation(); window.showLabelTasks('${l.id}')" class="task-chip task-chip-label">${escapeHtml(l.name)}</span>`).join('')}
+              ${people.length > 0 ? `<span onclick="event.stopPropagation(); window.showPersonTasks('${people[0].id}')" class="task-chip task-chip-person"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>${people.map(p => escapeHtml(p.name.split(' ')[0])).join(', ')}</span>` : ''}
+              ${task.deferDate ? `<span class="task-chip task-chip-date"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5V19L19 12z"/></svg>${formatSmartDate(task.deferDate)}</span>` : ''}
+              ${showDueDate && task.dueDate ? `<span class="task-chip task-chip-date ${isOverdue ? 'text-red-500' : isDueToday ? 'text-[var(--accent)]' : isDueSoon ? 'text-amber-500' : 'text-[var(--text-muted)]'}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>${formatSmartDate(task.dueDate)}</span>` : ''}
+              ${task.repeat && task.repeat.type !== 'none' ? `<span class="task-chip task-chip-icon" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8A5.87 5.87 0 0 1 6 12c0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></span>` : ''}
+              ${task.notes ? `<span class="task-chip task-chip-icon" title="${escapeHtml(task.notes.substring(0, 200))}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h12v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z"/></svg></span>` : ''}
             </div>
           ` : ''}
         </div>
