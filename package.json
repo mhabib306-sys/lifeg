@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "vite build && cd dist && git init && git checkout -b gh-pages && git add -A && git commit -m Deploy && git remote add origin https://github.com/mhabib306-sys/lifeg.git && git push -f origin gh-pages && rm -rf .git"
   },
   "repository": {
     "type": "git",
