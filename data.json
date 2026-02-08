@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T23:18:44.577Z",
+  "lastUpdated": "2026-02-08T23:18:58.237Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2813,8 +2813,8 @@
       "status": "anytime",
       "today": false,
       "flagged": false,
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-08T23:18:55.859Z",
       "categoryId": "personal",
       "labels": [],
       "people": [],
@@ -2830,7 +2830,33 @@
       "indent": 0,
       "order": 46000,
       "createdAt": "2026-02-08T23:18:42.106Z",
-      "updatedAt": "2026-02-08T23:18:42.106Z"
+      "updatedAt": "2026-02-08T23:18:55.859Z"
+    },
+    {
+      "id": "task_1770592735859_ebdpx9o0y",
+      "title": "Take B12",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": "2026-02-10",
+      "dueDate": null,
+      "repeat": {
+        "type": "daily",
+        "interval": 1,
+        "from": "due"
+      },
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 46000,
+      "createdAt": "2026-02-08T23:18:55.859Z",
+      "updatedAt": "2026-02-08T23:18:55.859Z"
     }
   ],
   "taskCategories": [
