@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T23:18:58.237Z",
+  "lastUpdated": "2026-02-08T23:19:23.407Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3011,18 +3011,18 @@
   ],
   "homeWidgets": [
     {
-      "id": "quick-add",
-      "type": "quick-add",
-      "title": "Quick Add Task",
+      "id": "quick-stats",
+      "type": "stats",
+      "title": "Quick Stats",
       "size": "full",
       "order": 0,
       "visible": true
     },
     {
-      "id": "today-tasks",
-      "type": "today-tasks",
-      "title": "Today",
-      "size": "half",
+      "id": "quick-add",
+      "type": "quick-add",
+      "title": "Quick Add Task",
+      "size": "full",
       "order": 1,
       "visible": true
     },
@@ -3035,17 +3035,17 @@
       "visible": true
     },
     {
-      "id": "quick-stats",
-      "type": "stats",
-      "title": "Quick Stats",
+      "id": "todays-score",
+      "type": "score",
+      "title": "Today's Score",
       "size": "half",
       "order": 3,
       "visible": true
     },
     {
-      "id": "todays-score",
-      "type": "score",
-      "title": "Today's Score",
+      "id": "today-tasks",
+      "type": "today-tasks",
+      "title": "Today",
       "size": "half",
       "order": 4,
       "visible": true
@@ -3062,7 +3062,7 @@
       "id": "daily-entry",
       "type": "daily-entry",
       "title": "Daily Entry",
-      "size": "half",
+      "size": "full",
       "order": 6,
       "visible": true
     }
