@@ -36,3 +36,4 @@ Home widgets are single-column on phones for readability.
 ## Perspectives
 - Custom perspectives support OmniFocus-style availability and rule matching (All/Any/None).
 - Special rules include Flagged and Due Soon, plus date range filters.
+- New perspectives default to Availability = Available.

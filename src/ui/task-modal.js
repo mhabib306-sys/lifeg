@@ -1885,13 +1885,13 @@ export function renderPerspectiveModalHtml() {
           </div>
           <div>
             <label class="text-sm text-charcoal/70 block mb-1">Availability (OmniFocus-style)</label>
-            <select id="perspective-availability" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
-              <option value="">Any availability</option>
-              <option value="available">Available</option>
-              <option value="remaining">Remaining</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
+              <select id="perspective-availability" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+                <option value="available">Available</option>
+                <option value="">Any availability</option>
+                <option value="remaining">Remaining</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
           <div>
             <label class="text-sm text-charcoal/70 block mb-1">Filter by Area</label>
             <select id="perspective-category" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
