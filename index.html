@@ -1408,6 +1408,194 @@
       background: var(--accent-light);
     }
 
+    /* Inline autocomplete popup (for trigger chars #, @, &) */
+    .inline-autocomplete-popup {
+      position: fixed;
+      z-index: 10000;
+      background: var(--modal-bg, var(--bg-card));
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      max-height: 220px;
+      overflow-y: auto;
+      min-width: 200px;
+      max-width: 300px;
+    }
+    .inline-ac-option {
+      padding: 8px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-primary);
+      transition: background 0.1s;
+    }
+    .inline-ac-option:hover,
+    .inline-ac-option.active {
+      background: var(--accent-light);
+    }
+    .inline-ac-option .ac-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .inline-ac-create {
+      padding: 8px 12px;
+      border-top: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-weight: 500;
+      font-size: 13px;
+    }
+    .inline-ac-create:hover,
+    .inline-ac-create.active {
+      background: var(--accent-light);
+    }
+    .inline-meta-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .inline-meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      animation: tagPop 0.2s ease;
+    }
+    .inline-meta-chip-remove {
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.15s;
+      display: inline-flex;
+      align-items: center;
+      margin-left: 1px;
+    }
+    .inline-meta-chip-remove:hover {
+      opacity: 1;
+    }
+
+    /* Calendar View */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: var(--border-light, var(--border));
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-light, var(--border));
+    }
+    .calendar-header-cell {
+      background: var(--bg-secondary);
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .calendar-day {
+      background: var(--bg-card, var(--bg-primary));
+      min-height: 72px;
+      padding: 4px;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .calendar-day:hover {
+      background: var(--accent-hover, rgba(0,0,0,0.03));
+    }
+    .calendar-day.outside {
+      background: var(--bg-secondary);
+      opacity: 0.5;
+    }
+    .calendar-day.today .calendar-day-num {
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .calendar-day.selected {
+      background: var(--accent-light);
+      box-shadow: inset 0 0 0 2px var(--accent);
+    }
+    .calendar-day-num {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .calendar-day.outside .calendar-day-num {
+      color: var(--text-muted);
+    }
+    .calendar-dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      padding: 0 2px;
+    }
+    .calendar-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .calendar-dot.due { background: #EF5350; }
+    .calendar-dot.defer { background: #42A5F5; }
+    .calendar-dot.overdue { background: #D32F2F; }
+    .calendar-task-preview {
+      font-size: 10px;
+      line-height: 1.3;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 2px;
+    }
+    @media (max-width: 768px) {
+      .calendar-day {
+        min-height: 52px;
+        padding: 2px;
+      }
+      .calendar-day-num {
+        font-size: 12px;
+        width: 22px;
+        height: 22px;
+      }
+      .calendar-task-preview {
+        display: none;
+      }
+      .calendar-header-cell {
+        padding: 6px 2px;
+        font-size: 10px;
+      }
+    }
+
     /* Multi-select tags */
     .tag-input-container {
       display: flex;
@@ -2058,6 +2246,7 @@
           tasks: tasksData,
           taskCategories: taskCategories,
           taskLabels: taskLabels,
+          taskPeople: taskPeople,
           customPerspectives: customPerspectives
         };
 
@@ -2151,7 +2340,7 @@
             }
             if (cloudData.maxScores) {
               MAX_SCORES = cloudData.maxScores;
-              localStorage.setItem('maxScores', JSON.stringify(MAX_SCORES));
+              localStorage.setItem(MAX_SCORES_KEY, JSON.stringify(MAX_SCORES));
             }
             if (cloudData.tasks) {
               tasksData = cloudData.tasks;
@@ -2164,6 +2353,10 @@
             if (cloudData.taskLabels) {
               taskLabels = cloudData.taskLabels;
               localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(taskLabels));
+            }
+            if (cloudData.taskPeople) {
+              taskPeople = cloudData.taskPeople;
+              localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(taskPeople));
             }
             if (cloudData.customPerspectives) {
               customPerspectives = cloudData.customPerspectives;
@@ -2310,6 +2503,7 @@
         WEIGHTS[category] = parseFloat(value) || 0;
       }
       saveWeights();
+      invalidateScoresCache();
       debouncedSaveToGithub(); // Auto-save to GitHub
       render();
     }
@@ -2317,6 +2511,7 @@
     function resetWeights() {
       WEIGHTS = JSON.parse(JSON.stringify(DEFAULT_WEIGHTS));
       saveWeights();
+      invalidateScoresCache();
       debouncedSaveToGithub(); // Auto-save to GitHub
       render();
     }
@@ -2324,6 +2519,7 @@
     function updateMaxScore(category, value) {
       MAX_SCORES[category] = parseFloat(value) || 0;
       saveMaxScores();
+      invalidateScoresCache();
       debouncedSaveToGithub(); // Auto-save to GitHub
       render();
     }
@@ -2331,6 +2527,7 @@
     function resetMaxScores() {
       MAX_SCORES = JSON.parse(JSON.stringify(DEFAULT_MAX_SCORES));
       saveMaxScores();
+      invalidateScoresCache();
       render();
     }
 
@@ -2483,6 +2680,8 @@
       next: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="white"/></svg>`,
       // Notes - Things 3 style: clean bullet list
       notes: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>`,
+      // Calendar - OmniFocus Forecast style: calendar with grid dots
+      calendar: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 2v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-1V2h-2v2H8V2H6zm13 18H5V9h14v11z"/><circle cx="8" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="16" cy="12" r="1.2"/><circle cx="8" cy="16" r="1.2"/><circle cx="12" cy="16" r="1.2"/><circle cx="16" cy="16" r="1.2"/></svg>`,
       // Tab icons - Things 3 style
       lifeScore: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3v-8zm4-4h2v12H7V9zm4-4h2v16h-2V5zm4 8h2v8h-2v-8zm4-4h2v12h-2V9z"/></svg>`,
       workspace: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 012-2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v16h12V4H6zm2 3h8v2H8V7zm0 4h8v2H8v-2zm0 4h5v2H8v-2z"/></svg>`,
@@ -2513,6 +2712,7 @@
       { id: 'inbox', name: 'Inbox', icon: THINGS3_ICONS.inbox, color: '#5598FE', filter: { status: 'inbox' }, builtin: true },
       { id: 'today', name: 'Today', icon: THINGS3_ICONS.today, color: '#FFCA28', filter: { status: 'today' }, builtin: true },
       { id: 'upcoming', name: 'Upcoming', icon: THINGS3_ICONS.upcoming, color: '#EF5350', filter: { upcoming: true }, builtin: true },
+      { id: 'calendar', name: 'Calendar', icon: THINGS3_ICONS.calendar, color: '#8B5CF6', filter: { calendar: true }, builtin: true },
       { id: 'anytime', name: 'Anytime', icon: THINGS3_ICONS.anytime, color: '#26A69A', filter: { status: 'anytime' }, builtin: true },
       { id: 'someday', name: 'Someday', icon: THINGS3_ICONS.someday, color: '#D4A24C', filter: { status: 'someday' }, builtin: true },
       { id: 'logbook', name: 'Logbook', icon: THINGS3_ICONS.logbook, color: '#66BB6A', filter: { completed: true }, builtin: true }
@@ -2558,9 +2758,13 @@
     let activeCategoryFilter = savedViewState.activeCategoryFilter || null;
     let activeLabelFilter = savedViewState.activeLabelFilter || null;
     let activePersonFilter = savedViewState.activePersonFilter || null;
+    let calendarMonth = new Date().getMonth(); // 0-11
+    let calendarYear = new Date().getFullYear();
+    let calendarSelectedDate = getLocalDateString(); // YYYY-MM-DD
     let editingTaskId = null;
     let inlineEditingTaskId = null; // For inline title editing
     let newTaskContext = { categoryId: null, labelId: null, personId: null, status: 'inbox' }; // Context for new task
+    const inlineAutocompleteMeta = new Map(); // Maps inputId -> { categoryId, labels[], people[] }
     let mobileDrawerOpen = false;
     let showTaskModal = false;
     let showPerspectiveModal = false;
@@ -2602,6 +2806,17 @@
         if (input) {
           input.focus();
           input.select();
+          // Setup inline autocomplete with existing task metadata
+          const task = tasksData.find(t => t.id === taskId);
+          if (task) {
+            setupInlineAutocomplete('inline-edit-input', {
+              initialMeta: {
+                categoryId: task.categoryId || null,
+                labels: task.labels ? [...task.labels] : [],
+                people: task.people ? [...task.people] : []
+              }
+            });
+          }
         }
       }, 100);
     }
@@ -2611,19 +2826,30 @@
       if (input) {
         const newTitle = input.value.trim();
         if (newTitle) {
-          updateTask(taskId, { title: newTitle });
+          const updates = { title: newTitle };
+          // Merge inline autocomplete metadata
+          const inlineMeta = inlineAutocompleteMeta.get('inline-edit-input');
+          if (inlineMeta) {
+            if (inlineMeta.categoryId !== undefined) updates.categoryId = inlineMeta.categoryId;
+            if (inlineMeta.labels) updates.labels = inlineMeta.labels;
+            if (inlineMeta.people) updates.people = inlineMeta.people;
+          }
+          updateTask(taskId, updates);
         }
       }
+      cleanupInlineAutocomplete('inline-edit-input');
       inlineEditingTaskId = null;
       render();
     }
 
     function cancelInlineEdit() {
+      cleanupInlineAutocomplete('inline-edit-input');
       inlineEditingTaskId = null;
       render();
     }
 
     function handleInlineEditKeydown(event, taskId) {
+      if (event._inlineAcHandled) return;
       if (event.key === 'Enter') {
         event.preventDefault();
         saveInlineEdit(taskId);
@@ -2638,6 +2864,7 @@
       activeFilterType = 'category';
       activeCategoryFilter = categoryId;
       activeLabelFilter = null;
+      activePersonFilter = null;
       mobileDrawerOpen = false;
       // Switch to tasks tab when navigating from Quick Stats or other widgets
       if (activeTab !== 'tasks') {
@@ -2653,6 +2880,7 @@
       activeFilterType = 'label';
       activeLabelFilter = labelId;
       activeCategoryFilter = null;
+      activePersonFilter = null;
       mobileDrawerOpen = false;
       // Switch to tasks tab when navigating from Quick Stats or other widgets
       if (activeTab !== 'tasks') {
@@ -2742,8 +2970,17 @@
         }
       }
 
+      // Merge inline autocomplete metadata
+      const inlineMeta = inlineAutocompleteMeta.get('quick-add-input');
+      if (inlineMeta) {
+        if (inlineMeta.categoryId) options.categoryId = inlineMeta.categoryId;
+        if (inlineMeta.labels && inlineMeta.labels.length) options.labels = [...(options.labels || []), ...inlineMeta.labels.filter(l => !(options.labels || []).includes(l))];
+        if (inlineMeta.people && inlineMeta.people.length) options.people = [...(options.people || []), ...inlineMeta.people.filter(p => !(options.people || []).includes(p))];
+      }
+
       createTask(title, options);
       inputElement.value = '';
+      cleanupInlineAutocomplete('quick-add-input');
       render();
 
       // Re-focus the quick-add input after render
@@ -2755,6 +2992,7 @@
 
     // Handle Enter key in quick-add input
     function handleQuickAddKeydown(event, inputElement) {
+      if (event._inlineAcHandled) return;
       if (event.key === 'Enter') {
         event.preventDefault();
         quickAddTask(inputElement);
@@ -2767,6 +3005,7 @@
       activePerspective = perspectiveId;
       activeCategoryFilter = null;
       activeLabelFilter = null;
+      activePersonFilter = null;
       mobileDrawerOpen = false;
       // Switch to tasks tab when navigating from Quick Stats or other widgets
       if (activeTab !== 'tasks') {
@@ -2983,7 +3222,7 @@
               <div class="w-5 h-5 rounded-full border-2 border-dashed border-charcoal/20 flex-shrink-0"></div>
               <input type="text" id="home-quick-add-input"
                 placeholder="Quick add task... (press Enter)"
-                onkeydown="if(event.key==='Enter'){event.preventDefault();homeQuickAddTask(this);}"
+                onkeydown="if(event._inlineAcHandled)return;if(event.key==='Enter'){event.preventDefault();homeQuickAddTask(this);}"
                 class="flex-1 text-[15px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none focus:ring-0">
               <button onclick="homeQuickAddTask(document.getElementById('home-quick-add-input'))"
                 class="text-charcoal/30 hover:text-coral transition p-1" title="Add task">
@@ -3215,8 +3454,17 @@
       if (!inputElement) return;
       const title = inputElement.value.trim();
       if (!title) return;
-      createTask(title, { status: 'inbox' });
+      const options = { status: 'inbox' };
+      // Merge inline autocomplete metadata
+      const inlineMeta = inlineAutocompleteMeta.get('home-quick-add-input');
+      if (inlineMeta) {
+        if (inlineMeta.categoryId) options.categoryId = inlineMeta.categoryId;
+        if (inlineMeta.labels && inlineMeta.labels.length) options.labels = inlineMeta.labels;
+        if (inlineMeta.people && inlineMeta.people.length) options.people = inlineMeta.people;
+      }
+      createTask(title, options);
       inputElement.value = '';
+      cleanupInlineAutocomplete('home-quick-add-input');
       render();
       setTimeout(() => {
         const input = document.getElementById('home-quick-add-input');
@@ -3691,6 +3939,7 @@
         isNote: options.isNote || false,      // If true, displays as note (bullet) instead of task (checkbox)
         parentId: options.parentId || null,   // For nested notes - parent note ID
         indent: options.indent || 0,          // Nesting level (0 = root, 1 = first child, etc.)
+        order: (tasksData.filter(t => !t.completed).length + 1) * 1000, // For manual ordering
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -3788,6 +4037,10 @@
       const note = tasksData.find(t => t.id === noteId);
       if (!note || !note.isNote || (note.indent || 0) <= 0) return;
 
+      // Find grandparent (parent's parent) for correct re-parenting
+      const parent = note.parentId ? tasksData.find(t => t.id === note.parentId) : null;
+      const grandparentId = parent ? parent.parentId : null;
+
       // Move children up with the note
       const children = getNoteChildren(noteId);
       children.forEach(child => {
@@ -3795,7 +4048,7 @@
       });
 
       note.indent = (note.indent || 0) - 1;
-      if (note.indent === 0) note.parentId = null;
+      note.parentId = note.indent === 0 ? null : grandparentId;
       note.updatedAt = new Date().toISOString();
       saveTasksData();
       render();
@@ -4098,7 +4351,16 @@
     }
 
     function deleteTask(taskId) {
+      // Promote child notes to root level (clear parentId)
+      tasksData.forEach(t => {
+        if (t.parentId === taskId) {
+          t.parentId = null;
+          t.indent = 0;
+        }
+      });
       tasksData = tasksData.filter(t => t.id !== taskId);
+      // Clear inline editing state if deleting the task being edited
+      if (inlineEditingTaskId === taskId) inlineEditingTaskId = null;
       saveTasksData();
     }
 
@@ -4267,7 +4529,9 @@
 
       if (taskId === draggedTaskId) return;
 
-      const rect = e.target.closest('.task-item').getBoundingClientRect();
+      const taskItem = e.target.closest('.task-item');
+      if (!taskItem) return;
+      const rect = taskItem.getBoundingClientRect();
       const midpoint = rect.top + rect.height / 2;
       const position = e.clientY < midpoint ? 'top' : 'bottom';
 
@@ -4439,6 +4703,11 @@
           return isTodayTask || isNextTask;
         }
 
+        // Calendar: Tasks with any date (dueDate or deferDate)
+        if (perspectiveId === 'calendar') {
+          return !!(task.dueDate || task.deferDate);
+        }
+
         // Upcoming: Tasks with future due dates (not today, not overdue)
         // Shows tasks from Anytime or Someday that have scheduled due dates
         if (perspectiveId === 'upcoming') {
@@ -4602,6 +4871,210 @@
           if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
           return new Date(a.createdAt) - new Date(b.createdAt);
         });
+    }
+
+    // ============ CALENDAR VIEW ============
+    function calendarPrevMonth() {
+      calendarMonth--;
+      if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; }
+      render();
+    }
+    function calendarNextMonth() {
+      calendarMonth++;
+      if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; }
+      render();
+    }
+    function calendarGoToday() {
+      const now = new Date();
+      calendarMonth = now.getMonth();
+      calendarYear = now.getFullYear();
+      calendarSelectedDate = getLocalDateString();
+      render();
+    }
+    function calendarSelectDate(dateStr) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return;
+      calendarSelectedDate = dateStr;
+      // Navigate to the month of the selected date (handles clicking outside days)
+      const parts = dateStr.split('-');
+      const selectedYear = parseInt(parts[0]);
+      const selectedMonth = parseInt(parts[1]) - 1; // Convert to 0-based
+      if (selectedYear !== calendarYear || selectedMonth !== calendarMonth) {
+        calendarYear = selectedYear;
+        calendarMonth = selectedMonth;
+      }
+      render();
+    }
+
+    function getTasksForDate(dateStr) {
+      return tasksData.filter(t => {
+        if (t.completed || t.isNote) return false;
+        return t.dueDate === dateStr || t.deferDate === dateStr;
+      });
+    }
+
+    function renderCalendarView() {
+      const today = getLocalDateString();
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+      // Build calendar grid
+      const firstDay = new Date(calendarYear, calendarMonth, 1);
+      const lastDay = new Date(calendarYear, calendarMonth + 1, 0);
+      const startDow = firstDay.getDay(); // 0=Sun
+      const daysInMonth = lastDay.getDate();
+
+      // Previous month padding
+      const prevMonthLast = new Date(calendarYear, calendarMonth, 0).getDate();
+      const cells = [];
+
+      // Add previous month days
+      for (let i = startDow - 1; i >= 0; i--) {
+        const d = prevMonthLast - i;
+        const m = calendarMonth === 0 ? 12 : calendarMonth;
+        const y = calendarMonth === 0 ? calendarYear - 1 : calendarYear;
+        const dateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        cells.push({ day: d, dateStr, outside: true });
+      }
+
+      // Current month days
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        cells.push({ day: d, dateStr, outside: false });
+      }
+
+      // Next month padding to fill grid
+      const remaining = 7 - (cells.length % 7);
+      if (remaining < 7) {
+        for (let d = 1; d <= remaining; d++) {
+          const m = calendarMonth === 11 ? 1 : calendarMonth + 2;
+          const y = calendarMonth === 11 ? calendarYear + 1 : calendarYear;
+          const dateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+          cells.push({ day: d, dateStr, outside: true });
+        }
+      }
+
+      // Build a map of date -> tasks for the visible range
+      const dateTaskMap = {};
+      cells.forEach(cell => {
+        dateTaskMap[cell.dateStr] = getTasksForDate(cell.dateStr);
+      });
+
+      // Selected date tasks
+      const selectedTasks = getTasksForDate(calendarSelectedDate);
+      const dueTasks = selectedTasks.filter(t => t.dueDate === calendarSelectedDate);
+      const deferTasks = selectedTasks.filter(t => t.deferDate === calendarSelectedDate && t.dueDate !== calendarSelectedDate);
+
+      // Format selected date label
+      const selDate = new Date(calendarSelectedDate + 'T12:00:00');
+      const isToday = calendarSelectedDate === today;
+      const selectedLabel = isToday ? 'Today' :
+        selDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+      const calendarHtml = `
+        <div class="calendar-grid">
+          ${dayNames.map(d => `<div class="calendar-header-cell">${d}</div>`).join('')}
+          ${cells.map(cell => {
+            const tasks = dateTaskMap[cell.dateStr] || [];
+            const isToday = cell.dateStr === today;
+            const isSelected = cell.dateStr === calendarSelectedDate;
+            const hasDue = tasks.some(t => t.dueDate === cell.dateStr);
+            const hasDefer = tasks.some(t => t.deferDate === cell.dateStr);
+            const hasOverdue = tasks.some(t => t.dueDate === cell.dateStr && t.dueDate < today);
+            const classes = ['calendar-day'];
+            if (cell.outside) classes.push('outside');
+            if (isToday) classes.push('today');
+            if (isSelected) classes.push('selected');
+
+            return `<div class="${classes.join(' ')}" onclick="calendarSelectDate('${cell.dateStr}')">
+              <div class="calendar-day-num">${cell.day}</div>
+              ${tasks.length > 0 ? `
+                <div class="calendar-dots">
+                  ${tasks.slice(0, 5).map(t => {
+                    const cls = (t.dueDate === cell.dateStr && t.dueDate < today) ? 'overdue' :
+                                t.dueDate === cell.dateStr ? 'due' : 'defer';
+                    return '<div class="calendar-dot ' + cls + '"></div>';
+                  }).join('')}
+                  ${tasks.length > 5 ? '<span style="font-size:9px;color:var(--text-muted)">+' + (tasks.length - 5) + '</span>' : ''}
+                </div>
+                ${!cell.outside && tasks.length > 0 ? `<div class="calendar-task-preview">${escapeHtml(tasks[0].title)}</div>` : ''}
+              ` : ''}
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+
+      return `
+        <div class="flex-1">
+          <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
+            <!-- Calendar Header -->
+            <div class="px-5 py-4 flex items-center justify-between border-b border-[var(--border-light)]">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl" style="color: #8B5CF6">${THINGS3_ICONS.calendar}</span>
+                <h2 class="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
+              </div>
+              <button onclick="openNewTaskModal()"
+                class="w-8 h-8 rounded-full bg-[#147EFB] text-white flex items-center justify-center hover:bg-[#0E6AD8] transition shadow-sm" title="Add Task">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+            </div>
+
+            <!-- Month Navigation -->
+            <div class="px-5 py-3 flex items-center justify-between border-b border-[var(--border-light)]">
+              <button onclick="calendarPrevMonth()" class="w-8 h-8 rounded-lg hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              <div class="flex items-center gap-3">
+                <h3 class="text-[16px] font-semibold text-[var(--text-primary)]">${monthNames[calendarMonth]} ${calendarYear}</h3>
+                <button onclick="calendarGoToday()" class="text-xs px-2 py-1 rounded-md bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--accent)] transition font-medium">Today</button>
+              </div>
+              <button onclick="calendarNextMonth()" class="w-8 h-8 rounded-lg hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="p-4">
+              ${calendarHtml}
+            </div>
+
+            <!-- Selected Day Tasks -->
+            <div class="border-t border-[var(--border-light)]">
+              <div class="px-5 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <h4 class="text-[14px] font-semibold text-[var(--text-primary)]">${selectedLabel}</h4>
+                  ${selectedTasks.length > 0 ? `<span class="text-xs px-2 py-0.5 rounded-full bg-[var(--bg-secondary)] text-[var(--text-muted)] font-medium">${selectedTasks.length}</span>` : ''}
+                </div>
+                <div class="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                  <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#EF5350] inline-block"></span>Due</span>
+                  <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#42A5F5] inline-block"></span>Start</span>
+                </div>
+              </div>
+              <div class="min-h-[200px]">
+                ${selectedTasks.length === 0 ? `
+                  <div class="flex flex-col items-center justify-center py-12 text-[var(--text-muted)]">
+                    <svg class="w-10 h-10 mb-2 opacity-30" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2v2M18 2v2M3 6h18M3 6v14a2 2 0 002 2h14a2 2 0 002-2V6"/></svg>
+                    <p class="text-[14px]">No tasks on this date</p>
+                  </div>
+                ` : `
+                  ${dueTasks.length > 0 ? `
+                    <div class="px-5 py-1">
+                      <div class="text-[11px] font-semibold text-[#EF5350] uppercase tracking-wider mb-1">Due</div>
+                    </div>
+                    ${dueTasks.map(task => renderTaskItem(task, false)).join('')}
+                  ` : ''}
+                  ${deferTasks.length > 0 ? `
+                    <div class="px-5 py-1 ${dueTasks.length > 0 ? 'mt-2' : ''}">
+                      <div class="text-[11px] font-semibold text-[#42A5F5] uppercase tracking-wider mb-1">Starting</div>
+                    </div>
+                    ${deferTasks.map(task => renderTaskItem(task)).join('')}
+                  ` : ''}
+                `}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     // Get current filtered tasks based on active filter type
@@ -5636,7 +6109,7 @@
         return `
           <div class="task-item group relative hover:bg-[var(--bg-secondary)]/50 rounded-lg transition cursor-pointer"
             onclick="showPerspectiveTasks('${task.status || 'anytime'}')">
-            <div class="flex items-center h-11 px-3">
+            <div class="flex items-center min-h-[44px] px-3 py-2">
               ${task.isNote ? `
                 <div class="w-5 h-5 flex items-center justify-center flex-shrink-0">
                   <div class="w-2 h-2 rounded-full bg-[var(--notes-accent)]"></div>
@@ -5648,14 +6121,11 @@
                   ${task.completed ? '<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>' : ''}
                 </button>
               `}
-              <span class="flex-1 ml-3 text-[14px] leading-tight ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} truncate">${escapeHtml(task.title)}</span>
+              <span class="flex-1 ml-3 text-[14px] leading-snug ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">${escapeHtml(task.title)}</span>
               ${task.repeat && task.repeat.type !== 'none' ? `
-                <span class="ml-1 text-[var(--accent)]" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}">
+                <span class="ml-1 text-[var(--accent)] flex-shrink-0" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
                 </span>
-              ` : ''}
-              ${labels.length > 0 ? `
-                <span class="ml-2 text-[11px] text-charcoal/40 flex-shrink-0">${labels[0].name}</span>
               ` : ''}
             </div>
           </div>
@@ -5684,7 +6154,7 @@
               ${isInlineEditing ? `
                 <input type="text" id="inline-edit-input" value="${task.title.replace(/"/g, '&quot;')}"
                   onkeydown="handleInlineEditKeydown(event, '${task.id}')"
-                  onblur="saveInlineEdit('${task.id}')"
+                  onblur="setTimeout(() => { if(inlineEditingTaskId) saveInlineEdit('${task.id}'); }, 180)"
                   class="w-full text-[16px] text-[var(--text-primary)] bg-[var(--bg-input)] border border-[var(--accent)] rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-light)]">
               ` : `
                 <span ondblclick="event.stopPropagation(); startInlineEdit('${task.id}')"
@@ -5924,13 +6394,27 @@
       if (showTaskModal) {
         initModalAutocomplete();
       }
+
+      // Initialize inline autocomplete for quick-add inputs
+      setTimeout(() => {
+        if (document.getElementById('quick-add-input')) {
+          setupInlineAutocomplete('quick-add-input');
+        }
+        if (document.getElementById('home-quick-add-input')) {
+          setupInlineAutocomplete('home-quick-add-input');
+        }
+      }, 60);
       } catch (err) {
         console.error('Render error:', err);
-        document.getElementById('app').innerHTML = '<div style="padding:20px;color:red;font-family:monospace;">Render error: ' + err.message + '<br><br>Stack: ' + err.stack + '</div>';
+        document.getElementById('app').innerHTML = '<div style="padding:20px;color:red;font-family:monospace;">Render error: ' + escapeHtml(err.message) + '<br><br>Stack: ' + escapeHtml(err.stack || '') + '</div>';
       }
     }
 
-    function switchTab(tab) { activeTab = tab; saveViewState(); render(); scrollToContent(); }
+    function switchTab(tab) {
+      // Cleanup any open inline autocomplete popups
+      document.querySelectorAll('.inline-autocomplete-popup').forEach(p => p.remove());
+      activeTab = tab; saveViewState(); render(); scrollToContent();
+    }
     function setToday() { currentDate = getLocalDateString(); render(); }
 
     function setBulkMonth(month, year) {
@@ -6944,7 +7428,8 @@
       };
 
       // Build task list (default view for non-area views)
-      const taskListHtml = isAreaView ? buildAreaTaskListHtml() : `
+      const isCalendarView = activeFilterType === 'perspective' && activePerspective === 'calendar';
+      const taskListHtml = isCalendarView ? renderCalendarView() : isAreaView ? buildAreaTaskListHtml() : `
         <div class="flex-1">
           <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
             <div class="task-list-header-desktop px-5 py-4 flex items-center justify-between">
@@ -7102,7 +7587,7 @@
       const editingTask = editingTaskId ? tasksData.find(t => t.id === editingTaskId) : null;
       if (showTaskModal) initModalState(editingTask);
       const taskModalHtml = showTaskModal ? `
-        <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showTaskModal=false; editingTaskId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
+        <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){closeTaskModal()}" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
           <div class="modal-enhanced w-full max-w-xl mx-4" onclick="event.stopPropagation()">
             <!-- Mobile drag handle -->
             <div class="flex justify-center pt-3 pb-1 md:hidden">
@@ -7121,7 +7606,7 @@
                   </div>
                 </div>
               </div>
-              <button onclick="showTaskModal=false; editingTaskId=null; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
+              <button onclick="closeTaskModal()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
               </button>
             </div>
@@ -7133,7 +7618,7 @@
                 <input type="text" id="task-title" value="${editingTask?.title || ''}"
                   placeholder="${modalIsNote ? 'What do you want to capture?' : 'What needs to be done?'}"
                   maxlength="500"
-                  onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();saveTaskFromModal();}"
+                  onkeydown="if(event._inlineAcHandled)return;if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();saveTaskFromModal();}"
                   class="modal-input-enhanced title-input">
               </div>
 
@@ -7241,7 +7726,7 @@
 
             <!-- Footer -->
             <div class="modal-footer-enhanced">
-              <button onclick="showTaskModal=false; editingTaskId=null; render()"
+              <button onclick="closeTaskModal()"
                 class="px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-light)] rounded-lg transition">
                 Cancel
               </button>
@@ -7866,7 +8351,342 @@
         // Focus title
         const titleInput = document.getElementById('task-title');
         if (titleInput) titleInput.focus();
+
+        // Setup inline autocomplete for modal title (# @ &)
+        setupInlineAutocomplete('task-title', { isModal: true });
       }, 50);
+    }
+
+    // ============ INLINE AUTOCOMPLETE (Todoist-style #, @, &) ============
+    function setupInlineAutocomplete(inputId, config = {}) {
+      const input = document.getElementById(inputId);
+      if (!input || input.dataset.inlineAcAttached) return;
+      input.dataset.inlineAcAttached = '1';
+
+      const isModal = config.isModal || false;
+      if (!isModal && !inlineAutocompleteMeta.has(inputId)) {
+        inlineAutocompleteMeta.set(inputId, {
+          categoryId: config.initialMeta?.categoryId || null,
+          labels: config.initialMeta?.labels ? [...config.initialMeta.labels] : [],
+          people: config.initialMeta?.people ? [...config.initialMeta.people] : []
+        });
+      }
+
+      let popup = null;
+      let activeIndex = 0;
+      let triggerChar = null;
+      let triggerPos = -1;
+
+      function getMeta() {
+        if (isModal) return { categoryId: modalSelectedArea, labels: modalSelectedTags, people: modalSelectedPeople };
+        return inlineAutocompleteMeta.get(inputId) || { categoryId: null, labels: [], people: [] };
+      }
+
+      function setMeta(key, value) {
+        if (isModal) {
+          if (key === 'categoryId') { modalSelectedArea = value; renderAreaInput(); }
+          else if (key === 'labels') { modalSelectedTags = value; renderTagsInput(); }
+          else if (key === 'people') { modalSelectedPeople = value; renderPeopleInput(); }
+        } else {
+          const meta = getMeta();
+          meta[key] = value;
+          inlineAutocompleteMeta.set(inputId, meta);
+          if (config.onMetadataChange) config.onMetadataChange(meta);
+          renderInlineChips(inputId);
+        }
+      }
+
+      function getItems() {
+        const meta = getMeta();
+        if (triggerChar === '#') return taskCategories;
+        if (triggerChar === '@') return taskLabels.filter(l => !(meta.labels || []).includes(l.id));
+        if (triggerChar === '&') return taskPeople.filter(p => !(meta.people || []).includes(p.id));
+        return [];
+      }
+
+      function getCreateFn() {
+        if (triggerChar === '#') return (name) => {
+          const c = { id: 'cat-' + Date.now(), name, color: '#6366f1', icon: '📁' };
+          taskCategories.push(c);
+          localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(taskCategories));
+          debouncedSaveToGithub();
+          return c;
+        };
+        if (triggerChar === '@') return (name) => {
+          const colors = ['#ef4444','#f59e0b','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
+          const l = { id: 'label-' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
+          taskLabels.push(l);
+          localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(taskLabels));
+          debouncedSaveToGithub();
+          return l;
+        };
+        if (triggerChar === '&') return (name) => {
+          const colors = ['#4A90A4','#6B8E5A','#E5533D','#C4943D','#7C6B8E'];
+          const p = { id: 'person-' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
+          taskPeople.push(p);
+          localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(taskPeople));
+          debouncedSaveToGithub();
+          return p;
+        };
+        return null;
+      }
+
+      function selectItem(item) {
+        // Remove trigger + query from input value
+        const val = input.value;
+        const before = val.substring(0, triggerPos);
+        const afterCaret = val.substring(input.selectionStart);
+        input.value = before.trimEnd() + (before.trimEnd() ? ' ' : '') + afterCaret.trimStart();
+        // Re-position caret
+        const newPos = (before.trimEnd() + (before.trimEnd() ? ' ' : '')).length;
+        input.setSelectionRange(newPos, newPos);
+
+        // Apply metadata
+        if (triggerChar === '#') {
+          setMeta('categoryId', item.id);
+        } else if (triggerChar === '@') {
+          const meta = getMeta();
+          const labels = [...(meta.labels || [])];
+          if (!labels.includes(item.id)) labels.push(item.id);
+          setMeta('labels', labels);
+        } else if (triggerChar === '&') {
+          const meta = getMeta();
+          const people = [...(meta.people || [])];
+          if (!people.includes(item.id)) people.push(item.id);
+          setMeta('people', people);
+        }
+        dismissPopup();
+        input.focus();
+      }
+
+      function dismissPopup() {
+        if (popup && popup.parentNode) popup.parentNode.removeChild(popup);
+        popup = null;
+        triggerChar = null;
+        triggerPos = -1;
+        activeIndex = 0;
+      }
+
+      function renderPopup(items, query) {
+        if (!popup) {
+          popup = document.createElement('div');
+          popup.className = 'inline-autocomplete-popup';
+          popup.addEventListener('mousedown', (e) => e.preventDefault()); // Prevent blur
+          document.body.appendChild(popup);
+        }
+
+        // Position near input
+        const rect = input.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        popup.style.left = Math.min(rect.left, window.innerWidth - 310) + 'px';
+        popup.style.width = Math.min(rect.width, 300) + 'px';
+        if (spaceBelow > 240) {
+          popup.style.top = rect.bottom + 4 + 'px';
+          popup.style.bottom = 'auto';
+        } else {
+          popup.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+          popup.style.top = 'auto';
+        }
+
+        const filtered = items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));
+        const hasExactMatch = items.some(i => i.name.toLowerCase() === query.toLowerCase());
+        const showCreate = query.length > 0 && !hasExactMatch;
+        const totalItems = filtered.length + (showCreate ? 1 : 0);
+
+        if (totalItems === 0) { dismissPopup(); return; }
+        if (activeIndex >= totalItems) activeIndex = totalItems - 1;
+        if (activeIndex < 0) activeIndex = 0;
+
+        const typeLabel = triggerChar === '#' ? 'Area' : triggerChar === '@' ? 'Tag' : 'Person';
+        let html = '';
+        filtered.forEach((item, idx) => {
+          const isActive = idx === activeIndex ? ' active' : '';
+          const icon = triggerChar === '#'
+            ? `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">${item.icon || '📁'}</span>`
+            : triggerChar === '@'
+            ? `<span class="w-3 h-3 rounded-full inline-block flex-shrink-0" style="background:${item.color}"></span>`
+            : `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">👤</span>`;
+          html += `<div class="inline-ac-option${isActive}" data-idx="${idx}">${icon}<span>${escapeHtml(item.name)}</span></div>`;
+        });
+        if (showCreate) {
+          const createIdx = filtered.length;
+          const isActive = activeIndex === createIdx ? ' active' : '';
+          html += `<div class="inline-ac-create${isActive}" data-idx="${createIdx}">+ Create ${typeLabel} "${escapeHtml(query)}"</div>`;
+        }
+        popup.innerHTML = html;
+
+        // Click handlers
+        popup.querySelectorAll('.inline-ac-option').forEach(el => {
+          el.addEventListener('click', () => selectItem(filtered[parseInt(el.dataset.idx)]));
+        });
+        const createEl = popup.querySelector('.inline-ac-create');
+        if (createEl) {
+          createEl.addEventListener('click', () => {
+            const createFn = getCreateFn();
+            if (createFn) {
+              const newItem = createFn(query);
+              selectItem(newItem);
+            }
+          });
+        }
+      }
+
+      function checkTrigger() {
+        const val = input.value;
+        const caret = input.selectionStart;
+
+        // Scan backwards from caret for trigger char
+        for (let i = caret - 1; i >= 0; i--) {
+          const ch = val[i];
+          if (ch === ' ' || ch === '\n') { dismissPopup(); return; }
+          if ((ch === '#' || ch === '@' || ch === '&') && (i === 0 || val[i-1] === ' ')) {
+            triggerChar = ch;
+            triggerPos = i;
+            const query = val.substring(i + 1, caret);
+            const items = getItems();
+            activeIndex = 0;
+            renderPopup(items, query);
+            return;
+          }
+        }
+        dismissPopup();
+      }
+
+      input.addEventListener('input', () => checkTrigger());
+
+      // Use capture phase so this fires BEFORE onkeydown attribute handlers
+      input.addEventListener('keydown', (e) => {
+        if (!popup) return;
+        const items = getItems();
+        const val = input.value;
+        const caret = input.selectionStart;
+        const query = val.substring(triggerPos + 1, caret);
+        const filtered = items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));
+        const hasExactMatch = items.some(i => i.name.toLowerCase() === query.toLowerCase());
+        const showCreate = query.length > 0 && !hasExactMatch;
+        const totalItems = filtered.length + (showCreate ? 1 : 0);
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          activeIndex = (activeIndex + 1) % totalItems;
+          renderPopup(items, query);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          activeIndex = (activeIndex - 1 + totalItems) % totalItems;
+          renderPopup(items, query);
+        } else if (e.key === 'Enter' || e.key === 'Tab') {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          e._inlineAcHandled = true;
+          if (activeIndex < filtered.length) {
+            selectItem(filtered[activeIndex]);
+          } else if (showCreate) {
+            const createFn = getCreateFn();
+            if (createFn) {
+              const newItem = createFn(query);
+              selectItem(newItem);
+            }
+          }
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          e._inlineAcHandled = true;
+          dismissPopup();
+        }
+      }, true);
+
+      let blurTimeout;
+      input.addEventListener('blur', () => {
+        blurTimeout = setTimeout(() => dismissPopup(), 150);
+      });
+      input.addEventListener('focus', () => {
+        clearTimeout(blurTimeout);
+      });
+
+      // Render initial chips for non-modal
+      if (!isModal) renderInlineChips(inputId);
+    }
+
+    function renderInlineChips(inputId) {
+      const meta = inlineAutocompleteMeta.get(inputId);
+      if (!meta) return;
+      const input = document.getElementById(inputId);
+      if (!input) return;
+
+      // Find or create chips container
+      let chipsEl = document.getElementById(inputId + '-chips');
+      if (!chipsEl) {
+        chipsEl = document.createElement('div');
+        chipsEl.id = inputId + '-chips';
+        chipsEl.className = 'inline-meta-chips';
+        input.parentNode.insertBefore(chipsEl, input.nextSibling);
+      }
+
+      let html = '';
+      // Area chip
+      if (meta.categoryId) {
+        const cat = taskCategories.find(c => c.id === meta.categoryId);
+        if (cat) {
+          html += `<span class="inline-meta-chip" style="background:${cat.color}20;color:${cat.color}">
+            ${cat.icon || '📁'} ${escapeHtml(cat.name)}
+            <span class="inline-meta-chip-remove" onclick="removeInlineMeta('${inputId}','category','${cat.id}')">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </span>
+          </span>`;
+        }
+      }
+      // Label chips
+      (meta.labels || []).forEach(lid => {
+        const label = taskLabels.find(l => l.id === lid);
+        if (label) {
+          html += `<span class="inline-meta-chip" style="background:${label.color}20;color:${label.color}">
+            ${escapeHtml(label.name)}
+            <span class="inline-meta-chip-remove" onclick="removeInlineMeta('${inputId}','label','${label.id}')">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </span>
+          </span>`;
+        }
+      });
+      // People chips
+      (meta.people || []).forEach(pid => {
+        const person = taskPeople.find(p => p.id === pid);
+        if (person) {
+          html += `<span class="inline-meta-chip" style="background:${person.color}20;color:${person.color}">
+            👤 ${escapeHtml(person.name)}
+            <span class="inline-meta-chip-remove" onclick="removeInlineMeta('${inputId}','person','${person.id}')">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </span>
+          </span>`;
+        }
+      });
+      chipsEl.innerHTML = html;
+    }
+
+    function removeInlineMeta(inputId, type, id) {
+      const meta = inlineAutocompleteMeta.get(inputId);
+      if (!meta) return;
+      if (type === 'category') meta.categoryId = null;
+      else if (type === 'label') meta.labels = (meta.labels || []).filter(l => l !== id);
+      else if (type === 'person') meta.people = (meta.people || []).filter(p => p !== id);
+      inlineAutocompleteMeta.set(inputId, meta);
+      renderInlineChips(inputId);
+    }
+
+    function cleanupInlineAutocomplete(inputId) {
+      inlineAutocompleteMeta.delete(inputId);
+      const chipsEl = document.getElementById(inputId + '-chips');
+      if (chipsEl) chipsEl.remove();
+      // Remove any open popup
+      document.querySelectorAll('.inline-autocomplete-popup').forEach(p => p.remove());
+    }
+
+    function closeTaskModal() {
+      cleanupInlineAutocomplete('task-title');
+      showTaskModal = false;
+      editingTaskId = null;
+      render();
     }
 
     // Save task from modal
@@ -7922,6 +8742,7 @@
         createTask(title, taskData);
       }
 
+      cleanupInlineAutocomplete('task-title');
       showTaskModal = false;
       editingTaskId = null;
       render();
@@ -7976,6 +8797,7 @@
         tasks: tasksData,
         taskCategories: taskCategories,
         taskLabels: taskLabels,
+        taskPeople: taskPeople,
         customPerspectives: customPerspectives,
         lastUpdated: new Date().toISOString()
       };
@@ -8015,6 +8837,10 @@
           if (imported.taskLabels) {
             taskLabels = imported.taskLabels;
             localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(taskLabels));
+          }
+          if (imported.taskPeople) {
+            taskPeople = imported.taskPeople;
+            localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(taskPeople));
           }
           if (imported.customPerspectives) {
             customPerspectives = imported.customPerspectives;
@@ -8066,7 +8892,7 @@
       if (e.key === 'Escape') {
         e.preventDefault();
         let modalClosed = false;
-        if (showTaskModal) { showTaskModal = false; editingTaskId = null; modalClosed = true; }
+        if (showTaskModal) { cleanupInlineAutocomplete('task-title'); showTaskModal = false; editingTaskId = null; modalClosed = true; }
         else if (showPerspectiveModal) { showPerspectiveModal = false; editingPerspectiveId = null; modalClosed = true; }
         else if (showCategoryModal) { showCategoryModal = false; editingCategoryId = null; modalClosed = true; }
         else if (showLabelModal) { showLabelModal = false; editingLabelId = null; modalClosed = true; }
