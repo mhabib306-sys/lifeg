@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T08:03:02.068Z",
+  "lastUpdated": "2026-02-08T08:03:27.686Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2476,20 +2476,24 @@
       "id": "task_1770537779625_2gz2y5err",
       "title": "Take B12",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
-      "categoryId": null,
+      "categoryId": "personal",
       "labels": [],
       "people": [],
-      "deferDate": null,
+      "deferDate": "2026-02-08",
       "dueDate": null,
-      "repeat": null,
+      "repeat": {
+        "type": "daily",
+        "interval": 1,
+        "from": "due"
+      },
       "isNote": false,
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-08T08:02:59.625Z",
-      "updatedAt": "2026-02-08T08:02:59.625Z"
+      "updatedAt": "2026-02-08T08:03:25.421Z"
     }
   ],
   "taskCategories": [
