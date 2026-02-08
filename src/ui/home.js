@@ -335,6 +335,57 @@ export function renderHomeWidget(widget, isEditing) {
       break;
     }
 
+    case 'score': {
+      const todayData2 = state.allData[today] || JSON.parse(JSON.stringify(defaultDayData));
+      const rawScores2 = calculateScores(todayData2);
+      const s = {
+        total: rawScores2?.total ?? 0,
+        prayer: rawScores2?.prayer ?? 0,
+        diabetes: rawScores2?.diabetes ?? 0,
+        whoop: rawScores2?.whoop ?? 0,
+        family: rawScores2?.family ?? 0,
+        habit: rawScores2?.habit ?? 0
+      };
+      const pct = Math.round((s.total / state.MAX_SCORES.total) * 100);
+
+      content = `
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-3xl font-bold text-[var(--accent)]">${s.total.toFixed(0)} <span class="text-base font-normal text-[var(--text-muted)]">/ ${state.MAX_SCORES.total}</span></p>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-bold text-[var(--text-primary)]">${pct}%</div>
+          </div>
+        </div>
+        <div class="h-2 bg-[var(--bg-secondary)] rounded-full mt-3 overflow-hidden">
+          <div class="h-full bg-[var(--accent)] rounded-full transition-all duration-500" style="width: ${Math.min(pct, 100)}%"></div>
+        </div>
+        <div class="score-grid grid grid-cols-5 gap-2 mt-3">
+          <div class="text-center">
+            <div class="text-[10px] text-[var(--text-muted)]">Prayers</div>
+            <div class="text-sm font-semibold text-[var(--text-primary)]">${s.prayer.toFixed(0)}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-[10px] text-[var(--text-muted)]">Glucose</div>
+            <div class="text-sm font-semibold text-[var(--text-primary)]">${s.diabetes.toFixed(0)}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-[10px] text-[var(--text-muted)]">Whoop</div>
+            <div class="text-sm font-semibold text-[var(--text-primary)]">${s.whoop.toFixed(0)}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-[10px] text-[var(--text-muted)]">Family</div>
+            <div class="text-sm font-semibold text-[var(--text-primary)]">${s.family.toFixed(0)}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-[10px] text-[var(--text-muted)]">Habits</div>
+            <div class="text-sm font-semibold text-[var(--text-primary)]">${s.habit.toFixed(0)}</div>
+          </div>
+        </div>
+      `;
+      break;
+    }
+
     case 'weather': {
       const w = state.weatherData;
       if (!w) {
@@ -413,7 +464,8 @@ export function renderHomeWidget(widget, isEditing) {
     'today-tasks': THINGS3_ICONS.today,
     'next-tasks': THINGS3_ICONS.next,
     'daily-entry': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>',
-    'weather': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>'
+    'weather': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>',
+    'score': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3v-8zm4-4h2v12H7V9zm4-4h2v16h-2V5zm4 8h2v8h-2v-8zm4-4h2v12h-2V9z"/></svg>'
   };
 
   const widgetColors = {
@@ -422,7 +474,8 @@ export function renderHomeWidget(widget, isEditing) {
     'today-tasks': '#FFCA28',
     'next-tasks': '#8B5CF6',
     'daily-entry': '#F97316',
-    'weather': '#F59E0B'
+    'weather': '#F59E0B',
+    'score': '#22C55E'
   };
 
   // Quick-add widget has minimal styling (no border, no background, no header)
@@ -493,19 +546,6 @@ export function homeQuickAddTask(inputElement) {
  */
 export function renderHomeTab() {
   const today = getLocalDateString();
-  const todayData = state.allData[today] || JSON.parse(JSON.stringify(defaultDayData));
-  const rawScores = calculateScores(todayData);
-  // Safe defaults for all score properties
-  const scores = {
-    total: rawScores?.total ?? 0,
-    prayer: rawScores?.prayer ?? 0,
-    diabetes: rawScores?.diabetes ?? 0,
-    whoop: rawScores?.whoop ?? 0,
-    family: rawScores?.family ?? 0,
-    habit: rawScores?.habit ?? 0,
-    prayerOnTime: rawScores?.prayerOnTime ?? 0,
-    prayerLate: rawScores?.prayerLate ?? 0
-  };
 
   const sortedWidgets = [...state.homeWidgets].sort((a, b) => a.order - b.order);
   const isMobileView = typeof window !== 'undefined'
@@ -572,45 +612,6 @@ export function renderHomeTab() {
       <!-- Widget Grid -->
       <div class="widget-grid grid ${isMobileView ? 'grid-cols-1' : 'grid-cols-2'} gap-4">
         ${visibleWidgets.map(widget => renderHomeWidget(widget, state.editingHomeWidgets)).join('')}
-      </div>
-
-      <!-- Today's Score Summary -->
-      <div class="bg-[var(--bg-card)] rounded-xl p-6 border border-[var(--border-light)]">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-lg font-semibold text-[var(--text-primary)]">Today's Score</h3>
-            <p class="text-4xl font-bold mt-1 text-[var(--accent)]">${scores.total.toFixed(0)} <span class="text-lg font-normal text-[var(--text-muted)]">/ ${state.MAX_SCORES.total}</span></p>
-          </div>
-          <div class="text-right">
-            <div class="text-sm text-[var(--text-muted)]">Progress</div>
-            <div class="text-2xl font-bold text-[var(--text-primary)]">${Math.round((scores.total / state.MAX_SCORES.total) * 100)}%</div>
-          </div>
-        </div>
-        <div class="h-2 bg-[var(--bg-secondary)] rounded-full mt-4 overflow-hidden">
-          <div class="h-full bg-[var(--accent)] rounded-full transition-all duration-500" style="width: ${Math.min((scores.total / state.MAX_SCORES.total) * 100, 100)}%"></div>
-        </div>
-        <div class="score-grid grid grid-cols-5 gap-2 mt-4">
-          <div class="text-center">
-            <div class="text-xs text-[var(--text-muted)]">Prayers</div>
-            <div class="font-semibold text-[var(--text-primary)]">${scores.prayer.toFixed(0)}</div>
-          </div>
-          <div class="text-center">
-            <div class="text-xs text-[var(--text-muted)]">Glucose</div>
-            <div class="font-semibold text-[var(--text-primary)]">${scores.diabetes.toFixed(0)}</div>
-          </div>
-          <div class="text-center">
-            <div class="text-xs text-[var(--text-muted)]">Whoop</div>
-            <div class="font-semibold text-[var(--text-primary)]">${scores.whoop.toFixed(0)}</div>
-          </div>
-          <div class="text-center">
-            <div class="text-xs text-[var(--text-muted)]">Family</div>
-            <div class="font-semibold text-[var(--text-primary)]">${scores.family.toFixed(0)}</div>
-          </div>
-          <div class="text-center">
-            <div class="text-xs text-[var(--text-muted)]">Habits</div>
-            <div class="font-semibold text-[var(--text-primary)]">${scores.habit.toFixed(0)}</div>
-          </div>
-        </div>
       </div>
     </div>
   `;

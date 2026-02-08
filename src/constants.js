@@ -98,9 +98,10 @@ export const DEFAULT_HOME_WIDGETS = [
   { id: 'quick-stats', type: 'stats', title: 'Quick Stats', size: 'full', order: 0, visible: true },
   { id: 'quick-add', type: 'quick-add', title: 'Quick Add Task', size: 'full', order: 1, visible: true },
   { id: 'weather', type: 'weather', title: 'Weather', size: 'half', order: 2, visible: true },
-  { id: 'today-tasks', type: 'today-tasks', title: 'Today', size: 'half', order: 3, visible: true },
-  { id: 'next-tasks', type: 'next-tasks', title: 'Next', size: 'half', order: 4, visible: true },
-  { id: 'daily-entry', type: 'daily-entry', title: 'Daily Entry', size: 'full', order: 5, visible: true }
+  { id: 'todays-score', type: 'score', title: "Today's Score", size: 'half', order: 3, visible: true },
+  { id: 'today-tasks', type: 'today-tasks', title: 'Today', size: 'half', order: 4, visible: true },
+  { id: 'next-tasks', type: 'next-tasks', title: 'Next', size: 'half', order: 5, visible: true },
+  { id: 'daily-entry', type: 'daily-entry', title: 'Daily Entry', size: 'full', order: 6, visible: true }
 ];
 
 // Default categories (Areas)
@@ -157,7 +158,7 @@ export const THINGS3_ICONS = {
   // Tab icons - Things 3 style
   lifeScore: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3v-8zm4-4h2v12H7V9zm4-4h2v16h-2V5zm4 8h2v8h-2v-8zm4-4h2v12h-2V9z"/></svg>`,
   workspace: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 012-2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v16h12V4H6zm2 3h8v2H8V7zm0 4h8v2H8v-2zm0 4h5v2H8v-2z"/></svg>`,
-  settings: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l2 1 2-.6 1.6 1.6-.6 2 1 2 2 1v2l-2 1-1 2 .6 2-1.6 1.6-2-.6-2 1-2-1-2 .6-1.6-1.6.6-2-1-2-2-1v-2l2-1 1-2-.6-2L8 3.9l2 .6 2-1z"/><circle cx="12" cy="12" r="3.1"/></svg>`
+  settings: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.61 3.61 0 0112 15.6z"/></svg>`
 };
 
 /**
