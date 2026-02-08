@@ -74,6 +74,13 @@ export function renderCalendarView() {
   const selectedTasks = getTasksForDate(state.calendarSelectedDate);
   const dueTasks = selectedTasks.filter(t => t.dueDate === state.calendarSelectedDate);
   const deferTasks = selectedTasks.filter(t => t.deferDate === state.calendarSelectedDate && t.dueDate !== state.calendarSelectedDate);
+  const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
+  const nextTasks = nextLabel ? state.tasksData.filter(t => {
+    if (t.completed || t.isNote) return false;
+    if (!(t.labels || []).includes(nextLabel.id)) return false;
+    const isDated = t.dueDate || t.deferDate || t.today;
+    return !isDated;
+  }) : [];
 
   // Format selected date label
   const selDate = new Date(state.calendarSelectedDate + 'T12:00:00');
@@ -150,7 +157,7 @@ export function renderCalendarView() {
         </div>
 
         <!-- Calendar Grid -->
-        <div class="p-4">
+        <div class="p-2">
           ${calendarHtml}
         </div>
 
@@ -184,6 +191,12 @@ export function renderCalendarView() {
                   <div class="text-[11px] font-semibold text-[#42A5F5] uppercase tracking-wider mb-1">Starting</div>
                 </div>
                 ${deferTasks.map(task => renderTaskItem(task)).join('')}
+              ` : ''}
+              ${nextTasks.length > 0 ? `
+                <div class="px-5 py-1 ${dueTasks.length > 0 || deferTasks.length > 0 ? 'mt-3' : ''}">
+                  <div class="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1">Next</div>
+                </div>
+                ${nextTasks.map(task => renderTaskItem(task)).join('')}
               ` : ''}
             `}
           </div>
