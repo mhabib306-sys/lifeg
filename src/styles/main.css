@@ -215,6 +215,7 @@ input[type="checkbox"]:focus {
   background: var(--bg-secondary);
   color: var(--text-secondary);
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .task-chip-icon {
@@ -684,6 +685,7 @@ input[type="checkbox"]:focus {
 .task-list {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 /* Prayer input specific styling */
@@ -917,10 +919,15 @@ input[type="checkbox"]:focus {
   .task-meta {
     margin-top: 6px !important;
     font-size: 12px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+    gap: 6px !important;
   }
 
   .task-chip {
-    padding: 3px 8px !important;
+    padding: 3px 7px !important;
   }
 
   /* Checkbox - force perfect circle */
