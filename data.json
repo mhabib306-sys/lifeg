@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T23:02:38.233Z",
+  "lastUpdated": "2026-02-08T23:02:52.059Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2354,28 +2354,6 @@
       "createdAt": "2026-02-08T00:16:29.575Z",
       "updatedAt": "2026-02-08T00:16:29.575Z",
       "order": 12000
-    },
-    {
-      "id": "task_1770509824799_akuyht7yj",
-      "title": "Quick win tag task",
-      "notes": "",
-      "status": "inbox",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [
-        "quick"
-      ],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "createdAt": "2026-02-08T00:17:04.799Z",
-      "updatedAt": "2026-02-08T08:59:29.534Z",
-      "order": 2000
     },
     {
       "id": "task_1770510427575_jqc4ymb63",
