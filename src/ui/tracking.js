@@ -10,6 +10,7 @@ import { defaultDayData, THINGS3_ICONS } from '../constants.js';
 import { calculateScores } from '../features/scoring.js';
 import { getTodayData } from '../data/storage.js';
 import { getAccentColor } from '../data/github-sync.js';
+import { isWhoopConnected, getWhoopLastSync } from '../data/whoop-sync.js';
 import {
   createPrayerInput,
   createToggle,
@@ -72,7 +73,11 @@ export function renderTrackingTab() {
     </div>
   `;
 
-  const whoopHelp = `<span class="text-xs text-charcoal/50">Hover ⓘ for tips</span>`;
+  const whoopSynced = isWhoopConnected() && getWhoopLastSync();
+  const whoopHelp = whoopSynced
+    ? `<span class="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Auto-synced</span>`
+    : `<span class="text-xs text-charcoal/50">Hover ⓘ for tips</span>`;
   const whoopContent = `
     <div class="grid grid-cols-3 gap-3">
       ${createNumberInput('Sleep Perf', data.whoop.sleepPerf, 'whoop', 'sleepPerf', '≥90', '%', '≥90%', '<b>How to improve:</b><br>• Consistent bedtime/wake time<br>• Cool room (65-68°F)<br>• No screens 1h before bed', 'left')}

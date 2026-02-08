@@ -8,6 +8,9 @@ import { state } from '../state.js';
 import { THEMES } from '../constants.js';
 import { getGithubToken, setGithubToken, getTheme, setTheme } from '../data/github-sync.js';
 import { updateWeight, resetWeights, updateMaxScore, resetMaxScores } from '../features/scoring.js';
+import {
+  isWhoopConnected, getWhoopWorkerUrl, getWhoopApiKey, getWhoopLastSync
+} from '../data/whoop-sync.js';
 
 // ============================================================================
 // createWeightInput — Single weight/max-score input row
@@ -27,6 +30,68 @@ export function createWeightInput(label, value, category, field = null) {
       <input type="number" step="1" value="${value}"
         class="w-20 px-2 py-1 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:ring-1 focus:ring-[var(--accent-light)] focus:border-[var(--accent)] outline-none"
         onchange="window.updateWeight('${category}', ${field ? `'${field}'` : 'null'}, this.value)">
+    </div>
+  `;
+}
+
+// ============================================================================
+// renderWhoopSettingsCard — WHOOP Integration settings
+// ============================================================================
+function renderWhoopSettingsCard() {
+  const connected = isWhoopConnected();
+  const workerUrl = getWhoopWorkerUrl();
+  const apiKey = getWhoopApiKey();
+  const lastSync = getWhoopLastSync();
+  const hasConfig = workerUrl && apiKey;
+
+  const lastSyncText = lastSync
+    ? new Date(lastSync).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+    : 'Never';
+
+  return `
+    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
+      <h3 class="font-semibold text-charcoal mb-4">WHOOP Integration <span class="text-coral">→</span></h3>
+      <p class="text-sm text-charcoal/50 mb-4">Auto-sync sleep performance, recovery, and strain from your WHOOP account.</p>
+
+      <div class="space-y-3 mb-4">
+        <div>
+          <label class="text-sm text-charcoal/70 block mb-1">Worker URL</label>
+          <input type="url" value="${workerUrl}" placeholder="https://whoop-proxy.xxx.workers.dev"
+            class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none"
+            onchange="window.setWhoopWorkerUrl(this.value)">
+        </div>
+        <div>
+          <label class="text-sm text-charcoal/70 block mb-1">API Key</label>
+          <input type="password" value="${apiKey}" placeholder="Shared secret from worker setup"
+            class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none"
+            onchange="window.setWhoopApiKey(this.value)">
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
+        ${connected ? `
+          <button onclick="window.syncWhoopNow()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
+            Sync Now
+          </button>
+          <button onclick="window.disconnectWhoop(); window.render()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition">
+            Disconnect
+          </button>
+          <span class="flex items-center text-xs text-charcoal/50">
+            <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+            Connected · Last sync: ${lastSyncText}
+          </span>
+        ` : `
+          <button onclick="window.connectWhoop()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
+            Connect WHOOP
+          </button>
+          <button onclick="window.checkWhoopStatus()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
+            Check Status
+          </button>
+          <span class="flex items-center text-xs text-charcoal/50">
+            <span class="w-2 h-2 rounded-full bg-charcoal/30 mr-2"></span> Not connected
+          </span>
+        `}
+      </div>
     </div>
   `;
 }
@@ -229,6 +294,8 @@ export function renderSettingsTab() {
           </span>
         </div>
       </div>
+
+      ${renderWhoopSettingsCard()}
 
       <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
         <h3 class="font-semibold text-charcoal mb-4">Data Management <span class="text-coral">→</span></h3>

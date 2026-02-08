@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents (Claude Code, Codex, etc.) when 
 
 ## Project Overview
 
-**Nucleus** (v4.2.18 - Cog) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
+**Nucleus** (v4.3.0 - Cog) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
 
 ## Git Workflow
 
@@ -61,6 +61,7 @@ lifeg/
 │   ├── data/
 │   │   ├── storage.js          (localStorage helpers, saveTasksData, saveData)
 │   │   ├── github-sync.js      (saveToGithub, loadCloudData, theme management)
+│   │   ├── whoop-sync.js       (WHOOP API auto-sync via Cloudflare Worker proxy)
 │   │   └── export-import.js    (exportData, importData)
 │   ├── features/
 │   │   ├── weather.js          (Open-Meteo API, caching, geolocation)
@@ -133,7 +134,7 @@ CSS custom properties in `src/styles/themes.css` — `:root` (simplebits) and `[
 
 ## localStorage Keys
 
-All prefixed with `lifeGamification`: `Data_v3`, `Weights_v1`, `Tasks`, `TaskCategories`, `TaskLabels`, `TaskPeople`, `Perspectives`, `HomeWidgets`, `Theme`, `GithubToken`, `ViewState`. Also `nucleusWeatherCache`, `nucleusWeatherLocation`, `collapsedNotes`.
+All prefixed with `lifeGamification`: `Data_v3`, `Weights_v1`, `Tasks`, `TaskCategories`, `TaskLabels`, `TaskPeople`, `Perspectives`, `HomeWidgets`, `Theme`, `GithubToken`, `ViewState`. Also `nucleusWeatherCache`, `nucleusWeatherLocation`, `collapsedNotes`, `nucleusWhoopWorkerUrl`, `nucleusWhoopApiKey`, `nucleusWhoopLastSync`, `nucleusWhoopConnected`.
 
 ## Important Patterns
 

@@ -18,6 +18,7 @@ import './bridge.js';
 import { state } from './state.js';
 import { initializeTaskOrders } from './features/task-filter.js';
 import { initWeather } from './features/weather.js';
+import { initWhoopSync } from './data/whoop-sync.js';
 import { applyStoredTheme, loadCloudData, debouncedSaveToGithub } from './data/github-sync.js';
 import { render } from './ui/render.js';
 import { migrateTodayFlag } from './features/tasks.js';
@@ -53,6 +54,9 @@ function initApp() {
 
   // Initialize weather
   initWeather();
+
+  // Initialize WHOOP sync
+  initWhoopSync();
 
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {

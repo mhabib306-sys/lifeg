@@ -31,6 +31,12 @@ import {
 
 import { exportData, importData } from './data/export-import.js';
 
+import {
+  getWhoopWorkerUrl, setWhoopWorkerUrl, getWhoopApiKey, setWhoopApiKey,
+  getWhoopLastSync, isWhoopConnected, fetchWhoopData, syncWhoopNow,
+  checkAndSyncWhoop, connectWhoop, disconnectWhoop, checkWhoopStatus, initWhoopSync
+} from './data/whoop-sync.js';
+
 // -- Features --
 import { fetchWeather, detectUserLocation, initWeather, loadWeatherLocation, saveWeatherLocation } from './features/weather.js';
 
@@ -153,6 +159,11 @@ Object.assign(window, {
 
   // Weather
   fetchWeather, detectUserLocation, initWeather, loadWeatherLocation, saveWeatherLocation,
+
+  // WHOOP Sync
+  getWhoopWorkerUrl, setWhoopWorkerUrl, getWhoopApiKey, setWhoopApiKey,
+  getWhoopLastSync, isWhoopConnected, fetchWhoopData, syncWhoopNow,
+  checkAndSyncWhoop, connectWhoop, disconnectWhoop, checkWhoopStatus, initWhoopSync,
 
   // Scoring
   parsePrayer, calcPrayerScore, invalidateScoresCache,
