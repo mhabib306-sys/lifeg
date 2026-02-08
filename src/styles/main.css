@@ -39,8 +39,9 @@ body {
   transform: translateY(0);
   box-shadow: none;
 }
-.sb-link { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.sb-link { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 .sb-link:hover { color: var(--accent-dark); }
+a, a:hover { cursor: pointer; }
 .sb-section-title {
   font-weight: 700;
   letter-spacing: 0.05em;
