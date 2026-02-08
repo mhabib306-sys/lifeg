@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T22:42:52.078Z",
+  "lastUpdated": "2026-02-08T22:42:57.195Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2922,9 +2922,9 @@
       "visible": true
     },
     {
-      "id": "weather",
-      "type": "weather",
-      "title": "Weather",
+      "id": "quick-stats",
+      "type": "stats",
+      "title": "Quick Stats",
       "size": "half",
       "order": 2,
       "visible": true
@@ -2938,9 +2938,9 @@
       "visible": true
     },
     {
-      "id": "quick-stats",
-      "type": "stats",
-      "title": "Quick Stats",
+      "id": "weather",
+      "type": "weather",
+      "title": "Weather",
       "size": "half",
       "order": 4,
       "visible": true
