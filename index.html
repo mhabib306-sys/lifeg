@@ -1930,7 +1930,7 @@
      *    - Home, Tasks, Track, Bulk, Dashboard tabs
      *
      * @author Muhammad Habib
-     * @version 3.3.0
+     * @version 3.3.1
      * @license MIT
      */
 
@@ -1942,7 +1942,7 @@
     // MAJOR: New major features (Home view, Next perspective, etc.)
     // MINOR: Enhancements and improvements
     // PATCH: Bug fixes and small tweaks
-    const APP_VERSION = '3.3.0 cli';
+    const APP_VERSION = '3.3.1 cli';
 
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -4775,7 +4775,8 @@
           if (task.deferDate && task.deferDate > today) return false;
           const isDueToday = task.dueDate === today;
           const isOverdue = task.dueDate && task.dueDate < today;
-          const isTodayTask = task.status === 'today' || isDueToday || isOverdue;
+          const isScheduledForToday = task.deferDate && task.deferDate <= today;
+          const isTodayTask = task.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
 
           // Include tasks tagged with "next" label
           const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
