@@ -188,6 +188,10 @@ input[type="checkbox"]:focus {
   border-left: none;
   border-radius: 8px;
   margin: 0 4px;
+  border-bottom: 1px solid var(--border-light);
+}
+.task-item:last-child {
+  border-bottom: none;
 }
 .task-item:hover {
   background: var(--accent-hover);
@@ -207,7 +211,7 @@ input[type="checkbox"]:focus {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: 6px;
+  margin-top: 4px;
   color: var(--text-secondary);
   font-size: 12px;
 }
@@ -1329,7 +1333,7 @@ input[type="checkbox"]:focus {
 
   /* Task row padding for mobile */
   .task-item > div {
-    padding: 12px 16px !important;
+    padding: 8px 12px !important;
   }
 }
 
