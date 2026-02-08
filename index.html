@@ -1930,7 +1930,7 @@
      *    - Home, Tasks, Track, Bulk, Dashboard tabs
      *
      * @author Muhammad Habib
-     * @version 3.4.1
+     * @version 3.4.2
      * @license MIT
      */
 
@@ -1942,7 +1942,7 @@
     // MAJOR: New major features (Home view, Next perspective, etc.)
     // MINOR: Enhancements and improvements
     // PATCH: Bug fixes and small tweaks
-    const APP_VERSION = '3.4.1';
+    const APP_VERSION = '3.4.2';
 
     const STORAGE_KEY = 'lifeGamificationData_v3';
     const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -2740,8 +2740,8 @@
 
     // Things 3 exact SVG icons (filled style matching the app)
     const THINGS3_ICONS = {
-      // Home - outlined house icon for homepage
-      home: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>`,
+      // Home - outlined house with door (CCW inner for nonzero cutout)
+      home: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L2 12h3v8h14v-8h3L12 3zM12 6.5L17 11v7h-3v-5h-4v5H7v-7l5-4.5z"/></svg>`,
       // Inbox - Things 3 style: document tray with curved bottom
       inbox: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm0 10v4h16v-4h-4a4 4 0 01-8 0H4z"/></svg>`,
       // Today - Things 3 style: filled 5-point star
@@ -2767,7 +2767,7 @@
       // Tab icons - Things 3 style
       lifeScore: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3v-8zm4-4h2v12H7V9zm4-4h2v16h-2V5zm4 8h2v8h-2v-8zm4-4h2v12h-2V9z"/></svg>`,
       workspace: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 012-2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v16h12V4H6zm2 3h8v2H8V7zm0 4h8v2H8v-2zm0 4h5v2H8v-2z"/></svg>`,
-      settings: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65a.5.5 0 00.12-.64l-2-3.46a.5.5 0 00-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.5.5 0 0014 2h-4a.5.5 0 00-.49.42l-.38 2.65c-.61.25-1.17.58-1.69.98l-2.49-1a.5.5 0 00-.61.22l-2 3.46a.5.5 0 00.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65a.5.5 0 00-.12.64l2 3.46a.5.5 0 00.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65a.5.5 0 00.49.42h4a.5.5 0 00.49-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.49 1a.5.5 0 00.61-.22l2-3.46a.5.5 0 00-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5zm0-5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/></svg>`
+      settings: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65a.5.5 0 00.12-.64l-2-3.46a.5.5 0 00-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.5.5 0 0014 2h-4a.5.5 0 00-.49.42l-.38 2.65c-.61.25-1.17.58-1.69.98l-2.49-1a.5.5 0 00-.61.22l-2 3.46a.5.5 0 00.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65a.5.5 0 00-.12.64l2 3.46a.5.5 0 00.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65a.5.5 0 00.49.42h4a.5.5 0 00.49-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.49 1a.5.5 0 00.61-.22l2-3.46a.5.5 0 00-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>`
     };
 
     /**
@@ -3346,10 +3346,10 @@
                     <span class="text-[10px] text-red-400">${dueTasks.length}</span>
                   </div>
                 </div>
-                <div class="space-y-0.5">${dueTasks.slice(0, 4).map(task => renderTaskItem(task, false, true)).join('')}</div>
+                <div class="space-y-0.5">${dueTasks.map(task => renderTaskItem(task, false, true)).join('')}</div>
               ` : ''}
               ${otherTodayTasks.length > 0 ? `
-                <div class="space-y-0.5">${otherTodayTasks.slice(0, dueTasks.length > 0 ? 3 : 6).map(task => renderTaskItem(task, false, true)).join('')}</div>
+                <div class="space-y-0.5">${otherTodayTasks.map(task => renderTaskItem(task, false, true)).join('')}</div>
               ` : ''}
               ${startingTasks.length > 0 ? `
                 <div class="px-3 pt-2 pb-1 ${dueTasks.length > 0 || otherTodayTasks.length > 0 ? 'mt-1 border-t border-[var(--border-light)]' : ''}">
@@ -3359,7 +3359,7 @@
                     <span class="text-[10px] text-blue-400">${startingTasks.length}</span>
                   </div>
                 </div>
-                <div class="space-y-0.5">${startingTasks.slice(0, 3).map(task => renderTaskItem(task, false, true)).join('')}</div>
+                <div class="space-y-0.5">${startingTasks.map(task => renderTaskItem(task, false, true)).join('')}</div>
               ` : ''}
               ${totalCount > 8 ? '<div class="px-3 py-3 text-center"><button onclick="showPerspectiveTasks(\'today\')" class="text-sm text-[var(--accent)] hover:underline font-medium">View all ' + totalCount + ' tasks →</button></div>' : ''}
             </div>
