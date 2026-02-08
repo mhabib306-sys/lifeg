@@ -202,30 +202,25 @@ input[type="checkbox"]:focus {
   word-break: break-word;
 }
 
-.task-meta {
-  row-gap: 6px;
+.task-meta-inline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
 }
 
-.task-chip {
+.task-meta-item {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  font-weight: 500;
-  white-space: nowrap;
+  color: inherit;
 }
 
-.task-chip-icon {
-  padding: 2px 6px;
-}
-
-.task-chip-category {
-  background: transparent;
-  padding-left: 0;
-  padding-right: 6px;
+.task-meta-sep {
+  color: var(--text-muted);
 }
 
 
@@ -916,18 +911,10 @@ input[type="checkbox"]:focus {
     line-height: 1.35 !important;
   }
 
-  .task-meta {
+  .task-meta-inline {
     margin-top: 6px !important;
     font-size: 12px !important;
-    flex-wrap: nowrap !important;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 2px;
-    gap: 6px !important;
-  }
-
-  .task-chip {
-    padding: 3px 7px !important;
+    line-height: 1.2 !important;
   }
 
   /* Checkbox - force perfect circle */
