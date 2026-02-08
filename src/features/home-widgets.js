@@ -39,6 +39,10 @@ export function ensureHomeWidgets() {
   merged.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   merged.forEach((w, i) => { w.order = i; });
 
+  // Ensure critical widgets stay visible
+  const todayWidget = merged.find(w => w.id === 'today-tasks');
+  if (todayWidget) todayWidget.visible = true;
+
   state.homeWidgets = merged;
   saveHomeWidgets();
 }
