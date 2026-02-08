@@ -434,6 +434,8 @@ input[type="checkbox"]:focus {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
+  width: 100%;
+  align-items: start;
 }
 /* Widget sizes */
 .widget.col-span-2 { grid-column: span 2; }
@@ -1048,7 +1050,16 @@ input[type="checkbox"]:focus {
   .widget-grid {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
-    padding: 0 16px !important;
+    padding: 0 !important;
+  }
+
+  /* Force one widget per row on mobile, regardless of desktop span classes */
+  .widget-grid > .widget,
+  .widget.col-span-1,
+  .widget.col-span-2 {
+    grid-column: 1 / -1 !important;
+    width: 100%;
+    min-width: 0;
   }
 
   .widget-header {
@@ -1142,6 +1153,23 @@ input[type="checkbox"]:focus {
   /* Action buttons visible on mobile (no hover) */
   .task-item .absolute.right-3 {
     opacity: 1 !important;
+  }
+}
+
+/* Force mobile widget layout for touch devices even in landscape widths */
+@media (hover: none) and (pointer: coarse) {
+  .widget-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 0 !important;
+  }
+
+  .widget-grid > .widget,
+  .widget.col-span-1,
+  .widget.col-span-2 {
+    grid-column: 1 / -1 !important;
+    width: 100%;
+    min-width: 0;
   }
 }
 

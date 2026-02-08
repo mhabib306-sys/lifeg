@@ -82,7 +82,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
   if (compact) {
     return `
       <div class="task-item group relative hover:bg-[var(--bg-secondary)]/50 rounded-lg transition cursor-pointer"
-        onclick="window.showPerspectiveTasks('${task.status || 'anytime'}')">
+        onclick="window.inlineEditingTaskId=null; window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render()">
         <div class="flex items-center min-h-[40px] px-3 py-1.5">
           ${task.isNote ? `
             <div class="w-5 h-5 flex items-center justify-center flex-shrink-0">
@@ -780,7 +780,7 @@ export function renderTasksTab() {
               <div class="${extraClass}">
                 <div class="px-5 py-2 sticky top-0 bg-[var(--bg-card)]">
                   <div class="flex items-center gap-2">
-                    <span class="text-${color}">${icon}</span>
+                    <span style="color: ${color}">${icon}</span>
                     <span class="text-[13px] font-semibold text-charcoal/50 uppercase tracking-wider">${label}</span>
                     <span class="text-xs text-charcoal/30">${tasks.length}</span>
                   </div>
@@ -793,7 +793,7 @@ export function renderTasksTab() {
             <div class="task-list">
               ${renderSection(dueTasks,
                 '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.7 12.4a6.06 6.06 0 00-.86-3.16l4.56-3.56L20.16 2l-4.13 4.15A7.94 7.94 0 0012 5a8 8 0 00-8 8c0 4.42 3.58 8 8 8a7.98 7.98 0 007.43-5.1l4.15 1.83.57-3.66-6.45 1.33zM12 19a6 6 0 116-6 6 6 0 01-6 6z"/><path d="M12.5 8H11v6l4.75 2.85.75-1.23-4-2.37z"/></svg>',
-                'Due', 'red-500')}
+                'Due', '#EF4444')}
               ${todayStatusTasks.length > 0 ? `
                 <div class="${dueTasks.length > 0 ? 'mt-2' : ''}">
                   ${todayStatusTasks.map(task => renderTaskItem(task)).join('')}
@@ -801,8 +801,8 @@ export function renderTasksTab() {
               ` : ''}
               ${renderSection(startingTasks,
                 '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>',
-                'Starting', 'blue-500', dueTasks.length > 0 || todayStatusTasks.length > 0 ? 'mt-2' : '')}
-              ${renderSection(nextTasks, THINGS3_ICONS.next, 'Next', '[#8B5CF6]',
+                'Starting', '#3B82F6', dueTasks.length > 0 || todayStatusTasks.length > 0 ? 'mt-2' : '')}
+              ${renderSection(nextTasks, THINGS3_ICONS.next, 'Next', '#8B5CF6',
                 allDated.length > 0 ? 'mt-4' : '')}
               ${totalTasks === 0 ? `
                 <div class="empty-state flex flex-col items-center justify-center py-20 text-charcoal/30">

@@ -49,9 +49,14 @@ function render() {
 export function renderHomeWidget(widget, isEditing) {
   const today = getLocalDateString();
   const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
+  const isMobileView = typeof window !== 'undefined'
+    && typeof window.matchMedia === 'function'
+    && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
 
   // Size class mapping
-  const sizeClass = widget.size === 'full' ? 'col-span-2' : widget.size === 'half' ? 'col-span-1' : 'col-span-1';
+  const sizeClass = isMobileView
+    ? 'col-span-2'
+    : (widget.size === 'full' ? 'col-span-2' : widget.size === 'half' ? 'col-span-1' : 'col-span-1');
 
   // Size labels for display
   const sizeLabels = { full: 'Full', half: 'Half', third: 'Third' };
@@ -227,7 +232,7 @@ export function renderHomeWidget(widget, isEditing) {
               <span class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">\uD83D\uDD4C Prayers</span>
               <span class="text-xs text-[var(--text-muted)] font-medium">${prayersDone}/5</span>
             </div>
-            <div class="grid grid-cols-6 gap-2">
+            <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
               ${['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((p, i) => {
                 const labels = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
                 const shortLabels = ['F', 'D', 'A', 'M', 'I'];
@@ -252,7 +257,7 @@ export function renderHomeWidget(widget, isEditing) {
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">\uD83D\uDC89 Glucose</span>
             </div>
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div class="text-center">
                 <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Avg</label>
                 <input type="number" value="${glucoseData.avg || ''}" placeholder="--"
@@ -279,7 +284,7 @@ export function renderHomeWidget(widget, isEditing) {
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">\u23F1\uFE0F Whoop</span>
             </div>
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div class="text-center">
                 <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Sleep %</label>
                 <input type="number" value="${whoopData.sleepPerf || ''}" placeholder="--"
@@ -307,7 +312,7 @@ export function renderHomeWidget(widget, isEditing) {
               <span class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">\u2728 Habits</span>
               <span class="text-xs text-[var(--text-muted)] font-medium">${habitsDone}/5</span>
             </div>
-            <div class="grid grid-cols-5 gap-2">
+            <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
               ${[
                 { field: 'exercise', icon: '\uD83C\uDFCB\uFE0F', label: 'Exercise' },
                 { field: 'reading', icon: '\uD83D\uDCDA', label: 'Read' },
@@ -433,9 +438,15 @@ export function renderHomeTab() {
     prayerLate: rawScores?.prayerLate ?? 0
   };
 
-  // Get visible widgets sorted by order
-  const visibleWidgets = state.homeWidgets.filter(w => w.visible).sort((a, b) => a.order - b.order);
-  const hiddenWidgets = state.homeWidgets.filter(w => !w.visible);
+  const sortedWidgets = [...state.homeWidgets].sort((a, b) => a.order - b.order);
+  const isMobileView = typeof window !== 'undefined'
+    && typeof window.matchMedia === 'function'
+    && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
+
+  // On mobile, always render all widgets in the configured order so critical cards
+  // (like Today) and any hidden cards remain accessible.
+  const visibleWidgets = isMobileView ? sortedWidgets : sortedWidgets.filter(w => w.visible);
+  const hiddenWidgets = isMobileView ? [] : sortedWidgets.filter(w => !w.visible);
 
   return `
     <div class="space-y-6">
@@ -490,7 +501,7 @@ export function renderHomeTab() {
       ` : ''}
 
       <!-- Widget Grid -->
-      <div class="widget-grid grid grid-cols-2 gap-4">
+      <div class="widget-grid grid ${isMobileView ? 'grid-cols-1' : 'grid-cols-2'} gap-4">
         ${visibleWidgets.map(widget => renderHomeWidget(widget, state.editingHomeWidgets)).join('')}
       </div>
 
@@ -509,7 +520,7 @@ export function renderHomeTab() {
         <div class="h-2 bg-[var(--bg-secondary)] rounded-full mt-4 overflow-hidden">
           <div class="h-full bg-[var(--accent)] rounded-full transition-all duration-500" style="width: ${Math.min((scores.total / state.MAX_SCORES.total) * 100, 100)}%"></div>
         </div>
-        <div class="grid grid-cols-5 gap-2 mt-4">
+        <div class="score-grid grid grid-cols-5 gap-2 mt-4">
           <div class="text-center">
             <div class="text-xs text-[var(--text-muted)]">Prayers</div>
             <div class="font-semibold text-[var(--text-primary)]">${scores.prayer.toFixed(0)}</div>
