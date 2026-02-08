@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T10:57:36.303Z",
+  "lastUpdated": "2026-02-08T11:05:41.876Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2758,6 +2758,48 @@
         ]
       },
       "builtin": false
+    }
+  ],
+  "homeWidgets": [
+    {
+      "id": "quick-add",
+      "type": "quick-add",
+      "title": "Quick Add Task",
+      "size": "full",
+      "order": 0,
+      "visible": true
+    },
+    {
+      "id": "quick-stats",
+      "type": "stats",
+      "title": "Quick Stats",
+      "size": "half",
+      "order": 1,
+      "visible": true
+    },
+    {
+      "id": "next-tasks",
+      "type": "next-tasks",
+      "title": "Next",
+      "size": "half",
+      "order": 2,
+      "visible": true
+    },
+    {
+      "id": "today-tasks",
+      "type": "today-tasks",
+      "title": "Today",
+      "size": "half",
+      "order": 3,
+      "visible": true
+    },
+    {
+      "id": "daily-entry",
+      "type": "daily-entry",
+      "title": "Daily Entry",
+      "size": "half",
+      "order": 4,
+      "visible": true
     }
   ]
 }
