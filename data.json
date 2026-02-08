@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T23:03:19.636Z",
+  "lastUpdated": "2026-02-08T23:03:25.485Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2720,12 +2720,12 @@
       "id": "task_1770589239003_3jgcwm2z9",
       "title": "Set up a way to have more fruits at home",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "today": false,
       "flagged": false,
       "completed": false,
       "completedAt": null,
-      "categoryId": null,
+      "categoryId": "cat_1769983795940",
       "labels": [],
       "people": [],
       "deferDate": null,
@@ -2736,7 +2736,7 @@
       "indent": 0,
       "order": 14000,
       "createdAt": "2026-02-08T22:20:39.003Z",
-      "updatedAt": "2026-02-08T22:20:39.003Z"
+      "updatedAt": "2026-02-08T23:03:23.038Z"
     },
     {
       "id": "task_1770591608748_yr9unqfio",
