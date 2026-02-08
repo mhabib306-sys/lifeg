@@ -130,6 +130,7 @@ export async function syncWhoopNow() {
 
   localStorage.setItem(LS_LAST_SYNC, String(Date.now()));
 
+  window.invalidateScoresCache();
   window.saveData();
   window.debouncedSaveToGithub();
   window.render();
