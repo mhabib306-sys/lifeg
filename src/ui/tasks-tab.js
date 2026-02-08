@@ -107,7 +107,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
   }
 
   return `
-    <div class="task-item group relative"
+    <div class="task-item group relative ${hasMetadata && metaParts.length ? 'has-meta' : 'no-meta'}"
       draggable="${isInlineEditing || isTouch ? 'false' : 'true'}"
       ${isInlineEditing || isTouch ? '' : `ondragstart="window.handleDragStart(event, '${task.id}')"
       ondragend="window.handleDragEnd(event)"
@@ -115,7 +115,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
       ondragleave="window.handleDragLeave(event)"
       ondrop="window.handleDrop(event, '${task.id}')"`}
       onclick="if(window.matchMedia('(hover: none)').matches && !event.target.closest('.task-checkbox')) { window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render(); }">
-      <div class="flex items-start gap-3 px-4 py-2.5" style="${indentLevel > 0 ? `padding-left: ${16 + indentPx}px` : ''}">
+      <div class="task-row flex items-start gap-3 px-4 py-2.5" style="${indentLevel > 0 ? `padding-left: ${16 + indentPx}px` : ''}">
         ${task.isNote ? `
           <div class="mt-2 w-1.5 h-1.5 rounded-full ${indentLevel > 0 ? 'bg-[var(--notes-accent)]/50' : 'bg-[var(--notes-accent)]'} flex-shrink-0"></div>
         ` : `

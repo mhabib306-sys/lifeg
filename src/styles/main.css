@@ -200,6 +200,14 @@ input[type="checkbox"]:focus {
   background: var(--accent-light);
 }
 
+.task-item.no-meta .task-row {
+  align-items: center;
+}
+
+.task-item.has-meta .task-row {
+  align-items: flex-start;
+}
+
 .task-title {
   display: block;
   white-space: normal;
