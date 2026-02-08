@@ -289,8 +289,8 @@ export function toggleInlineTagInput() {
             class="modal-inline-input flex-1 px-2 py-1.5 text-sm border border-softborder rounded focus:border-coral focus:outline-none"
             onkeydown="if(event.key==='Enter'){event.preventDefault();addInlineTag();}">
           <input type="color" id="inline-tag-color" value="#6B7280" class="w-8 h-8 rounded cursor-pointer border-0">
-          <button onclick="addInlineTag()" class="px-3 py-1.5 text-sm bg-coral text-white rounded hover:bg-coralDark">Add</button>
-          <button onclick="toggleInlineTagInput()" class="px-2 py-1.5 text-sm text-charcoal/50 hover:text-charcoal">&times;</button>
+          <button type="button" onclick="addInlineTag()" class="px-3 py-1.5 text-sm bg-coral text-white rounded hover:bg-coralDark">Add</button>
+          <button type="button" onclick="toggleInlineTagInput()" class="px-2 py-1.5 text-sm text-charcoal/50 hover:text-charcoal">&times;</button>
         </div>
       `;
       setTimeout(() => document.getElementById('inline-tag-name')?.focus(), 50);
@@ -350,8 +350,8 @@ export function toggleInlinePersonInput() {
           <input type="text" id="inline-person-name" placeholder="Person name"
             class="modal-inline-input flex-1 px-2 py-1.5 text-sm border border-softborder rounded focus:border-coral focus:outline-none"
             onkeydown="if(event.key==='Enter'){event.preventDefault();addInlinePerson();}">
-          <button onclick="addInlinePerson()" class="px-3 py-1.5 text-sm bg-coral text-white rounded hover:bg-coralDark">Add</button>
-          <button onclick="toggleInlinePersonInput()" class="px-2 py-1.5 text-sm text-charcoal/50 hover:text-charcoal">&times;</button>
+          <button type="button" onclick="addInlinePerson()" class="px-3 py-1.5 text-sm bg-coral text-white rounded hover:bg-coralDark">Add</button>
+          <button type="button" onclick="toggleInlinePersonInput()" class="px-2 py-1.5 text-sm text-charcoal/50 hover:text-charcoal">&times;</button>
         </div>
       `;
       setTimeout(() => document.getElementById('inline-person-name')?.focus(), 50);
@@ -763,7 +763,7 @@ export function renderAreaInput() {
   const area = state.taskCategories.find(c => c.id === state.modalSelectedArea);
 
   container.innerHTML = `
-    <div id="area-display" class="mb-2" onclick="document.getElementById('area-search').focus()">
+    <div id="area-display" class="modal-token-shell mb-2 area-display-shell" onclick="document.getElementById('area-search').focus()">
       ${area
         ? `<span class="tag-pill" style="background: ${area.color}20; color: ${area.color}">
              ${area.icon || '\uD83D\uDCC1'} ${escapeHtml(area.name)}
@@ -774,7 +774,7 @@ export function renderAreaInput() {
         : '<span class="text-[var(--text-muted)] text-sm">No area selected</span>'}
     </div>
     <div class="autocomplete-container">
-      <input type="text" id="area-search" class="autocomplete-input" placeholder="Search areas...">
+      <input type="text" id="area-search" class="autocomplete-input modal-input-enhanced" placeholder="Search areas...">
       <svg class="autocomplete-icon w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
       <div id="area-dropdown" class="autocomplete-dropdown"></div>
     </div>

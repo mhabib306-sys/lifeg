@@ -719,7 +719,8 @@ input[type="checkbox"]:focus {
 .mobile-bottom-nav-inner {
   display: flex;
   justify-content: space-around;
-  max-width: 500px;
+  max-width: none;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -786,6 +787,7 @@ input[type="checkbox"]:focus {
     align-items: center;
     gap: 2px;
     min-width: 0;
+    max-width: calc(100% - 96px);
   }
 
   .mobile-version {
@@ -798,6 +800,7 @@ input[type="checkbox"]:focus {
     font-size: 19px !important;
     font-weight: 700 !important;
     letter-spacing: -0.01em;
+    line-height: 1.15;
   }
 
   .mobile-header-action {
@@ -825,7 +828,7 @@ input[type="checkbox"]:focus {
 
   /* Main content padding for bottom nav */
   main, .main-content {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+    padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
   }
 
   /* Sidebar becomes full-screen overlay on mobile */
@@ -926,20 +929,21 @@ input[type="checkbox"]:focus {
   }
 
   .life-sub-nav .flex {
+    min-width: 100%;
     width: max-content;
   }
 
   /* Task items - larger touch targets */
   .task-item {
     padding: 4px 8px;
-    min-height: 36px;
+    min-height: 44px;
     margin: 0 !important;
     border-radius: 0 !important;
   }
 
   .task-title {
     font-size: 14px !important;
-    line-height: 1.2 !important;
+    line-height: 1.35 !important;
     white-space: normal !important;
     overflow: visible !important;
     text-overflow: unset !important;
@@ -947,7 +951,7 @@ input[type="checkbox"]:focus {
 
   .task-meta-inline {
     margin-top: 2px !important;
-    font-size: 10px !important;
+    font-size: 11px !important;
     line-height: 1.05 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
@@ -995,7 +999,7 @@ input[type="checkbox"]:focus {
 
   .modal-content, .modal-enhanced {
     margin: 0 !important;
-    max-height: 90vh !important;
+    max-height: calc(100vh - env(safe-area-inset-top) - 8px) !important;
     width: 100% !important;
     max-width: 100% !important;
     border-radius: 20px 20px 0 0 !important;
@@ -1091,6 +1095,7 @@ input[type="checkbox"]:focus {
 
   .widget-body {
     padding: 14px !important;
+    overflow-wrap: anywhere;
   }
 
   .widget-title {
@@ -1126,6 +1131,9 @@ input[type="checkbox"]:focus {
     flex-wrap: wrap;
     gap: 10px !important;
     align-items: flex-start !important;
+  }
+  .area-stats-row > * {
+    flex-shrink: 0;
   }
 
   .area-stats-bar {
@@ -1190,7 +1198,7 @@ input[type="checkbox"]:focus {
 
   /* Action buttons visible on mobile (no hover) */
   .task-item .absolute.right-3 {
-    opacity: 1 !important;
+    opacity: 0 !important;
   }
 }
 
@@ -1410,7 +1418,7 @@ input[type="checkbox"]:focus {
   }
 
   /* Task title text - ensure full width display */
-  .task-item .flex-1 span {
+  .task-item .task-title {
     display: block !important;
     white-space: normal !important;
     word-wrap: break-word !important;
@@ -1431,7 +1439,9 @@ input[type="checkbox"]:focus {
 
   /* Task row padding for mobile */
   .task-item .task-row {
-    padding: 6px 10px !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    padding-right: 10px !important;
     gap: 8px !important;
   }
 
@@ -1499,7 +1509,7 @@ input[type="checkbox"]:focus {
   box-shadow: var(--shadow-lg);
   max-height: 200px;
   overflow-y: auto;
-  z-index: 100;
+  z-index: 300;
   opacity: 0;
   visibility: hidden;
   transform: translateY(-8px);
@@ -1575,7 +1585,21 @@ input[type="checkbox"]:focus {
   max-height: 220px;
   overflow-y: auto;
   min-width: 200px;
-  max-width: 300px;
+  max-width: min(360px, calc(100vw - 24px));
+}
+
+.calendar-more-line {
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.calendar-legend-dot-due {
+  background: #EF5350;
+}
+
+.calendar-legend-dot-start {
+  background: #42A5F5;
 }
 .inline-ac-option {
   padding: 8px 12px;
@@ -1803,6 +1827,11 @@ input[type="checkbox"]:focus {
   min-height: 30px;
   padding: 0;
   box-shadow: none;
+}
+.area-display-shell {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
 }
 .modal-token-shell .tag-pill {
   line-height: 1.25;
@@ -2045,6 +2074,10 @@ input[type="checkbox"]:focus {
 
 .modal-enhanced .status-pill.selected {
   box-shadow: none;
+}
+
+.modal-footer-enhanced button {
+  min-height: 40px;
 }
 
 .date-row .text-sm,

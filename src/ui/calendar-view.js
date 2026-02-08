@@ -76,7 +76,12 @@ export function renderCalendarView() {
   const deferTasks = selectedTasks.filter(t => t.deferDate === state.calendarSelectedDate && t.dueDate !== state.calendarSelectedDate);
   const isToday = state.calendarSelectedDate === today;
   const activeTasks = state.tasksData.filter(t => !t.completed && !t.isNote);
-  const todayTasks = isToday ? activeTasks.filter(t => t.today || t.dueDate === today || t.deferDate === today) : [];
+  const todayTasks = isToday ? activeTasks.filter(t => {
+    const isDueToday = t.dueDate === today;
+    const isOverdue = t.dueDate && t.dueDate < today;
+    const isScheduledForToday = t.deferDate && t.deferDate <= today;
+    return t.today || isDueToday || isOverdue || isScheduledForToday;
+  }) : [];
   const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
   const nextTasks = nextLabel ? activeTasks.filter(t => {
     if (!(t.labels || []).includes(nextLabel.id)) return false;
@@ -113,12 +118,7 @@ export function renderCalendarView() {
                 const cls = isOver ? 'overdue' : isDue ? 'due' : 'defer';
                 return `<div class="calendar-task-line ${cls}">${escapeHtml(t.title)}</div>`;
               }).join('')}
-              ${cellTasks.length > 3 ? cellTasks.slice(3).map(t => {
-                const isDue = t.dueDate === cell.dateStr;
-                const isOver = isDue && t.dueDate < today;
-                const cls = isOver ? 'overdue' : isDue ? 'due' : 'defer';
-                return `<div class="calendar-task-line ${cls}">${escapeHtml(t.title)}</div>`;
-              }).join('') : ''}
+              ${cellTasks.length > 3 ? `<div class="calendar-more-line">+${cellTasks.length - 3} more</div>` : ''}
             </div>
           ` : ''}
         </div>`;
@@ -150,7 +150,7 @@ export function renderCalendarView() {
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
           </button>
           <div class="flex items-center gap-3">
-            <h3 class="text-[16px] font-semibold text-[var(--text-primary)]">${monthNames[state.calendarMonth]} ${state.calendarYear}</h3>
+            <h3 class="text-[16px] font-semibold text-[var(--text-primary)] truncate max-w-[180px] sm:max-w-none">${monthNames[state.calendarMonth]} ${state.calendarYear}</h3>
             <button onclick="calendarGoToday()" class="text-xs px-2 py-1 rounded-md bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--accent)] transition font-medium">Today</button>
           </div>
           <button onclick="calendarNextMonth()" class="w-8 h-8 rounded-lg hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
@@ -172,8 +172,8 @@ export function renderCalendarView() {
             </div>
             ${!isToday ? `
               <div class="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#EF5350] inline-block"></span>Due</span>
-                <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#42A5F5] inline-block"></span>Start</span>
+                <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full calendar-legend-dot-due inline-block"></span>Due</span>
+                <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full calendar-legend-dot-start inline-block"></span>Start</span>
               </div>
             ` : ''}
           </div>
