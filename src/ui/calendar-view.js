@@ -74,9 +74,11 @@ export function renderCalendarView() {
   const selectedTasks = getTasksForDate(state.calendarSelectedDate);
   const dueTasks = selectedTasks.filter(t => t.dueDate === state.calendarSelectedDate);
   const deferTasks = selectedTasks.filter(t => t.deferDate === state.calendarSelectedDate && t.dueDate !== state.calendarSelectedDate);
+  const isToday = state.calendarSelectedDate === today;
+  const activeTasks = state.tasksData.filter(t => !t.completed && !t.isNote);
+  const todayTasks = isToday ? activeTasks.filter(t => t.today || t.dueDate === today || t.deferDate === today) : [];
   const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
-  const nextTasks = nextLabel ? state.tasksData.filter(t => {
-    if (t.completed || t.isNote) return false;
+  const nextTasks = nextLabel ? activeTasks.filter(t => {
     if (!(t.labels || []).includes(nextLabel.id)) return false;
     const isDated = t.dueDate || t.deferDate || t.today;
     return !isDated;
@@ -84,9 +86,9 @@ export function renderCalendarView() {
 
   // Format selected date label
   const selDate = new Date(state.calendarSelectedDate + 'T12:00:00');
-  const isToday = state.calendarSelectedDate === today;
   const selectedLabel = isToday ? 'Today' :
     selDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const selectedCount = isToday ? todayTasks.length : selectedTasks.length;
 
   const calendarHtml = `
     <div class="calendar-grid">
@@ -157,7 +159,7 @@ export function renderCalendarView() {
         </div>
 
         <!-- Calendar Grid -->
-        <div class="p-2">
+        <div class="px-2 pt-2 pb-1">
           ${calendarHtml}
         </div>
 
@@ -166,38 +168,47 @@ export function renderCalendarView() {
           <div class="px-5 py-3 flex items-center justify-between">
             <div class="flex items-center gap-2">
               <h4 class="text-[14px] font-semibold text-[var(--text-primary)]">${selectedLabel}</h4>
-              ${selectedTasks.length > 0 ? `<span class="text-xs px-2 py-0.5 rounded-full bg-[var(--bg-secondary)] text-[var(--text-muted)] font-medium">${selectedTasks.length}</span>` : ''}
+              ${selectedCount > 0 ? `<span class="text-xs px-2 py-0.5 rounded-full bg-[var(--bg-secondary)] text-[var(--text-muted)] font-medium">${selectedCount}</span>` : ''}
             </div>
-            <div class="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-              <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#EF5350] inline-block"></span>Due</span>
-              <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#42A5F5] inline-block"></span>Start</span>
-            </div>
+            ${!isToday ? `
+              <div class="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#EF5350] inline-block"></span>Due</span>
+                <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#42A5F5] inline-block"></span>Start</span>
+              </div>
+            ` : ''}
           </div>
-          <div class="min-h-[200px]">
-            ${selectedTasks.length === 0 ? `
+          <div class="min-h-[120px]">
+            ${selectedCount === 0 ? `
               <div class="flex flex-col items-center justify-center py-12 text-[var(--text-muted)]">
                 <svg class="w-10 h-10 mb-2 opacity-30" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
                 <p class="text-[14px]">No tasks on this date</p>
               </div>
             ` : `
-              ${dueTasks.length > 0 ? `
+              ${isToday ? `
                 <div class="px-5 py-1">
-                  <div class="text-[11px] font-semibold text-[#EF5350] uppercase tracking-wider mb-1">Due</div>
+                  <div class="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1">Today</div>
                 </div>
-                ${dueTasks.map(task => renderTaskItem(task, false)).join('')}
-              ` : ''}
-              ${deferTasks.length > 0 ? `
-                <div class="px-5 py-1 ${dueTasks.length > 0 ? 'mt-2' : ''}">
-                  <div class="text-[11px] font-semibold text-[#42A5F5] uppercase tracking-wider mb-1">Starting</div>
-                </div>
-                ${deferTasks.map(task => renderTaskItem(task)).join('')}
-              ` : ''}
-              ${nextTasks.length > 0 ? `
-                <div class="px-5 py-1 ${dueTasks.length > 0 || deferTasks.length > 0 ? 'mt-3' : ''}">
-                  <div class="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1">Next</div>
-                </div>
-                ${nextTasks.map(task => renderTaskItem(task)).join('')}
-              ` : ''}
+                ${todayTasks.map(task => renderTaskItem(task, false)).join('')}
+                ${nextTasks.length > 0 ? `
+                  <div class="px-5 py-1 mt-3">
+                    <div class="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1">Next</div>
+                  </div>
+                  ${nextTasks.map(task => renderTaskItem(task)).join('')}
+                ` : ''}
+              ` : `
+                ${dueTasks.length > 0 ? `
+                  <div class="px-5 py-1">
+                    <div class="text-[11px] font-semibold text-[#EF5350] uppercase tracking-wider mb-1">Due</div>
+                  </div>
+                  ${dueTasks.map(task => renderTaskItem(task, false)).join('')}
+                ` : ''}
+                ${deferTasks.length > 0 ? `
+                  <div class="px-5 py-1 ${dueTasks.length > 0 ? 'mt-2' : ''}">
+                    <div class="text-[11px] font-semibold text-[#42A5F5] uppercase tracking-wider mb-1">Starting</div>
+                  </div>
+                  ${deferTasks.map(task => renderTaskItem(task)).join('')}
+                ` : ''}
+              `}
             `}
           </div>
         </div>
