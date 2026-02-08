@@ -4707,6 +4707,8 @@
         // - "Next" tasks: tasks tagged with a "next" label
         // Note: Defer date controls availability, NOT perspective membership
         if (perspectiveId === 'today') {
+          // Deferred tasks are not yet available
+          if (task.deferDate && task.deferDate > today) return false;
           const isDueToday = task.dueDate === today;
           const isOverdue = task.dueDate && task.dueDate < today;
           const isTodayTask = task.status === 'today' || isDueToday || isOverdue;
@@ -5572,7 +5574,7 @@
       return `
         <div class="flex-1 text-center">
           <input type="text" value="${value}" placeholder="X.Y"
-            class="prayer-input w-full px-3 py-2 border border-softborder rounded text-center font-mono text-lg bg-white mb-1"
+            class="prayer-input w-full px-3 py-2 border border-[var(--border)] rounded text-center font-mono text-lg bg-[var(--bg-input)] mb-1"
             onchange="updateData('prayers', '${prayer}', this.value)">
           <div class="text-xs font-medium text-charcoal/70">${label}</div>
           <div class="text-xs text-charcoal/50 mt-0.5">
@@ -5601,7 +5603,7 @@
       return `
         <div class="flex-1 text-center group relative">
           <input type="number" step="any" value="${value}" placeholder="${placeholder}"
-            class="w-full px-2 py-2 border border-softborder rounded text-center text-sm bg-white mb-1"
+            class="w-full px-2 py-2 border border-[var(--border)] rounded text-center text-sm bg-[var(--bg-input)] mb-1"
             onchange="updateData('${category}', '${field}', this.value)">
           <div class="text-xs font-medium text-charcoal/70 flex items-center justify-center gap-1">
             ${label}
@@ -5862,14 +5864,14 @@
         <div class="flex gap-3 mt-3 pt-3 border-t border-softborder">
           <div class="flex-1 text-center">
             <input type="number" step="any" value="${data.habits.water}" placeholder="2.5"
-              class="w-full px-2 py-2 border border-softborder rounded text-center text-sm bg-white mb-1"
+              class="w-full px-2 py-2 border border-[var(--border)] rounded text-center text-sm bg-[var(--bg-input)] mb-1"
               onchange="updateData('habits', 'water', this.value)">
             <div class="text-xs font-medium text-charcoal/70">💧 Water</div>
             <div class="text-xs text-charcoal/40">L · 1pt/L</div>
           </div>
           <div class="flex-1 text-center">
             <input type="number" step="1" value="${data.habits.nop}" placeholder="0-1"
-              class="w-full px-2 py-2 border border-softborder rounded text-center text-sm bg-white mb-1"
+              class="w-full px-2 py-2 border border-[var(--border)] rounded text-center text-sm bg-[var(--bg-input)] mb-1"
               onchange="updateData('habits', 'nop', this.value)">
             <div class="text-xs font-medium text-charcoal/70">💤 NoP</div>
             <div class="text-xs text-charcoal/40">1=+2, 0=-2</div>
@@ -6157,7 +6159,7 @@
                 <button onclick="event.stopPropagation(); toggleTaskComplete('${task.id}')"
                   aria-label="${task.completed ? 'Mark task as incomplete' : 'Mark task as complete'}: ${escapeHtml(task.title)}"
                   class="task-checkbox w-[18px] h-[18px] rounded-full border-[1.5px] flex-shrink-0 flex items-center justify-center transition-all ${task.completed ? 'completed bg-[var(--accent)] border-[var(--accent)] text-white' : 'border-[var(--text-muted)] hover:border-[var(--accent)]'}">
-                  ${task.completed ? '<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>' : ''}
+                  ${task.completed ? '<svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>' : ''}
                 </button>
               `}
               <span class="flex-1 ml-3 text-[14px] leading-snug truncate ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">${escapeHtml(task.title)}</span>
@@ -6186,7 +6188,7 @@
               <button onclick="event.stopPropagation(); toggleTaskComplete('${task.id}')"
                 aria-label="${task.completed ? 'Mark task as incomplete' : 'Mark task as complete'}: ${escapeHtml(task.title)}"
                 class="task-checkbox mt-0.5 w-[18px] h-[18px] rounded-full border-[1.5px] flex-shrink-0 flex items-center justify-center transition-all ${task.completed ? 'completed bg-[var(--accent)] border-[var(--accent)] text-white' : 'border-[var(--text-muted)] hover:border-[var(--accent)]'}">
-                ${task.completed ? '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>' : ''}
+                ${task.completed ? '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>' : ''}
               </button>
             `}
             <div class="flex-1 min-w-0">
@@ -6562,21 +6564,21 @@
           } else if (bulkCategory === 'prayers' && field !== 'quran') {
             cells += '<td class="border border-softborder px-1 py-1">' +
               '<input type="text" value="' + (value || '') + '" placeholder="X.Y"' +
-              ' class="w-full px-1 py-1 text-center text-sm font-mono border-0 focus:ring-2 focus:ring-coral rounded bg-white"' +
+              ' class="w-full px-1 py-1 text-center text-sm font-mono border-0 focus:ring-2 focus:ring-coral rounded bg-[var(--bg-input)]"' +
               ' onchange="updateBulkData(\'' + dateStr + '\', \'' + bulkCategory + '\', \'' + field + '\', this.value)">' +
               '</td>';
           } else {
             cells += '<td class="border border-softborder px-1 py-1">' +
               '<input type="number" step="any" value="' + (value || '') + '"' +
-              ' class="w-full px-1 py-1 text-center text-sm border-0 focus:ring-2 focus:ring-coral rounded bg-white"' +
+              ' class="w-full px-1 py-1 text-center text-sm border-0 focus:ring-2 focus:ring-coral rounded bg-[var(--bg-input)]"' +
               ' onchange="updateBulkData(\'' + dateStr + '\', \'' + bulkCategory + '\', \'' + field + '\', this.value)">' +
               '</td>';
           }
         });
 
         const rowClass = (isWeekend ? 'bg-warmgray/50 ' : '') + (isToday ? 'bg-coral/10 ' : '') + 'hover:bg-warmgray';
-        const dayCellClass = 'border border-softborder px-2 py-1 font-medium text-center text-charcoal sticky left-0 z-10 ' + (isToday ? 'bg-coral/20' : 'bg-white');
-        const weekdayCellClass = 'border border-softborder px-2 py-1 text-xs text-charcoal/50 text-center sticky left-10 z-10 ' + (isToday ? 'bg-coral/20' : 'bg-white');
+        const dayCellClass = 'border border-softborder px-2 py-1 font-medium text-center text-charcoal sticky left-0 z-10 ' + (isToday ? 'bg-coral/20' : 'bg-[var(--bg-card)]');
+        const weekdayCellClass = 'border border-softborder px-2 py-1 text-xs text-charcoal/50 text-center sticky left-10 z-10 ' + (isToday ? 'bg-coral/20' : 'bg-[var(--bg-card)]');
 
         tableRows += '<tr class="' + rowClass + '">' +
           '<td class="' + dayCellClass + '">' + day + '</td>' +
@@ -6629,7 +6631,7 @@
             '<div class="flex flex-wrap items-center gap-4">' +
               '<div>' +
                 '<label class="text-sm text-charcoal/60 block mb-1">Month</label>' +
-                '<select onchange="const [m,y] = this.value.split(\'-\'); setBulkMonth(m, y)" class="px-3 py-2 border border-softborder rounded-lg focus:ring-2 focus:ring-coral outline-none bg-white text-charcoal">' +
+                '<select onchange="const [m,y] = this.value.split(\'-\'); setBulkMonth(m, y)" class="px-3 py-2 border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-coral outline-none bg-[var(--bg-input)] text-charcoal">' +
                   monthOptions +
                 '</select>' +
               '</div>' +
@@ -6691,10 +6693,10 @@
 
     function createWeightInput(label, value, category, field = null) {
       return `
-        <div class="flex items-center justify-between py-2 border-b border-gray-100">
-          <span class="text-sm text-gray-700">${label}</span>
+        <div class="flex items-center justify-between py-2 border-b border-[var(--border-light)]">
+          <span class="text-sm text-[var(--text-secondary)]">${label}</span>
           <input type="number" step="1" value="${value}"
-            class="w-20 px-2 py-1 border border-gray-300 rounded text-center text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            class="w-20 px-2 py-1 border border-[var(--border)] rounded text-center text-sm bg-[var(--bg-input)] focus:ring-1 focus:ring-[var(--accent-light)] focus:border-[var(--accent)] outline-none"
             onchange="updateWeight('${category}', ${field ? `'${field}'` : 'null'}, this.value)">
         </div>
       `;
@@ -6784,42 +6786,42 @@
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               <div class="text-center">
                 <input type="number" value="${MAX_SCORES.prayer}"
-                  class="w-full px-3 py-2 border border-softborder rounded text-center text-lg bg-white mb-1"
+                  class="w-full px-3 py-2 border border-[var(--border)] rounded text-center text-lg bg-[var(--bg-input)] mb-1"
                   onchange="updateMaxScore('prayer', this.value)">
                 <div class="text-xs font-medium text-charcoal/70">Prayer</div>
                 <div class="text-xs text-charcoal/40">5×5 + quran</div>
               </div>
               <div class="text-center">
                 <input type="number" value="${MAX_SCORES.diabetes}"
-                  class="w-full px-3 py-2 border border-softborder rounded text-center text-lg bg-white mb-1"
+                  class="w-full px-3 py-2 border border-[var(--border)] rounded text-center text-lg bg-[var(--bg-input)] mb-1"
                   onchange="updateMaxScore('diabetes', this.value)">
                 <div class="text-xs font-medium text-charcoal/70">Diabetes</div>
                 <div class="text-xs text-charcoal/40">avg+tir+ins</div>
               </div>
               <div class="text-center">
                 <input type="number" value="${MAX_SCORES.whoop}"
-                  class="w-full px-3 py-2 border border-softborder rounded text-center text-lg bg-white mb-1"
+                  class="w-full px-3 py-2 border border-[var(--border)] rounded text-center text-lg bg-[var(--bg-input)] mb-1"
                   onchange="updateMaxScore('whoop', this.value)">
                 <div class="text-xs font-medium text-charcoal/70">Whoop</div>
                 <div class="text-xs text-charcoal/40">all optimal</div>
               </div>
               <div class="text-center">
                 <input type="number" value="${MAX_SCORES.family}"
-                  class="w-full px-3 py-2 border border-softborder rounded text-center text-lg bg-white mb-1"
+                  class="w-full px-3 py-2 border border-[var(--border)] rounded text-center text-lg bg-[var(--bg-input)] mb-1"
                   onchange="updateMaxScore('family', this.value)">
                 <div class="text-xs font-medium text-charcoal/70">Family</div>
                 <div class="text-xs text-charcoal/40">all checked</div>
               </div>
               <div class="text-center">
                 <input type="number" value="${MAX_SCORES.habits}"
-                  class="w-full px-3 py-2 border border-softborder rounded text-center text-lg bg-white mb-1"
+                  class="w-full px-3 py-2 border border-[var(--border)] rounded text-center text-lg bg-[var(--bg-input)] mb-1"
                   onchange="updateMaxScore('habits', this.value)">
                 <div class="text-xs font-medium text-charcoal/70">Habits</div>
                 <div class="text-xs text-charcoal/40">all done</div>
               </div>
               <div class="text-center">
                 <input type="number" value="${MAX_SCORES.total}"
-                  class="w-full px-3 py-2 border border-softborder rounded text-center text-lg bg-white mb-1 border-coral"
+                  class="w-full px-3 py-2 border border-[var(--border)] rounded text-center text-lg bg-[var(--bg-input)] mb-1 border-coral"
                   onchange="updateMaxScore('total', this.value)">
                 <div class="text-xs font-medium text-coral">Total</div>
                 <div class="text-xs text-charcoal/40">sum of all</div>
@@ -6842,13 +6844,13 @@
                   <p class="text-sm text-charcoal/50">${theme.description}</p>
                   <div class="flex gap-2 mt-3">
                     ${key === 'simplebits' ? `
-                      <div class="w-6 h-6 rounded-full bg-[#F7F6F4] border border-gray-300" title="Background"></div>
-                      <div class="w-6 h-6 rounded-full bg-[#EFEDE8] border border-gray-300" title="Card"></div>
+                      <div class="w-6 h-6 rounded-full bg-[#F7F6F4] border border-[var(--border)]" title="Background"></div>
+                      <div class="w-6 h-6 rounded-full bg-[#EFEDE8] border border-[var(--border)]" title="Card"></div>
                       <div class="w-6 h-6 rounded-full bg-[#E5533D]" title="Accent"></div>
                       <div class="w-6 h-6 rounded-full bg-[#1a1a1a]" title="Text"></div>
                     ` : `
-                      <div class="w-6 h-6 rounded-full bg-[#FFFFFF] border border-gray-300" title="Background"></div>
-                      <div class="w-6 h-6 rounded-full bg-[#F5F5F7] border border-gray-300" title="Card"></div>
+                      <div class="w-6 h-6 rounded-full bg-[#FFFFFF] border border-[var(--border)]" title="Background"></div>
+                      <div class="w-6 h-6 rounded-full bg-[#F5F5F7] border border-[var(--border)]" title="Card"></div>
                       <div class="w-6 h-6 rounded-full bg-[#4A90D9]" title="Accent"></div>
                       <div class="w-6 h-6 rounded-full bg-[#1D1D1F]" title="Text"></div>
                     `}
@@ -6867,7 +6869,7 @@
               <div class="flex gap-2">
                 <input type="password" id="github-token-input" value="${getGithubToken()}"
                   placeholder="ghp_xxxx or github_pat_xxxx"
-                  class="flex-1 px-3 py-2 border border-softborder rounded text-sm bg-white focus:border-coral focus:outline-none">
+                  class="flex-1 px-3 py-2 border border-[var(--border)] rounded text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:outline-none">
                 <button onclick="setGithubToken(document.getElementById('github-token-input').value)"
                   class="sb-btn px-4 py-2 rounded text-sm font-medium">
                   Save Token
@@ -6909,7 +6911,7 @@
           </div>
 
           <!-- Changelog -->
-          <div class="sb-card rounded-xl p-6 bg-white">
+          <div class="sb-card rounded-xl p-6 bg-[var(--bg-card)]">
             <div class="flex items-center justify-between mb-6">
               <div>
                 <h3 class="font-semibold text-charcoal">Changelog <span class="text-coral">→</span></h3>
@@ -7264,7 +7266,7 @@
                   <div class="flex items-center gap-3">
                     <div class="relative w-12 h-12">
                       <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
-                        <circle cx="18" cy="18" r="16" fill="none" stroke="#E5E7EB" stroke-width="3"/>
+                        <circle cx="18" cy="18" r="16" fill="none" stroke="var(--border)" stroke-width="3"/>
                         <circle cx="18" cy="18" r="16" fill="none" stroke="${categoryColor}" stroke-width="3"
                           stroke-dasharray="${completionRate} 100" stroke-linecap="round"/>
                       </svg>
@@ -7315,7 +7317,7 @@
             <!-- Task Sections -->
             <div class="space-y-4">
               ${overdueTasks.length > 0 ? `
-                <div class="bg-white rounded-xl border border-red-100 overflow-hidden">
+                <div class="bg-[var(--bg-card)] rounded-xl border border-red-100 overflow-hidden">
                   <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-center gap-2">
                     <svg class="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
                     <span class="text-sm font-semibold text-red-700">Overdue</span>
@@ -7326,14 +7328,14 @@
               ` : ''}
 
               ${todayTasks.length > 0 ? `
-                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
-                  <div class="px-4 py-3 bg-amber-50/50 border-b border-charcoal/[0.06] flex items-center gap-2">
+                <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+                  <div class="px-4 py-3 bg-amber-50/50 border-b border-[var(--border-light)] flex items-center gap-2">
                     <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
                     <span class="text-sm font-semibold text-charcoal">Today</span>
                     <span class="text-xs text-charcoal/40 ml-1">${todayTasks.length}</span>
                   </div>
                   <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
-                  <div class="px-4 py-2 border-t border-charcoal/5">
+                  <div class="px-4 py-2 border-t border-[var(--border-light)]">
                     <button onclick="createTask('', { status: 'today', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'today' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                       class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-500 hover:text-amber-600 hover:bg-amber-50/50 rounded-lg transition text-left">
                       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
@@ -7344,8 +7346,8 @@
               ` : ''}
 
               ${upcomingTasks.length > 0 ? `
-                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
-                  <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
+                <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+                  <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
                     <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
                     <span class="text-sm font-semibold text-charcoal">Upcoming</span>
                     <span class="text-xs text-charcoal/40 ml-1">${upcomingTasks.length}</span>
@@ -7355,8 +7357,8 @@
               ` : ''}
 
               ${deferredTasks.length > 0 ? `
-                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden opacity-75">
-                  <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
+                <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden opacity-75">
+                  <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
                     <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
                     <span class="text-sm font-semibold text-[var(--text-muted)]">Deferred</span>
                     <span class="text-xs text-charcoal/40 ml-1">${deferredTasks.length}</span>
@@ -7366,14 +7368,14 @@
               ` : ''}
 
               ${inboxTasks.length > 0 ? `
-                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
-                  <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
+                <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+                  <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
                     <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h4.18c.26 1.7 1.74 3 3.57 3h2.5c1.83 0 3.31-1.3 3.57-3H21v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6zm0-2l3-7h12l3 7h-4.18c-.26-1.7-1.74-3-3.57-3h-2.5c-1.83 0-3.31 1.3-3.57 3H3z"/></svg>
                     <span class="text-sm font-semibold text-charcoal">Inbox</span>
                     <span class="text-xs text-charcoal/40 ml-1">${inboxTasks.length}</span>
                   </div>
                   <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
-                  <div class="px-4 py-2 border-t border-charcoal/5">
+                  <div class="px-4 py-2 border-t border-[var(--border-light)]">
                     <button onclick="createTask('', { status: 'inbox', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                       class="flex items-center gap-2 px-3 py-2 w-full text-sm text-blue-500 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition text-left">
                       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
@@ -7384,14 +7386,14 @@
               ` : ''}
 
               ${anytimeTasks.length > 0 ? `
-                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
-                  <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
+                <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+                  <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
                     <svg class="w-4 h-4 text-teal-500" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="2"/><rect x="3" y="10" width="18" height="4" rx="2"/><rect x="3" y="16" width="18" height="4" rx="2"/></svg>
                     <span class="text-sm font-semibold text-charcoal">Anytime</span>
                     <span class="text-xs text-charcoal/40 ml-1">${anytimeTasks.length}</span>
                   </div>
                   <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
-                  <div class="px-4 py-2 border-t border-charcoal/5">
+                  <div class="px-4 py-2 border-t border-[var(--border-light)]">
                     <button onclick="createTask('', { status: 'anytime', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                       class="flex items-center gap-2 px-3 py-2 w-full text-sm text-teal-500 hover:text-teal-600 hover:bg-teal-50/50 rounded-lg transition text-left">
                       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
@@ -7402,14 +7404,14 @@
               ` : ''}
 
               ${somedayTasks.length > 0 ? `
-                <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
-                  <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center gap-2">
+                <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+                  <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
                     <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h18v4H3V3zm1 5h16v13a1 1 0 01-1 1H5a1 1 0 01-1-1V8zm5 3v2h6v-2H9z"/></svg>
                     <span class="text-sm font-semibold text-charcoal">Someday</span>
                     <span class="text-xs text-charcoal/40 ml-1">${somedayTasks.length}</span>
                   </div>
                   <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
-                  <div class="px-4 py-2 border-t border-charcoal/5">
+                  <div class="px-4 py-2 border-t border-[var(--border-light)]">
                     <button onclick="createTask('', { status: 'someday', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = tasksData.filter(t => !t.isNote && t.status === 'someday' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                       class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-600 hover:text-amber-700 hover:bg-amber-50/50 rounded-lg transition text-left">
                       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
@@ -7420,8 +7422,8 @@
               ` : ''}
 
               <!-- Notes Section (always show) -->
-              <div class="bg-white rounded-xl border border-charcoal/[0.06] overflow-hidden">
-                <div class="px-4 py-3 border-b border-charcoal/[0.06] flex items-center justify-between">
+              <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+                <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <svg class="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>
                     <span class="text-sm font-semibold text-charcoal">Notes</span>
@@ -7435,7 +7437,7 @@
                 </div>
                 ${noteItems.length > 0 ? `
                   <div class="task-list">${noteItems.map(task => renderTaskItem(task)).join('')}</div>
-                  <div class="px-4 py-2 border-t border-charcoal/5">
+                  <div class="px-4 py-2 border-t border-[var(--border-light)]">
                     <button onclick="createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { startInlineEdit(notes[notes.length-1].id); } }, 100);"
                       class="flex items-center gap-2 px-3 py-2 w-full text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50/50 rounded-lg transition text-left">
                       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
@@ -7455,7 +7457,7 @@
               </div>
 
               ${totalTasks === 0 ? `
-                <div class="bg-white rounded-xl border border-charcoal/[0.06] py-16">
+                <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
                   <div class="flex flex-col items-center justify-center text-charcoal/30">
                     <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style="background: ${categoryColor}10">
                       <svg class="w-10 h-10" style="color: ${categoryColor}" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>
@@ -7633,7 +7635,10 @@
 
       // Task Modal - Enhanced Design
       const editingTask = editingTaskId ? tasksData.find(t => t.id === editingTaskId) : null;
-      if (showTaskModal) initModalState(editingTask);
+      if (showTaskModal && !modalStateInitialized) {
+        initModalState(editingTask);
+        modalStateInitialized = true;
+      }
       const taskModalHtml = showTaskModal ? `
         <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){closeTaskModal()}" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
           <div class="modal-enhanced w-full max-w-xl mx-4" onclick="event.stopPropagation()">
@@ -8071,6 +8076,7 @@
     let modalSelectedPeople = [];
     let modalIsNote = false;
     let modalRepeatEnabled = false;
+    let modalStateInitialized = false;
 
     function initModalState(editingTask) {
       if (editingTask) {
@@ -8281,7 +8287,7 @@
         (item) => `<div class="autocomplete-option-icon" style="background: ${item.color}20; color: ${item.color}">${item.icon || '📁'}</div>`,
         true,
         (name) => {
-          const newCat = { id: 'cat-' + Date.now(), name, color: '#6366f1', icon: '📁' };
+          const newCat = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '📁' };
           taskCategories.push(newCat);
           localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(taskCategories));
           debouncedSaveToGithub();
@@ -8334,7 +8340,7 @@
         true,
         (name) => {
           const colors = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
-          const newTag = { id: 'label-' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
+          const newTag = { id: 'label_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
           taskLabels.push(newTag);
           localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(taskLabels));
           debouncedSaveToGithub();
@@ -8386,7 +8392,7 @@
         () => `<div class="autocomplete-option-icon bg-[var(--bg-secondary)]"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`,
         true,
         (name) => {
-          const newPerson = { id: 'person-' + Date.now(), name };
+          const newPerson = { id: 'person_' + Date.now(), name };
           taskPeople.push(newPerson);
           localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(taskPeople));
           debouncedSaveToGithub();
@@ -8477,7 +8483,7 @@
 
       function getCreateFn() {
         if (triggerChar === '#') return (name) => {
-          const c = { id: 'cat-' + Date.now(), name, color: '#6366f1', icon: '📁' };
+          const c = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '📁' };
           taskCategories.push(c);
           localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(taskCategories));
           debouncedSaveToGithub();
@@ -8485,7 +8491,7 @@
         };
         if (triggerChar === '@') return (name) => {
           const colors = ['#ef4444','#f59e0b','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
-          const l = { id: 'label-' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
+          const l = { id: 'label_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
           taskLabels.push(l);
           localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(taskLabels));
           debouncedSaveToGithub();
@@ -8493,7 +8499,7 @@
         };
         if (triggerChar === '&') return (name) => {
           const colors = ['#4A90A4','#6B8E5A','#E5533D','#C4943D','#7C6B8E'];
-          const p = { id: 'person-' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
+          const p = { id: 'person_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
           taskPeople.push(p);
           localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(taskPeople));
           debouncedSaveToGithub();
@@ -8757,6 +8763,7 @@
       cleanupInlineAutocomplete('task-title');
       showTaskModal = false;
       editingTaskId = null;
+      modalStateInitialized = false;
       render();
     }
 
@@ -8809,6 +8816,7 @@
       cleanupInlineAutocomplete('task-title');
       showTaskModal = false;
       editingTaskId = null;
+      modalStateInitialized = false;
       render();
     }
 
