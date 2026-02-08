@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T23:02:52.059Z",
+  "lastUpdated": "2026-02-08T23:03:15.213Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2696,13 +2696,15 @@
       "id": "task_1770588562749_har98muot",
       "title": "Send Tawfik Magdy resume from Mostafa to Manal Ameen",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "today": false,
       "flagged": false,
       "completed": false,
       "completedAt": null,
-      "categoryId": null,
-      "labels": [],
+      "categoryId": "work",
+      "labels": [
+        "label_1770020325388"
+      ],
       "people": [],
       "deferDate": null,
       "dueDate": null,
@@ -2712,7 +2714,7 @@
       "indent": 0,
       "order": 12000,
       "createdAt": "2026-02-08T22:09:22.749Z",
-      "updatedAt": "2026-02-08T22:09:22.749Z"
+      "updatedAt": "2026-02-08T23:03:12.683Z"
     },
     {
       "id": "task_1770589239003_3jgcwm2z9",
