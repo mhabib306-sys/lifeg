@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T22:55:48.397Z",
+  "lastUpdated": "2026-02-08T22:59:52.054Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2876,6 +2876,11 @@
       "id": "person_1770576686684",
       "name": "Joehnny",
       "color": "#7C6B8E"
+    },
+    {
+      "id": "person_1770591589441",
+      "name": "Nadine",
+      "color": "#4A90A4"
     }
   ],
   "customPerspectives": [
