@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.1.0 - Modular';
+export const APP_VERSION = '4.2.0 - Modular';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -171,7 +171,7 @@ export const THINGS3_ICONS = {
  *
  * FILTER LOGIC (implemented in getFilteredTasks):
  * - inbox: status='inbox' AND no categoryId (unprocessed items)
- * - today: status='today' OR dueToday OR overdue OR scheduled for today
+ * - today: today=true OR dueToday OR overdue OR scheduled for today
  * - upcoming: has future dueDate
  * - anytime: status='anytime' (no deadline, available now)
  * - someday: status='someday' (on hold for later)
@@ -179,7 +179,7 @@ export const THINGS3_ICONS = {
  */
 export const BUILTIN_PERSPECTIVES = [
   { id: 'inbox', name: 'Inbox', icon: THINGS3_ICONS.inbox, color: '#5598FE', filter: { status: 'inbox' }, builtin: true },
-  { id: 'today', name: 'Today', icon: THINGS3_ICONS.today, color: '#FFCA28', filter: { status: 'today' }, builtin: true },
+  { id: 'today', name: 'Today', icon: THINGS3_ICONS.today, color: '#FFCA28', filter: { today: true }, builtin: true },
   { id: 'upcoming', name: 'Upcoming', icon: THINGS3_ICONS.upcoming, color: '#EF5350', filter: { upcoming: true }, builtin: true },
   { id: 'calendar', name: 'Calendar', icon: THINGS3_ICONS.calendar, color: '#8B5CF6', filter: { calendar: true }, builtin: true },
   { id: 'anytime', name: 'Anytime', icon: THINGS3_ICONS.anytime, color: '#26A69A', filter: { status: 'anytime' }, builtin: true },

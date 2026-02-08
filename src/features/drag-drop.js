@@ -137,7 +137,7 @@ export function reorderTasks(draggedId, targetId, position) {
  */
 export function normalizeTaskOrders() {
   // Group tasks by status and rebalance order values
-  const statuses = ['inbox', 'today', 'anytime', 'someday'];
+  const statuses = ['inbox', 'anytime', 'someday'];
   statuses.forEach(status => {
     const statusTasks = state.tasksData
       .filter(t => t.status === status && !t.completed)

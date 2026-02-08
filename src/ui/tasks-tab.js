@@ -193,7 +193,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
   const taskItems = areaTasks.filter(t => !t.isNote);
   const overdueTasks = taskItems.filter(t => t.dueDate && t.dueDate < todayDate);
   const todayTasks = taskItems.filter(t =>
-    !overdueTasks.includes(t) && (t.status === 'today' || t.dueDate === todayDate));
+    !overdueTasks.includes(t) && (t.today || t.dueDate === todayDate));
   const upcomingTasks = taskItems.filter(t =>
     t.dueDate && t.dueDate > todayDate && !todayTasks.includes(t));
   const deferredTasks = taskItems.filter(t =>
@@ -304,7 +304,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
             <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'today', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'today' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+              <button onclick="window.createTask('', { status: 'anytime', today: true, categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.today && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                 class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-500 hover:text-amber-600 hover:bg-amber-50/50 rounded-lg transition text-left">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Add to Today...
@@ -469,7 +469,7 @@ export function renderTasksTab() {
         const isDueToday = t.dueDate === todayDate;
         const isOverdue = t.dueDate && t.dueDate < todayDate;
         const isScheduledForToday = t.deferDate && t.deferDate <= todayDate;
-        return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
+        return t.today || isDueToday || isOverdue || isScheduledForToday;
       }).length;
     } else {
       taskCounts[p.id] = getFilteredTasks(p.id).length;
@@ -745,8 +745,8 @@ export function renderTasksTab() {
             const allDated = filteredTasks.filter(t => {
               const isDueToday = t.dueDate === today;
               const isOverdue = t.dueDate && t.dueDate < today;
-              const isScheduledForToday = t.deferDate && t.deferDate <= today;
-              return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
+            const isScheduledForToday = t.deferDate && t.deferDate <= today;
+            return t.today || isDueToday || isOverdue || isScheduledForToday;
             });
 
             // Split into sections: Due (overdue + due today), Starting (deferred today), Other (status=today)
@@ -762,8 +762,8 @@ export function renderTasksTab() {
             // Next tasks: tasks tagged with "next" label (not already in dated)
             const nextTasks = nextLabel ? filteredTasks.filter(t => {
               const isNextTagged = (t.labels || []).includes(nextLabel.id);
-              const isScheduledForToday = t.deferDate && t.deferDate <= today;
-              const isDatedTask = t.status === 'today' || t.dueDate === today || (t.dueDate && t.dueDate < today) || isScheduledForToday;
+            const isScheduledForToday = t.deferDate && t.deferDate <= today;
+            const isDatedTask = t.today || t.dueDate === today || (t.dueDate && t.dueDate < today) || isScheduledForToday;
               return isNextTagged && !isDatedTask;
             }) : [];
 

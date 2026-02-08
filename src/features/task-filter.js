@@ -27,9 +27,9 @@ export function initializeTaskOrders() {
  *
  * PERSPECTIVE RULES:
  * - inbox: status='inbox' AND no categoryId
- * - today: status='today' OR dueDate=today OR overdue OR deferDate<=today
+ * - today: today=true OR dueDate=today OR overdue OR deferDate<=today
  * - upcoming: has future dueDate
- * - anytime: status='anytime' OR status='today' AND no future dueDate
+ * - anytime: status='anytime' (today flag does not exclude) AND no future dueDate
  * - someday: status='someday'
  * - logbook: completed=true
  *
@@ -61,7 +61,7 @@ export function getFilteredTasks(perspectiveId) {
     if (task.completed) return false;
 
     // OmniFocus model for Today:
-    // - Tasks explicitly marked as 'today'
+    // - Tasks flagged for today
     // - Tasks with today's due date
     // - Overdue tasks (due date in the past)
     // - "Next" tasks: tasks tagged with a "next" label
@@ -72,7 +72,7 @@ export function getFilteredTasks(perspectiveId) {
       const isDueToday = task.dueDate === today;
       const isOverdue = task.dueDate && task.dueDate < today;
       const isScheduledForToday = task.deferDate && task.deferDate <= today;
-      const isTodayTask = task.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
+      const isTodayTask = task.today || isDueToday || isOverdue || isScheduledForToday;
 
       // Include tasks tagged with "next" label
       const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
@@ -94,9 +94,9 @@ export function getFilteredTasks(perspectiveId) {
     }
 
     // Anytime: Tasks available to do anytime (no specific schedule)
-    // Today tasks should still appear in Anytime (Things 3 behavior)
+    // Today flag does not exclude tasks from Anytime
     if (perspectiveId === 'anytime') {
-      if (task.status !== 'anytime' && task.status !== 'today') return false;
+      if (task.status !== 'anytime') return false;
       // If it has a due date in the future, it shows in Upcoming instead
       if (task.dueDate && task.dueDate > today) return false;
       // Deferred tasks are not yet available

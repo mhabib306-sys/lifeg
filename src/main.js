@@ -20,6 +20,7 @@ import { initializeTaskOrders } from './features/task-filter.js';
 import { initWeather } from './features/weather.js';
 import { applyStoredTheme, loadCloudData, debouncedSaveToGithub } from './data/github-sync.js';
 import { render } from './ui/render.js';
+import { migrateTodayFlag } from './features/tasks.js';
 import { ensureHomeWidgets } from './features/home-widgets.js';
 
 // ============================================================================
@@ -31,6 +32,7 @@ function initApp() {
   applyStoredTheme();
 
   // Initialize task ordering
+  migrateTodayFlag();
   initializeTaskOrders();
 
   // Ensure home widgets are complete

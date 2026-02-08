@@ -6,6 +6,7 @@ performed via state updates followed by `render()`.
 
 ## High-Level Flow
 1. Load state from localStorage.
+2. Migrate legacy task data (today flag).
 2. Apply theme and initialize task ordering.
 3. Render the UI.
 4. Load cloud data asynchronously and re-render on completion.

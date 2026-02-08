@@ -85,7 +85,7 @@ export function renderHomeWidget(widget, isEditing) {
         const isDueToday = t.dueDate === today;
         const isOverdue = t.dueDate && t.dueDate < today;
         const isScheduledForToday = t.deferDate && t.deferDate <= today;
-        return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
+        return t.today || isDueToday || isOverdue || isScheduledForToday;
       }).length;
       const nextTasksCount = nextLabel ? state.tasksData.filter(t => {
         if (t.completed || t.isNote) return false;
@@ -139,7 +139,7 @@ export function renderHomeWidget(widget, isEditing) {
         const isDueToday = t.dueDate === today;
         const isOverdue = t.dueDate && t.dueDate < today;
         const isScheduledForToday = t.deferDate && t.deferDate <= today;
-        return t.status === 'today' || isDueToday || isOverdue || isScheduledForToday;
+        return t.today || isDueToday || isOverdue || isScheduledForToday;
       });
       // Due tasks: overdue + due today (shown first)
       const dueTasks = allTodayTasks.filter(t => (t.dueDate && t.dueDate <= today)).sort((a, b) => a.dueDate.localeCompare(b.dueDate));
@@ -191,7 +191,7 @@ export function renderHomeWidget(widget, isEditing) {
         if (t.completed || t.isNote) return false;
         const isNextTagged = (t.labels || []).includes(nextLabel.id);
         if (!isNextTagged) return false;
-        const isDatedTask = t.status === 'today' || t.dueDate === today || (t.dueDate && t.dueDate < today);
+        const isDatedTask = t.today || t.dueDate === today || (t.dueDate && t.dueDate < today);
         return !isDatedTask;
       }) : [];
 

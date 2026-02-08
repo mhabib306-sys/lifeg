@@ -145,8 +145,15 @@ export function openNewTaskModal() {
       };
     } else {
       // Built-in perspective - set status based on perspective
-      const statusMap = { inbox: 'inbox', today: 'today', anytime: 'anytime', someday: 'someday' };
-      state.newTaskContext = { categoryId: null, labelId: null, labelIds: null, personId: null, status: statusMap[state.activePerspective] || 'inbox' };
+      const statusMap = { inbox: 'inbox', today: 'anytime', anytime: 'anytime', someday: 'someday' };
+      state.newTaskContext = {
+        categoryId: null,
+        labelId: null,
+        labelIds: null,
+        personId: null,
+        status: statusMap[state.activePerspective] || 'inbox',
+        today: state.activePerspective === 'today'
+      };
     }
   } else {
     state.newTaskContext = { categoryId: null, labelId: null, labelIds: null, personId: null, status: 'inbox' };
@@ -201,9 +208,10 @@ export function quickAddTask(inputElement) {
       }
     } else {
       // Built-in perspective - set status based on perspective
-      const statusMap = { inbox: 'inbox', today: 'today', anytime: 'anytime', someday: 'someday' };
+      const statusMap = { inbox: 'inbox', today: 'anytime', anytime: 'anytime', someday: 'someday' };
       if (statusMap[state.activePerspective]) {
         options.status = statusMap[state.activePerspective];
+        if (state.activePerspective === 'today') options.today = true;
       }
     }
   }
@@ -566,6 +574,7 @@ export function initModalState(editingTask) {
   if (editingTask) {
     state.modalSelectedArea = editingTask.categoryId || null;
     state.modalSelectedStatus = editingTask.status || 'inbox';
+    state.modalSelectedToday = !!editingTask.today;
     state.modalSelectedTags = [...(editingTask.labels || [])];
     state.modalSelectedPeople = [...(editingTask.people || [])];
     state.modalIsNote = editingTask.isNote || false;
@@ -573,6 +582,7 @@ export function initModalState(editingTask) {
   } else {
     state.modalSelectedArea = state.newTaskContext.categoryId || null;
     state.modalSelectedStatus = state.newTaskContext.status || 'inbox';
+    state.modalSelectedToday = !!state.newTaskContext.today;
     state.modalSelectedTags = state.newTaskContext.labelIds ? [...state.newTaskContext.labelIds] : (state.newTaskContext.labelId ? [state.newTaskContext.labelId] : []);
     state.modalSelectedPeople = state.newTaskContext.personId ? [state.newTaskContext.personId] : [];
     state.modalIsNote = state.activePerspective === 'notes';
@@ -597,13 +607,21 @@ export function setModalType(isNote) {
 }
 
 /**
- * Set the modal status (inbox/today/anytime/someday) and update pills.
+ * Set the modal status (inbox/anytime/someday) or toggle Today flag.
  * @param {string} status
  */
 export function setModalStatus(status) {
-  state.modalSelectedStatus = status;
+  if (status === 'today') {
+    state.modalSelectedToday = !state.modalSelectedToday;
+  } else {
+    state.modalSelectedStatus = status;
+  }
   document.querySelectorAll('.status-pill').forEach(pill => {
-    pill.classList.toggle('selected', pill.dataset.status === status);
+    if (pill.dataset.status === 'today') {
+      pill.classList.toggle('selected', state.modalSelectedToday);
+    } else {
+      pill.classList.toggle('selected', pill.dataset.status === state.modalSelectedStatus);
+    }
   });
 }
 
@@ -916,7 +934,8 @@ export function saveTaskFromModal() {
   const taskData = {
     title: title,
     notes: document.getElementById('task-notes')?.value.trim() || '',
-    status: state.modalSelectedStatus, // Keep the status as-is (today, inbox, anytime, someday)
+    status: state.modalSelectedStatus,
+    today: state.modalSelectedToday,
     categoryId: state.modalSelectedArea,
     deferDate: deferDateValue,
     dueDate: document.getElementById('task-due')?.value || null,
@@ -1061,7 +1080,7 @@ export function renderTaskModalHtml() {
               <div class="status-pill ${state.modalSelectedStatus === 'inbox' ? 'selected' : ''}" data-status="inbox" onclick="setModalStatus('inbox')">
                 <span class="status-icon">${THINGS3_ICONS.inbox.replace('w-5 h-5', 'w-4 h-4')}</span>Inbox
               </div>
-              <div class="status-pill ${state.modalSelectedStatus === 'today' ? 'selected' : ''}" data-status="today" onclick="setModalStatus('today')">
+              <div class="status-pill ${state.modalSelectedToday ? 'selected' : ''}" data-status="today" onclick="setModalStatus('today')">
                 <span class="status-icon">${THINGS3_ICONS.today.replace('w-5 h-5', 'w-4 h-4')}</span>Today
               </div>
               <div class="status-pill ${state.modalSelectedStatus === 'anytime' ? 'selected' : ''}" data-status="anytime" onclick="setModalStatus('anytime')">

@@ -7,7 +7,7 @@ power of OmniFocus-style availability.
 ## Status Semantics
 - **Inbox**: Unprocessed tasks (no category). Assigning a category moves it to Anytime.
 - **Anytime**: General bucket for available tasks.
-- **Today**: A flag-like status indicating explicit focus today.
+- **Today**: A flag indicating explicit focus today (non-exclusive).
 - **Someday**: Hidden from active lists.
 
 ## Date Semantics
@@ -17,7 +17,7 @@ power of OmniFocus-style availability.
 ## Perspective Rules
 ### Today
 Includes:
-- status = `today`
+- today = `true`
 - due today
 - overdue
 - defer date <= today
@@ -25,7 +25,7 @@ Also includes tasks tagged with label `Next` (OmniFocus influence).
 
 ### Anytime
 Includes tasks with:
-- status = `anytime` **or** `today`
+- status = `anytime` (today flag does not exclude)
 - no future due date
 - defer date <= today
 

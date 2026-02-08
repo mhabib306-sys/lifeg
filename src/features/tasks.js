@@ -10,7 +10,8 @@ import { generateTaskId, getLocalDateString } from '../utils.js';
  * @property {string} id - Unique ID (task_{timestamp}_{random})
  * @property {string} title - Task name/description
  * @property {string} notes - Additional details/context
- * @property {string} status - 'inbox'|'today'|'anytime'|'someday'
+ * @property {string} status - 'inbox'|'anytime'|'someday'
+ * @property {boolean} today - True if flagged for Today
  * @property {boolean} completed - Completion state
  * @property {string|null} completedAt - ISO timestamp when completed
  * @property {string|null} categoryId - Area/category assignment
@@ -28,7 +29,7 @@ import { generateTaskId, getLocalDateString } from '../utils.js';
  * THINGS 3 BEHAVIOR:
  * - Inbox tasks have no category
  * - Assigning a category moves Inbox -> Anytime
- * - "Today" status means task is available now (defer date <= today)
+ * - "Today" is a flag (non-exclusive) and does not replace status
  * - "Someday" hides task from active views
  *
  * @param {string} title - Task title
@@ -36,11 +37,13 @@ import { generateTaskId, getLocalDateString } from '../utils.js';
  * @returns {Task} Created task object
  */
 export function createTask(title, options = {}) {
+  const normalizedStatus = options.status === 'today' ? 'anytime' : (options.status || 'inbox');
   const task = {
     id: generateTaskId(),
     title: title,
     notes: options.notes || '',
-    status: options.status || 'inbox', // inbox, today, anytime, someday
+    status: normalizedStatus, // inbox, anytime, someday
+    today: options.today || options.status === 'today' || false,
     completed: false,
     completedAt: null,
     categoryId: options.categoryId || null,
@@ -65,6 +68,10 @@ export function updateTask(taskId, updates) {
   const idx = state.tasksData.findIndex(t => t.id === taskId);
   if (idx !== -1) {
     const task = state.tasksData[idx];
+    if (updates.status === 'today') {
+      updates.status = 'anytime';
+      updates.today = true;
+    }
     // Things 3 logic: Assigning Area to Inbox task moves it to Anytime
     if (task.status === 'inbox' && updates.categoryId && !task.categoryId) {
       updates.status = 'anytime';
@@ -72,6 +79,23 @@ export function updateTask(taskId, updates) {
     state.tasksData[idx] = { ...task, ...updates, updatedAt: new Date().toISOString() };
     saveTasksData();
   }
+}
+
+// Migrate legacy status='today' tasks to today flag
+export function migrateTodayFlag() {
+  let changed = false;
+  state.tasksData.forEach(task => {
+    if (task.status === 'today') {
+      task.status = 'anytime';
+      task.today = true;
+      changed = true;
+    }
+    if (typeof task.today !== 'boolean') {
+      task.today = false;
+      changed = true;
+    }
+  });
+  if (changed) saveTasksData();
 }
 
 export function deleteTask(taskId) {

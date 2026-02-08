@@ -15,5 +15,9 @@
 - Metadata is a single, truncated line.
 - Checkbox aligned to title center when metadata is absent.
 
+## Today Flag
+- Today is a separate flag (not a status).
+- Tasks can be Today and still appear in Anytime.
+
 ## Widgets
 Home widgets are single-column on phones for readability.

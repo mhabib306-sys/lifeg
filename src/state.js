@@ -240,6 +240,7 @@ export const state = {
   // ---- Task modal state ----
   modalSelectedArea: null,
   modalSelectedStatus: 'inbox',
+  modalSelectedToday: false,
   modalSelectedTags: [],
   modalSelectedPeople: [],
   modalIsNote: false,
