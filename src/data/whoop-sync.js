@@ -6,8 +6,8 @@
 // Uses window.saveData(), window.debouncedSaveToGithub(), window.render() via bridge.
 //
 // Sync schedule:
-//   - On app load (if >6h stale)
-//   - Every 6 hours while app is open
+//   - First morning sync at 11:00 AM (so new WHOOP cycle has started)
+//   - Every 6 hours after that while app is open
 //   - Final snapshot at 23:59 local time daily
 
 import { state } from '../state.js';
@@ -24,6 +24,9 @@ const SYNC_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
 let syncIntervalId = null;
 let endOfDayTimeoutId = null;
+let morningTimeoutId = null;
+
+const MORNING_HOUR = 11; // First sync at 11:00 AM (new cycle likely started)
 
 // ---- Config getters/setters ----
 
@@ -211,6 +214,7 @@ function startSyncInterval() {
 function stopSyncTimers() {
   if (syncIntervalId) { clearInterval(syncIntervalId); syncIntervalId = null; }
   if (endOfDayTimeoutId) { clearTimeout(endOfDayTimeoutId); endOfDayTimeoutId = null; }
+  if (morningTimeoutId) { clearTimeout(morningTimeoutId); morningTimeoutId = null; }
 }
 
 // ---- Connect / Disconnect ----
@@ -242,11 +246,24 @@ export function initWhoopSync() {
 
   if (!isWhoopConnected()) return;
 
-  // Sync on load if stale
-  checkAndSyncWhoop();
-
-  // Recurring 6h sync
-  startSyncInterval();
+  // First morning sync at 11 AM so the new WHOOP cycle has started.
+  // If already past 11 AM, sync immediately (if stale).
+  const now = new Date();
+  if (now.getHours() < MORNING_HOUR) {
+    const target = new Date(now);
+    target.setHours(MORNING_HOUR, 0, 0, 0);
+    const ms = target - now;
+    const mins = Math.floor(ms / 60000);
+    console.log(`WHOOP: first sync deferred to 11:00 AM (${mins}m from now)`);
+    morningTimeoutId = setTimeout(() => {
+      syncWhoopNow();
+      startSyncInterval();
+    }, ms);
+  } else {
+    // Past 11 AM — sync now if stale, then start interval
+    checkAndSyncWhoop();
+    startSyncInterval();
+  }
 
   // Daily 23:59 final snapshot
   scheduleEndOfDaySync();
