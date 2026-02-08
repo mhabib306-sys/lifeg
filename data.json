@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-08T11:26:12.278Z",
+  "lastUpdated": "2026-02-08T11:26:24.555Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1753,7 +1753,9 @@
         "sleepPerf": 84,
         "recovery": 74
       },
-      "prayers": {},
+      "prayers": {
+        "quran": 1
+      },
       "family": {
         "mom": true,
         "ahmed": true
