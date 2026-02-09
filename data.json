@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T11:14:58.528Z",
+  "lastUpdated": "2026-02-09T11:16:11.326Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2271,8 +2271,8 @@
       "title": "Take B12",
       "notes": "",
       "status": "anytime",
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-09T11:16:01.014Z",
       "categoryId": "personal",
       "labels": [],
       "people": [],
@@ -2287,7 +2287,7 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-08T08:02:59.625Z",
-      "updatedAt": "2026-02-08T14:45:58.772Z",
+      "updatedAt": "2026-02-09T11:16:01.014Z",
       "order": 3000
     },
     {
@@ -2662,6 +2662,58 @@
       "order": 25000,
       "createdAt": "2026-02-09T09:44:50.504Z",
       "updatedAt": "2026-02-09T09:44:50.504Z"
+    },
+    {
+      "id": "task_1770635761014_93wxwdo1c",
+      "title": "Take B12",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": true,
+      "completedAt": "2026-02-09T11:16:07.564Z",
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": "2026-02-09",
+      "dueDate": null,
+      "repeat": {
+        "type": "daily",
+        "interval": 1,
+        "from": "due"
+      },
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 36000,
+      "createdAt": "2026-02-09T11:16:01.014Z",
+      "updatedAt": "2026-02-09T11:16:07.564Z"
+    },
+    {
+      "id": "task_1770635767564_c17he1h1e",
+      "title": "Take B12",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": "2026-02-10",
+      "dueDate": null,
+      "repeat": {
+        "type": "daily",
+        "interval": 1,
+        "from": "due"
+      },
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 36000,
+      "createdAt": "2026-02-09T11:16:07.564Z",
+      "updatedAt": "2026-02-09T11:16:07.564Z"
     }
   ],
   "taskCategories": [
