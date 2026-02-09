@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T18:34:56.041Z",
+  "lastUpdated": "2026-02-09T18:35:05.912Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2379,8 +2379,8 @@
       "title": "Take B12",
       "notes": "",
       "status": "anytime",
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-09T18:34:58.228Z",
       "categoryId": "personal",
       "labels": [],
       "people": [],
@@ -2395,10 +2395,11 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-08T08:02:59.625Z",
-      "updatedAt": "2026-02-08T14:45:58.772Z",
+      "updatedAt": "2026-02-09T18:34:58.228Z",
       "order": 9000,
       "today": false,
-      "flagged": false
+      "flagged": false,
+      "_spawnedRepeatId": "task_1770662098228_jajroyt6s"
     },
     {
       "id": "task_1770539531712_1uj5n1q1j",
@@ -2586,28 +2587,6 @@
       "flagged": false
     },
     {
-      "id": "task_1770565930160_cs8oj7kcs",
-      "title": "Todo",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "order": 3000,
-      "createdAt": "2026-02-08T15:52:10.160Z",
-      "updatedAt": "2026-02-08T15:52:10.160Z",
-      "today": true,
-      "flagged": false
-    },
-    {
       "id": "task_1770576704363_panfyf0jg",
       "title": "Make sure Joehnny and Ali are aligned on the cashback performance assessment",
       "notes": "",
@@ -2781,8 +2760,8 @@
       "status": "inbox",
       "today": false,
       "flagged": false,
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-09T18:35:02.195Z",
       "categoryId": null,
       "labels": [],
       "people": [],
@@ -2794,7 +2773,7 @@
       "indent": 0,
       "order": 48000,
       "createdAt": "2026-02-09T05:10:08.457Z",
-      "updatedAt": "2026-02-09T05:10:42.329Z"
+      "updatedAt": "2026-02-09T18:35:02.195Z"
     },
     {
       "id": "task_1770660818521_qanl2io2l",
@@ -2820,6 +2799,83 @@
       "createdAt": "2026-02-09T18:13:38.521Z",
       "updatedAt": "2026-02-09T18:13:38.521Z",
       "noteOrder": 11000
+    },
+    {
+      "id": "task_1770662098228_jajroyt6s",
+      "title": "Take B12",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": true,
+      "completedAt": "2026-02-09T18:35:03.019Z",
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": "2026-02-09",
+      "dueDate": null,
+      "repeat": {
+        "type": "daily",
+        "interval": 1,
+        "from": "due"
+      },
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 41000,
+      "createdAt": "2026-02-09T18:34:58.228Z",
+      "updatedAt": "2026-02-09T18:35:03.019Z",
+      "gcalEventId": "ld4og7jt4vhud6v3idmk8v1mjc",
+      "_spawnedRepeatId": "task_1770662103019_ptllslnbh"
+    },
+    {
+      "id": "task_1770662103019_ptllslnbh",
+      "title": "Take B12",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": "2026-02-10",
+      "dueDate": null,
+      "repeat": {
+        "type": "daily",
+        "interval": 1,
+        "from": "due"
+      },
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 39000,
+      "createdAt": "2026-02-09T18:35:03.019Z",
+      "updatedAt": "2026-02-09T18:35:03.425Z",
+      "gcalEventId": "pcdcl7ljakd4l0vs182q3ollq4"
+    },
+    {
+      "id": "task_1770565930160_cs8oj7kcs",
+      "title": "Todo",
+      "notes": "",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 3000,
+      "createdAt": "2026-02-08T15:52:10.160Z",
+      "updatedAt": "2026-02-08T15:52:10.160Z",
+      "today": true,
+      "flagged": false
     }
   ],
   "taskCategories": [
