@@ -16,6 +16,24 @@ function getEventKey(event) {
   return `${event.calendarId}::instance::${event.id}`;
 }
 
+function getMeetingScopeKeys(event) {
+  if (!event) return [];
+  const keys = [`${event.calendarId}::instance::${event.id}`];
+  if (event.recurringEventId) {
+    keys.push(`${event.calendarId}::series::${event.recurringEventId}`);
+  }
+  return keys;
+}
+
+function hasMeetingWorkspace(event) {
+  const keys = getMeetingScopeKeys(event);
+  if (!keys.length) return false;
+  const docs = state.meetingNotesByEvent || {};
+  const hasDoc = keys.some(key => !!docs[key]);
+  if (hasDoc) return true;
+  return state.tasksData.some(task => keys.includes(task.meetingEventKey));
+}
+
 function persistMeetingNotes() {
   localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(state.meetingNotesByEvent || {}));
   if (typeof window.debouncedSaveToGithub === 'function') {
@@ -378,10 +396,7 @@ function renderMeetingNotesPage() {
 
 function renderEventActionsModal(event) {
   if (!event) return '';
-  const notesKey = getEventKey(event);
-  const hasLegacyNotes = !!state.meetingNotesByEvent?.[notesKey]?.content?.trim();
-  const hasLinkedItems = getMeetingLinkedItems(notesKey).length > 0;
-  const hasNotes = hasLegacyNotes || hasLinkedItems;
+  const hasNotes = hasMeetingWorkspace(event);
   const meetingActionLabel = event.meetingProvider ? `Join ${escapeHtml(event.meetingProvider)}` : 'Open Meeting Link';
   const meetingSubLabel = event.meetingLink
     ? (event.meetingProvider ? `Launch ${escapeHtml(event.meetingProvider)} directly` : 'Open the detected call URL')
@@ -554,9 +569,10 @@ export function renderCalendarView() {
                 const cls = isOver ? 'overdue' : isDue ? 'due' : 'defer';
                 return `<div class="calendar-task-line ${cls}">${escapeHtml(t.title)}</div>`;
               }).join('')}
-              ${cellEvents.map(e =>
-                `<div class="calendar-task-line event" onclick="event.stopPropagation(); openCalendarEventActions('${q(e.calendarId)}','${q(e.id)}')">${escapeHtml(e.summary)}</div>`
-              ).join('')}
+              ${cellEvents.map(e => {
+                const withNotes = hasMeetingWorkspace(e);
+                return `<div class="calendar-task-line event ${withNotes ? 'with-notes' : ''}" onclick="event.stopPropagation(); openCalendarEventActions('${q(e.calendarId)}','${q(e.id)}')">${withNotes ? '<span class="calendar-line-note-indicator"></span>' : ''}${escapeHtml(e.summary)}</div>`;
+              }).join('')}
             </div>
           ` : ''}
         </div>`;
@@ -606,7 +622,8 @@ export function renderCalendarView() {
                 ? '<div class="calendar-range-empty">No items</div>'
                 : allItems.map(item => {
                   if (item.type === 'event') {
-                    return `<div class="calendar-task-line event" onclick="event.stopPropagation(); openCalendarEventActions('${q(item.event.calendarId)}','${q(item.event.id)}')">${escapeHtml(item.event.summary)}</div>`;
+                    const withNotes = hasMeetingWorkspace(item.event);
+                    return `<div class="calendar-task-line event ${withNotes ? 'with-notes' : ''}" onclick="event.stopPropagation(); openCalendarEventActions('${q(item.event.calendarId)}','${q(item.event.id)}')">${withNotes ? '<span class="calendar-line-note-indicator"></span>' : ''}${escapeHtml(item.event.summary)}</div>`;
                   }
                   const t = item.task;
                   const isDue = t.dueDate === dateStr;
@@ -698,10 +715,12 @@ export function renderCalendarView() {
     ? gcalEvents.map(e => {
       const title = escapeHtml(e.summary.length > 60 ? e.summary.slice(0, 57) + '...' : e.summary);
       const timeStr = formatEventTimeLabel(e) || 'All day';
+      const withNotes = hasMeetingWorkspace(e);
       return `
-        <button onclick="openCalendarEventActions('${q(e.calendarId)}','${q(e.id)}')" class="w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-[var(--bg-secondary)] transition rounded-lg">
-          <span class="w-2.5 h-2.5 rounded-full bg-[#2F9B6A] flex-shrink-0"></span>
+        <button onclick="openCalendarEventActions('${q(e.calendarId)}','${q(e.id)}')" class="w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-[var(--bg-secondary)] transition rounded-lg ${withNotes ? 'calendar-side-event-with-notes' : ''}">
+          <span class="w-2.5 h-2.5 rounded-full ${withNotes ? 'bg-coral' : 'bg-[#2F9B6A]'} flex-shrink-0"></span>
           <span class="text-sm text-[var(--text-primary)] flex-1 truncate">${title}</span>
+          ${withNotes ? '<span class="calendar-notes-chip">Notes</span>' : ''}
           <span class="text-xs text-[var(--text-muted)] flex-shrink-0">${escapeHtml(timeStr)}</span>
         </button>
       `;
