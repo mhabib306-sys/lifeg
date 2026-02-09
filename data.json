@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T11:56:19.378Z",
+  "lastUpdated": "2026-02-09T11:56:26.536Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2737,7 +2737,7 @@
     },
     {
       "id": "task_1770638176897_b5qx100se",
-      "title": "",
+      "title": "Create a second note",
       "notes": "",
       "status": "anytime",
       "completed": false,
@@ -2753,7 +2753,27 @@
       "indent": 1,
       "noteOrder": 2000,
       "createdAt": "2026-02-09T11:56:16.897Z",
-      "updatedAt": "2026-02-09T11:56:16.897Z"
+      "updatedAt": "2026-02-09T11:56:22.897Z"
+    },
+    {
+      "id": "task_1770638184176_vwic9k5fb",
+      "title": "",
+      "notes": "",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": "task_1770638172030_rerbvp7gp",
+      "indent": 2,
+      "noteOrder": 1000,
+      "createdAt": "2026-02-09T11:56:24.176Z",
+      "updatedAt": "2026-02-09T11:56:24.176Z"
     }
   ],
   "taskCategories": [
