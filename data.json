@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T13:37:34.375Z",
+  "lastUpdated": "2026-02-09T13:37:39.057Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2768,7 +2768,9 @@
       "categoryId": "personal",
       "labels": [],
       "people": [
-        "person_1770644251701"
+        "person_1770644251701",
+        "person_1770644256603",
+        "person_1770644258965"
       ],
       "deferDate": null,
       "dueDate": null,
@@ -2778,7 +2780,7 @@
       "indent": 0,
       "noteOrder": 1000,
       "createdAt": "2026-02-09T12:36:37.729Z",
-      "updatedAt": "2026-02-09T13:37:31.702Z"
+      "updatedAt": "2026-02-09T13:37:38.966Z"
     },
     {
       "id": "task_1770642770390_cwx33mxxa",
@@ -2939,6 +2941,16 @@
     {
       "id": "person_1770644251701",
       "name": "Mom",
+      "color": "#E5533D"
+    },
+    {
+      "id": "person_1770644256603",
+      "name": "Dad",
+      "color": "#7C6B8E"
+    },
+    {
+      "id": "person_1770644258965",
+      "name": "Eman",
       "color": "#E5533D"
     }
   ],
