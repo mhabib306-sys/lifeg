@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T18:03:23.597Z",
+  "lastUpdated": "2026-02-09T18:04:58.539Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3091,5 +3091,6 @@
       "order": 9,
       "visible": true
     }
-  ]
+  ],
+  "meetingNotesByEvent": {}
 }
