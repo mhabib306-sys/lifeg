@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T12:12:45.755Z",
+  "lastUpdated": "2026-02-09T12:12:48.420Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2862,7 +2862,7 @@
     },
     {
       "id": "task_1770639163273_c9it8rxh2",
-      "title": "",
+      "title": "Sub note",
       "notes": "",
       "status": "anytime",
       "completed": false,
@@ -2878,7 +2878,27 @@
       "indent": 1,
       "noteOrder": 1000,
       "createdAt": "2026-02-09T12:12:43.273Z",
-      "updatedAt": "2026-02-09T12:12:43.273Z"
+      "updatedAt": "2026-02-09T12:12:46.020Z"
+    },
+    {
+      "id": "task_1770639166020_pieusngnf",
+      "title": "",
+      "notes": "",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "cat_1769983795940",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": "task_1770639163273_c9it8rxh2",
+      "indent": 2,
+      "noteOrder": 1000,
+      "createdAt": "2026-02-09T12:12:46.021Z",
+      "updatedAt": "2026-02-09T12:12:46.021Z"
     }
   ],
   "taskCategories": [
