@@ -213,6 +213,11 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
     !deferredTasks.includes(t));
   const somedayTasks = taskItems.filter(t => t.status === 'someday');
   const inboxTasks = taskItems.filter(t => t.status === 'inbox');
+  const dueSoonCount = taskItems.filter(t => {
+    if (!t.dueDate || t.dueDate <= todayDate) return false;
+    const diff = (new Date(t.dueDate + 'T00:00:00') - new Date(todayDate + 'T00:00:00')) / 86400000;
+    return diff <= 3;
+  }).length;
 
   const completionRate = activeTasks + completedTasks > 0 ? Math.round((completedTasks / (activeTasks + completedTasks)) * 100) : 0;
   const categoryColor = currentCategory.color || '#6366F1';
@@ -232,6 +237,14 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             <div>
               <h1 class="text-2xl font-bold text-charcoal">${currentCategory.name}</h1>
               <p class="text-charcoal/50 text-sm mt-0.5">${totalTasks} item${totalTasks !== 1 ? 's' : ''} · ${completedTasks} completed</p>
+              <div class="mt-2 flex flex-wrap items-center gap-2">
+                <span class="area-chip">
+                  <span class="area-chip-dot" style="background:${categoryColor}"></span>
+                  ${activeTasks} active
+                </span>
+                <span class="area-chip">${noteItems.length} notes</span>
+                ${dueSoonCount > 0 ? `<span class="area-chip area-chip-warn">${dueSoonCount} due soon</span>` : ''}
+              </div>
             </div>
           </div>
         </div>
@@ -266,11 +279,18 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
               </div>
             ` : ''}
             <div class="flex-1"></div>
-            <button onclick="window.openNewTaskModal()"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${categoryColor}">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-              Add Task
-            </button>
+            <div class="flex items-center gap-2">
+              <button onclick="window.createRootNote('${currentCategory.id}')"
+                class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-purple-100 text-purple-600 bg-purple-50 hover:bg-purple-100 transition">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Note
+              </button>
+              <button onclick="window.openNewTaskModal()"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${categoryColor}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Add Task
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -287,6 +307,18 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             class="text-charcoal/30 hover:opacity-70 transition p-1" style="color: ${categoryColor}">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
           </button>
+        </div>
+        <div class="mt-3 flex flex-wrap items-center gap-2">
+          <button onclick="window.createTask('', { status: 'inbox', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-inbox">+ Inbox</button>
+          <button onclick="window.createTask('', { status: 'anytime', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-anytime">+ Anytime</button>
+          <button onclick="window.createTask('', { status: 'someday', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'someday' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-someday">+ Someday</button>
+          <button onclick="window.createTask('', { status: 'anytime', today: true, categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.today && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-today">+ Today</button>
+          <button onclick="window.createRootNote('${currentCategory.id}')"
+            class="area-chip area-chip-action area-chip-note">+ Note</button>
         </div>
       </div>
 
@@ -333,7 +365,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
         ` : ''}
 
         ${deferredTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden opacity-75">
+          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
             <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
               <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
               <span class="text-sm font-semibold text-[var(--text-muted)]">Deferred</span>

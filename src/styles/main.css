@@ -473,6 +473,64 @@ input[type="checkbox"]:focus {
   font-weight: 500;
 }
 
+/* Area page quick chips */
+.area-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.area-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+}
+.area-chip-warn {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #c2410c;
+}
+.area-chip-action {
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.area-chip-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+}
+.area-chip-inbox:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
+}
+.area-chip-anytime:hover {
+  background: #f0fdfa;
+  border-color: #99f6e4;
+  color: #0f766e;
+}
+.area-chip-someday:hover {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #b45309;
+}
+.area-chip-today:hover {
+  background: #fefce8;
+  border-color: #fef08a;
+  color: #a16207;
+}
+.area-chip-note:hover {
+  background: #faf5ff;
+  border-color: #d8b4fe;
+  color: #7e22ce;
+}
+
 /* Outliner Notes Styles */
 .note-item {
   --note-depth: 0;
