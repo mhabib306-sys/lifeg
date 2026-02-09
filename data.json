@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T14:26:03.196Z",
+  "lastUpdated": "2026-02-09T14:26:12.128Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1536,7 +1536,7 @@
         "asr": "1",
         "maghrib": "",
         "isha": "",
-        "quran": "1"
+        "quran": 0
       },
       "glucose": {
         "avg": "",
@@ -1574,7 +1574,7 @@
         "asr": "",
         "maghrib": "",
         "isha": "",
-        "quran": "1"
+        "quran": 0
       },
       "glucose": {
         "avg": "165",
@@ -1623,9 +1623,9 @@
         "fajr": 1,
         "dhuhr": "1",
         "asr": "",
-        "maghrib": "0",
-        "isha": "0",
-        "quran": "0"
+        "maghrib": 1,
+        "isha": 1,
+        "quran": 1
       },
       "glucose": {
         "avg": 161,
@@ -1635,7 +1635,7 @@
       "whoop": {
         "sleepPerf": 62,
         "recovery": 51,
-        "strain": 4.3,
+        "strain": 0.1,
         "whoopAge": ""
       },
       "family": {
@@ -1651,7 +1651,7 @@
         "reading": 0,
         "meditation": 0,
         "water": "",
-        "vitamins": true,
+        "vitamins": false,
         "brushTeeth": 0,
         "nop": ""
       }
@@ -1722,7 +1722,9 @@
       "dueDate": "2026-02-01",
       "createdAt": "2026-02-01T17:33:11.520Z",
       "updatedAt": "2026-02-01T21:59:24.391Z",
-      "order": 2000
+      "order": 2000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1769975062714_q3orkc0x4",
@@ -1738,13 +1740,15 @@
       "dueDate": null,
       "createdAt": "2026-02-01T19:44:22.714Z",
       "updatedAt": "2026-02-01T20:23:36.335Z",
-      "order": 3000
+      "order": 3000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1769983134892_m1rrugw2n",
       "title": "Review Q1 Board Material",
       "notes": "",
-      "status": "today",
+      "status": "anytime",
       "completed": true,
       "completedAt": "2026-02-07T08:23:12.141Z",
       "categoryId": "work",
@@ -1758,7 +1762,9 @@
       "repeat": null,
       "createdAt": "2026-02-01T21:58:54.892Z",
       "updatedAt": "2026-02-07T08:23:12.141Z",
-      "order": 1000
+      "order": 1000,
+      "today": true,
+      "flagged": false
     },
     {
       "id": "task_1769983190852_63y3loltu",
@@ -1775,27 +1781,47 @@
       "repeat": null,
       "createdAt": "2026-02-01T21:59:50.852Z",
       "updatedAt": "2026-02-01T22:09:24.738Z",
-      "order": 1000
+      "order": 1000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1769983213352_9h03aplwq",
       "title": "Hifz gift for Nancy as she finishes Hud (so she memorized until Yusuf) ahead of Ramadan",
       "notes": "",
-      "status": "anytime",
+      "status": "inbox",
       "completed": false,
       "completedAt": null,
-      "categoryId": "cat_1769983795940",
+      "categoryId": "family",
       "labels": [],
       "people": [],
       "deferDate": null,
       "dueDate": "2026-02-14",
       "repeat": null,
       "createdAt": "2026-02-01T22:00:13.352Z",
-      "updatedAt": "2026-02-09T12:20:29.953Z",
-      "order": 5000,
+      "updatedAt": "2026-02-01T22:08:24.521Z",
+      "order": 6000,
       "today": false,
-      "flagged": false,
-      "isNote": false
+      "flagged": false
+    },
+    {
+      "id": "task_1769983575696_3yq56ixj0",
+      "title": "task",
+      "notes": "",
+      "status": "inbox",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "createdAt": "2026-02-01T22:06:15.696Z",
+      "updatedAt": "2026-02-01T22:06:15.696Z",
+      "order": 9000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1769984504582_xua0ibokb",
@@ -1814,7 +1840,28 @@
       "repeat": null,
       "createdAt": "2026-02-01T22:21:44.582Z",
       "updatedAt": "2026-02-09T04:47:18.251Z",
-      "order": 5000
+      "order": 11000,
+      "today": false,
+      "flagged": false
+    },
+    {
+      "id": "task_1769986708273_8h0ih9rn2",
+      "title": "testing a task in a cat that should appear in anytime",
+      "notes": "",
+      "status": "inbox",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "work",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "createdAt": "2026-02-01T22:58:28.273Z",
+      "updatedAt": "2026-02-01T23:06:21.695Z",
+      "order": 5000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1769987546598_2phz0gy20",
@@ -1833,7 +1880,9 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:12:26.598Z",
       "updatedAt": "2026-02-06T14:53:30.380Z",
-      "order": 12000
+      "order": 20000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1769988506419_k5obmgok8",
@@ -1852,50 +1901,56 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:28:26.419Z",
       "updatedAt": "2026-02-07T09:20:51.767Z",
-      "order": 4000
+      "order": 4000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1769988515754_csmenwco0",
-      "title": "Send a thank you note to Amr Morsy of Saya",
+      "title": "Send a thank you note to Amr Morsy",
       "notes": "",
-      "status": "anytime",
+      "status": "inbox",
       "completed": false,
       "completedAt": null,
-      "categoryId": "personal",
+      "categoryId": null,
       "labels": [],
       "people": [],
       "deferDate": null,
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T23:28:35.754Z",
-      "updatedAt": "2026-02-09T11:22:31.962Z",
-      "order": 3000
+      "updatedAt": "2026-02-07T23:24:35.358Z",
+      "order": 4000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1769988521177_vhh01bgsj",
-      "title": "Send a thank you note to Samy of Dar El Orouba",
+      "title": "Send a thank you note to Samy",
       "notes": "",
-      "status": "anytime",
+      "status": "inbox",
       "completed": false,
       "completedAt": null,
-      "categoryId": "personal",
+      "categoryId": null,
       "labels": [],
       "people": [],
       "deferDate": null,
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T23:28:41.177Z",
-      "updatedAt": "2026-02-09T11:22:22.201Z",
-      "order": 9000
+      "updatedAt": "2026-02-08T23:03:17.162Z",
+      "order": 11000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1769988612754_r5uemyqjd",
       "title": "Annual Merit increase for Dubai population",
       "notes": "",
-      "status": "anytime",
+      "status": "inbox",
       "completed": false,
       "completedAt": null,
-      "categoryId": "work",
+      "categoryId": null,
       "labels": [],
       "people": [
         "person_1769988307264"
@@ -1904,8 +1959,10 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T23:30:12.754Z",
-      "updatedAt": "2026-02-09T11:21:52.473Z",
-      "order": 1000
+      "updatedAt": "2026-02-08T22:32:25.344Z",
+      "order": 1000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770019730706_1pnzslxtt",
@@ -1921,7 +1978,10 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-02T08:08:50.706Z",
-      "updatedAt": "2026-02-02T08:08:55.352Z"
+      "updatedAt": "2026-02-02T08:08:55.352Z",
+      "today": false,
+      "flagged": false,
+      "order": 14000
     },
     {
       "id": "task_1770019776918_pke6505zt",
@@ -1940,24 +2000,28 @@
       "repeat": null,
       "createdAt": "2026-02-02T08:09:36.918Z",
       "updatedAt": "2026-02-02T08:09:52.631Z",
-      "order": 14000
+      "order": 22000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770020104608_3pypqlvmh",
       "title": "Schedule 1:1 with Seif",
       "notes": "",
-      "status": "anytime",
+      "status": "inbox",
       "completed": false,
       "completedAt": null,
-      "categoryId": "work",
+      "categoryId": null,
       "labels": [],
       "people": [],
       "deferDate": null,
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-02T08:15:04.608Z",
-      "updatedAt": "2026-02-09T11:22:08.745Z",
-      "order": 6000
+      "updatedAt": "2026-02-08T22:31:38.052Z",
+      "order": 7000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770023484203_knltwbqf7",
@@ -1976,7 +2040,9 @@
       "repeat": null,
       "createdAt": "2026-02-02T09:11:24.203Z",
       "updatedAt": "2026-02-07T21:32:18.067Z",
-      "order": 5000
+      "order": 5000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770407032465_enl9a1re9",
@@ -1994,7 +2060,9 @@
       "isNote": false,
       "createdAt": "2026-02-06T19:43:52.465Z",
       "updatedAt": "2026-02-08T18:49:58.475Z",
-      "order": 5000
+      "order": 5000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770407038478_0u5etf01p",
@@ -2011,11 +2079,10 @@
       "repeat": null,
       "isNote": true,
       "createdAt": "2026-02-06T19:43:58.478Z",
-      "updatedAt": "2026-02-09T14:12:28.063Z",
-      "order": 16000,
-      "parentId": null,
-      "indent": 0,
-      "noteOrder": 500
+      "updatedAt": "2026-02-07T08:01:38.593Z",
+      "order": 24000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770407048879_4e86e0ajn",
@@ -2032,11 +2099,32 @@
       "repeat": null,
       "isNote": true,
       "createdAt": "2026-02-06T19:44:08.879Z",
-      "updatedAt": "2026-02-09T14:12:37.482Z",
-      "order": 13000,
+      "updatedAt": "2026-02-07T08:11:29.758Z",
+      "order": 21000,
       "parentId": null,
       "indent": 0,
-      "noteOrder": 250
+      "today": false,
+      "flagged": false
+    },
+    {
+      "id": "task_1770407118912_dg79goye3",
+      "title": "Note title",
+      "notes": "Note details",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "createdAt": "2026-02-06T19:45:18.912Z",
+      "updatedAt": "2026-02-07T08:51:17.825Z",
+      "order": 25000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770419495459_db8m1al68",
@@ -2054,7 +2142,29 @@
       "isNote": false,
       "createdAt": "2026-02-06T23:11:35.459Z",
       "updatedAt": "2026-02-08T00:16:12.198Z",
-      "order": 18000
+      "order": 26000,
+      "today": false,
+      "flagged": false
+    },
+    {
+      "id": "task_1770419503417_ps4ynftsw",
+      "title": "Breadfast note",
+      "notes": "",
+      "status": "inbox",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "work",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "createdAt": "2026-02-06T23:11:43.417Z",
+      "updatedAt": "2026-02-06T23:11:43.417Z",
+      "order": 3000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770450641886_r0ykcmc6m",
@@ -2072,7 +2182,9 @@
       "isNote": true,
       "createdAt": "2026-02-07T07:50:41.886Z",
       "updatedAt": "2026-02-07T07:50:45.809Z",
-      "order": 19000
+      "order": 27000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770450958071_jz3ou5au6",
@@ -2092,13 +2204,15 @@
       "isNote": true,
       "createdAt": "2026-02-07T07:55:58.071Z",
       "updatedAt": "2026-02-07T07:55:58.071Z",
-      "order": 11000
+      "order": 19000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770456058835_o9bav1rjn",
       "title": "Get a gift for Omar Metwally?",
       "notes": "",
-      "status": "today",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
       "categoryId": null,
@@ -2112,15 +2226,17 @@
       "indent": 0,
       "createdAt": "2026-02-07T09:20:58.835Z",
       "updatedAt": "2026-02-08T14:45:57.270Z",
-      "order": 1000
+      "order": 1000,
+      "today": true,
+      "flagged": false
     },
     {
       "id": "task_1770456275105_ylqx33576",
       "title": "Finish the tomb registration thing",
       "notes": "",
       "status": "anytime",
-      "completed": true,
-      "completedAt": "2026-02-09T11:14:55.040Z",
+      "completed": false,
+      "completedAt": null,
       "categoryId": null,
       "labels": [],
       "people": [],
@@ -2131,8 +2247,54 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-07T09:24:35.106Z",
-      "updatedAt": "2026-02-09T11:14:55.040Z",
-      "order": 10000
+      "updatedAt": "2026-02-08T15:43:21.642Z",
+      "order": 18000,
+      "today": false,
+      "flagged": false
+    },
+    {
+      "id": "task_1770458513599_4ld7hzilp",
+      "title": "I don't think Eman realized how big this was to me.",
+      "notes": "",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": null,
+      "indent": 0,
+      "createdAt": "2026-02-07T10:01:53.599Z",
+      "updatedAt": "2026-02-07T10:02:19.548Z",
+      "order": 23000,
+      "today": false,
+      "flagged": false
+    },
+    {
+      "id": "task_1770485272782_1l1ycs1mk",
+      "title": "",
+      "notes": "",
+      "status": "inbox",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "createdAt": "2026-02-07T17:27:52.782Z",
+      "updatedAt": "2026-02-07T17:27:52.782Z",
+      "order": 2000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770490285825_vgowyp7kn",
@@ -2154,7 +2316,31 @@
       "indent": 0,
       "createdAt": "2026-02-07T18:51:25.826Z",
       "updatedAt": "2026-02-07T20:07:24.844Z",
-      "order": 6000
+      "order": 6000,
+      "today": false,
+      "flagged": false
+    },
+    {
+      "id": "task_1770509778354_dbyy19ncj",
+      "title": "Task",
+      "notes": "",
+      "status": "inbox",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "work",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "createdAt": "2026-02-08T00:16:18.354Z",
+      "updatedAt": "2026-02-08T00:16:23.732Z",
+      "order": 8000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770510427575_jqc4ymb63",
@@ -2178,15 +2364,17 @@
       "indent": 0,
       "createdAt": "2026-02-08T00:27:07.575Z",
       "updatedAt": "2026-02-08T00:27:07.575Z",
-      "order": 7000
+      "order": 14000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770537779625_2gz2y5err",
       "title": "Take B12",
       "notes": "",
       "status": "anytime",
-      "completed": true,
-      "completedAt": "2026-02-09T11:16:01.014Z",
+      "completed": false,
+      "completedAt": null,
       "categoryId": "personal",
       "labels": [],
       "people": [],
@@ -2201,8 +2389,10 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-08T08:02:59.625Z",
-      "updatedAt": "2026-02-09T11:16:01.014Z",
-      "order": 3000
+      "updatedAt": "2026-02-08T14:45:58.772Z",
+      "order": 9000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770539531712_1uj5n1q1j",
@@ -2222,7 +2412,9 @@
       "indent": 0,
       "order": 2000,
       "createdAt": "2026-02-08T08:32:11.712Z",
-      "updatedAt": "2026-02-08T15:43:09.763Z"
+      "updatedAt": "2026-02-08T15:43:09.763Z",
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770540821297_5qvw166rw",
@@ -2240,9 +2432,11 @@
       "isNote": true,
       "parentId": null,
       "indent": 0,
-      "order": 20000,
+      "order": 29000,
       "createdAt": "2026-02-08T08:53:41.297Z",
-      "updatedAt": "2026-02-08T08:53:41.297Z"
+      "updatedAt": "2026-02-08T08:53:41.297Z",
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770540828612_b3q4ssdag",
@@ -2262,7 +2456,9 @@
       "indent": 1,
       "createdAt": "2026-02-08T08:53:45.454Z",
       "updatedAt": "2026-02-08T08:53:51.423Z",
-      "order": 1000
+      "order": 7000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770540831423_c87emukre",
@@ -2282,7 +2478,9 @@
       "indent": 2,
       "createdAt": "2026-02-08T08:53:48.938Z",
       "updatedAt": "2026-02-08T08:53:54.279Z",
-      "order": 2000
+      "order": 8000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770540844662_jfbkwax3v",
@@ -2302,7 +2500,9 @@
       "indent": 0,
       "createdAt": "2026-02-08T08:53:53.479Z",
       "updatedAt": "2026-02-08T08:54:04.662Z",
-      "order": 4000
+      "order": 10000,
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770550089075_aufzybsl8",
@@ -2311,7 +2511,7 @@
       "status": "anytime",
       "completed": false,
       "completedAt": null,
-      "categoryId": "cat_1769983795940",
+      "categoryId": "family",
       "labels": [],
       "people": [
         "person-1770490296950"
@@ -2324,8 +2524,30 @@
       "indent": 0,
       "order": 7000,
       "createdAt": "2026-02-08T11:28:09.075Z",
-      "updatedAt": "2026-02-09T12:20:21.066Z",
+      "updatedAt": "2026-02-08T17:27:51.589Z",
       "today": true,
+      "flagged": false
+    },
+    {
+      "id": "task_1770550567385_p56inxou0",
+      "title": "",
+      "notes": "",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": "task_1770407038478_0u5etf01p",
+      "indent": 1,
+      "createdAt": "2026-02-08T11:36:07.385Z",
+      "updatedAt": "2026-02-08T11:36:07.385Z",
+      "order": 3000,
+      "today": false,
       "flagged": false
     },
     {
@@ -2346,15 +2568,17 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 8000,
+      "order": 10000,
       "createdAt": "2026-02-08T15:19:35.208Z",
-      "updatedAt": "2026-02-08T15:19:35.208Z"
+      "updatedAt": "2026-02-08T15:19:35.208Z",
+      "today": false,
+      "flagged": false
     },
     {
       "id": "task_1770565930160_cs8oj7kcs",
       "title": "Todo",
       "notes": "",
-      "status": "today",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
       "categoryId": null,
@@ -2368,7 +2592,9 @@
       "indent": 0,
       "order": 3000,
       "createdAt": "2026-02-08T15:52:10.160Z",
-      "updatedAt": "2026-02-08T15:52:10.160Z"
+      "updatedAt": "2026-02-08T15:52:10.160Z",
+      "today": true,
+      "flagged": false
     },
     {
       "id": "task_1770576704363_panfyf0jg",
@@ -2393,7 +2619,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 8000,
+      "order": 16000,
       "createdAt": "2026-02-08T18:51:44.364Z",
       "updatedAt": "2026-02-09T04:47:56.590Z"
     },
@@ -2417,7 +2643,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 6000,
+      "order": 13000,
       "createdAt": "2026-02-08T22:09:22.749Z",
       "updatedAt": "2026-02-08T23:03:12.683Z"
     },
@@ -2439,7 +2665,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 9000,
+      "order": 17000,
       "createdAt": "2026-02-08T22:20:39.003Z",
       "updatedAt": "2026-02-08T23:03:23.038Z"
     },
@@ -2463,7 +2689,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 23000,
+      "order": 32000,
       "createdAt": "2026-02-08T23:00:08.748Z",
       "updatedAt": "2026-02-08T23:00:08.748Z"
     },
@@ -2485,7 +2711,7 @@
       "isNote": true,
       "parentId": null,
       "indent": 0,
-      "order": 22000,
+      "order": 31000,
       "createdAt": "2026-02-08T23:07:06.419Z",
       "updatedAt": "2026-02-08T23:08:55.378Z"
     },
@@ -2509,7 +2735,7 @@
       "updatedAt": "2026-02-08T23:08:53.590Z",
       "today": false,
       "flagged": false,
-      "order": 21000
+      "order": 30000
     },
     {
       "id": "task_1770596756539_vp4g87inh",
@@ -2531,7 +2757,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 24000,
+      "order": 33000,
       "createdAt": "2026-02-09T00:25:56.539Z",
       "updatedAt": "2026-02-09T00:25:56.539Z"
     },
@@ -2542,365 +2768,20 @@
       "status": "inbox",
       "today": false,
       "flagged": false,
-      "completed": true,
-      "completedAt": "2026-02-09T11:14:54.094Z",
+      "completed": false,
+      "completedAt": null,
       "categoryId": null,
       "labels": [],
       "people": [],
       "deferDate": "2026-02-09",
-      "dueDate": "2026-02-09",
+      "dueDate": null,
       "repeat": null,
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 10000,
+      "order": 48000,
       "createdAt": "2026-02-09T05:10:08.457Z",
-      "updatedAt": "2026-02-09T11:14:54.094Z"
-    },
-    {
-      "id": "task_1770630290504_ok5hgkzzv",
-      "title": "Review the Users metrics and discuss with Joehnny any questions",
-      "notes": "",
-      "status": "anytime",
-      "today": true,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "order": 25000,
-      "createdAt": "2026-02-09T09:44:50.504Z",
-      "updatedAt": "2026-02-09T09:44:50.504Z"
-    },
-    {
-      "id": "task_1770635761014_93wxwdo1c",
-      "title": "Take B12",
-      "notes": "",
-      "status": "anytime",
-      "today": false,
-      "flagged": false,
-      "completed": true,
-      "completedAt": "2026-02-09T11:16:07.564Z",
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": "2026-02-09",
-      "dueDate": null,
-      "repeat": {
-        "type": "daily",
-        "interval": 1,
-        "from": "due"
-      },
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "order": 36000,
-      "createdAt": "2026-02-09T11:16:01.014Z",
-      "updatedAt": "2026-02-09T11:16:07.564Z"
-    },
-    {
-      "id": "task_1770635767564_c17he1h1e",
-      "title": "Take B12",
-      "notes": "",
-      "status": "anytime",
-      "today": false,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": "2026-02-10",
-      "dueDate": null,
-      "repeat": {
-        "type": "daily",
-        "interval": 1,
-        "from": "due"
-      },
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "order": 36000,
-      "createdAt": "2026-02-09T11:16:07.564Z",
-      "updatedAt": "2026-02-09T11:16:07.564Z"
-    },
-    {
-      "id": "task_1770638549365_cjbydcc6d",
-      "title": "Talk to Mostafa and Eugene about using only the Main Cats on our app in any board or investors slides moving forward",
-      "notes": "",
-      "status": "anytime",
-      "today": false,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "work",
-      "labels": [],
-      "people": [
-        "person_1769988307264",
-        "person_1770645906849"
-      ],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "order": 41000,
-      "createdAt": "2026-02-09T12:02:29.365Z",
-      "updatedAt": "2026-02-09T14:05:14.624Z"
-    },
-    {
-      "id": "task_1770639159150_9kuqmhfu5",
-      "title": "Main note",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "cat_1769983795940",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "noteOrder": 1000,
-      "createdAt": "2026-02-09T12:12:39.150Z",
-      "updatedAt": "2026-02-09T12:12:43.273Z"
-    },
-    {
-      "id": "task_1770639163273_c9it8rxh2",
-      "title": "Sub note",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "cat_1769983795940",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": "task_1770639159150_9kuqmhfu5",
-      "indent": 1,
-      "noteOrder": 1000,
-      "createdAt": "2026-02-09T12:12:43.273Z",
-      "updatedAt": "2026-02-09T12:12:46.020Z"
-    },
-    {
-      "id": "task_1770639166020_pieusngnf",
-      "title": "Another sub note",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "cat_1769983795940",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": "task_1770639163273_c9it8rxh2",
-      "indent": 2,
-      "noteOrder": 1000,
-      "createdAt": "2026-02-09T12:12:46.021Z",
-      "updatedAt": "2026-02-09T12:12:48.809Z"
-    },
-    {
-      "id": "task_1770639256266_htsfsqeu4",
-      "title": "Discuss with Nancy the Podcast questions",
-      "notes": "",
-      "status": "anytime",
-      "today": false,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "cat_1769983795940",
-      "labels": [],
-      "people": [
-        "person-1770490296950"
-      ],
-      "deferDate": "2026-02-09",
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "order": 46000,
-      "createdAt": "2026-02-09T12:14:16.266Z",
-      "updatedAt": "2026-02-09T12:14:16.266Z"
-    },
-    {
-      "id": "task_1770640597729_1snt8xwyy",
-      "title": "Mom mentioned to Eman that she is upset because she didn't stand up for me during the verbal abuse I faced dealing with my dad in my early years. I don't think Eman realized how big this was for me. I was just journaling about the exact same thing around the same time this happened. And now I realize that this was what mom apologized for during the last days.",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "personal",
-      "labels": [
-        "label_1770644268551"
-      ],
-      "people": [
-        "person_1770644251701",
-        "person_1770644256603",
-        "person_1770644258965"
-      ],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "noteOrder": 1000,
-      "createdAt": "2026-02-09T12:36:37.729Z",
-      "updatedAt": "2026-02-09T14:12:18.962Z"
-    },
-    {
-      "id": "task_1770642770390_cwx33mxxa",
-      "title": "Nancy mentioned to me how her team changed the metrics without making sure they are covering what they need to report for the target. I also need to close the reporting mechanism for the board and investors and have Omar Badr take over from Eugene.",
-      "notes": "",
-      "status": "inbox",
-      "today": false,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "order": 39000,
-      "createdAt": "2026-02-09T13:12:50.390Z",
-      "updatedAt": "2026-02-09T13:12:50.390Z"
-    },
-    {
-      "id": "task_1770644520022_n7njes3k9",
-      "title": "Set the time to figure out how to organize my time between everything with the current setup",
-      "notes": "",
-      "status": "anytime",
-      "today": false,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "order": 40000,
-      "createdAt": "2026-02-09T13:42:00.022Z",
-      "updatedAt": "2026-02-09T13:42:00.022Z"
-    },
-    {
-      "id": "task_1770644520022_r2f2lgxkb",
-      "title": "Remind Nancy to invite Ahmad and Dad to have lunch with us and discuss plans for Ramadan",
-      "notes": "",
-      "status": "anytime",
-      "today": false,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "family",
-      "labels": [],
-      "people": [
-        "person-1770490296950",
-        "person_1770450952169",
-        "person_1770644256603"
-      ],
-      "deferDate": "2026-02-11",
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "order": 41000,
-      "createdAt": "2026-02-09T13:42:00.022Z",
-      "updatedAt": "2026-02-09T13:42:00.022Z"
-    },
-    {
-      "id": "task_1770646200473_mro173qyq",
-      "title": "The Care PL issue",
-      "notes": "",
-      "status": "anytime",
-      "today": false,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [
-        "person-1770510421604"
-      ],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "order": 41000,
-      "createdAt": "2026-02-09T14:10:00.473Z",
-      "updatedAt": "2026-02-09T14:10:22.490Z"
-    },
-    {
-      "id": "task_1770646266480_k8btsq398",
-      "title": "Note",
-      "notes": "",
-      "status": "anytime",
-      "today": false,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "order": 45000,
-      "createdAt": "2026-02-09T14:11:06.480Z",
-      "updatedAt": "2026-02-09T14:11:06.480Z"
-    },
-    {
-      "id": "task_1770647148591_tkt47epx4",
-      "title": "I want to be better",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "noteOrder": 2000,
-      "createdAt": "2026-02-09T14:25:48.592Z",
-      "updatedAt": "2026-02-09T14:26:00.409Z"
+      "updatedAt": "2026-02-09T05:10:42.329Z"
     }
   ],
   "taskCategories": [
@@ -2975,21 +2856,6 @@
       "id": "label-1770510417167",
       "name": "portfolio",
       "color": "#3b82f6"
-    },
-    {
-      "id": "label_1770638542646",
-      "name": "Mostafa",
-      "color": "#22c55e"
-    },
-    {
-      "id": "label_1770638544367",
-      "name": "Eugene",
-      "color": "#ec4899"
-    },
-    {
-      "id": "label_1770644268551",
-      "name": "Journal",
-      "color": "#f59e0b"
     }
   ],
   "taskPeople": [
@@ -3040,38 +2906,15 @@
       "id": "person_1770591589441",
       "name": "Nadine",
       "color": "#4A90A4"
-    },
-    {
-      "id": "person_1770644251701",
-      "name": "Mom",
-      "color": "#E5533D"
-    },
-    {
-      "id": "person_1770644256603",
-      "name": "Dad",
-      "color": "#7C6B8E"
-    },
-    {
-      "id": "person_1770644258965",
-      "name": "Eman",
-      "color": "#E5533D"
-    },
-    {
-      "id": "person_1770645906849",
-      "name": "Eugene Hooi",
-      "color": "#6B8E5A"
     }
   ],
   "customPerspectives": [
     {
       "id": "custom_1770017177816",
       "name": "Nancy: Active Topics",
-      "icon": "👰",
+      "icon": "📌",
       "filter": {
-        "logic": "all",
         "categoryId": "cat_1769983795940",
-        "availability": "available",
-        "tagMatch": "any",
         "labelIds": [
           "label_1769989456692"
         ]
@@ -3101,17 +2944,17 @@
       "visible": true
     },
     {
-      "id": "weather",
-      "type": "weather",
-      "title": "Weather",
-      "size": "half",
-      "order": 1,
-      "visible": false
-    },
-    {
       "id": "today-tasks",
       "type": "today-tasks",
       "title": "Today",
+      "size": "half",
+      "order": 1,
+      "visible": true
+    },
+    {
+      "id": "weather",
+      "type": "weather",
+      "title": "Weather",
       "size": "half",
       "order": 2,
       "visible": true
@@ -3125,68 +2968,27 @@
       "visible": true
     },
     {
+      "id": "todays-score",
+      "type": "score",
+      "title": "Today's Score",
+      "size": "half",
+      "order": 4,
+      "visible": true
+    },
+    {
       "id": "next-tasks",
       "type": "next-tasks",
       "title": "Next",
       "size": "half",
-      "order": 4,
+      "order": 5,
       "visible": true
     },
     {
       "id": "daily-entry",
       "type": "daily-entry",
       "title": "Daily Entry",
-      "size": "full",
-      "order": 5,
-      "visible": true
-    },
-    {
-      "id": "todays-score",
-      "type": "score",
-      "title": "Today's Score",
       "size": "half",
       "order": 6,
-      "visible": true
-    },
-    {
-      "id": "perspective-custom_1770017177816",
-      "type": "perspective",
-      "title": "Nancy: Active Topics",
-      "perspectiveId": "custom_1770017177816",
-      "size": "half",
-      "order": 7,
-      "visible": true
-    },
-    {
-      "id": "prayers",
-      "type": "prayers",
-      "title": "Prayers",
-      "size": "half",
-      "order": 8,
-      "visible": true
-    },
-    {
-      "id": "glucose",
-      "type": "glucose",
-      "title": "Glucose",
-      "size": "half",
-      "order": 9,
-      "visible": true
-    },
-    {
-      "id": "whoop",
-      "type": "whoop",
-      "title": "Whoop",
-      "size": "half",
-      "order": 10,
-      "visible": true
-    },
-    {
-      "id": "habits",
-      "type": "habits",
-      "title": "Habits",
-      "size": "half",
-      "order": 11,
       "visible": true
     }
   ]
