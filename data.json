@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T19:37:28.904Z",
+  "lastUpdated": "2026-02-09T19:49:13.056Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2929,50 +2929,12 @@
       "order": 3000,
       "today": false,
       "flagged": false
-    },
-    {
-      "id": "task_1769986708273_8h0ih9rn2",
-      "title": "testing a task in a cat that should appear in anytime",
-      "notes": "",
-      "status": "inbox",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "work",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "createdAt": "2026-02-01T22:58:28.273Z",
-      "updatedAt": "2026-02-01T23:06:21.695Z",
-      "order": 5000,
-      "today": false,
-      "flagged": false
-    },
-    {
-      "id": "task_1770509778354_dbyy19ncj",
-      "title": "Task",
-      "notes": "",
-      "status": "inbox",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "work",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "createdAt": "2026-02-08T00:16:18.354Z",
-      "updatedAt": "2026-02-08T00:16:23.732Z",
-      "order": 8000,
-      "today": false,
-      "flagged": false
     }
   ],
-  "deletedTaskTombstones": {},
+  "deletedTaskTombstones": {
+    "task_1769986708273_8h0ih9rn2": "2026-02-09T19:37:29.588Z",
+    "task_1770509778354_dbyy19ncj": "2026-02-09T19:37:30.799Z"
+  },
   "taskCategories": [
     {
       "id": "personal",
