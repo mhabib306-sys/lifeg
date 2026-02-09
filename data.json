@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T04:47:05.632Z",
+  "lastUpdated": "2026-02-09T04:47:20.904Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1811,7 +1811,7 @@
     },
     {
       "id": "task_1769984504582_xua0ibokb",
-      "title": "Memorizing Gift",
+      "title": "Quran Memorization Gift",
       "notes": "",
       "status": "anytime",
       "completed": false,
@@ -1825,7 +1825,7 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T22:21:44.582Z",
-      "updatedAt": "2026-02-08T15:46:51.390Z",
+      "updatedAt": "2026-02-09T04:47:18.251Z",
       "order": 11000
     },
     {
