@@ -288,13 +288,13 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
       <!-- Quick Add -->
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] px-4 py-3">
         <div class="flex items-center gap-3">
-          <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
+          <button onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
-              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${categoryColor}40"></div>`
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6] mr-1.5"></div><span class="text-[12px] font-medium text-[#8B5CF6]">Note</span>`
+              : `<div class="w-[16px] h-[16px] rounded-full border-[1.5px] border-dashed mr-1" style="border-color: ${categoryColor}60"></div><span class="text-[12px] font-medium text-[var(--text-muted)]/60">Task</span>`
             }
-          </div>
+          </button>
           <input type="text" id="quick-add-input"
             placeholder="${state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
             onkeydown="window.handleQuickAddKeydown(event, this)"
@@ -724,13 +724,13 @@ export function renderTasksTab() {
             ${state.activePerspective === 'notes' ? `
               <div class="w-2 h-2 rounded-full border-2 border-dashed border-[#8B5CF6]/40 flex-shrink-0 ml-1.5"></div>
             ` : `
-              <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
+              <button onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
                 class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
                 ${state.quickAddIsNote
-                  ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
-                  : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed border-[var(--text-muted)]/30 flex-shrink-0"></div>`
+                  ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6] mr-1.5"></div><span class="text-[12px] font-medium text-[#8B5CF6]">Note</span>`
+                  : `<div class="w-[16px] h-[16px] rounded-full border-[1.5px] border-dashed border-[var(--text-muted)]/30 mr-1"></div><span class="text-[12px] font-medium text-[var(--text-muted)]/60">Task</span>`
                 }
-              </div>
+              </button>
             `}
             <input type="text" id="quick-add-input"
               placeholder="${state.activePerspective === 'notes' || state.quickAddIsNote ? 'New Note' : 'New To-Do'}"

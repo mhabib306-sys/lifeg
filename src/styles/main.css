@@ -1046,18 +1046,20 @@ input[type="checkbox"]:focus {
 
 /* Quick-add task/note type toggle */
 .quick-add-type-toggle {
-  width: 22px;
-  height: 22px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  padding: 3px 8px 3px 6px;
   cursor: pointer;
-  border-radius: 50%;
+  border-radius: 999px;
   flex-shrink: 0;
-  transition: background 0.15s;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  transition: background 0.15s, border-color 0.15s;
+  line-height: 1;
 }
 .quick-add-type-toggle:hover {
-  background: var(--accent-light, rgba(0,0,0,0.05));
+  background: var(--accent-light, rgba(0,0,0,0.04));
+  border-color: var(--text-muted);
 }
 
 /* Mobile Header Compact */
