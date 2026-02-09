@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T11:56:07.313Z",
+  "lastUpdated": "2026-02-09T11:56:19.378Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2716,8 +2716,8 @@
       "updatedAt": "2026-02-09T11:16:07.564Z"
     },
     {
-      "id": "task_1770638127676_0vaoa622b",
-      "title": "Sub note",
+      "id": "task_1770638172030_rerbvp7gp",
+      "title": "Main note",
       "notes": "",
       "status": "anytime",
       "completed": false,
@@ -2732,8 +2732,28 @@
       "parentId": "task_1770407118912_dg79goye3",
       "indent": 1,
       "noteOrder": 1000,
-      "createdAt": "2026-02-09T11:55:27.676Z",
-      "updatedAt": "2026-02-09T11:55:34.301Z"
+      "createdAt": "2026-02-09T11:56:12.030Z",
+      "updatedAt": "2026-02-09T11:56:13.984Z"
+    },
+    {
+      "id": "task_1770638176897_b5qx100se",
+      "title": "",
+      "notes": "",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": "task_1770407118912_dg79goye3",
+      "indent": 1,
+      "noteOrder": 2000,
+      "createdAt": "2026-02-09T11:56:16.897Z",
+      "updatedAt": "2026-02-09T11:56:16.897Z"
     }
   ],
   "taskCategories": [
