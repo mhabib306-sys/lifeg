@@ -405,16 +405,16 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
               <span class="text-sm font-semibold text-charcoal">Notes</span>
               <span class="text-xs text-charcoal/40 ml-1">${noteItems.length}</span>
             </div>
-            <button onclick="window.createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = window.tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { window.startInlineEdit(notes[notes.length-1].id); } }, 100);"
+            <button onclick="window.createRootNote('${currentCategory.id}')"
               class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-purple-600 hover:bg-purple-50 rounded-lg transition">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
               Add Note
             </button>
           </div>
           ${noteItems.length > 0 ? `
-            <div class="task-list">${noteItems.map(task => renderTaskItem(task)).join('')}</div>
+            <div class="py-2">${renderNotesOutliner(currentCategory.id)}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = window.tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { window.startInlineEdit(notes[notes.length-1].id); } }, 100);"
+              <button onclick="window.createRootNote('${currentCategory.id}')"
                 class="flex items-center gap-2 px-3 py-2 w-full text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50/50 rounded-lg transition text-left">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Add another note...
@@ -423,7 +423,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           ` : `
             <div class="px-4 py-8 text-center">
               <p class="text-sm text-charcoal/40 mb-3">No notes in this area yet</p>
-              <button onclick="window.createTask('', { isNote: true, categoryId: '${currentCategory.id}', status: 'anytime' }); setTimeout(() => { const notes = window.tasksData.filter(t => t.isNote && t.categoryId === '${currentCategory.id}' && !t.completed); if (notes.length) { window.startInlineEdit(notes[notes.length-1].id); } }, 100);"
+              <button onclick="window.createRootNote('${currentCategory.id}')"
                 class="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-600 text-sm font-medium rounded-lg hover:bg-purple-100 transition">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Create your first note
@@ -465,6 +465,7 @@ export function renderTasksTab() {
   const allPerspectives = [...BUILTIN_PERSPECTIVES, ...state.customPerspectives];
   const filteredTasks = getCurrentFilteredTasks();
   const viewInfo = getCurrentViewInfo();
+  const activeNotesCategory = state.activeCategoryFilter ? getCategoryById(state.activeCategoryFilter) : null;
 
   // Count tasks per perspective
   const taskCounts = {};
@@ -818,7 +819,15 @@ export function renderTasksTab() {
             <!-- Notes Outliner View -->
             <div class="notes-outliner bg-[var(--bg-card)]">
               <div class="px-4 py-3 border-b border-charcoal/5">
-                <div class="flex items-center gap-2 text-xs text-charcoal/40">
+                ${activeNotesCategory ? `
+                  <div class="mb-2">
+                    <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
+                      <span class="w-2 h-2 rounded-full" style="background:${activeNotesCategory.color || '#8B5CF6'}"></span>
+                      ${escapeHtml(activeNotesCategory.name)}
+                    </span>
+                  </div>
+                ` : ''}
+                <div class="flex flex-wrap items-center gap-2 text-xs text-charcoal/40">
                   <span>Tab to indent</span>
                   <span>•</span>
                   <span>Shift+Tab to outdent</span>
@@ -831,7 +840,7 @@ export function renderTasksTab() {
               <div class="py-2">
                 ${renderNotesOutliner(state.activeCategoryFilter)}
                 <div class="px-4 py-2">
-                  <button onclick="window.createTask('', { isNote: true, categoryId: ${state.activeCategoryFilter ? `'${state.activeCategoryFilter}'` : 'null'}, status: 'anytime' }); setTimeout(() => { const notes = window.tasksData.filter(t => t.isNote && !t.completed); if (notes.length) window.focusNote(notes[notes.length-1].id); }, 100);"
+                  <button onclick="window.createRootNote(${state.activeCategoryFilter ? `'${state.activeCategoryFilter}'` : 'null'})"
                     class="flex items-center gap-2 py-2 w-full text-left text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                     Add new note

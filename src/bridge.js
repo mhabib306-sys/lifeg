@@ -68,7 +68,7 @@ import {
 import {
   saveCollapsedNotes as saveCollapsedNotesFromNotes,
   toggleNoteCollapse, getNotesHierarchy, noteHasChildren, getNoteChildren,
-  indentNote, outdentNote, createNoteAfter, createChildNote,
+  indentNote, outdentNote, createRootNote, createNoteAfter, createChildNote,
   deleteNote, focusNote, handleNoteKeydown, handleNoteBlur,
   renderNoteItem, renderNotesOutliner
 } from './features/notes.js';
@@ -187,7 +187,7 @@ Object.assign(window, {
 
   // Notes
   toggleNoteCollapse, getNotesHierarchy, noteHasChildren, getNoteChildren,
-  indentNote, outdentNote, createNoteAfter, createChildNote,
+  indentNote, outdentNote, createRootNote, createNoteAfter, createChildNote,
   deleteNote, focusNote, handleNoteKeydown, handleNoteBlur,
   renderNoteItem, renderNotesOutliner,
 
