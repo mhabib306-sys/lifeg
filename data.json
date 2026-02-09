@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T06:40:37.644Z",
+  "lastUpdated": "2026-02-09T06:40:46.006Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2044,44 +2044,6 @@
       "order": 24000
     },
     {
-      "id": "task_1770565629779_j30x0zk69",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "indent": 0,
-      "createdAt": "2026-02-06T22:16:01.668Z",
-      "updatedAt": "2026-02-08T15:47:09.779Z",
-      "order": 1000
-    },
-    {
-      "id": "task_1770565622726_me9fzmv6a",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "indent": 0,
-      "createdAt": "2026-02-07T00:48:04.858Z",
-      "updatedAt": "2026-02-08T15:47:02.726Z",
-      "order": 2000
-    },
-    {
       "id": "task_1770407048879_4e86e0ajn",
       "title": "Another note",
       "notes": "",
@@ -2524,25 +2486,6 @@
       "createdAt": "2026-02-08T11:36:07.385Z",
       "updatedAt": "2026-02-08T11:36:07.385Z",
       "order": 3000
-    },
-    {
-      "id": "task_1770553013226_bqy65nkk4",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "indent": 0,
-      "createdAt": "2026-02-07T05:52:11.238Z",
-      "updatedAt": "2026-02-08T12:16:53.226Z",
-      "order": 6000
     },
     {
       "id": "task_1770563975208_w48quf1y9",
