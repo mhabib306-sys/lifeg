@@ -694,12 +694,16 @@ input[type="checkbox"]:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: rgba(28, 34, 45, 0.35);
+  color: var(--text-muted);
   transition: all 0.12s ease;
 }
 .note-action-btn:hover {
-  background: rgba(139, 92, 246, 0.08);
-  color: var(--notes-accent, #8B5CF6);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+.note-action-btn-delete:hover {
+  color: #ef4444;
+  background: #fef2f2;
 }
 
 /* Breadcrumb bar */
