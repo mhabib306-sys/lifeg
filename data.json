@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T12:36:35.568Z",
+  "lastUpdated": "2026-02-09T12:36:40.097Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2131,26 +2131,6 @@
       "order": 10000
     },
     {
-      "id": "task_1770458513599_4ld7hzilp",
-      "title": "I don't think Eman realized how big this was to me.",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "createdAt": "2026-02-07T10:01:53.599Z",
-      "updatedAt": "2026-02-07T10:02:19.548Z",
-      "order": 15000
-    },
-    {
       "id": "task_1770490285825_vgowyp7kn",
       "title": "Discuss what happened today with N.",
       "notes": "",
@@ -2777,6 +2757,26 @@
       "order": 47000,
       "createdAt": "2026-02-09T12:16:36.456Z",
       "updatedAt": "2026-02-09T12:16:36.456Z"
+    },
+    {
+      "id": "task_1770640597729_1snt8xwyy",
+      "title": "",
+      "notes": "",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": null,
+      "indent": 0,
+      "noteOrder": 1000,
+      "createdAt": "2026-02-09T12:36:37.729Z",
+      "updatedAt": "2026-02-09T12:36:37.729Z"
     }
   ],
   "taskCategories": [
