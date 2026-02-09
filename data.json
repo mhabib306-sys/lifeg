@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T11:59:26.240Z",
+  "lastUpdated": "2026-02-09T12:02:26.982Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2868,6 +2868,16 @@
       "id": "label-1770510417167",
       "name": "portfolio",
       "color": "#3b82f6"
+    },
+    {
+      "id": "label_1770638542646",
+      "name": "Mostafa",
+      "color": "#22c55e"
+    },
+    {
+      "id": "label_1770638544367",
+      "name": "Eugene",
+      "color": "#ec4899"
     }
   ],
   "taskPeople": [
