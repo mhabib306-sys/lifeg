@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T18:40:22.778Z",
+  "lastUpdated": "2026-02-09T18:40:29.197Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2884,8 +2884,8 @@
       "status": "inbox",
       "today": false,
       "flagged": false,
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-09T18:40:26.859Z",
       "categoryId": null,
       "labels": [],
       "people": [],
@@ -2897,7 +2897,7 @@
       "indent": 0,
       "order": 39000,
       "createdAt": "2026-02-09T18:40:19.906Z",
-      "updatedAt": "2026-02-09T18:40:20.370Z",
+      "updatedAt": "2026-02-09T18:40:26.859Z",
       "gcalEventId": "gri0203aiaovpsv5th19i3tj64"
     }
   ],
