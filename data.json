@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T15:53:36.472Z",
+  "lastUpdated": "2026-02-09T15:53:42.738Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2216,8 +2216,8 @@
       "title": "Finish the tomb registration thing",
       "notes": "",
       "status": "anytime",
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-09T15:53:39.647Z",
       "categoryId": null,
       "labels": [],
       "people": [],
@@ -2228,7 +2228,7 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-07T09:24:35.106Z",
-      "updatedAt": "2026-02-08T15:43:21.642Z",
+      "updatedAt": "2026-02-09T15:53:39.647Z",
       "order": 18000,
       "today": false,
       "flagged": false
@@ -2356,8 +2356,8 @@
       "title": "Take B12",
       "notes": "",
       "status": "anytime",
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-09T15:53:38.492Z",
       "categoryId": "personal",
       "labels": [],
       "people": [],
@@ -2372,7 +2372,7 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-08T08:02:59.625Z",
-      "updatedAt": "2026-02-08T14:45:58.772Z",
+      "updatedAt": "2026-02-09T15:53:38.492Z",
       "order": 9000,
       "today": false,
       "flagged": false
@@ -2767,6 +2767,58 @@
       "order": 40000,
       "createdAt": "2026-02-09T15:42:00.740Z",
       "updatedAt": "2026-02-09T15:42:00.740Z"
+    },
+    {
+      "id": "task_1770652418492_iqtkgrx3r",
+      "title": "Take B12",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": true,
+      "completedAt": "2026-02-09T15:53:40.271Z",
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": "2026-02-09",
+      "dueDate": null,
+      "repeat": {
+        "type": "daily",
+        "interval": 1,
+        "from": "due"
+      },
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 38000,
+      "createdAt": "2026-02-09T15:53:38.492Z",
+      "updatedAt": "2026-02-09T15:53:40.271Z"
+    },
+    {
+      "id": "task_1770652420271_sllopopj8",
+      "title": "Take B12",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": "2026-02-10",
+      "dueDate": null,
+      "repeat": {
+        "type": "daily",
+        "interval": 1,
+        "from": "due"
+      },
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 37000,
+      "createdAt": "2026-02-09T15:53:40.271Z",
+      "updatedAt": "2026-02-09T15:53:40.271Z"
     }
   ],
   "taskCategories": [
