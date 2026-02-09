@@ -648,19 +648,16 @@ input[type="checkbox"]:focus {
   min-width: 0;
 }
 .note-meta-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
-  min-height: 0;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+  color: var(--text-secondary);
+  font-size: 11px;
 }
 .note-meta-chips:empty {
   display: none;
-}
-.note-meta-chips .inline-meta-chip {
-  font-size: 10px;
-  padding: 1px 5px;
-  border-radius: 4px;
-  animation: none;
 }
 
 /* Collapsed children count badge */

@@ -287,52 +287,25 @@ function renderNoteMetaChipsDOM(noteId, note) {
   container.innerHTML = buildNoteMetaChipsHtml(note);
 }
 
-/** Build HTML for note metadata chips. */
+/** Build HTML for note metadata (plain text with bullet separators, matching task style). */
 function buildNoteMetaChipsHtml(note) {
-  let html = '';
+  const metaParts = [];
   if (note.categoryId) {
     const cat = state.taskCategories.find(c => c.id === note.categoryId);
-    if (cat) {
-      html += `<span class="inline-meta-chip" style="background:${cat.color}20;color:${cat.color}">
-        ${cat.icon || '\uD83D\uDCC1'} ${escapeHtml(cat.name)}
-        <span class="inline-meta-chip-remove" onclick="event.stopPropagation(); removeNoteInlineMeta('${note.id}','category','${cat.id}')">
-          <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </span>
-      </span>`;
-    }
+    if (cat) metaParts.push(escapeHtml(cat.name));
   }
   (note.labels || []).forEach(lid => {
     const label = state.taskLabels.find(l => l.id === lid);
-    if (label) {
-      html += `<span class="inline-meta-chip" style="background:${label.color}20;color:${label.color}">
-        ${escapeHtml(label.name)}
-        <span class="inline-meta-chip-remove" onclick="event.stopPropagation(); removeNoteInlineMeta('${note.id}','label','${label.id}')">
-          <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </span>
-      </span>`;
-    }
+    if (label) metaParts.push(escapeHtml(label.name));
   });
   (note.people || []).forEach(pid => {
     const person = state.taskPeople.find(p => p.id === pid);
-    if (person) {
-      html += `<span class="inline-meta-chip" style="background:${person.color}20;color:${person.color}">
-        \uD83D\uDC64 ${escapeHtml(person.name)}
-        <span class="inline-meta-chip-remove" onclick="event.stopPropagation(); removeNoteInlineMeta('${note.id}','person','${person.id}')">
-          <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </span>
-      </span>`;
-    }
+    if (person) metaParts.push(escapeHtml(person.name.split(' ')[0]));
   });
   if (note.deferDate) {
-    html += `<span class="inline-meta-chip" style="background:#8b5cf620;color:#8b5cf6">
-      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
-      ${formatSmartDate(note.deferDate)}
-      <span class="inline-meta-chip-remove" onclick="event.stopPropagation(); removeNoteInlineMeta('${note.id}','deferDate','')">
-        <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-      </span>
-    </span>`;
+    metaParts.push(`Start ${formatSmartDate(note.deferDate)}`);
   }
-  return html;
+  return metaParts.length ? metaParts.join(' \u2022 ') : '';
 }
 
 /** Remove a piece of metadata from a note. */
