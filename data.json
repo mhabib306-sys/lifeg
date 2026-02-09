@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T11:58:51.865Z",
+  "lastUpdated": "2026-02-09T11:59:20.115Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3001,6 +3001,15 @@
       "title": "Daily Entry",
       "size": "half",
       "order": 6,
+      "visible": true
+    },
+    {
+      "id": "perspective-custom_1770017177816",
+      "type": "perspective",
+      "title": "Nancy: Active Topics",
+      "perspectiveId": "custom_1770017177816",
+      "size": "half",
+      "order": 7,
       "visible": true
     }
   ]
