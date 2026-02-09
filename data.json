@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T16:26:39.281Z",
+  "lastUpdated": "2026-02-09T16:26:48.895Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2009,17 +2009,19 @@
       "id": "task_1770020104608_3pypqlvmh",
       "title": "Schedule 1:1 with Seif",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
-      "categoryId": null,
+      "categoryId": "work",
       "labels": [],
-      "people": [],
+      "people": [
+        "person_1769977441169"
+      ],
       "deferDate": null,
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-02T08:15:04.608Z",
-      "updatedAt": "2026-02-08T22:31:38.052Z",
+      "updatedAt": "2026-02-09T16:26:46.476Z",
       "order": 7000,
       "today": false,
       "flagged": false
