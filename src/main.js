@@ -17,6 +17,7 @@ import './bridge.js';
 // -- Direct imports for init-only functions --
 import { state } from './state.js';
 import { initializeTaskOrders } from './features/task-filter.js';
+import { initializeNoteOrders } from './features/notes.js';
 import { initWeather } from './features/weather.js';
 import { initWhoopSync } from './data/whoop-sync.js';
 import { applyStoredTheme, loadCloudData, debouncedSaveToGithub } from './data/github-sync.js';
@@ -35,6 +36,7 @@ function initApp() {
   // Initialize task ordering
   migrateTodayFlag();
   initializeTaskOrders();
+  initializeNoteOrders();
 
   // Ensure home widgets are complete
   ensureHomeWidgets();

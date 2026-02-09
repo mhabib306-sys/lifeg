@@ -227,6 +227,13 @@ export const state = {
   // ---- Notes outliner ----
   editingNoteId: null,
   collapsedNotes: initialCollapsedNotes,  // Set<string>
+  zoomedNoteId: null,                     // ID of note zoomed into (null = root)
+  notesBreadcrumb: [],                    // [{id, title}] for breadcrumb trail
+
+  // ---- Notes drag & drop ----
+  draggedNoteId: null,
+  dragOverNoteId: null,
+  noteDragPosition: null,                 // 'top' | 'bottom' | 'child'
 
   // ---- Task list drag & drop ----
   draggedTaskId: null,

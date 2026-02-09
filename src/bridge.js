@@ -68,8 +68,14 @@ import {
 import {
   saveCollapsedNotes as saveCollapsedNotesFromNotes,
   toggleNoteCollapse, getNotesHierarchy, noteHasChildren, getNoteChildren,
+  countAllDescendants, isDescendantOf, getNoteAncestors,
   indentNote, outdentNote, createRootNote, createNoteAfter, createChildNote,
-  deleteNote, focusNote, handleNoteKeydown, handleNoteBlur,
+  deleteNote, focusNote, handleNoteKeydown, handleNoteBlur, handleNoteFocus,
+  handleNoteInput, removeNoteInlineMeta,
+  initializeNoteOrders,
+  zoomIntoNote, zoomOutOfNote, navigateToBreadcrumb, renderNotesBreadcrumb,
+  handleNoteDragStart, handleNoteDragEnd, handleNoteDragOver,
+  handleNoteDragLeave, handleNoteDrop, reorderNotes,
   renderNoteItem, renderNotesOutliner
 } from './features/notes.js';
 
@@ -187,8 +193,14 @@ Object.assign(window, {
 
   // Notes
   toggleNoteCollapse, getNotesHierarchy, noteHasChildren, getNoteChildren,
+  countAllDescendants, isDescendantOf, getNoteAncestors,
   indentNote, outdentNote, createRootNote, createNoteAfter, createChildNote,
-  deleteNote, focusNote, handleNoteKeydown, handleNoteBlur,
+  deleteNote, focusNote, handleNoteKeydown, handleNoteBlur, handleNoteFocus,
+  handleNoteInput, removeNoteInlineMeta,
+  initializeNoteOrders,
+  zoomIntoNote, zoomOutOfNote, navigateToBreadcrumb, renderNotesBreadcrumb,
+  handleNoteDragStart, handleNoteDragEnd, handleNoteDragOver,
+  handleNoteDragLeave, handleNoteDrop, reorderNotes,
   renderNoteItem, renderNotesOutliner,
 
   // Drag & Drop
@@ -266,6 +278,8 @@ const stateProxies = [
   'syncStatus', 'lastSyncTime',
   'weekChart', 'breakdownChart',
   'collapsedNotes', 'newTaskContext',
+  'zoomedNoteId', 'notesBreadcrumb',
+  'draggedNoteId', 'dragOverNoteId', 'noteDragPosition',
   'inlineAutocompleteMeta',
 ];
 

@@ -42,6 +42,9 @@ function renderCalendarView() {
 function renderNotesOutliner(categoryId) {
   return window.renderNotesOutliner(categoryId);
 }
+function renderNotesBreadcrumb() {
+  return window.renderNotesBreadcrumb();
+}
 
 // ============================================================================
 // renderTaskItem — Renders a single task row (compact or full)
@@ -850,34 +853,25 @@ export function renderTasksTab() {
           })() : (state.activePerspective === 'notes' ? `
             <!-- Notes Outliner View -->
             <div class="notes-outliner bg-[var(--bg-card)]">
-              <div class="px-4 py-3 border-b border-charcoal/5">
-                ${activeNotesCategory ? `
-                  <div class="mb-2">
+              <div class="px-4 py-3 border-b border-charcoal/5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  ${activeNotesCategory ? `
                     <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
                       <span class="w-2 h-2 rounded-full" style="background:${activeNotesCategory.color || '#8B5CF6'}"></span>
                       ${escapeHtml(activeNotesCategory.name)}
                     </span>
-                  </div>
-                ` : ''}
-                <div class="flex flex-wrap items-center gap-2 text-xs text-charcoal/40">
-                  <span>Tab to indent</span>
-                  <span>•</span>
-                  <span>Shift+Tab to outdent</span>
-                  <span>•</span>
-                  <span>Enter for new note</span>
-                  <span>•</span>
-                  <span>Click bullet to collapse</span>
+                  ` : ''}
+                  <span class="text-xs text-charcoal/30">${taskCounts['notes'] || 0} notes</span>
                 </div>
+                <button onclick="window.createRootNote(${state.activeCategoryFilter ? `'${state.activeCategoryFilter}'` : 'null'})"
+                  class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-purple-600 hover:bg-purple-50 rounded-lg transition">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                  New note
+                </button>
               </div>
+              ${renderNotesBreadcrumb()}
               <div class="py-2">
                 ${renderNotesOutliner(state.activeCategoryFilter)}
-                <div class="px-4 py-2">
-                  <button onclick="window.createRootNote(${state.activeCategoryFilter ? `'${state.activeCategoryFilter}'` : 'null'})"
-                    class="flex items-center gap-2 py-2 w-full text-left text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                    Add new note
-                  </button>
-                </div>
               </div>
             </div>
           ` : `
