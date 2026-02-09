@@ -51,7 +51,7 @@ async function classifyWithAI(rawText) {
   const tags = state.taskLabels.map(l => l.name);
   const people = state.taskPeople.map(p => p.name);
 
-  const systemPrompt = `You are a task classification assistant for a personal productivity app. Your job is to take raw freeform text and split it into individual actionable items, then classify each.
+  const systemPrompt = `You are a classification assistant for a personal productivity app. Your job is to take raw freeform text and split it into individual items, then classify each as a task OR a note.
 
 The user has these Areas: ${JSON.stringify(areas)}
 The user has these Tags: ${JSON.stringify(tags)}
@@ -59,7 +59,11 @@ The user has these People: ${JSON.stringify(people)}
 
 Rules:
 1. SPLIT compound paragraphs into separate items. If a sentence contains multiple actions or distinct thoughts, split them.
-2. CLASSIFY each item as "task" (actionable, something to do) or "note" (observation, reference, idea, thought).
+2. CLASSIFY each item as "task" or "note":
+   - TASK: a forward-looking action the user needs to DO. Contains imperatives, obligations, or explicit intent to act. Examples: "Buy groceries", "Call dentist", "Need to finish report by Friday".
+   - NOTE: anything that is NOT a clear action. This includes: observations ("missed my vitamins today"), reflections ("feeling tired lately"), ideas ("maybe try a standing desk"), facts ("meeting was moved to 3pm"), journal entries ("had a great workout"), questions ("what's the best protein powder?"), references, or bookmarks.
+   - When in doubt, prefer "note". Only classify as "task" when there is a clear, unambiguous action to perform.
+   - Past-tense statements are almost always notes — do NOT convert them into tasks. "Missed taking vitamins" is a note, NOT a task to "Take vitamins".
 3. EXTRACT metadata by matching against the provided lists:
    - area: match to one of the user's Areas (exact name, case-insensitive). null if no match.
    - tags: array of matched Tag names. Empty array if none.
@@ -67,14 +71,14 @@ Rules:
    - deferDate: if a start/defer date is mentioned, return YYYY-MM-DD. null otherwise.
    - dueDate: if a deadline/due date is mentioned, return YYYY-MM-DD. null otherwise.
 4. Provide a CONFIDENCE score 0.0-1.0 for each classification.
-5. Clean up the title: remove metadata markers (#, @, &, !) and make it a clean actionable sentence.
+5. Clean up the title: remove metadata markers (#, @, &, !) but PRESERVE the original meaning and tense. For tasks, make it a clean action. For notes, keep it as the user wrote it — do NOT rewrite notes into actions.
 
 Today's date is ${new Date().toISOString().split('T')[0]}.
 
 Respond with ONLY valid JSON — no markdown, no explanation. The JSON must be an array of objects:
 [
   {
-    "title": "Clean action item title",
+    "title": "Clean title preserving original intent",
     "type": "task" or "note",
     "confidence": 0.0-1.0,
     "area": "Area Name" or null,
@@ -267,6 +271,16 @@ export function classifyItem(text) {
   // Starts with "Note:", "Idea:", "Thought:", "Remember:"
   if (/^(note|idea|thought|remember|observation|insight|reflection):/i.test(text)) {
     score -= 50;
+  }
+
+  // Past-tense / observational language: "missed", "forgot", "didn't", "wasn't", "had a", "went to"
+  if (/\b(missed|forgot|forgotten|didn't|didn't|wasn't|wasn't|couldn't|couldn't|had\s+a|went\s+to|was\s+\w+ing|felt\s+|noticed\s+|realized\s+|found\s+out)\b/i.test(text)) {
+    score -= 35;
+  }
+
+  // Starts with "I" + past tense (journal-style: "I missed...", "I had...", "I went...")
+  if (/^i\s+(missed|forgot|had|was|went|felt|saw|heard|met|got|did|made|took|came|ran|ate|slept)\b/i.test(text)) {
+    score -= 30;
   }
 
   // Multi-sentence (contains period followed by capital letter)
