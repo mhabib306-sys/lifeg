@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T19:22:19.807Z",
+  "lastUpdated": "2026-02-09T19:22:25.381Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2922,6 +2922,29 @@
       "createdAt": "2026-02-09T18:48:33.181Z",
       "updatedAt": "2026-02-09T18:48:33.718Z",
       "gcalEventId": "m94vs65i4sjpeqq7l051k45jbc"
+    },
+    {
+      "id": "task_1770664943053_s2tiavdoq",
+      "title": "Note",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": "h@breadfast.com::8qa8p4v0rfbdrkuhh16ng1ugn0_20260205T083000Z",
+      "order": 40000,
+      "createdAt": "2026-02-09T19:22:23.054Z",
+      "updatedAt": "2026-02-09T19:22:23.054Z"
     }
   ],
   "taskCategories": [
