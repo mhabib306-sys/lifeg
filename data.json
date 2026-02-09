@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T18:04:58.539Z",
+  "lastUpdated": "2026-02-09T18:11:56.522Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3060,11 +3060,19 @@
       "visible": true
     },
     {
+      "id": "daily-entry",
+      "type": "daily-entry",
+      "title": "Daily Entry",
+      "size": "full",
+      "order": 6,
+      "visible": true
+    },
+    {
       "id": "prayers",
       "type": "prayers",
       "title": "Prayers",
       "size": "half",
-      "order": 6,
+      "order": 7,
       "visible": true
     },
     {
@@ -3072,7 +3080,7 @@
       "type": "glucose",
       "title": "Glucose",
       "size": "half",
-      "order": 7,
+      "order": 8,
       "visible": true
     },
     {
@@ -3080,7 +3088,7 @@
       "type": "whoop",
       "title": "Whoop",
       "size": "half",
-      "order": 8,
+      "order": 9,
       "visible": true
     },
     {
@@ -3088,9 +3096,8 @@
       "type": "habits",
       "title": "Habits",
       "size": "half",
-      "order": 9,
+      "order": 10,
       "visible": true
     }
-  ],
-  "meetingNotesByEvent": {}
+  ]
 }
