@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T19:30:52.817Z",
+  "lastUpdated": "2026-02-09T19:30:59.880Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2485,7 +2485,7 @@
       "id": "task_1770563975208_w48quf1y9",
       "title": "Review Elastic Search progress and missing features",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
       "categoryId": "work",
@@ -2501,7 +2501,7 @@
       "indent": 0,
       "order": 10000,
       "createdAt": "2026-02-08T15:19:35.208Z",
-      "updatedAt": "2026-02-08T15:19:35.208Z",
+      "updatedAt": "2026-02-09T19:30:57.541Z",
       "today": false,
       "flagged": false
     },
