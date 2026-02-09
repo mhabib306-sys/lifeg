@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T07:16:43.052Z",
+  "lastUpdated": "2026-02-09T08:33:19.109Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1631,9 +1631,9 @@
         "insulin": ""
       },
       "whoop": {
-        "sleepPerf": 84,
-        "recovery": 74,
-        "strain": 4.9,
+        "sleepPerf": 62,
+        "recovery": 51,
+        "strain": 0.1,
         "whoopAge": ""
       },
       "family": {
@@ -1720,9 +1720,7 @@
       "dueDate": "2026-02-01",
       "createdAt": "2026-02-01T17:33:11.520Z",
       "updatedAt": "2026-02-01T21:59:24.391Z",
-      "order": 2000,
-      "today": false,
-      "flagged": false
+      "order": 2000
     },
     {
       "id": "task_1769975062714_q3orkc0x4",
@@ -1738,15 +1736,13 @@
       "dueDate": null,
       "createdAt": "2026-02-01T19:44:22.714Z",
       "updatedAt": "2026-02-01T20:23:36.335Z",
-      "order": 3000,
-      "today": false,
-      "flagged": false
+      "order": 3000
     },
     {
       "id": "task_1769983134892_m1rrugw2n",
       "title": "Review Q1 Board Material",
       "notes": "",
-      "status": "anytime",
+      "status": "today",
       "completed": true,
       "completedAt": "2026-02-07T08:23:12.141Z",
       "categoryId": "work",
@@ -1760,9 +1756,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T21:58:54.892Z",
       "updatedAt": "2026-02-07T08:23:12.141Z",
-      "order": 1000,
-      "today": true,
-      "flagged": false
+      "order": 1000
     },
     {
       "id": "task_1769983190852_63y3loltu",
@@ -1779,9 +1773,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T21:59:50.852Z",
       "updatedAt": "2026-02-01T22:09:24.738Z",
-      "order": 1000,
-      "today": false,
-      "flagged": false
+      "order": 1000
     },
     {
       "id": "task_1769983213352_9h03aplwq",
@@ -1798,9 +1790,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T22:00:13.352Z",
       "updatedAt": "2026-02-01T22:08:24.521Z",
-      "order": 6000,
-      "today": false,
-      "flagged": false
+      "order": 6000
     },
     {
       "id": "task_1769983575696_3yq56ixj0",
@@ -1817,13 +1807,11 @@
       "repeat": null,
       "createdAt": "2026-02-01T22:06:15.696Z",
       "updatedAt": "2026-02-01T22:06:15.696Z",
-      "order": 9000,
-      "today": false,
-      "flagged": false
+      "order": 9000
     },
     {
       "id": "task_1769984504582_xua0ibokb",
-      "title": "Memorizing Gift",
+      "title": "Quran Memorization Gift",
       "notes": "",
       "status": "anytime",
       "completed": false,
@@ -1837,10 +1825,8 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T22:21:44.582Z",
-      "updatedAt": "2026-02-08T15:46:51.390Z",
-      "order": 11000,
-      "today": false,
-      "flagged": false
+      "updatedAt": "2026-02-09T04:47:18.251Z",
+      "order": 11000
     },
     {
       "id": "task_1769986708273_8h0ih9rn2",
@@ -1857,9 +1843,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T22:58:28.273Z",
       "updatedAt": "2026-02-01T23:06:21.695Z",
-      "order": 5000,
-      "today": false,
-      "flagged": false
+      "order": 5000
     },
     {
       "id": "task_1769987546598_2phz0gy20",
@@ -1878,9 +1862,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:12:26.598Z",
       "updatedAt": "2026-02-06T14:53:30.380Z",
-      "order": 19000,
-      "today": false,
-      "flagged": false
+      "order": 20000
     },
     {
       "id": "task_1769988506419_k5obmgok8",
@@ -1899,9 +1881,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:28:26.419Z",
       "updatedAt": "2026-02-07T09:20:51.767Z",
-      "order": 4000,
-      "today": false,
-      "flagged": false
+      "order": 4000
     },
     {
       "id": "task_1769988515754_csmenwco0",
@@ -1918,9 +1898,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:28:35.754Z",
       "updatedAt": "2026-02-07T23:24:35.358Z",
-      "order": 4000,
-      "today": false,
-      "flagged": false
+      "order": 4000
     },
     {
       "id": "task_1769988521177_vhh01bgsj",
@@ -1937,9 +1915,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:28:41.177Z",
       "updatedAt": "2026-02-08T23:03:17.162Z",
-      "order": 11000,
-      "today": false,
-      "flagged": false
+      "order": 11000
     },
     {
       "id": "task_1769988612754_r5uemyqjd",
@@ -1958,9 +1934,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:30:12.754Z",
       "updatedAt": "2026-02-08T22:32:25.344Z",
-      "order": 1000,
-      "today": false,
-      "flagged": false
+      "order": 1000
     },
     {
       "id": "task_1770019730706_1pnzslxtt",
@@ -1976,10 +1950,7 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-02T08:08:50.706Z",
-      "updatedAt": "2026-02-02T08:08:55.352Z",
-      "today": false,
-      "flagged": false,
-      "order": 14000
+      "updatedAt": "2026-02-02T08:08:55.352Z"
     },
     {
       "id": "task_1770019776918_pke6505zt",
@@ -1998,9 +1969,7 @@
       "repeat": null,
       "createdAt": "2026-02-02T08:09:36.918Z",
       "updatedAt": "2026-02-02T08:09:52.631Z",
-      "order": 21000,
-      "today": false,
-      "flagged": false
+      "order": 22000
     },
     {
       "id": "task_1770020104608_3pypqlvmh",
@@ -2017,9 +1986,7 @@
       "repeat": null,
       "createdAt": "2026-02-02T08:15:04.608Z",
       "updatedAt": "2026-02-08T22:31:38.052Z",
-      "order": 7000,
-      "today": false,
-      "flagged": false
+      "order": 7000
     },
     {
       "id": "task_1770023484203_knltwbqf7",
@@ -2038,9 +2005,7 @@
       "repeat": null,
       "createdAt": "2026-02-02T09:11:24.203Z",
       "updatedAt": "2026-02-07T21:32:18.067Z",
-      "order": 5000,
-      "today": false,
-      "flagged": false
+      "order": 5000
     },
     {
       "id": "task_1770407032465_enl9a1re9",
@@ -2058,9 +2023,7 @@
       "isNote": false,
       "createdAt": "2026-02-06T19:43:52.465Z",
       "updatedAt": "2026-02-08T18:49:58.475Z",
-      "order": 5000,
-      "today": false,
-      "flagged": false
+      "order": 5000
     },
     {
       "id": "task_1770407038478_0u5etf01p",
@@ -2078,73 +2041,7 @@
       "isNote": true,
       "createdAt": "2026-02-06T19:43:58.478Z",
       "updatedAt": "2026-02-07T08:01:38.593Z",
-      "order": 23000,
-      "today": false,
-      "flagged": false
-    },
-    {
-      "id": "task_1770565629779_j30x0zk69",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "indent": 0,
-      "createdAt": "2026-02-06T22:16:01.668Z",
-      "updatedAt": "2026-02-08T15:47:09.779Z",
-      "order": 1000,
-      "today": false,
-      "flagged": false
-    },
-    {
-      "id": "task_1770565622726_me9fzmv6a",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "indent": 0,
-      "createdAt": "2026-02-07T00:48:04.858Z",
-      "updatedAt": "2026-02-08T15:47:02.726Z",
-      "order": 2000,
-      "today": false,
-      "flagged": false
-    },
-    {
-      "id": "task_1770452185946_qf81xc7bb",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "createdAt": "2026-02-07T08:16:25.946Z",
-      "updatedAt": "2026-02-07T08:16:25.946Z",
-      "order": 15000,
-      "today": false,
-      "flagged": false
+      "order": 24000
     },
     {
       "id": "task_1770407048879_4e86e0ajn",
@@ -2162,11 +2059,9 @@
       "isNote": true,
       "createdAt": "2026-02-06T19:44:08.879Z",
       "updatedAt": "2026-02-07T08:11:29.758Z",
-      "order": 20000,
+      "order": 21000,
       "parentId": null,
-      "indent": 0,
-      "today": false,
-      "flagged": false
+      "indent": 0
     },
     {
       "id": "task_1770407118912_dg79goye3",
@@ -2184,9 +2079,7 @@
       "isNote": true,
       "createdAt": "2026-02-06T19:45:18.912Z",
       "updatedAt": "2026-02-07T08:51:17.825Z",
-      "order": 24000,
-      "today": false,
-      "flagged": false
+      "order": 25000
     },
     {
       "id": "task_1770419495459_db8m1al68",
@@ -2204,9 +2097,7 @@
       "isNote": false,
       "createdAt": "2026-02-06T23:11:35.459Z",
       "updatedAt": "2026-02-08T00:16:12.198Z",
-      "order": 25000,
-      "today": false,
-      "flagged": false
+      "order": 26000
     },
     {
       "id": "task_1770419503417_ps4ynftsw",
@@ -2224,9 +2115,7 @@
       "isNote": false,
       "createdAt": "2026-02-06T23:11:43.417Z",
       "updatedAt": "2026-02-06T23:11:43.417Z",
-      "order": 3000,
-      "today": false,
-      "flagged": false
+      "order": 3000
     },
     {
       "id": "task_1770450641886_r0ykcmc6m",
@@ -2244,9 +2133,7 @@
       "isNote": true,
       "createdAt": "2026-02-07T07:50:41.886Z",
       "updatedAt": "2026-02-07T07:50:45.809Z",
-      "order": 26000,
-      "today": false,
-      "flagged": false
+      "order": 27000
     },
     {
       "id": "task_1770450958071_jz3ou5au6",
@@ -2266,15 +2153,13 @@
       "isNote": true,
       "createdAt": "2026-02-07T07:55:58.071Z",
       "updatedAt": "2026-02-07T07:55:58.071Z",
-      "order": 18000,
-      "today": false,
-      "flagged": false
+      "order": 19000
     },
     {
       "id": "task_1770456058835_o9bav1rjn",
       "title": "Get a gift for Omar Metwally?",
       "notes": "",
-      "status": "anytime",
+      "status": "today",
       "completed": false,
       "completedAt": null,
       "categoryId": null,
@@ -2288,9 +2173,7 @@
       "indent": 0,
       "createdAt": "2026-02-07T09:20:58.835Z",
       "updatedAt": "2026-02-08T14:45:57.270Z",
-      "order": 1000,
-      "today": true,
-      "flagged": false
+      "order": 1000
     },
     {
       "id": "task_1770456275105_ylqx33576",
@@ -2310,9 +2193,7 @@
       "indent": 0,
       "createdAt": "2026-02-07T09:24:35.106Z",
       "updatedAt": "2026-02-08T15:43:21.642Z",
-      "order": 17000,
-      "today": false,
-      "flagged": false
+      "order": 18000
     },
     {
       "id": "task_1770458513599_4ld7hzilp",
@@ -2332,9 +2213,7 @@
       "indent": 0,
       "createdAt": "2026-02-07T10:01:53.599Z",
       "updatedAt": "2026-02-07T10:02:19.548Z",
-      "order": 22000,
-      "today": false,
-      "flagged": false
+      "order": 23000
     },
     {
       "id": "task_1770485272782_1l1ycs1mk",
@@ -2354,9 +2233,7 @@
       "indent": 0,
       "createdAt": "2026-02-07T17:27:52.782Z",
       "updatedAt": "2026-02-07T17:27:52.782Z",
-      "order": 2000,
-      "today": false,
-      "flagged": false
+      "order": 2000
     },
     {
       "id": "task_1770490285825_vgowyp7kn",
@@ -2378,9 +2255,7 @@
       "indent": 0,
       "createdAt": "2026-02-07T18:51:25.826Z",
       "updatedAt": "2026-02-07T20:07:24.844Z",
-      "order": 6000,
-      "today": false,
-      "flagged": false
+      "order": 6000
     },
     {
       "id": "task_1770509778354_dbyy19ncj",
@@ -2400,9 +2275,7 @@
       "indent": 0,
       "createdAt": "2026-02-08T00:16:18.354Z",
       "updatedAt": "2026-02-08T00:16:23.732Z",
-      "order": 8000,
-      "today": false,
-      "flagged": false
+      "order": 8000
     },
     {
       "id": "task_1770509789575_mza6yq92h",
@@ -2422,9 +2295,7 @@
       "indent": 1,
       "createdAt": "2026-02-08T00:16:29.575Z",
       "updatedAt": "2026-02-08T00:16:29.575Z",
-      "order": 12000,
-      "today": false,
-      "flagged": false
+      "order": 12000
     },
     {
       "id": "task_1770510427575_jqc4ymb63",
@@ -2448,9 +2319,7 @@
       "indent": 0,
       "createdAt": "2026-02-08T00:27:07.575Z",
       "updatedAt": "2026-02-08T00:27:07.575Z",
-      "order": 14000,
-      "today": false,
-      "flagged": false
+      "order": 14000
     },
     {
       "id": "task_1770537779625_2gz2y5err",
@@ -2474,9 +2343,7 @@
       "indent": 0,
       "createdAt": "2026-02-08T08:02:59.625Z",
       "updatedAt": "2026-02-08T14:45:58.772Z",
-      "order": 9000,
-      "today": false,
-      "flagged": false
+      "order": 9000
     },
     {
       "id": "task_1770539531712_1uj5n1q1j",
@@ -2496,31 +2363,7 @@
       "indent": 0,
       "order": 2000,
       "createdAt": "2026-02-08T08:32:11.712Z",
-      "updatedAt": "2026-02-08T15:43:09.763Z",
-      "today": false,
-      "flagged": false
-    },
-    {
-      "id": "task_1770540817967_et7t3mp6j",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "order": 27000,
-      "createdAt": "2026-02-08T08:53:37.967Z",
-      "updatedAt": "2026-02-08T08:53:37.967Z",
-      "today": false,
-      "flagged": false
+      "updatedAt": "2026-02-08T15:43:09.763Z"
     },
     {
       "id": "task_1770540821297_5qvw166rw",
@@ -2538,11 +2381,9 @@
       "isNote": true,
       "parentId": null,
       "indent": 0,
-      "order": 28000,
+      "order": 29000,
       "createdAt": "2026-02-08T08:53:41.297Z",
-      "updatedAt": "2026-02-08T08:53:41.297Z",
-      "today": false,
-      "flagged": false
+      "updatedAt": "2026-02-08T08:53:41.297Z"
     },
     {
       "id": "task_1770540828612_b3q4ssdag",
@@ -2562,9 +2403,7 @@
       "indent": 1,
       "createdAt": "2026-02-08T08:53:45.454Z",
       "updatedAt": "2026-02-08T08:53:51.423Z",
-      "order": 7000,
-      "today": false,
-      "flagged": false
+      "order": 7000
     },
     {
       "id": "task_1770540831423_c87emukre",
@@ -2584,9 +2423,7 @@
       "indent": 2,
       "createdAt": "2026-02-08T08:53:48.938Z",
       "updatedAt": "2026-02-08T08:53:54.279Z",
-      "order": 8000,
-      "today": false,
-      "flagged": false
+      "order": 8000
     },
     {
       "id": "task_1770540844662_jfbkwax3v",
@@ -2606,15 +2443,13 @@
       "indent": 0,
       "createdAt": "2026-02-08T08:53:53.479Z",
       "updatedAt": "2026-02-08T08:54:04.662Z",
-      "order": 10000,
-      "today": false,
-      "flagged": false
+      "order": 10000
     },
     {
       "id": "task_1770550089075_aufzybsl8",
       "title": "Discuss with Nancy the Ramadan setup",
       "notes": "",
-      "status": "anytime",
+      "status": "today",
       "completed": false,
       "completedAt": null,
       "categoryId": "family",
@@ -2630,9 +2465,7 @@
       "indent": 0,
       "order": 7000,
       "createdAt": "2026-02-08T11:28:09.075Z",
-      "updatedAt": "2026-02-08T17:27:51.589Z",
-      "today": true,
-      "flagged": false
+      "updatedAt": "2026-02-08T17:27:51.589Z"
     },
     {
       "id": "task_1770550567385_p56inxou0",
@@ -2652,73 +2485,7 @@
       "indent": 1,
       "createdAt": "2026-02-08T11:36:07.385Z",
       "updatedAt": "2026-02-08T11:36:07.385Z",
-      "order": 3000,
-      "today": false,
-      "flagged": false
-    },
-    {
-      "id": "task_1770553008518_bibjv9j22",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "indent": 0,
-      "createdAt": "2026-02-07T16:00:23.998Z",
-      "updatedAt": "2026-02-08T12:16:48.518Z",
-      "order": 4000,
-      "today": false,
-      "flagged": false
-    },
-    {
-      "id": "task_1770553010031_lwcanyodd",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": "task_1770553008518_bibjv9j22",
-      "indent": 1,
-      "createdAt": "2026-02-08T02:08:37.514Z",
-      "updatedAt": "2026-02-08T12:16:51.172Z",
-      "order": 5000,
-      "today": false,
-      "flagged": false
-    },
-    {
-      "id": "task_1770553013226_bqy65nkk4",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "indent": 0,
-      "createdAt": "2026-02-07T05:52:11.238Z",
-      "updatedAt": "2026-02-08T12:16:53.226Z",
-      "order": 6000,
-      "today": false,
-      "flagged": false
+      "order": 3000
     },
     {
       "id": "task_1770563975208_w48quf1y9",
@@ -2740,15 +2507,13 @@
       "indent": 0,
       "order": 10000,
       "createdAt": "2026-02-08T15:19:35.208Z",
-      "updatedAt": "2026-02-08T15:19:35.208Z",
-      "today": false,
-      "flagged": false
+      "updatedAt": "2026-02-08T15:19:35.208Z"
     },
     {
       "id": "task_1770565930160_cs8oj7kcs",
       "title": "Todo",
       "notes": "",
-      "status": "anytime",
+      "status": "today",
       "completed": false,
       "completedAt": null,
       "categoryId": null,
@@ -2762,9 +2527,7 @@
       "indent": 0,
       "order": 3000,
       "createdAt": "2026-02-08T15:52:10.160Z",
-      "updatedAt": "2026-02-08T15:52:10.160Z",
-      "today": true,
-      "flagged": false
+      "updatedAt": "2026-02-08T15:52:10.160Z"
     },
     {
       "id": "task_1770576704363_panfyf0jg",
@@ -2789,9 +2552,9 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 29000,
+      "order": 16000,
       "createdAt": "2026-02-08T18:51:44.364Z",
-      "updatedAt": "2026-02-08T18:52:16.552Z"
+      "updatedAt": "2026-02-09T04:47:56.590Z"
     },
     {
       "id": "task_1770588562749_har98muot",
@@ -2835,7 +2598,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 16000,
+      "order": 17000,
       "createdAt": "2026-02-08T22:20:39.003Z",
       "updatedAt": "2026-02-08T23:03:23.038Z"
     },
@@ -2906,6 +2669,52 @@
       "today": false,
       "flagged": false,
       "order": 30000
+    },
+    {
+      "id": "task_1770596756539_vp4g87inh",
+      "title": "Check if someone can get Solgar b12 from abroad",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "health",
+      "labels": [
+        "label_1770020325388"
+      ],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 33000,
+      "createdAt": "2026-02-09T00:25:56.539Z",
+      "updatedAt": "2026-02-09T00:25:56.539Z"
+    },
+    {
+      "id": "task_1770613808456_jgmankbol",
+      "title": "Call Ali Refaai for the categories slide",
+      "notes": "",
+      "status": "inbox",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": "2026-02-09",
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 48000,
+      "createdAt": "2026-02-09T05:10:08.457Z",
+      "updatedAt": "2026-02-09T05:10:42.329Z"
     }
   ],
   "taskCategories": [
