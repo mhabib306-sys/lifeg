@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T14:26:48.889Z",
+  "lastUpdated": "2026-02-09T14:45:28.919Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2984,11 +2984,35 @@
       "visible": true
     },
     {
-      "id": "daily-entry",
-      "type": "daily-entry",
-      "title": "Daily Entry",
+      "id": "prayers",
+      "type": "prayers",
+      "title": "Prayers",
       "size": "half",
       "order": 6,
+      "visible": true
+    },
+    {
+      "id": "glucose",
+      "type": "glucose",
+      "title": "Glucose",
+      "size": "half",
+      "order": 7,
+      "visible": true
+    },
+    {
+      "id": "whoop",
+      "type": "whoop",
+      "title": "Whoop",
+      "size": "half",
+      "order": 8,
+      "visible": true
+    },
+    {
+      "id": "habits",
+      "type": "habits",
+      "title": "Habits",
+      "size": "half",
+      "order": 9,
       "visible": true
     }
   ]
