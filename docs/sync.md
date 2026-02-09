@@ -44,6 +44,7 @@
 ### Meeting notes
 - Merge by `eventKey`.
 - Newer `updatedAt` (fallback `createdAt`) wins.
+- Meeting workspace bullets/tasks are stored in `tasks[]` via `meetingEventKey` and follow task merge rules.
 
 ### Metadata collections (categories/labels/people/perspectives/widgets)
 - Merge by `id`.

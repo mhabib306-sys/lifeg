@@ -51,6 +51,15 @@ function getMeetingNotesEvent() {
   return findCalendarEvent(calendarId, eventId) || null;
 }
 
+function getMeetingLinkedItems(eventKey) {
+  if (!eventKey) return [];
+  return state.tasksData.filter(t => t.meetingEventKey === eventKey);
+}
+
+function renderMultilineText(text) {
+  return escapeHtml(text || '').replace(/\n/g, '<br>');
+}
+
 function getSelectedModalEvent() {
   if (!state.calendarEventModalOpen) return null;
   return findCalendarEvent(state.calendarEventModalCalendarId, state.calendarEventModalEventId);
@@ -146,20 +155,32 @@ export function closeCalendarMeetingNotes() {
   window.render();
 }
 
-export function updateCalendarMeetingNotesContent(content) {
+export function addMeetingLinkedItem(itemType = 'note') {
   const key = state.calendarMeetingNotesEventKey;
   if (!key) return;
+  const input = document.getElementById('meeting-item-input');
+  const title = String(input?.value || '').trim();
+  if (!title) return;
 
-  if (!state.meetingNotesByEvent) state.meetingNotesByEvent = {};
-  if (!state.meetingNotesByEvent[key]) {
-    const event = getMeetingNotesEvent();
-    if (!event) return;
-    ensureMeetingNoteDoc(event);
+  const event = getMeetingNotesEvent();
+  if (!event) return;
+  ensureMeetingNoteDoc(event);
+
+  window.createTask?.(title, {
+    isNote: itemType !== 'task',
+    status: 'anytime',
+    meetingEventKey: key,
+    notes: '',
+  });
+  if (input) input.value = '';
+  window.render();
+}
+
+export function handleMeetingItemInputKeydown(event, itemType = 'note') {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    addMeetingLinkedItem(itemType);
   }
-
-  state.meetingNotesByEvent[key].content = content;
-  state.meetingNotesByEvent[key].updatedAt = new Date().toISOString();
-  persistMeetingNotes();
 }
 
 function renderMeetingNotesPage() {
@@ -175,17 +196,36 @@ function renderMeetingNotesPage() {
 
   const key = getEventKey(event);
   const doc = ensureMeetingNoteDoc(event);
-  const notes = doc?.content || '';
+  const legacyNotes = doc?.content || '';
   const eventDate = formatEventDateLabel(event);
   const eventTime = formatEventTimeLabel(event);
+  const attendees = Array.isArray(event.attendees) ? event.attendees : [];
+  const linkedItems = getMeetingLinkedItems(key);
+  const openItems = linkedItems.filter(item => !item.completed);
+  const completedItems = linkedItems.filter(item => item.completed);
+  const itemRows = openItems.length > 0
+    ? openItems.map(task => {
+      const marker = task.isNote
+        ? '<span class="w-2 h-2 rounded-full bg-[var(--accent)] mt-1.5"></span>'
+        : `<button onclick="event.stopPropagation(); window.toggleTaskComplete('${q(task.id)}')" class="task-checkbox mt-0.5 w-[18px] h-[18px] rounded-full border-[1.5px] border-[var(--text-muted)] hover:border-[var(--accent)] transition"></button>`;
+      return `
+        <div class="px-3 py-2 rounded-lg border border-[var(--border-light)] bg-[var(--bg-secondary)]/40 flex items-start gap-2.5">
+          ${marker}
+          <button onclick="window.inlineEditingTaskId=null; window.editingTaskId='${q(task.id)}'; window.showTaskModal=true; window.render()" class="text-left flex-1 text-sm text-[var(--text-primary)] leading-snug">
+            ${escapeHtml(task.title || 'Untitled')}
+          </button>
+        </div>
+      `;
+    }).join('')
+    : '<div class="text-sm text-[var(--text-muted)] px-1 py-2">No bullet points yet.</div>';
 
   return `
     <div class="calendar-meeting-notes-page bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
       <div class="calendar-meeting-notes-header px-5 py-4 border-b border-[var(--border-light)] flex flex-wrap items-center justify-between gap-3">
         <div class="min-w-0">
-          <div class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Meeting Notes</div>
+          <div class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Meeting Workspace</div>
           <h2 class="text-lg font-semibold text-[var(--text-primary)] truncate">${escapeHtml(event.summary || 'Untitled Event')}</h2>
-          <p class="text-sm text-[var(--text-muted)]">${escapeHtml(eventDate)}${eventTime ? ` • ${escapeHtml(eventTime)}` : ''}</p>
+          <p class="text-sm text-[var(--text-muted)]">${escapeHtml(eventDate)}${eventTime ? ` • ${escapeHtml(eventTime)}` : ''} • ${openItems.length} open</p>
         </div>
         <div class="calendar-meeting-notes-actions flex items-center gap-2">
           <button onclick="closeCalendarMeetingNotes()" class="calendar-meeting-btn px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] text-sm font-medium hover:opacity-90 transition">Back</button>
@@ -198,14 +238,68 @@ function renderMeetingNotesPage() {
         </div>
       </div>
 
-      <div class="calendar-meeting-notes-body p-5">
-        <textarea
-          id="meeting-notes-textarea"
-          class="calendar-meeting-notes-textarea w-full min-h-[58vh] p-4 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-[var(--accent-light)] focus:border-[var(--accent)]"
-          placeholder="Capture agenda, decisions, blockers, and action items..."
-          oninput="updateCalendarMeetingNotesContent(this.value)"
-        >${escapeHtml(notes)}</textarea>
-        <div class="mt-2 text-xs text-[var(--text-muted)]">Saved automatically for this event.</div>
+      <div class="calendar-meeting-notes-body p-5 grid grid-cols-1 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] gap-5">
+        <div class="space-y-3">
+          <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-semibold text-[var(--text-primary)]">Meeting Notes & Tasks</h3>
+              <span class="text-xs text-[var(--text-muted)]">${linkedItems.length} linked</span>
+            </div>
+            <div class="flex items-center gap-2 mb-3">
+              <input
+                id="meeting-item-input"
+                type="text"
+                placeholder="Add bullet point..."
+                onkeydown="handleMeetingItemInputKeydown(event, 'note')"
+                class="flex-1 min-w-0 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-light)] focus:border-[var(--accent)]"
+              />
+              <button onclick="addMeetingLinkedItem('note')" class="px-3 py-2 rounded-lg text-xs font-semibold bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:opacity-90">Add Bullet</button>
+              <button onclick="addMeetingLinkedItem('task')" class="px-3 py-2 rounded-lg text-xs font-semibold bg-coral/10 text-coral hover:bg-coral/20">Add Task</button>
+            </div>
+            <div class="space-y-2">
+              ${itemRows}
+              ${completedItems.length > 0 ? `
+                <details class="mt-3">
+                  <summary class="text-xs font-medium text-[var(--text-muted)] cursor-pointer">${completedItems.length} completed</summary>
+                  <div class="mt-2 space-y-1.5">
+                    ${completedItems.map(task => `
+                      <div class="text-xs text-[var(--text-muted)] line-through px-2 py-1">${escapeHtml(task.title || 'Untitled')}</div>
+                    `).join('')}
+                  </div>
+                </details>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
+            <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-2">Attendees</h3>
+            ${attendees.length > 0 ? `
+              <div class="flex flex-wrap gap-1.5">
+                ${attendees.map(a => `
+                  <span class="text-xs px-2 py-1 rounded-full bg-[var(--bg-secondary)] text-[var(--text-primary)]">
+                    ${escapeHtml(a.displayName || a.email || 'Guest')}
+                  </span>
+                `).join('')}
+              </div>
+            ` : '<p class="text-xs text-[var(--text-muted)]">No attendee metadata available for this event.</p>'}
+          </div>
+
+          ${event.description ? `
+            <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
+              <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-2">Original Event Note</h3>
+              <div class="text-sm text-[var(--text-secondary)] leading-relaxed max-h-[260px] overflow-auto">${renderMultilineText(event.description)}</div>
+            </div>
+          ` : ''}
+
+          ${legacyNotes ? `
+            <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
+              <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-2">Legacy Internal Notes</h3>
+              <div class="text-sm text-[var(--text-secondary)] leading-relaxed max-h-[220px] overflow-auto">${renderMultilineText(legacyNotes)}</div>
+            </div>
+          ` : ''}
+        </div>
       </div>
     </div>
   `;
@@ -214,13 +308,15 @@ function renderMeetingNotesPage() {
 function renderEventActionsModal(event) {
   if (!event) return '';
   const notesKey = getEventKey(event);
-  const hasNotes = !!state.meetingNotesByEvent?.[notesKey]?.content?.trim();
+  const hasLegacyNotes = !!state.meetingNotesByEvent?.[notesKey]?.content?.trim();
+  const hasLinkedItems = getMeetingLinkedItems(notesKey).length > 0;
+  const hasNotes = hasLegacyNotes || hasLinkedItems;
   const meetingActionLabel = event.meetingProvider ? `Join ${escapeHtml(event.meetingProvider)}` : 'Open Meeting Link';
   const meetingSubLabel = event.meetingLink
     ? (event.meetingProvider ? `Launch ${escapeHtml(event.meetingProvider)} directly` : 'Open the detected call URL')
     : 'No Meet/Zoom/Teams link found in this event';
-  const notesActionLabel = hasNotes ? 'Open Meeting Notes' : 'Create Meeting Notes';
-  const notesSubLabel = hasNotes ? 'Continue your existing notes for this event' : 'Start a dedicated notes page for this event';
+  const notesActionLabel = hasNotes ? 'Open Meeting Workspace' : 'Create Meeting Workspace';
+  const notesSubLabel = hasNotes ? 'Review linked bullets/tasks and event metadata' : 'Start linked bullets/tasks for this event';
 
   return `
     <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[320]" onclick="if(event.target===this) closeCalendarEventActions()">

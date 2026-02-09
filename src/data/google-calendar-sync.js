@@ -280,6 +280,13 @@ export async function fetchEventsForRange(timeMin, timeMax) {
             status: e.status || '',
             summary: e.summary || '(No title)',
             description: e.description || '',
+            attendees: Array.isArray(e.attendees)
+              ? e.attendees.map(a => ({
+                email: a.email || '',
+                displayName: a.displayName || '',
+                responseStatus: a.responseStatus || '',
+              }))
+              : [],
             start: e.start,
             end: e.end,
             location: e.location || '',

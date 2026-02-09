@@ -1,7 +1,7 @@
 # Data Model
 
 ## Ownership Matrix
-- Task execution state (`completed`, `completedAt`, `status`, `today`, `categoryId`, `labels`, `people`, dates): `tasks[]` entity by `id`
+- Task execution state (`completed`, `completedAt`, `status`, `today`, `categoryId`, `labels`, `people`, dates, `meetingEventKey`): `tasks[]` entity by `id`
 - Daily life tracking: `allData[YYYY-MM-DD]`
 - Meeting notes for calendar events: `meetingNotesByEvent[eventKey]`
 - Taxonomy/config (categories, labels, people, perspectives, home widgets): collection entries by `id`
@@ -26,6 +26,7 @@
   isNote: boolean,
   parentId: string | null,
   indent: number,
+  meetingEventKey: string | null,
   order: number,
   createdAt: ISO string,
   updatedAt: ISO string

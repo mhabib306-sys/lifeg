@@ -133,7 +133,8 @@ import {
   closeCalendarEventActions,
   openCalendarMeetingNotes,
   closeCalendarMeetingNotes,
-  updateCalendarMeetingNotesContent
+  addMeetingLinkedItem,
+  handleMeetingItemInputKeydown
 } from './ui/calendar-view.js';
 import { createPrayerInput, createToggle, createNumberInput, createCounter, createScoreCard, createCard } from './ui/input-builders.js';
 import {
@@ -219,7 +220,7 @@ Object.assign(window, {
   syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
   initGCalSync, toggleCalendarSelection,
   openCalendarEventActions, closeCalendarEventActions,
-  openCalendarMeetingNotes, closeCalendarMeetingNotes, updateCalendarMeetingNotesContent,
+  openCalendarMeetingNotes, closeCalendarMeetingNotes, addMeetingLinkedItem, handleMeetingItemInputKeydown,
 
   // Scoring
   parsePrayer, calcPrayerScore, invalidateScoresCache,

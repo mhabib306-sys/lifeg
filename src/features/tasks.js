@@ -33,6 +33,7 @@ function findTaskIndexById(taskId) {
  * @property {boolean} isNote - True = outline note, False = task
  * @property {string|null} parentId - Parent note ID for hierarchy
  * @property {number} indent - Nesting level (0 = root)
+ * @property {string|null} meetingEventKey - Linked calendar event key (calendarId::eventId)
  * @property {string} createdAt - ISO creation timestamp
  * @property {string} updatedAt - ISO last modified timestamp
  *
@@ -73,6 +74,7 @@ export function createTask(title, options = {}) {
     isNote: options.isNote || false,      // If true, displays as note (bullet) instead of task (checkbox)
     parentId: options.parentId || null,   // For nested notes - parent note ID
     indent: options.indent || 0,          // Nesting level (0 = root, 1 = first child, etc.)
+    meetingEventKey: options.meetingEventKey || null, // Meeting-linked notes/tasks
     order: (state.tasksData.filter(t => !t.completed).length + 1) * 1000, // For manual ordering
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
