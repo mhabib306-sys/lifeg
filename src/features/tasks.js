@@ -71,6 +71,9 @@ export function createTask(title, options = {}) {
   };
   state.tasksData.push(task);
   saveTasksData();
+  if (!task.isNote && (task.deferDate || task.dueDate)) {
+    window.pushTaskToGCalIfConnected?.(task);
+  }
   return task;
 }
 
@@ -93,6 +96,14 @@ export function updateTask(taskId, updates) {
     }
     state.tasksData[idx] = { ...task, ...updates, updatedAt: new Date().toISOString() };
     saveTasksData();
+    const updated = state.tasksData[idx];
+    if (!updated.isNote) {
+      if (updated.deferDate || updated.dueDate) {
+        window.pushTaskToGCalIfConnected?.(updated);
+      } else if (updated.gcalEventId) {
+        window.deleteGCalEventIfConnected?.(updated);
+      }
+    }
   }
 }
 
@@ -118,6 +129,10 @@ export function migrateTodayFlag() {
 }
 
 export function deleteTask(taskId) {
+  const taskToDelete = state.tasksData.find(t => t.id === taskId);
+  if (taskToDelete && taskToDelete.gcalEventId) {
+    window.deleteGCalEventIfConnected?.(taskToDelete);
+  }
   // Promote child notes to root level (clear parentId)
   state.tasksData.forEach(t => {
     if (t.parentId === taskId) {

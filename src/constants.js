@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.8.5 - Homebase';
+export const APP_VERSION = '4.9.0 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -93,6 +93,15 @@ export const TASK_LABELS_KEY = 'lifeGamificationTaskLabels';
 export const TASK_PEOPLE_KEY = 'lifeGamificationTaskPeople';
 export const HOME_WIDGETS_KEY = 'lifeGamificationHomeWidgets';
 export const VIEW_STATE_KEY = 'lifeGamificationViewState';
+
+// Google Calendar integration
+export const GCAL_ACCESS_TOKEN_KEY = 'nucleusGCalAccessToken';
+export const GCAL_TOKEN_TIMESTAMP_KEY = 'nucleusGCalTokenTimestamp';
+export const GCAL_SELECTED_CALENDARS_KEY = 'nucleusGCalSelectedCalendars';
+export const GCAL_TARGET_CALENDAR_KEY = 'nucleusGCalTargetCalendar';
+export const GCAL_EVENTS_CACHE_KEY = 'nucleusGCalEventsCache';
+export const GCAL_LAST_SYNC_KEY = 'nucleusGCalLastSync';
+export const GCAL_CONNECTED_KEY = 'nucleusGCalConnected';
 
 // Default home widgets configuration
 export const DEFAULT_HOME_WIDGETS = [

@@ -2,7 +2,7 @@
 // CALENDAR VIEW MODULE
 // ============================================================================
 // Renders the OmniFocus Forecast-style calendar view with month grid,
-// task dots (due/defer/overdue), and selected day task list.
+// task dots (due/defer/overdue), Google Calendar events, and selected day task list.
 
 import { state } from '../state.js';
 import { getTasksForDate } from '../features/calendar.js';
@@ -16,8 +16,10 @@ import { escapeHtml, getLocalDateString } from '../utils.js';
  *   - Red dots: due tasks
  *   - Blue dots: defer (start) tasks
  *   - Dark red dots: overdue tasks
+ *   - Green dots: Google Calendar events
  *
- * Below the grid, shows the selected day's tasks split into "Due" and "Starting" sections.
+ * Below the grid, shows the selected day's tasks split into "Due", "Starting",
+ * and "Events" sections.
  * Uses state.calendarMonth (0-11), state.calendarYear, state.calendarSelectedDate.
  *
  * @returns {string} HTML string for the calendar perspective view
@@ -89,20 +91,28 @@ export function renderCalendarView() {
     return !isDated;
   }) : [];
 
+  // Google Calendar events for selected date
+  const gcalEvents = window.getGCalEventsForDate?.(state.calendarSelectedDate) || [];
+  const gcalConnected = window.isGCalConnected?.() || false;
+
   // Format selected date label
   const selDate = new Date(state.calendarSelectedDate + 'T12:00:00');
   const selectedLabel = isToday ? 'Today' :
     selDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-  const selectedCount = isToday ? todayTasks.length : selectedTasks.length;
+  const taskCount = isToday ? todayTasks.length : selectedTasks.length;
+  const selectedCount = taskCount + gcalEvents.length;
 
   const calendarHtml = `
     <div class="calendar-grid">
       ${dayNames.map(d => `<div class="calendar-header-cell">${d}</div>`).join('')}
       ${cells.map(cell => {
         const tasks = dateTaskMap[cell.dateStr] || [];
+        const cellEvents = window.getGCalEventsForDate?.(cell.dateStr) || [];
         const isCellToday = cell.dateStr === today;
         const isSelected = cell.dateStr === state.calendarSelectedDate;
         const cellTasks = tasks.filter(t => t.dueDate === cell.dateStr || t.deferDate === cell.dateStr);
+        const allItems = [...cellTasks.slice(0, 2), ...cellEvents.slice(0, cellTasks.length >= 2 ? 1 : 2)];
+        const totalItems = cellTasks.length + cellEvents.length;
         const classes = ['calendar-day'];
         if (cell.outside) classes.push('outside');
         if (isCellToday) classes.push('today');
@@ -110,15 +120,18 @@ export function renderCalendarView() {
 
         return `<div class="${classes.join(' ')}" onclick="calendarSelectDate('${cell.dateStr}')">
           <div class="calendar-day-num">${cell.day}</div>
-          ${cellTasks.length > 0 ? `
+          ${allItems.length > 0 ? `
             <div class="calendar-task-list">
-              ${cellTasks.slice(0, 3).map(t => {
+              ${cellTasks.slice(0, 2).map(t => {
                 const isDue = t.dueDate === cell.dateStr;
                 const isOver = isDue && t.dueDate < today;
                 const cls = isOver ? 'overdue' : isDue ? 'due' : 'defer';
                 return `<div class="calendar-task-line ${cls}">${escapeHtml(t.title)}</div>`;
               }).join('')}
-              ${cellTasks.length > 3 ? `<div class="calendar-more-line">+${cellTasks.length - 3} more</div>` : ''}
+              ${cellEvents.slice(0, cellTasks.length >= 2 ? 1 : 2).map(e =>
+                `<div class="calendar-task-line event">${escapeHtml(e.summary)}</div>`
+              ).join('')}
+              ${totalItems > 3 ? `<div class="calendar-more-line">+${totalItems - 3} more</div>` : ''}
             </div>
           ` : ''}
         </div>`;
@@ -128,6 +141,37 @@ export function renderCalendarView() {
 
   // renderTaskItem is called via window since it may not be extracted yet
   const renderTaskItem = window.renderTaskItem || ((task) => `<div class="px-5 py-2 text-sm text-[var(--text-primary)]">${escapeHtml(task.title)}</div>`);
+
+  // Token expired banner
+  const tokenBanner = state.gcalTokenExpired ? `
+    <div class="mx-5 my-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between">
+      <span class="text-sm text-amber-700">Google Calendar session expired</span>
+      <button onclick="reconnectGCal()" class="text-sm font-medium text-amber-700 hover:text-amber-900 underline">Reconnect</button>
+    </div>
+  ` : '';
+
+  // Render GCal events section
+  const eventsSection = gcalEvents.length > 0 ? `
+    <div class="px-5 py-1 ${(dueTasks.length > 0 || deferTasks.length > 0 || (isToday && todayTasks.length > 0)) ? 'mt-2' : ''}">
+      <div class="text-[11px] font-semibold text-[#10B981] uppercase tracking-wider mb-1">Events</div>
+    </div>
+    ${gcalEvents.map(e => {
+      let timeStr = 'All day';
+      if (!e.allDay && e.start.dateTime) {
+        const d = new Date(e.start.dateTime);
+        timeStr = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      }
+      const title = escapeHtml(e.summary.length > 40 ? e.summary.slice(0, 37) + '...' : e.summary);
+      const link = e.htmlLink ? `onclick="window.open('${e.htmlLink.replace(/'/g, "\\'")}', '_blank')"` : '';
+      return `
+        <div class="px-5 py-2 flex items-center gap-3 hover:bg-[var(--bg-secondary)] transition cursor-pointer" ${link}>
+          <span class="w-2 h-2 rounded-full bg-[#10B981] flex-shrink-0"></span>
+          <span class="text-sm text-[var(--text-primary)] flex-1 truncate">${title}</span>
+          <span class="text-xs text-[var(--text-muted)] flex-shrink-0">${timeStr}</span>
+        </div>
+      `;
+    }).join('')}
+  ` : '';
 
   return `
     <div class="flex-1">
@@ -152,11 +196,14 @@ export function renderCalendarView() {
           <div class="flex items-center gap-3">
             <h3 class="text-[15px] font-semibold text-[var(--text-primary)]">${monthNames[state.calendarMonth]} ${state.calendarYear}</h3>
             <button onclick="calendarGoToday()" class="text-[11px] px-2.5 py-1 rounded-full bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--accent)] transition font-medium">Today</button>
+            ${state.gcalSyncing ? '<span class="text-[10px] text-[var(--text-muted)]">Syncing...</span>' : ''}
           </div>
           <button onclick="calendarNextMonth()" class="w-8 h-8 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
           </button>
         </div>
+
+        ${tokenBanner}
 
         <!-- Calendar Grid -->
         <div class="px-3 pt-2 pb-2">
@@ -174,6 +221,7 @@ export function renderCalendarView() {
               <div class="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                 <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full calendar-legend-dot-due inline-block"></span>Due</span>
                 <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full calendar-legend-dot-start inline-block"></span>Start</span>
+                ${gcalConnected ? '<span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#10B981] inline-block"></span>Event</span>' : ''}
               </div>
             ` : ''}
           </div>
@@ -195,6 +243,7 @@ export function renderCalendarView() {
                   </div>
                   ${nextTasks.map(task => renderTaskItem(task)).join('')}
                 ` : ''}
+                ${eventsSection}
               ` : `
                 ${dueTasks.length > 0 ? `
                   <div class="px-5 py-1">
@@ -208,6 +257,7 @@ export function renderCalendarView() {
                   </div>
                   ${deferTasks.map(task => renderTaskItem(task)).join('')}
                 ` : ''}
+                ${eventsSection}
               `}
             `}
           </div>

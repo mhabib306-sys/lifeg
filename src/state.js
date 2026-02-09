@@ -269,6 +269,12 @@ export const state = {
   braindumpAIError: null,        // string error message if AI failed
   braindumpFullPage: false,      // true = full-width review, false = 640px container
 
+  // ---- Google Calendar ----
+  gcalEvents: [],            // Cached Google Calendar events
+  gcalCalendarList: [],      // Available calendars from user's account
+  gcalSyncing: false,        // True during active sync
+  gcalTokenExpired: false,   // True when token needs refresh
+
   // ---- Task modal state ----
   modalSelectedArea: null,
   modalSelectedStatus: 'inbox',

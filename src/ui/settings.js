@@ -12,6 +12,10 @@ import {
   isWhoopConnected, getWhoopWorkerUrl, getWhoopApiKey, getWhoopLastSync
 } from '../data/whoop-sync.js';
 import { getAnthropicKey } from '../features/braindump.js';
+import {
+  isGCalConnected, getSelectedCalendars, getTargetCalendar
+} from '../data/google-calendar-sync.js';
+import { GCAL_LAST_SYNC_KEY } from '../constants.js';
 
 // ============================================================================
 // createWeightInput — Single weight/max-score input row
@@ -92,6 +96,108 @@ function renderWhoopSettingsCard() {
             <span class="w-2 h-2 rounded-full bg-charcoal/30 mr-2"></span> Not connected
           </span>
         `}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================================
+// renderGCalSettingsCard — Google Calendar integration
+// ============================================================================
+function renderGCalSettingsCard() {
+  const connected = isGCalConnected();
+  const tokenExpired = state.gcalTokenExpired;
+  const calendars = state.gcalCalendarList || [];
+  const selected = getSelectedCalendars();
+  const targetCal = getTargetCalendar();
+  const lastSync = localStorage.getItem(GCAL_LAST_SYNC_KEY);
+  const lastSyncText = lastSync
+    ? new Date(parseInt(lastSync, 10)).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+    : 'Never';
+
+  // Writable calendars for the "push to" dropdown
+  const writableCalendars = calendars.filter(c => c.accessRole === 'owner' || c.accessRole === 'writer');
+
+  if (!connected) {
+    return `
+      <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
+        <h3 class="font-semibold text-charcoal mb-4">Google Calendar <span class="text-coral">→</span></h3>
+        <p class="text-sm text-charcoal/50 mb-4">See Google Calendar events in the Calendar view and push dated tasks to Google Calendar.</p>
+        <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
+          <button onclick="window.connectGCal()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
+            Connect Google Calendar
+          </button>
+          <span class="flex items-center text-xs text-charcoal/50">
+            <span class="w-2 h-2 rounded-full bg-charcoal/30 mr-2"></span> Not connected
+          </span>
+        </div>
+      </div>
+    `;
+  }
+
+  if (tokenExpired) {
+    return `
+      <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
+        <h3 class="font-semibold text-charcoal mb-4">Google Calendar <span class="text-coral">→</span></h3>
+        <p class="text-sm text-charcoal/50 mb-4">Your Google Calendar session has expired. Reconnect to resume syncing.</p>
+        <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
+          <button onclick="window.reconnectGCal()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
+            Reconnect
+          </button>
+          <button onclick="window.disconnectGCal()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition">
+            Disconnect
+          </button>
+          <span class="flex items-center text-xs text-charcoal/50">
+            <span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span> Session expired
+          </span>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
+      <h3 class="font-semibold text-charcoal mb-4">Google Calendar <span class="text-coral">→</span></h3>
+      <p class="text-sm text-charcoal/50 mb-4">Select calendars to show events from and choose which calendar to push tasks to.</p>
+
+      ${calendars.length > 0 ? `
+        <div class="mb-4">
+          <label class="text-sm text-charcoal/70 block mb-2">Show events from:</label>
+          <div class="space-y-1.5 max-h-40 overflow-y-auto">
+            ${calendars.map(c => `
+              <label class="flex items-center gap-2 px-2 py-1 rounded hover:bg-warmgray cursor-pointer">
+                <input type="checkbox" ${selected.includes(c.id) ? 'checked' : ''}
+                  onchange="window.toggleCalendarSelection('${c.id.replace(/'/g, "\\'")}')"
+                  class="rounded text-coral focus:ring-coral">
+                <span class="w-3 h-3 rounded-full flex-shrink-0" style="background: ${c.backgroundColor}"></span>
+                <span class="text-sm text-charcoal truncate">${c.summary}</span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="text-sm text-charcoal/70 block mb-2">Push tasks to:</label>
+          <select onchange="window.setTargetCalendar(this.value); window.render()"
+            class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none">
+            ${writableCalendars.map(c => `
+              <option value="${c.id}" ${c.id === targetCal ? 'selected' : ''}>${c.summary}</option>
+            `).join('')}
+          </select>
+        </div>
+      ` : '<p class="text-sm text-charcoal/40 mb-4">Loading calendars...</p>'}
+
+      <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
+        <button onclick="window.syncGCalNow()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
+          Sync Now
+        </button>
+        <button onclick="window.disconnectGCal()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition">
+          Disconnect
+        </button>
+        <span class="flex items-center text-xs text-charcoal/50">
+          <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+          Connected · Last sync: ${lastSyncText}
+        </span>
       </div>
     </div>
   `;
@@ -355,6 +461,8 @@ export function renderSettingsTab() {
       </div>
 
       ${renderWhoopSettingsCard()}
+
+      ${renderGCalSettingsCard()}
 
       ${renderAIClassificationCard()}
 

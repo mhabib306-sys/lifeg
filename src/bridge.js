@@ -31,13 +31,21 @@ import {
 
 import { exportData, importData } from './data/export-import.js';
 
-import { signInWithGoogle, signOutUser, getCurrentUser, initAuth } from './data/firebase.js';
+import { signInWithGoogle, signOutUser, getCurrentUser, initAuth, signInWithGoogleCalendar } from './data/firebase.js';
 
 import {
   getWhoopWorkerUrl, setWhoopWorkerUrl, getWhoopApiKey, setWhoopApiKey,
   getWhoopLastSync, isWhoopConnected, fetchWhoopData, syncWhoopNow,
   checkAndSyncWhoop, connectWhoop, disconnectWhoop, checkWhoopStatus, initWhoopSync
 } from './data/whoop-sync.js';
+
+import {
+  isGCalConnected, getSelectedCalendars, setSelectedCalendars,
+  getTargetCalendar, setTargetCalendar, fetchCalendarList,
+  getGCalEventsForDate, pushTaskToGCalIfConnected, deleteGCalEventIfConnected,
+  syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
+  initGCalSync, toggleCalendarSelection
+} from './data/google-calendar-sync.js';
 
 // -- Features --
 import { fetchWeather, detectUserLocation, initWeather, loadWeatherLocation, saveWeatherLocation } from './features/weather.js';
@@ -187,7 +195,7 @@ Object.assign(window, {
   exportData, importData,
 
   // Firebase Auth
-  signInWithGoogle, signOutUser, getCurrentUser, initAuth,
+  signInWithGoogle, signOutUser, getCurrentUser, initAuth, signInWithGoogleCalendar,
 
   // Weather
   fetchWeather, detectUserLocation, initWeather, loadWeatherLocation, saveWeatherLocation,
@@ -196,6 +204,13 @@ Object.assign(window, {
   getWhoopWorkerUrl, setWhoopWorkerUrl, getWhoopApiKey, setWhoopApiKey,
   getWhoopLastSync, isWhoopConnected, fetchWhoopData, syncWhoopNow,
   checkAndSyncWhoop, connectWhoop, disconnectWhoop, checkWhoopStatus, initWhoopSync,
+
+  // Google Calendar Sync
+  isGCalConnected, getSelectedCalendars, setSelectedCalendars,
+  getTargetCalendar, setTargetCalendar, fetchCalendarList,
+  getGCalEventsForDate, pushTaskToGCalIfConnected, deleteGCalEventIfConnected,
+  syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
+  initGCalSync, toggleCalendarSelection,
 
   // Scoring
   parsePrayer, calcPrayerScore, invalidateScoresCache,
@@ -326,6 +341,7 @@ const stateProxies = [
   'inlineAutocompleteMeta',
   'undoAction', 'undoTimerRemaining', 'undoTimerId',
   'showBraindump', 'braindumpRawText', 'braindumpParsedItems', 'braindumpStep', 'braindumpEditingIndex', 'braindumpSuccessMessage', 'braindumpProcessing', 'braindumpAIError', 'braindumpFullPage',
+  'gcalEvents', 'gcalCalendarList', 'gcalSyncing', 'gcalTokenExpired',
 ];
 
 stateProxies.forEach(prop => {

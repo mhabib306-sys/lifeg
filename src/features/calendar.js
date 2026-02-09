@@ -12,12 +12,14 @@ import { getLocalDateString } from '../utils.js';
 export function calendarPrevMonth() {
   state.calendarMonth--;
   if (state.calendarMonth < 0) { state.calendarMonth = 11; state.calendarYear--; }
+  if (window.isGCalConnected?.()) window.syncGCalNow?.();
   window.render();
 }
 
 export function calendarNextMonth() {
   state.calendarMonth++;
   if (state.calendarMonth > 11) { state.calendarMonth = 0; state.calendarYear++; }
+  if (window.isGCalConnected?.()) window.syncGCalNow?.();
   window.render();
 }
 

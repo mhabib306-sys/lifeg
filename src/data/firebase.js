@@ -7,6 +7,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
 import { state } from '../state.js';
+import { GCAL_ACCESS_TOKEN_KEY, GCAL_TOKEN_TIMESTAMP_KEY } from '../constants.js';
 
 // Firebase web app config (client-side — not secret)
 const firebaseConfig = {
@@ -38,6 +39,24 @@ export function signOutUser() {
 
 export function getCurrentUser() {
   return auth.currentUser;
+}
+
+export async function signInWithGoogleCalendar() {
+  const provider = new GoogleAuthProvider();
+  provider.addScope('https://www.googleapis.com/auth/calendar');
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    if (credential && credential.accessToken) {
+      localStorage.setItem(GCAL_ACCESS_TOKEN_KEY, credential.accessToken);
+      localStorage.setItem(GCAL_TOKEN_TIMESTAMP_KEY, String(Date.now()));
+      return credential.accessToken;
+    }
+    return null;
+  } catch (err) {
+    console.error('Google Calendar sign-in failed:', err);
+    return null;
+  }
 }
 
 export function initAuth(onReady) {

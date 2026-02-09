@@ -2098,6 +2098,7 @@ input[type="checkbox"]:focus {
 .calendar-task-line.due { color: #EF5350; background: #EF535010; }
 .calendar-task-line.defer { color: #42A5F5; background: #42A5F510; }
 .calendar-task-line.overdue { color: #D32F2F; background: #D32F2F10; }
+.calendar-task-line.event { color: #10B981; background: #10B98110; }
 @media (max-width: 768px) {
   .calendar-day {
     padding: 3px;

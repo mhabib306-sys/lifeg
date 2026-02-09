@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents (Claude Code, Codex, etc.) when 
 
 ## Project Overview
 
-**Homebase** (v4.8.5 - Homebase) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
+**Homebase** (v4.9.0 - Homebase) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
 
 ## Git Workflow
 
@@ -67,6 +67,7 @@ lifeg/
 │   │   ├── storage.js          (localStorage helpers, saveTasksData, saveData)
 │   │   ├── github-sync.js      (saveToGithub, loadCloudData, theme management)
 │   │   ├── whoop-sync.js       (WHOOP API auto-sync via Cloudflare Worker proxy)
+│   │   ├── google-calendar-sync.js (Two-way Google Calendar sync via REST API)
 │   │   └── export-import.js    (exportData, importData)
 │   ├── features/
 │   │   ├── weather.js          (Open-Meteo API, caching, geolocation)
@@ -139,7 +140,7 @@ CSS custom properties in `src/styles/themes.css` — `:root` (simplebits) and `[
 
 ## localStorage Keys
 
-All prefixed with `lifeGamification`: `Data_v3`, `Weights_v1`, `Tasks`, `TaskCategories`, `TaskLabels`, `TaskPeople`, `Perspectives`, `HomeWidgets`, `Theme`, `GithubToken`, `ViewState`. Also `nucleusWeatherCache`, `nucleusWeatherLocation`, `collapsedNotes`, `nucleusWhoopWorkerUrl`, `nucleusWhoopApiKey`, `nucleusWhoopLastSync`, `nucleusWhoopConnected`.
+All prefixed with `lifeGamification`: `Data_v3`, `Weights_v1`, `Tasks`, `TaskCategories`, `TaskLabels`, `TaskPeople`, `Perspectives`, `HomeWidgets`, `Theme`, `GithubToken`, `ViewState`. Also `nucleusWeatherCache`, `nucleusWeatherLocation`, `collapsedNotes`, `nucleusWhoopWorkerUrl`, `nucleusWhoopApiKey`, `nucleusWhoopLastSync`, `nucleusWhoopConnected`, `nucleusGCalAccessToken`, `nucleusGCalTokenTimestamp`, `nucleusGCalSelectedCalendars`, `nucleusGCalTargetCalendar`, `nucleusGCalEventsCache`, `nucleusGCalLastSync`, `nucleusGCalConnected`.
 
 ## Important Patterns
 
