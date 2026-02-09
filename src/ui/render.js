@@ -115,9 +115,7 @@ export function render() {
           <svg class="w-16 h-16 mb-6 animate-pulse" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <defs><linearGradient id="authGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/></linearGradient></defs>
             <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#authGrad)"/>
-            <path d="M50 20 L78 42 V78 H22 V42 Z" fill="white" opacity="0.25"/>
-            <path d="M50 32 C50 32 62 48 62 58 C62 65 56.5 70 50 70 C43.5 70 38 65 38 58 C38 48 50 32 50 32Z" fill="white"/>
-            <path d="M50 45 C50 45 56 53 56 58 C56 62 53.3 64.5 50 64.5 C46.7 64.5 44 62 44 58 C44 53 50 45 50 45Z" fill="#F59E0B"/>
+            <path d="M50 25 C50 25 66 46 66 58 C66 67 58.8 74 50 74 C41.2 74 34 67 34 58 C34 46 50 25 50 25Z" fill="white"/>
           </svg>
           <p class="text-[var(--text-muted)] text-sm">Loading...</p>
         </div>`;
@@ -131,9 +129,7 @@ export function render() {
           <svg class="w-20 h-20 mb-4" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <defs><linearGradient id="loginGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/></linearGradient></defs>
             <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#loginGrad)"/>
-            <path d="M50 20 L78 42 V78 H22 V42 Z" fill="white" opacity="0.25"/>
-            <path d="M50 32 C50 32 62 48 62 58 C62 65 56.5 70 50 70 C43.5 70 38 65 38 58 C38 48 50 32 50 32Z" fill="white"/>
-            <path d="M50 45 C50 45 56 53 56 58 C56 62 53.3 64.5 50 64.5 C46.7 64.5 44 62 44 58 C44 53 50 45 50 45Z" fill="#F59E0B"/>
+            <path d="M50 25 C50 25 66 46 66 58 C66 67 58.8 74 50 74 C41.2 74 34 67 34 58 C34 46 50 25 50 25Z" fill="white"/>
           </svg>
           <h1 class="text-2xl font-bold text-[var(--text-primary)] mb-1">Homebase</h1>
           <p class="text-sm text-[var(--text-muted)] mb-8">Your life, all in one place</p>
@@ -154,8 +150,6 @@ export function render() {
     }
 
     // ---- Authenticated: render full app ----
-    const dateDisplay = new Date(state.currentDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
     app.innerHTML = `
       <!-- Mobile Header - Things 3 style -->
       <header class="mobile-header-compact border-b border-[var(--border-light)] bg-[var(--bg-card)] sticky top-0 z-50" style="display: none;">
@@ -168,9 +162,7 @@ export function render() {
             <svg class="w-8 h-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
               <defs><linearGradient id="mobileGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/></linearGradient></defs>
               <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#mobileGrad)"/>
-              <path d="M50 20 L78 42 V78 H22 V42 Z" fill="white" opacity="0.25"/>
-              <path d="M50 32 C50 32 62 48 62 58 C62 65 56.5 70 50 70 C43.5 70 38 65 38 58 C38 48 50 32 50 32Z" fill="white"/>
-              <path d="M50 45 C50 45 56 53 56 58 C56 62 53.3 64.5 50 64.5 C46.7 64.5 44 62 44 58 C44 53 50 45 50 45Z" fill="#F59E0B"/>
+              <path d="M50 25 C50 25 66 46 66 58 C66 67 58.8 74 50 74 C41.2 74 34 67 34 58 C34 46 50 25 50 25Z" fill="white"/>
             </svg>
           `}
         </div>
@@ -204,9 +196,7 @@ export function render() {
                   </linearGradient>
                 </defs>
                 <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#homebaseGrad)"/>
-                <path d="M50 20 L78 42 V78 H22 V42 Z" fill="white" opacity="0.25"/>
-                <path d="M50 32 C50 32 62 48 62 58 C62 65 56.5 70 50 70 C43.5 70 38 65 38 58 C38 48 50 32 50 32Z" fill="white"/>
-                <path d="M50 45 C50 45 56 53 56 58 C56 62 53.3 64.5 50 64.5 C46.7 64.5 44 62 44 58 C44 53 50 45 50 45Z" fill="#F59E0B"/>
+                <path d="M50 25 C50 25 66 46 66 58 C66 67 58.8 74 50 74 C41.2 74 34 67 34 58 C34 46 50 25 50 25Z" fill="white"/>
               </svg>
               <div>
                 <div class="flex items-center gap-2">
@@ -227,7 +217,6 @@ export function render() {
               <button onclick="setToday()" class="sb-btn px-4 py-2 rounded-lg text-sm font-medium">Today</button>
             </div>
           </div>
-          <p class="text-charcoal/50 text-sm mt-2">${dateDisplay}</p>
         </div>
       </header>
 
