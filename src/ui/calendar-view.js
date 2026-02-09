@@ -184,6 +184,20 @@ export function openCalendarMeetingNotes(calendarId, eventId) {
   window.render();
 }
 
+export function openCalendarMeetingWorkspaceByEventKey(eventKey) {
+  if (!eventKey) return;
+  const parts = String(eventKey).split('::');
+  if (parts.length >= 3) {
+    state.calendarMeetingNotesScope = parts[1] === 'series' ? 'series' : 'instance';
+  }
+  state.calendarMeetingNotesEventKey = String(eventKey);
+  state.activeTab = 'calendar';
+  state.calendarEventModalOpen = false;
+  state.calendarEventModalCalendarId = null;
+  state.calendarEventModalEventId = null;
+  window.render();
+}
+
 export function setCalendarMeetingNotesScope(scope) {
   if (!['instance', 'series'].includes(scope)) return;
   state.calendarMeetingNotesScope = scope;

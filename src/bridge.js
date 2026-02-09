@@ -133,6 +133,7 @@ import {
   openCalendarEventActions,
   closeCalendarEventActions,
   openCalendarMeetingNotes,
+  openCalendarMeetingWorkspaceByEventKey,
   closeCalendarMeetingNotes,
   setCalendarMeetingNotesScope,
   convertCalendarEventToTask,
@@ -228,7 +229,7 @@ Object.assign(window, {
   syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
   initGCalSync, toggleCalendarSelection,
   openCalendarEventActions, closeCalendarEventActions,
-  openCalendarMeetingNotes, closeCalendarMeetingNotes, setCalendarMeetingNotesScope,
+  openCalendarMeetingNotes, openCalendarMeetingWorkspaceByEventKey, closeCalendarMeetingNotes, setCalendarMeetingNotesScope,
   convertCalendarEventToTask, startCalendarEventDrag, clearCalendarEventDrag, dropCalendarEventToSlot,
   addMeetingLinkedItem, handleMeetingItemInputKeydown,
 
