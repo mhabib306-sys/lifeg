@@ -202,6 +202,30 @@ export function toggleTaskComplete(taskId) {
 
     saveTasksData();
     window.render();
+
+    // Keep Google Calendar "Homebase Tasks" clean:
+    // - completing a task removes its synced event
+    // - uncompleting a dated task recreates the synced event
+    if (task.completed) {
+      if (task.gcalEventId) {
+        const eventIdToDelete = task.gcalEventId;
+        window.deleteGCalEventIfConnected?.(task)
+          .then(() => {
+            const current = state.tasksData.find(t => taskIdEquals(t.id, taskId));
+            if (!current) return;
+            if (current.gcalEventId !== eventIdToDelete) return;
+            current.gcalEventId = null;
+            current.updatedAt = new Date().toISOString();
+            saveTasksData();
+            window.render();
+          })
+          .catch((err) => {
+            console.warn('GCal completion cleanup failed:', err);
+          });
+      }
+    } else if (!task.gcalEventId && (task.deferDate || task.dueDate)) {
+      window.pushTaskToGCalIfConnected?.(task);
+    }
   } else {
     console.warn('toggleTaskComplete: task not found', taskId);
   }
