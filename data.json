@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T12:14:18.993Z",
+  "lastUpdated": "2026-02-09T12:14:28.418Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3138,12 +3138,20 @@
       "visible": true
     },
     {
+      "id": "daily-entry",
+      "type": "daily-entry",
+      "title": "Daily Entry",
+      "size": "full",
+      "order": 6,
+      "visible": true
+    },
+    {
       "id": "perspective-custom_1770017177816",
       "type": "perspective",
       "title": "Nancy: Active Topics",
       "perspectiveId": "custom_1770017177816",
       "size": "half",
-      "order": 6,
+      "order": 7,
       "visible": true
     },
     {
@@ -3151,7 +3159,7 @@
       "type": "prayers",
       "title": "Prayers",
       "size": "half",
-      "order": 7,
+      "order": 8,
       "visible": true
     },
     {
@@ -3159,7 +3167,7 @@
       "type": "glucose",
       "title": "Glucose",
       "size": "half",
-      "order": 8,
+      "order": 9,
       "visible": true
     },
     {
@@ -3167,7 +3175,7 @@
       "type": "whoop",
       "title": "Whoop",
       "size": "half",
-      "order": 9,
+      "order": 10,
       "visible": true
     },
     {
@@ -3175,7 +3183,7 @@
       "type": "habits",
       "title": "Habits",
       "size": "half",
-      "order": 10,
+      "order": 11,
       "visible": true
     }
   ]
