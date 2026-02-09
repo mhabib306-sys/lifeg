@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T15:00:06.896Z",
+  "lastUpdated": "2026-02-09T15:42:03.413Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2760,6 +2760,30 @@
       "order": 48000,
       "createdAt": "2026-02-09T05:10:08.457Z",
       "updatedAt": "2026-02-09T05:10:42.329Z"
+    },
+    {
+      "id": "task_1770651720740_xn4ry44aj",
+      "title": "Consolidate the categories into 6-10 categories instead of 21 for BoD and investors presentations",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "categoryId": "work",
+      "labels": [],
+      "people": [
+        "person-1770510421604"
+      ],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 40000,
+      "createdAt": "2026-02-09T15:42:00.740Z",
+      "updatedAt": "2026-02-09T15:42:00.740Z"
     }
   ],
   "taskCategories": [
