@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T18:30:41.037Z",
+  "lastUpdated": "2026-02-09T18:34:56.041Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2082,7 +2082,8 @@
       "updatedAt": "2026-02-07T08:01:38.593Z",
       "order": 24000,
       "today": false,
-      "flagged": false
+      "flagged": false,
+      "noteOrder": 1000
     },
     {
       "id": "task_1770407048879_4e86e0ajn",
@@ -2104,7 +2105,8 @@
       "parentId": null,
       "indent": 0,
       "today": false,
-      "flagged": false
+      "flagged": false,
+      "noteOrder": 2000
     },
     {
       "id": "task_1770407118912_dg79goye3",
@@ -2124,7 +2126,8 @@
       "updatedAt": "2026-02-07T08:51:17.825Z",
       "order": 25000,
       "today": false,
-      "flagged": false
+      "flagged": false,
+      "noteOrder": 3000
     },
     {
       "id": "task_1770419495459_db8m1al68",
@@ -2184,7 +2187,8 @@
       "updatedAt": "2026-02-07T07:50:45.809Z",
       "order": 27000,
       "today": false,
-      "flagged": false
+      "flagged": false,
+      "noteOrder": 4000
     },
     {
       "id": "task_1770450958071_jz3ou5au6",
@@ -2206,7 +2210,8 @@
       "updatedAt": "2026-02-07T07:55:58.071Z",
       "order": 19000,
       "today": false,
-      "flagged": false
+      "flagged": false,
+      "noteOrder": 5000
     },
     {
       "id": "task_1770456058835_o9bav1rjn",
@@ -2272,7 +2277,8 @@
       "updatedAt": "2026-02-07T10:02:19.548Z",
       "order": 23000,
       "today": false,
-      "flagged": false
+      "flagged": false,
+      "noteOrder": 6000
     },
     {
       "id": "task_1770485272782_1l1ycs1mk",
@@ -2436,7 +2442,8 @@
       "createdAt": "2026-02-08T08:53:41.297Z",
       "updatedAt": "2026-02-08T08:53:41.297Z",
       "today": false,
-      "flagged": false
+      "flagged": false,
+      "noteOrder": 7000
     },
     {
       "id": "task_1770540828612_b3q4ssdag",
@@ -2458,7 +2465,8 @@
       "updatedAt": "2026-02-08T08:53:51.423Z",
       "order": 7000,
       "today": false,
-      "flagged": false
+      "flagged": false,
+      "noteOrder": 1000
     },
     {
       "id": "task_1770540831423_c87emukre",
@@ -2480,7 +2488,8 @@
       "updatedAt": "2026-02-08T08:53:54.279Z",
       "order": 8000,
       "today": false,
-      "flagged": false
+      "flagged": false,
+      "noteOrder": 1000
     },
     {
       "id": "task_1770540844662_jfbkwax3v",
@@ -2502,7 +2511,8 @@
       "updatedAt": "2026-02-08T08:54:04.662Z",
       "order": 10000,
       "today": false,
-      "flagged": false
+      "flagged": false,
+      "noteOrder": 8000
     },
     {
       "id": "task_1770550089075_aufzybsl8",
@@ -2548,7 +2558,8 @@
       "updatedAt": "2026-02-08T11:36:07.385Z",
       "order": 3000,
       "today": false,
-      "flagged": false
+      "flagged": false,
+      "noteOrder": 1000
     },
     {
       "id": "task_1770563975208_w48quf1y9",
@@ -2713,7 +2724,8 @@
       "indent": 0,
       "order": 31000,
       "createdAt": "2026-02-08T23:07:06.419Z",
-      "updatedAt": "2026-02-08T23:08:55.378Z"
+      "updatedAt": "2026-02-08T23:08:55.378Z",
+      "noteOrder": 9000
     },
     {
       "id": "task_1770592037280_st0eoglpu",
@@ -2735,7 +2747,8 @@
       "updatedAt": "2026-02-08T23:08:53.590Z",
       "today": false,
       "flagged": false,
-      "order": 30000
+      "order": 30000,
+      "noteOrder": 10000
     },
     {
       "id": "task_1770596756539_vp4g87inh",
@@ -2805,7 +2818,8 @@
       "indent": 0,
       "order": 41000,
       "createdAt": "2026-02-09T18:13:38.521Z",
-      "updatedAt": "2026-02-09T18:13:38.521Z"
+      "updatedAt": "2026-02-09T18:13:38.521Z",
+      "noteOrder": 11000
     }
   ],
   "taskCategories": [
