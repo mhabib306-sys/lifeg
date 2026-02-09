@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T19:28:39.779Z",
+  "lastUpdated": "2026-02-09T19:29:39.747Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2949,14 +2949,14 @@
     },
     {
       "id": "task_1770665317331_0ufby0muz",
-      "title": "Test bullet",
+      "title": "Test bullet in an event and area Breadfast",
       "notes": "",
       "status": "anytime",
       "today": false,
       "flagged": false,
       "completed": false,
       "completedAt": null,
-      "categoryId": null,
+      "categoryId": "work",
       "labels": [],
       "people": [],
       "deferDate": null,
@@ -2968,7 +2968,7 @@
       "meetingEventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260209T083000Z",
       "order": 41000,
       "createdAt": "2026-02-09T19:28:37.331Z",
-      "updatedAt": "2026-02-09T19:28:37.331Z"
+      "updatedAt": "2026-02-09T19:29:36.574Z"
     }
   ],
   "taskCategories": [
