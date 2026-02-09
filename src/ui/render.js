@@ -338,6 +338,16 @@ export function render() {
       initModalAutocomplete();
     }
 
+    // Restore focus to emoji search input if picker is open
+    if (state.perspectiveEmojiPickerOpen) {
+      const emojiInput = document.getElementById('emoji-search-input');
+      if (emojiInput) {
+        emojiInput.focus();
+        const len = emojiInput.value.length;
+        emojiInput.setSelectionRange(len, len);
+      }
+    }
+
     // Initialize inline autocomplete for quick-add inputs
     setTimeout(() => {
       if (document.getElementById('quick-add-input')) {
