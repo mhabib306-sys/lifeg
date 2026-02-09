@@ -1,19 +1,183 @@
 // ============================================================================
 // BRAINDUMP MODULE — Intelligent text capture & classification engine
 // ============================================================================
-// Three-phase pipeline:
-//   1. segmentText()     — split raw text into individual items
-//   2. classifyItem()    — score each item as task vs note
-//   3. extractMetadata() — pull out #area, @tag, &person, dates
+// Two classification paths:
+//   1. AI (Claude API) — splits compound text, classifies, extracts metadata
+//   2. Heuristic fallback — rule-based scoring when no API key configured
 //
 // Public API:
-//   parseBraindump(rawText) → array of parsed items
+//   parseBraindump(rawText) → Promise<array of parsed items>
+//   parseBraindumpHeuristic(rawText) → array of parsed items (sync)
 //   submitBraindumpItems(items) → creates tasks/notes, returns counts
+//   getAnthropicKey() / setAnthropicKey(key) — API key management
 
 import { state } from '../state.js';
 import { createTask } from './tasks.js';
 import { saveTasksData } from '../data/storage.js';
-import { BRAINDUMP_ACTION_VERBS } from '../constants.js';
+import { BRAINDUMP_ACTION_VERBS, ANTHROPIC_KEY } from '../constants.js';
+
+// ============================================================================
+// Anthropic API Key Management
+// ============================================================================
+
+export function getAnthropicKey() {
+  return localStorage.getItem(ANTHROPIC_KEY) || '';
+}
+
+export function setAnthropicKey(key) {
+  const trimmed = (key || '').trim();
+  if (trimmed) {
+    localStorage.setItem(ANTHROPIC_KEY, trimmed);
+  } else {
+    localStorage.removeItem(ANTHROPIC_KEY);
+  }
+}
+
+// ============================================================================
+// AI Classification via Claude API
+// ============================================================================
+
+/**
+ * Call Claude API to intelligently split, classify, and extract metadata.
+ * Returns array of parsed items matching the heuristic shape.
+ * Throws on error (caller should catch and fallback).
+ */
+async function classifyWithAI(rawText) {
+  const apiKey = getAnthropicKey();
+  if (!apiKey) throw new Error('No API key configured');
+
+  // Gather user's areas, tags, people for the prompt
+  const areas = state.taskCategories.map(c => c.name);
+  const tags = state.taskLabels.map(l => l.name);
+  const people = state.taskPeople.map(p => p.name);
+
+  const systemPrompt = `You are a task classification assistant for a personal productivity app. Your job is to take raw freeform text and split it into individual actionable items, then classify each.
+
+The user has these Areas: ${JSON.stringify(areas)}
+The user has these Tags: ${JSON.stringify(tags)}
+The user has these People: ${JSON.stringify(people)}
+
+Rules:
+1. SPLIT compound paragraphs into separate items. If a sentence contains multiple actions or distinct thoughts, split them.
+2. CLASSIFY each item as "task" (actionable, something to do) or "note" (observation, reference, idea, thought).
+3. EXTRACT metadata by matching against the provided lists:
+   - area: match to one of the user's Areas (exact name, case-insensitive). null if no match.
+   - tags: array of matched Tag names. Empty array if none.
+   - people: array of matched People names. Empty array if none.
+   - deferDate: if a start/defer date is mentioned, return YYYY-MM-DD. null otherwise.
+   - dueDate: if a deadline/due date is mentioned, return YYYY-MM-DD. null otherwise.
+4. Provide a CONFIDENCE score 0.0-1.0 for each classification.
+5. Clean up the title: remove metadata markers (#, @, &, !) and make it a clean actionable sentence.
+
+Today's date is ${new Date().toISOString().split('T')[0]}.
+
+Respond with ONLY valid JSON — no markdown, no explanation. The JSON must be an array of objects:
+[
+  {
+    "title": "Clean action item title",
+    "type": "task" or "note",
+    "confidence": 0.0-1.0,
+    "area": "Area Name" or null,
+    "tags": ["Tag Name", ...],
+    "people": ["Person Name", ...],
+    "deferDate": "YYYY-MM-DD" or null,
+    "dueDate": "YYYY-MM-DD" or null
+  }
+]`;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 4096,
+        system: systemPrompt,
+        messages: [
+          { role: 'user', content: rawText }
+        ],
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errBody = await response.text().catch(() => '');
+      throw new Error(`API error ${response.status}: ${errBody}`);
+    }
+
+    const data = await response.json();
+    const text = data.content?.[0]?.text || '';
+
+    // Parse JSON from response (handle potential markdown wrapping)
+    let jsonStr = text.trim();
+    if (jsonStr.startsWith('```')) {
+      jsonStr = jsonStr.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
+    }
+
+    const items = JSON.parse(jsonStr);
+    if (!Array.isArray(items)) throw new Error('Response is not an array');
+
+    // Map AI results to our item shape
+    return items.map((item, index) => {
+      // Resolve area name to ID
+      let categoryId = null;
+      if (item.area) {
+        const cat = state.taskCategories.find(
+          c => c.name.toLowerCase() === item.area.toLowerCase()
+        );
+        if (cat) categoryId = cat.id;
+      }
+
+      // Resolve tag names to IDs
+      const labelIds = (item.tags || [])
+        .map(name => {
+          const label = state.taskLabels.find(
+            l => l.name.toLowerCase() === name.toLowerCase()
+          );
+          return label ? label.id : null;
+        })
+        .filter(Boolean);
+
+      // Resolve people names to IDs
+      const personIds = (item.people || [])
+        .map(name => {
+          const person = state.taskPeople.find(
+            p => p.name.toLowerCase() === name.toLowerCase()
+          );
+          return person ? person.id : null;
+        })
+        .filter(Boolean);
+
+      return {
+        index,
+        originalText: item.title || '',
+        title: item.title || '',
+        type: item.type === 'note' ? 'note' : 'task',
+        score: item.type === 'task' ? 50 : -50,
+        confidence: Math.max(0, Math.min(1, item.confidence || 0.8)),
+        categoryId,
+        labels: labelIds,
+        people: personIds,
+        deferDate: item.deferDate || null,
+        dueDate: item.dueDate || null,
+        included: true,
+      };
+    });
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
+  }
+}
 
 // ============================================================================
 // Phase 1 — Segment raw text into individual items
@@ -37,7 +201,7 @@ export function segmentText(rawText) {
 }
 
 // ============================================================================
-// Phase 2 — Classify an item as task or note
+// Phase 2 — Classify an item as task or note (heuristic)
 // ============================================================================
 
 /**
@@ -142,7 +306,7 @@ export function classifyItem(text) {
 }
 
 // ============================================================================
-// Phase 3 — Extract metadata from text
+// Phase 3 — Extract metadata from text (heuristic)
 // ============================================================================
 
 /**
@@ -240,10 +404,10 @@ export function extractMetadata(text) {
 }
 
 // ============================================================================
-// Orchestrator — Parse raw text into structured items
+// Heuristic Orchestrator — Parse raw text (sync, rule-based)
 // ============================================================================
 
-export function parseBraindump(rawText) {
+export function parseBraindumpHeuristic(rawText) {
   const segments = segmentText(rawText);
   return segments.map((text, index) => {
     const classification = classifyItem(text);
@@ -263,6 +427,27 @@ export function parseBraindump(rawText) {
       included: true,
     };
   });
+}
+
+// ============================================================================
+// Main Orchestrator — AI first, heuristic fallback (async)
+// ============================================================================
+
+export async function parseBraindump(rawText) {
+  // If no API key, skip AI entirely
+  if (!getAnthropicKey()) {
+    return parseBraindumpHeuristic(rawText);
+  }
+
+  try {
+    const items = await classifyWithAI(rawText);
+    if (items && items.length > 0) return items;
+    // Empty result from AI — fall through to heuristic
+  } catch (err) {
+    console.warn('AI classification failed, falling back to heuristic:', err.message);
+  }
+
+  return parseBraindumpHeuristic(rawText);
 }
 
 // ============================================================================

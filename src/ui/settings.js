@@ -11,6 +11,7 @@ import { updateWeight, resetWeights, updateMaxScore, resetMaxScores } from '../f
 import {
   isWhoopConnected, getWhoopWorkerUrl, getWhoopApiKey, getWhoopLastSync
 } from '../data/whoop-sync.js';
+import { getAnthropicKey } from '../features/braindump.js';
 
 // ============================================================================
 // createWeightInput — Single weight/max-score input row
@@ -91,6 +92,44 @@ function renderWhoopSettingsCard() {
             <span class="w-2 h-2 rounded-full bg-charcoal/30 mr-2"></span> Not connected
           </span>
         `}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================================
+// renderAIClassificationCard — Anthropic API key for braindump AI
+// ============================================================================
+function renderAIClassificationCard() {
+  const apiKey = getAnthropicKey();
+  const hasKey = !!apiKey;
+
+  return `
+    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
+      <h3 class="font-semibold text-charcoal mb-4">AI Classification <span class="text-coral">→</span></h3>
+      <p class="text-sm text-charcoal/50 mb-4">Use Claude AI to intelligently split, classify, and extract metadata from your Braindump text. Without an API key, the heuristic classifier is used.</p>
+
+      <div class="mb-4">
+        <label class="text-sm text-charcoal/70 block mb-2">Anthropic API Key</label>
+        <div class="flex gap-2">
+          <input type="password" id="anthropic-key-input" value="${apiKey}"
+            placeholder="sk-ant-..."
+            class="flex-1 px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none">
+          <button onclick="window.setAnthropicKey(document.getElementById('anthropic-key-input').value); window.render()"
+            class="sb-btn px-4 py-2 rounded text-sm font-medium">
+            Save Key
+          </button>
+        </div>
+        <p class="text-xs text-charcoal/40 mt-2">
+          Create an API key at
+          <a href="https://console.anthropic.com/settings/keys" target="_blank" class="sb-link">console.anthropic.com</a>.
+          Uses Claude Haiku 4.5 for fast, low-cost classification.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2 pt-3 border-t border-softborder">
+        <span class="w-2 h-2 rounded-full ${hasKey ? 'bg-green-500' : 'bg-charcoal/30'}"></span>
+        <span class="text-xs text-charcoal/50">${hasKey ? 'Configured — AI classification active' : 'Not configured — using heuristic classifier'}</span>
       </div>
     </div>
   `;
@@ -316,6 +355,8 @@ export function renderSettingsTab() {
       </div>
 
       ${renderWhoopSettingsCard()}
+
+      ${renderAIClassificationCard()}
 
       <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
         <h3 class="font-semibold text-charcoal mb-4">Data Management <span class="text-coral">→</span></h3>

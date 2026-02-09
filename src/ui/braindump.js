@@ -7,7 +7,7 @@
 
 import { state } from '../state.js';
 import { escapeHtml } from '../utils.js';
-import { parseBraindump, submitBraindumpItems } from '../features/braindump.js';
+import { parseBraindump, getAnthropicKey, submitBraindumpItems } from '../features/braindump.js';
 
 // ============================================================================
 // Open / Close
@@ -40,12 +40,25 @@ export function closeBraindump() {
 // Process (Step 1 → Step 2)
 // ============================================================================
 
-export function processBraindump() {
+export async function processBraindump() {
   const ta = document.getElementById('braindump-textarea');
   if (ta) state.braindumpRawText = ta.value;
   if (!state.braindumpRawText.trim()) return;
 
-  state.braindumpParsedItems = parseBraindump(state.braindumpRawText);
+  // Show processing state if AI is configured
+  const useAI = !!getAnthropicKey();
+  if (useAI) {
+    state.braindumpProcessing = true;
+    state.braindumpStep = 'processing';
+    window.render();
+  }
+
+  try {
+    state.braindumpParsedItems = await parseBraindump(state.braindumpRawText);
+  } finally {
+    state.braindumpProcessing = false;
+  }
+
   state.braindumpStep = 'review';
   state.braindumpEditingIndex = null;
   window.render();
@@ -209,6 +222,10 @@ export function renderBraindumpOverlay() {
 
   if (state.braindumpStep === 'success') {
     return renderSuccessOverlay();
+  }
+
+  if (state.braindumpStep === 'processing') {
+    return renderProcessingStep();
   }
 
   if (state.braindumpStep === 'review') {
@@ -392,6 +409,39 @@ function renderBraindumpItemCard(item, index) {
           <div class="braindump-confidence-fill" style="width: ${item.confidence * 100}%; background: ${confColor};"></div>
         </div>
         <span class="braindump-confidence-label" style="color: ${confColor}">${Math.round(item.confidence * 100)}%</span>
+      </div>
+    </div>
+  `;
+}
+
+// ---- Processing step (AI thinking) ----
+function renderProcessingStep() {
+  return `
+    <div class="braindump-overlay">
+      <div class="braindump-container">
+        <div class="braindump-header">
+          <div class="flex items-center gap-3">
+            <div class="braindump-icon">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.5 2a5.5 5.5 0 0 1 5 7.7c.4.4.8.9 1 1.5a3.5 3.5 0 0 1-1.5 6.8H9.5a5.5 5.5 0 0 1 0-11z"/>
+                <path d="M14 13.5a3 3 0 0 0-5 0"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-bold text-[var(--text-primary)]">Braindump</h2>
+              <p class="text-xs text-[var(--text-muted)]">AI is analyzing your text...</p>
+            </div>
+          </div>
+          <button onclick="closeBraindump()" class="braindump-close" aria-label="Close">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
+        </div>
+
+        <div class="braindump-processing-body">
+          <div class="braindump-spinner"></div>
+          <p class="text-base font-semibold text-[var(--text-primary)] mt-4">Thinking...</p>
+          <p class="text-sm text-[var(--text-muted)] mt-1">Splitting, classifying, and extracting metadata</p>
+        </div>
       </div>
     </div>
   `;

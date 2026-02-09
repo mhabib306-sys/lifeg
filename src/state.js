@@ -261,9 +261,10 @@ export const state = {
   showBraindump: false,
   braindumpRawText: '',
   braindumpParsedItems: [],
-  braindumpStep: 'input',       // 'input' | 'review' | 'success'
+  braindumpStep: 'input',       // 'input' | 'processing' | 'review' | 'success'
   braindumpEditingIndex: null,
   braindumpSuccessMessage: '',
+  braindumpProcessing: false,    // true while AI is classifying
 
   // ---- Task modal state ----
   modalSelectedArea: null,

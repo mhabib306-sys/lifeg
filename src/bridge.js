@@ -108,7 +108,8 @@ import {
 } from './features/undo.js';
 
 import {
-  parseBraindump, submitBraindumpItems
+  parseBraindump, parseBraindumpHeuristic, submitBraindumpItems,
+  getAnthropicKey, setAnthropicKey
 } from './features/braindump.js';
 
 // -- UI --
@@ -251,7 +252,8 @@ Object.assign(window, {
   startUndoCountdown, executeUndo, dismissUndo, renderUndoToastHtml,
 
   // Braindump
-  parseBraindump, submitBraindumpItems,
+  parseBraindump, parseBraindumpHeuristic, submitBraindumpItems,
+  getAnthropicKey, setAnthropicKey,
   openBraindump, closeBraindump, processBraindump, backToInput,
   toggleBraindumpItemType, toggleBraindumpItemInclude, removeBraindumpItem,
   editBraindumpItem, saveBraindumpItemEdit, cancelBraindumpItemEdit,
@@ -323,7 +325,7 @@ const stateProxies = [
   'draggedNoteId', 'dragOverNoteId', 'noteDragPosition',
   'inlineAutocompleteMeta',
   'undoAction', 'undoTimerRemaining', 'undoTimerId',
-  'showBraindump', 'braindumpRawText', 'braindumpParsedItems', 'braindumpStep', 'braindumpEditingIndex', 'braindumpSuccessMessage',
+  'showBraindump', 'braindumpRawText', 'braindumpParsedItems', 'braindumpStep', 'braindumpEditingIndex', 'braindumpSuccessMessage', 'braindumpProcessing',
 ];
 
 stateProxies.forEach(prop => {
