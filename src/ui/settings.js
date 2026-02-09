@@ -252,6 +252,87 @@ function renderAIClassificationCard() {
   `;
 }
 
+function renderOfflineQueueCard() {
+  const queue = window.getGCalOfflineQueue?.() || [];
+  return `
+    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
+      <h3 class="font-semibold text-charcoal mb-4">Offline Queue <span class="text-coral">→</span></h3>
+      <p class="text-sm text-charcoal/50 mb-4">Google Calendar write actions queued while offline or failing token/network checks.</p>
+      <div class="flex flex-wrap gap-2 mb-3">
+        <button onclick="window.retryGCalOfflineQueue()" class="px-3 py-1.5 bg-coral text-white rounded-lg text-xs font-semibold hover:bg-coralDark transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Retry All</button>
+        <button onclick="window.clearGCalOfflineQueue()" class="px-3 py-1.5 bg-warmgray text-charcoal rounded-lg text-xs font-semibold hover:bg-softborder transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Clear</button>
+        <span class="text-xs text-charcoal/50 flex items-center">${queue.length} queued</span>
+      </div>
+      <div class="space-y-2 max-h-56 overflow-auto">
+        ${queue.length ? queue.map(item => `
+          <div class="px-3 py-2 rounded-lg bg-warmgray border border-softborder flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="text-xs font-semibold text-charcoal">${item.type}</p>
+              <p class="text-[11px] text-charcoal/50">${new Date(item.createdAt).toLocaleString()}</p>
+              ${item.lastError ? `<p class="text-[11px] text-amber-700 mt-0.5">${item.lastError}</p>` : ''}
+            </div>
+            <button onclick="window.removeGCalOfflineQueueItem('${item.id}')" class="text-xs px-2 py-1 rounded bg-white border border-softborder text-charcoal/70 hover:text-charcoal">Remove</button>
+          </div>
+        `).join('') : '<p class="text-sm text-charcoal/40">Queue is empty.</p>'}
+      </div>
+    </div>
+  `;
+}
+
+function renderConflictCenterCard() {
+  const conflicts = state.conflictNotifications || [];
+  return `
+    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
+      <h3 class="font-semibold text-charcoal mb-4">Conflict Center <span class="text-coral">→</span></h3>
+      <p class="text-sm text-charcoal/50 mb-4">Notifications created when cloud/local payloads require conflict policy decisions.</p>
+      <div class="flex items-center gap-2 mb-3">
+        <button onclick="window.clearConflictNotifications()" class="px-3 py-1.5 bg-warmgray text-charcoal rounded-lg text-xs font-semibold hover:bg-softborder transition ${conflicts.length ? '' : 'opacity-50 cursor-not-allowed'}" ${conflicts.length ? '' : 'disabled'}>Clear All</button>
+        <span class="text-xs text-charcoal/50">${conflicts.length} items</span>
+      </div>
+      <div class="space-y-2 max-h-56 overflow-auto">
+        ${conflicts.length ? conflicts.map(item => `
+          <div class="px-3 py-2 rounded-lg border border-amber-200 bg-amber-50 flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="text-xs font-semibold text-amber-900">${item.entity || 'entity'} • ${item.mode || 'policy'}</p>
+              <p class="text-[11px] text-amber-800">${item.reason || ''}</p>
+              <p class="text-[11px] text-amber-700">${new Date(item.createdAt).toLocaleString()}</p>
+            </div>
+            <button onclick="window.dismissConflictNotification('${item.id}')" class="text-xs px-2 py-1 rounded bg-white border border-amber-300 text-amber-900 hover:bg-amber-100">Dismiss</button>
+          </div>
+        `).join('') : '<p class="text-sm text-charcoal/40">No conflicts logged.</p>'}
+      </div>
+    </div>
+  `;
+}
+
+function renderPerformanceCard() {
+  const perf = state.renderPerf || { lastMs: 0, avgMs: 0, maxMs: 0, count: 0 };
+  return `
+    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
+      <h3 class="font-semibold text-charcoal mb-4">Client Profiling <span class="text-coral">→</span></h3>
+      <p class="text-sm text-charcoal/50 mb-4">Lightweight render metrics sampled in-browser.</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+        <div class="p-3 rounded-lg bg-warmgray border border-softborder">
+          <div class="text-xs text-charcoal/50">Last Render</div>
+          <div class="text-lg font-semibold text-charcoal">${perf.lastMs} ms</div>
+        </div>
+        <div class="p-3 rounded-lg bg-warmgray border border-softborder">
+          <div class="text-xs text-charcoal/50">Average</div>
+          <div class="text-lg font-semibold text-charcoal">${perf.avgMs} ms</div>
+        </div>
+        <div class="p-3 rounded-lg bg-warmgray border border-softborder">
+          <div class="text-xs text-charcoal/50">Max</div>
+          <div class="text-lg font-semibold text-charcoal">${perf.maxMs} ms</div>
+        </div>
+        <div class="p-3 rounded-lg bg-warmgray border border-softborder">
+          <div class="text-xs text-charcoal/50">Samples</div>
+          <div class="text-lg font-semibold text-charcoal">${perf.count}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 // ============================================================================
 // renderSettingsTab — Full settings page
 // ============================================================================
@@ -474,6 +555,12 @@ export function renderSettingsTab() {
       ${renderWhoopSettingsCard()}
 
       ${renderGCalSettingsCard()}
+
+      ${renderOfflineQueueCard()}
+
+      ${renderConflictCenterCard()}
+
+      ${renderPerformanceCard()}
 
       ${renderAIClassificationCard()}
 

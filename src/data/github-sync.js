@@ -19,7 +19,8 @@ import {
   TASK_PEOPLE_KEY,
   PERSPECTIVES_KEY,
   HOME_WIDGETS_KEY,
-  MEETING_NOTES_KEY
+  MEETING_NOTES_KEY,
+  CONFLICT_NOTIFICATIONS_KEY
 } from '../constants.js';
 
 // ---------------------------------------------------------------------------
@@ -178,6 +179,29 @@ function parseTimestamp(value) {
   return Number.isFinite(ts) ? ts : 0;
 }
 
+function pushConflictNotification(entry) {
+  const list = Array.isArray(state.conflictNotifications) ? state.conflictNotifications : [];
+  list.unshift({
+    id: `conf_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    createdAt: new Date().toISOString(),
+    ...entry,
+  });
+  state.conflictNotifications = list.slice(0, 100);
+  localStorage.setItem(CONFLICT_NOTIFICATIONS_KEY, JSON.stringify(state.conflictNotifications));
+}
+
+export function dismissConflictNotification(id) {
+  state.conflictNotifications = (state.conflictNotifications || []).filter(item => item.id !== id);
+  localStorage.setItem(CONFLICT_NOTIFICATIONS_KEY, JSON.stringify(state.conflictNotifications));
+  window.render();
+}
+
+export function clearConflictNotifications() {
+  state.conflictNotifications = [];
+  localStorage.setItem(CONFLICT_NOTIFICATIONS_KEY, '[]');
+  window.render();
+}
+
 function mergeMeetingNotesData(cloudMeetingNotes = {}) {
   if (!cloudMeetingNotes || typeof cloudMeetingNotes !== 'object') return;
 
@@ -223,11 +247,27 @@ function mergeEntityCollection(localItems = [], cloudItems = [], timestampFields
       return;
     }
     if (!timestampFields.length) {
+      if (JSON.stringify(localItem) !== JSON.stringify(cloudItem)) {
+        pushConflictNotification({
+          entity: 'collection',
+          mode: 'local_wins',
+          itemId: String(cloudItem.id),
+          reason: 'No timestamp field for deterministic newest-wins merge',
+        });
+      }
       return; // Keep local on conflict when no timestamp exists.
     }
     const localTs = parseTimestamp(timestampFields.map(field => localItem[field]).find(Boolean));
     const cloudTs = parseTimestamp(timestampFields.map(field => cloudItem[field]).find(Boolean));
     if (cloudTs > localTs) byId.set(cloudItem.id, cloudItem);
+    else if (cloudTs === localTs && JSON.stringify(localItem) !== JSON.stringify(cloudItem)) {
+      pushConflictNotification({
+        entity: 'timestamped_collection',
+        mode: 'local_wins_tie',
+        itemId: String(cloudItem.id),
+        reason: 'Tied timestamps with different payloads',
+      });
+    }
   });
 
   localList.forEach(item => {

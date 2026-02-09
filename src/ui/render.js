@@ -7,7 +7,7 @@
 
 import { state } from '../state.js';
 import { getLocalDateString, escapeHtml } from '../utils.js';
-import { APP_VERSION, THINGS3_ICONS, BUILTIN_PERSPECTIVES, GITHUB_TOKEN_KEY } from '../constants.js';
+import { APP_VERSION, APP_VERSION_SEEN_KEY, THINGS3_ICONS, BUILTIN_PERSPECTIVES, GITHUB_TOKEN_KEY } from '../constants.js';
 import { saveViewState } from '../data/storage.js';
 import { renderHomeTab } from './home.js';
 
@@ -28,6 +28,20 @@ function renderBulkEntryTab() {
 
 function renderDashboardTab() {
   if (typeof window.renderDashboardTab === 'function') return window.renderDashboardTab();
+  if (!window.__dashboardRendererLoading) {
+    window.__dashboardRendererLoading = true;
+    import('./dashboard.js')
+      .then((mod) => {
+        if (mod?.renderDashboardTab) window.renderDashboardTab = mod.renderDashboardTab;
+      })
+      .catch((err) => {
+        console.warn('Failed to lazy-load dashboard renderer:', err);
+      })
+      .finally(() => {
+        window.__dashboardRendererLoading = false;
+        render();
+      });
+  }
   return '<div class="p-8 text-center text-[var(--text-muted)]">Loading dashboard tab...</div>';
 }
 
@@ -120,6 +134,7 @@ function getGithubToken() {
  * HTML including headers, nav, footer, and mobile bottom nav.
  */
 export function render() {
+  const renderStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
   try {
     const app = document.getElementById('app');
     const isCalendarTabActive = state.activeTab === 'calendar';
@@ -168,6 +183,21 @@ export function render() {
     }
 
     // ---- Authenticated: render full app ----
+    const cachePromptHtml = state.showCacheRefreshPrompt ? `
+      <div class="max-w-6xl mx-auto px-6 pt-4">
+        <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex items-center justify-between gap-3">
+          <div>
+            <p class="text-sm font-semibold text-amber-900">New app update available</p>
+            <p class="text-xs text-amber-800">${escapeHtml(state.cacheRefreshPromptMessage || `Version ${APP_VERSION} is available. Refresh recommended to avoid stale cache.`)}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="forceHardRefresh()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-600 text-white hover:bg-amber-700">Refresh Now</button>
+            <button onclick="dismissCacheRefreshPrompt()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white border border-amber-300 text-amber-800 hover:bg-amber-100">Later</button>
+          </div>
+        </div>
+      </div>
+    ` : '';
+
     app.innerHTML = `
       <!-- Mobile Header - Things 3 style -->
       <header class="mobile-header-compact border-b border-[var(--border-light)] bg-[var(--bg-card)] sticky top-0 z-50" style="display: none;">
@@ -288,6 +318,8 @@ export function render() {
       </div>
       ` : ''}
 
+      ${cachePromptHtml}
+
       <main class="max-w-6xl mx-auto px-6 py-8">
         ${state.activeTab === 'home' ? renderHomeTab() :
           state.activeTab === 'life' ? (state.activeSubTab === 'daily' ? renderTrackingTab() : state.activeSubTab === 'bulk' ? renderBulkEntryTab() : renderDashboardTab()) :
@@ -378,10 +410,28 @@ export function render() {
         setupInlineAutocomplete('home-quick-add-input');
       }
     }, 60);
+
+    const renderMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - renderStart;
+    const perf = state.renderPerf || { lastMs: 0, avgMs: 0, maxMs: 0, count: 0 };
+    const count = (perf.count || 0) + 1;
+    const avgMs = ((perf.avgMs || 0) * (count - 1) + renderMs) / count;
+    state.renderPerf = {
+      lastMs: Number(renderMs.toFixed(2)),
+      avgMs: Number(avgMs.toFixed(2)),
+      maxMs: Number(Math.max(perf.maxMs || 0, renderMs).toFixed(2)),
+      count,
+    };
   } catch (err) {
     console.error('Render error:', err);
     document.getElementById('app').innerHTML = '<div style="padding:20px;color:red;font-family:monospace;">Render error: ' + escapeHtml(err.message) + '<br><br>Stack: ' + escapeHtml(err.stack || '') + '</div>';
   }
+}
+
+export function dismissCacheRefreshPrompt() {
+  state.showCacheRefreshPrompt = false;
+  state.cacheRefreshPromptMessage = '';
+  localStorage.setItem(APP_VERSION_SEEN_KEY, APP_VERSION);
+  render();
 }
 
 // ============================================================================

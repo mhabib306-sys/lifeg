@@ -26,6 +26,7 @@ import { initAuth } from './data/firebase.js';
 import { render } from './ui/render.js';
 import { migrateTodayFlag } from './features/tasks.js';
 import { ensureHomeWidgets } from './features/home-widgets.js';
+import { APP_VERSION, APP_VERSION_SEEN_KEY } from './constants.js';
 
 // ============================================================================
 // App Initialization (called only after auth confirms a signed-in user)
@@ -104,6 +105,7 @@ function initApp() {
   window.addEventListener('online', () => {
     console.log('Back online — syncing...');
     debouncedSaveToGithub();
+    window.retryGCalOfflineQueue?.();
   });
 
   window.addEventListener('offline', () => {
@@ -120,6 +122,13 @@ function initApp() {
 function bootstrap() {
   // Apply theme immediately so login screen is styled
   applyStoredTheme();
+
+  const lastSeenVersion = localStorage.getItem(APP_VERSION_SEEN_KEY) || '';
+  if (lastSeenVersion && lastSeenVersion !== APP_VERSION) {
+    state.showCacheRefreshPrompt = true;
+    state.cacheRefreshPromptMessage = `Detected update from ${lastSeenVersion} to ${APP_VERSION}. A hard refresh is recommended.`;
+  }
+  localStorage.setItem(APP_VERSION_SEEN_KEY, APP_VERSION);
 
   // Show loading spinner
   render();

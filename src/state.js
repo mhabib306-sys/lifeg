@@ -32,6 +32,8 @@ import {
   MAX_SCORES_KEY,
   WEIGHTS_KEY,
   MEETING_NOTES_KEY,
+  GCAL_OFFLINE_QUEUE_KEY,
+  CONFLICT_NOTIFICATIONS_KEY,
 } from './constants.js';
 
 // ---------------------------------------------------------------------------
@@ -203,7 +205,9 @@ export const state = {
   calendarEventModalOpen: false,
   calendarEventModalCalendarId: null,
   calendarEventModalEventId: null,
+  draggedCalendarEvent: null,   // { calendarId, eventId }
   calendarMeetingNotesEventKey: null,
+  calendarMeetingNotesScope: 'instance', // 'instance' | 'series'
   meetingNotesByEvent: safeJsonParse(MEETING_NOTES_KEY, {}),
 
   // ---- Task editing state ----
@@ -283,6 +287,15 @@ export const state = {
   gcalError: null,           // Last Google Calendar error message
   gcalSyncing: false,        // True during active sync
   gcalTokenExpired: false,   // True when token needs refresh
+  gcalOfflineQueue: safeJsonParse(GCAL_OFFLINE_QUEUE_KEY, []),
+
+  // ---- Conflict center ----
+  conflictNotifications: safeJsonParse(CONFLICT_NOTIFICATIONS_KEY, []),
+
+  // ---- Render perf + cache prompt ----
+  renderPerf: { lastMs: 0, avgMs: 0, maxMs: 0, count: 0 },
+  showCacheRefreshPrompt: false,
+  cacheRefreshPromptMessage: '',
 
   // ---- Task modal state ----
   modalSelectedArea: null,

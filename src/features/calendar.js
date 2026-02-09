@@ -25,6 +25,18 @@ export function calendarPrevMonth() {
     window.render();
     return;
   }
+  if (state.calendarViewMode === 'weekgrid') {
+    shiftSelectedDate(-7);
+    if (window.isGCalConnected?.()) window.syncGCalNow?.();
+    window.render();
+    return;
+  }
+  if (state.calendarViewMode === 'daygrid') {
+    shiftSelectedDate(-1);
+    if (window.isGCalConnected?.()) window.syncGCalNow?.();
+    window.render();
+    return;
+  }
   if (state.calendarViewMode === '3days') {
     shiftSelectedDate(-3);
     if (window.isGCalConnected?.()) window.syncGCalNow?.();
@@ -40,6 +52,18 @@ export function calendarPrevMonth() {
 export function calendarNextMonth() {
   if (state.calendarViewMode === 'week') {
     shiftSelectedDate(7);
+    if (window.isGCalConnected?.()) window.syncGCalNow?.();
+    window.render();
+    return;
+  }
+  if (state.calendarViewMode === 'weekgrid') {
+    shiftSelectedDate(7);
+    if (window.isGCalConnected?.()) window.syncGCalNow?.();
+    window.render();
+    return;
+  }
+  if (state.calendarViewMode === 'daygrid') {
+    shiftSelectedDate(1);
     if (window.isGCalConnected?.()) window.syncGCalNow?.();
     window.render();
     return;
@@ -65,7 +89,7 @@ export function calendarGoToday() {
 }
 
 export function setCalendarViewMode(mode) {
-  if (!['month', 'week', '3days'].includes(mode)) return;
+  if (!['month', 'week', '3days', 'daygrid', 'weekgrid'].includes(mode)) return;
   state.calendarViewMode = mode;
   if (window.isGCalConnected?.()) window.syncGCalNow?.();
   window.render();

@@ -26,7 +26,8 @@ import {
 import {
   getGithubToken, setGithubToken, getTheme, setTheme,
   applyStoredTheme, getAccentColor, getThemeColors,
-  updateSyncStatus, saveToGithub, debouncedSaveToGithub, loadCloudData
+  updateSyncStatus, saveToGithub, debouncedSaveToGithub, loadCloudData,
+  dismissConflictNotification, clearConflictNotifications
 } from './data/github-sync.js';
 
 import { exportData, importData } from './data/export-import.js';
@@ -43,6 +44,7 @@ import {
   isGCalConnected, getSelectedCalendars, setSelectedCalendars,
   getTargetCalendar, setTargetCalendar, fetchCalendarList,
   getGCalEventsForDate, pushTaskToGCalIfConnected, deleteGCalEventIfConnected,
+  rescheduleGCalEventIfConnected, getGCalOfflineQueue, retryGCalOfflineQueue, clearGCalOfflineQueue, removeGCalOfflineQueueItem,
   syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
   initGCalSync, toggleCalendarSelection
 } from './data/google-calendar-sync.js';
@@ -121,11 +123,10 @@ import {
 } from './features/braindump.js';
 
 // -- UI --
-import { render, switchTab, switchSubTab, setToday, forceHardRefresh } from './ui/render.js';
+import { render, switchTab, switchSubTab, setToday, forceHardRefresh, dismissCacheRefreshPrompt } from './ui/render.js';
 import { renderHomeTab, renderHomeWidget, homeQuickAddTask } from './ui/home.js';
 import { renderTrackingTab } from './ui/tracking.js';
 import { setBulkMonth, setBulkCategory, updateBulkData, updateBulkSummary, getDaysInMonth, renderBulkEntryTab } from './ui/bulk-entry.js';
-import { renderDashboardTab } from './ui/dashboard.js';
 import { renderTaskItem, buildAreaTaskListHtml, renderTasksTab } from './ui/tasks-tab.js';
 import {
   renderCalendarView,
@@ -133,6 +134,11 @@ import {
   closeCalendarEventActions,
   openCalendarMeetingNotes,
   closeCalendarMeetingNotes,
+  setCalendarMeetingNotesScope,
+  convertCalendarEventToTask,
+  startCalendarEventDrag,
+  clearCalendarEventDrag,
+  dropCalendarEventToSlot,
   addMeetingLinkedItem,
   handleMeetingItemInputKeydown
 } from './ui/calendar-view.js';
@@ -198,6 +204,7 @@ Object.assign(window, {
   getGithubToken, setGithubToken, getTheme, setTheme,
   applyStoredTheme, getAccentColor, getThemeColors,
   updateSyncStatus, saveToGithub, debouncedSaveToGithub, loadCloudData,
+  dismissConflictNotification, clearConflictNotifications,
 
   // Export/Import
   exportData, importData,
@@ -217,10 +224,13 @@ Object.assign(window, {
   isGCalConnected, getSelectedCalendars, setSelectedCalendars,
   getTargetCalendar, setTargetCalendar, fetchCalendarList,
   getGCalEventsForDate, pushTaskToGCalIfConnected, deleteGCalEventIfConnected,
+  rescheduleGCalEventIfConnected, getGCalOfflineQueue, retryGCalOfflineQueue, clearGCalOfflineQueue, removeGCalOfflineQueueItem,
   syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
   initGCalSync, toggleCalendarSelection,
   openCalendarEventActions, closeCalendarEventActions,
-  openCalendarMeetingNotes, closeCalendarMeetingNotes, addMeetingLinkedItem, handleMeetingItemInputKeydown,
+  openCalendarMeetingNotes, closeCalendarMeetingNotes, setCalendarMeetingNotesScope,
+  convertCalendarEventToTask, startCalendarEventDrag, clearCalendarEventDrag, dropCalendarEventToSlot,
+  addMeetingLinkedItem, handleMeetingItemInputKeydown,
 
   // Scoring
   parsePrayer, calcPrayerScore, invalidateScoresCache,
@@ -288,11 +298,10 @@ Object.assign(window, {
   submitBraindump, renderBraindumpOverlay, renderBraindumpFAB,
 
   // Main UI
-  render, switchTab, switchSubTab, setToday, forceHardRefresh,
+  render, switchTab, switchSubTab, setToday, forceHardRefresh, dismissCacheRefreshPrompt,
   renderHomeTab, renderHomeWidget, homeQuickAddTask,
   renderTrackingTab,
   setBulkMonth, setBulkCategory, updateBulkData, updateBulkSummary, getDaysInMonth, renderBulkEntryTab,
-  renderDashboardTab,
   renderTaskItem, buildAreaTaskListHtml, renderTasksTab,
   renderCalendarView,
   createPrayerInput, createToggle, createNumberInput, createCounter, createScoreCard, createCard,
@@ -339,7 +348,8 @@ const stateProxies = [
   'draggedSidebarItem', 'draggedSidebarType', 'sidebarDragPosition',
   'calendarMonth', 'calendarYear', 'calendarSelectedDate', 'calendarViewMode',
   'calendarEventModalOpen', 'calendarEventModalCalendarId', 'calendarEventModalEventId',
-  'calendarMeetingNotesEventKey', 'meetingNotesByEvent',
+  'draggedCalendarEvent',
+  'calendarMeetingNotesEventKey', 'calendarMeetingNotesScope', 'meetingNotesByEvent',
   'currentDate', 'bulkMonth', 'bulkYear', 'bulkCategory',
   'tasksData', 'taskCategories', 'taskLabels', 'taskPeople',
   'customPerspectives', 'homeWidgets', 'allData',
@@ -353,7 +363,8 @@ const stateProxies = [
   'inlineAutocompleteMeta',
   'undoAction', 'undoTimerRemaining', 'undoTimerId',
   'showBraindump', 'braindumpRawText', 'braindumpParsedItems', 'braindumpStep', 'braindumpEditingIndex', 'braindumpSuccessMessage', 'braindumpProcessing', 'braindumpAIError', 'braindumpFullPage',
-  'gcalEvents', 'gcalCalendarList', 'gcalSyncing', 'gcalTokenExpired',
+  'gcalEvents', 'gcalCalendarList', 'gcalSyncing', 'gcalTokenExpired', 'gcalOfflineQueue',
+  'conflictNotifications', 'renderPerf', 'showCacheRefreshPrompt', 'cacheRefreshPromptMessage',
 ];
 
 stateProxies.forEach(prop => {

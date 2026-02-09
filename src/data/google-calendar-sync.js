@@ -9,7 +9,8 @@ import { state } from '../state.js';
 import {
   GCAL_ACCESS_TOKEN_KEY, GCAL_TOKEN_TIMESTAMP_KEY,
   GCAL_SELECTED_CALENDARS_KEY, GCAL_TARGET_CALENDAR_KEY,
-  GCAL_EVENTS_CACHE_KEY, GCAL_LAST_SYNC_KEY, GCAL_CONNECTED_KEY
+  GCAL_EVENTS_CACHE_KEY, GCAL_LAST_SYNC_KEY, GCAL_CONNECTED_KEY,
+  GCAL_OFFLINE_QUEUE_KEY
 } from '../constants.js';
 
 const GCAL_API = 'https://www.googleapis.com/calendar/v3';
@@ -19,6 +20,29 @@ const GCAL_FETCH_TIMEOUT_MS = 15000; // Prevent indefinite loading on hung reque
 
 let syncIntervalId = null;
 let tokenRefreshPromise = null;
+
+function persistOfflineQueue() {
+  localStorage.setItem(GCAL_OFFLINE_QUEUE_KEY, JSON.stringify(state.gcalOfflineQueue || []));
+}
+
+function enqueueOfflineAction(type, payload, lastError = '') {
+  const queue = Array.isArray(state.gcalOfflineQueue) ? state.gcalOfflineQueue : [];
+  queue.push({
+    id: `gq_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    type,
+    payload,
+    createdAt: new Date().toISOString(),
+    lastError: lastError || '',
+  });
+  state.gcalOfflineQueue = queue;
+  persistOfflineQueue();
+  window.render();
+}
+
+function removeOfflineActionById(id) {
+  state.gcalOfflineQueue = (state.gcalOfflineQueue || []).filter(item => item.id !== id);
+  persistOfflineQueue();
+}
 
 function detectMeetingProvider(url = '') {
   const u = String(url).toLowerCase();
@@ -80,6 +104,21 @@ export function getTargetCalendar() {
 
 export function setTargetCalendar(calendarId) {
   localStorage.setItem(GCAL_TARGET_CALENDAR_KEY, calendarId);
+}
+
+export function getGCalOfflineQueue() {
+  return Array.isArray(state.gcalOfflineQueue) ? state.gcalOfflineQueue : [];
+}
+
+export function clearGCalOfflineQueue() {
+  state.gcalOfflineQueue = [];
+  persistOfflineQueue();
+  window.render();
+}
+
+export function removeGCalOfflineQueueItem(itemId) {
+  removeOfflineActionById(itemId);
+  window.render();
 }
 
 function getGCalLastSync() {
@@ -287,6 +326,8 @@ export async function fetchEventsForRange(timeMin, timeMax) {
                 responseStatus: a.responseStatus || '',
               }))
               : [],
+            recurringEventId: e.recurringEventId || '',
+            originalStartTime: e.originalStartTime || null,
             start: e.start,
             end: e.end,
             location: e.location || '',
@@ -376,19 +417,112 @@ export async function deleteGCalEvent(task) {
   );
 }
 
+async function rescheduleGCalEvent(event, startIso, endIso) {
+  if (!event?.calendarId || !event?.id) return null;
+  const body = {
+    start: { dateTime: startIso },
+    end: { dateTime: endIso },
+  };
+  return gcalFetch(
+    `/calendars/${encodeURIComponent(event.calendarId)}/events/${encodeURIComponent(event.id)}`,
+    { method: 'PATCH', body: JSON.stringify(body) }
+  );
+}
+
 export async function pushTaskToGCalIfConnected(task) {
   if (!isGCalConnected()) return;
+  if (!navigator.onLine) {
+    enqueueOfflineAction('push_task', { task });
+    return;
+  }
   if (!(await ensureValidToken())) return;
   if (task.isNote) return;
   if (!task.deferDate && !task.dueDate) return;
-  try { await pushTaskToGCal(task); } catch (err) { console.warn('GCal push failed:', err); }
+  try {
+    const result = await pushTaskToGCal(task);
+    if (!result) enqueueOfflineAction('push_task', { task }, state.gcalError || 'Push failed');
+  } catch (err) {
+    enqueueOfflineAction('push_task', { task }, err?.message || 'Push failed');
+    console.warn('GCal push failed:', err);
+  }
 }
 
 export async function deleteGCalEventIfConnected(task) {
   if (!isGCalConnected()) return;
+  if (!navigator.onLine) {
+    enqueueOfflineAction('delete_event', { task });
+    return;
+  }
   if (!(await ensureValidToken())) return;
   if (!task.gcalEventId) return;
-  try { await deleteGCalEvent(task); } catch (err) { console.warn('GCal delete failed:', err); }
+  try {
+    const result = await deleteGCalEvent(task);
+    if (result === null) enqueueOfflineAction('delete_event', { task }, state.gcalError || 'Delete failed');
+  } catch (err) {
+    enqueueOfflineAction('delete_event', { task }, err?.message || 'Delete failed');
+    console.warn('GCal delete failed:', err);
+  }
+}
+
+export async function rescheduleGCalEventIfConnected(event, dateStr, hour) {
+  if (!isGCalConnected() || !event) return false;
+
+  const nextStart = new Date(`${dateStr}T${String(hour).padStart(2, '0')}:00:00`);
+  const prevStart = event?.start?.dateTime ? new Date(event.start.dateTime) : null;
+  const prevEnd = event?.end?.dateTime ? new Date(event.end.dateTime) : null;
+  const durationMs = prevStart && prevEnd ? Math.max(30 * 60 * 1000, prevEnd - prevStart) : 60 * 60 * 1000;
+  const nextEnd = new Date(nextStart.getTime() + durationMs);
+  const startIso = nextStart.toISOString();
+  const endIso = nextEnd.toISOString();
+
+  if (!navigator.onLine) {
+    enqueueOfflineAction('reschedule_event', { event, dateStr, hour, startIso, endIso }, 'Offline');
+    return false;
+  }
+
+  if (!(await ensureValidToken())) return false;
+  try {
+    const result = await rescheduleGCalEvent(event, startIso, endIso);
+    if (!result) {
+      enqueueOfflineAction('reschedule_event', { event, dateStr, hour, startIso, endIso }, state.gcalError || 'Reschedule failed');
+      return false;
+    }
+    const target = state.gcalEvents.find(e => e.calendarId === event.calendarId && e.id === event.id);
+    if (target) {
+      target.start = { dateTime: startIso };
+      target.end = { dateTime: endIso };
+      target.allDay = false;
+      localStorage.setItem(GCAL_EVENTS_CACHE_KEY, JSON.stringify(state.gcalEvents));
+    }
+    window.render();
+    return true;
+  } catch (err) {
+    enqueueOfflineAction('reschedule_event', { event, dateStr, hour, startIso, endIso }, err?.message || 'Reschedule failed');
+    console.warn('GCal reschedule failed:', err);
+    return false;
+  }
+}
+
+export async function retryGCalOfflineQueue() {
+  const queue = [...getGCalOfflineQueue()];
+  if (!queue.length) return;
+  for (const item of queue) {
+    try {
+      if (item.type === 'push_task' && item.payload?.task) {
+        await pushTaskToGCalIfConnected(item.payload.task);
+      } else if (item.type === 'delete_event' && item.payload?.task) {
+        await deleteGCalEventIfConnected(item.payload.task);
+      } else if (item.type === 'reschedule_event' && item.payload?.event) {
+        await rescheduleGCalEventIfConnected(item.payload.event, item.payload.dateStr, item.payload.hour);
+      }
+      removeOfflineActionById(item.id);
+    } catch (err) {
+      const target = state.gcalOfflineQueue.find(q => q.id === item.id);
+      if (target) target.lastError = err?.message || 'Retry failed';
+      persistOfflineQueue();
+    }
+  }
+  window.render();
 }
 
 // ---- Lifecycle ----
