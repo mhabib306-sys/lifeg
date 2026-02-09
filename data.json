@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T12:05:49.728Z",
+  "lastUpdated": "2026-02-09T12:06:31.952Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2979,9 +2979,12 @@
     {
       "id": "custom_1770017177816",
       "name": "Nancy: Active Topics",
-      "icon": "📌",
+      "icon": "👰",
       "filter": {
+        "logic": "all",
         "categoryId": "cat_1769983795940",
+        "availability": "available",
+        "tagMatch": "any",
         "labelIds": [
           "label_1769989456692"
         ]
