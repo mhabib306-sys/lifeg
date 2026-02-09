@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T16:25:48.270Z",
+  "lastUpdated": "2026-02-09T16:26:39.281Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1909,17 +1909,17 @@
       "id": "task_1769988515754_csmenwco0",
       "title": "Send a thank you note to Amr Morsy",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
-      "categoryId": null,
+      "categoryId": "personal",
       "labels": [],
       "people": [],
       "deferDate": null,
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T23:28:35.754Z",
-      "updatedAt": "2026-02-07T23:24:35.358Z",
+      "updatedAt": "2026-02-09T16:26:36.690Z",
       "order": 4000,
       "today": false,
       "flagged": false
