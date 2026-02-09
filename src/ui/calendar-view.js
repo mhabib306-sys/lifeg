@@ -87,6 +87,29 @@ function q(str) {
   return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
+function renderCalendarSidebarTaskItem(task) {
+  const title = escapeHtml(task.title || 'Untitled task');
+  const due = task.dueDate ? escapeHtml(task.dueDate) : '';
+  const dueBadge = due ? `<span class="text-[10px] text-[var(--text-muted)]">${due}</span>` : '';
+  return `
+    <div class="px-4 py-2.5 border-b border-[var(--border-light)]/60 last:border-b-0">
+      <div class="flex items-start gap-2.5">
+        <button
+          onclick="event.stopPropagation(); window.toggleTaskComplete('${q(task.id)}')"
+          class="task-checkbox mt-0.5 w-[18px] h-[18px] rounded-full border-[1.5px] border-[var(--text-muted)] hover:border-[var(--accent)] flex-shrink-0 flex items-center justify-center transition-all"
+          aria-label="Mark task complete: ${title}">
+        </button>
+        <button
+          onclick="window.inlineEditingTaskId=null; window.editingTaskId='${q(task.id)}'; window.showTaskModal=true; window.render()"
+          class="flex-1 min-w-0 text-left">
+          <div class="text-[14px] leading-snug text-[var(--text-primary)] break-words">${title}</div>
+          ${dueBadge}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
 function dateToStr(dateObj) {
   return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 }
@@ -415,8 +438,6 @@ export function renderCalendarView() {
 
   const calendarHtml = state.calendarViewMode === 'month' ? buildMonthGrid() : buildRangeGrid();
 
-  const renderTaskItem = window.renderTaskItem || ((task) => `<div class="px-5 py-2 text-sm text-[var(--text-primary)]">${escapeHtml(task.title)}</div>`);
-
   const tokenBanner = state.gcalTokenExpired ? `
     <div class="mx-5 my-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between">
       <span class="text-sm text-amber-700">Google Calendar session expired</span>
@@ -425,7 +446,7 @@ export function renderCalendarView() {
   ` : '';
 
   const todayListHtml = todayTasks.length > 0
-    ? todayTasks.map(task => renderTaskItem(task, false)).join('')
+    ? todayTasks.map(task => renderCalendarSidebarTaskItem(task)).join('')
     : `<div class="px-4 py-4 text-sm text-[var(--text-muted)]">No tasks for today.</div>`;
 
   const selectedDateLabel = selDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
@@ -511,11 +532,11 @@ export function renderCalendarView() {
               <div class="calendar-side-list">
                 ${dueTasks.length > 0 ? `
                   <div class="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[#B55322]">Due</div>
-                  ${dueTasks.map(task => renderTaskItem(task, false)).join('')}
+                  ${dueTasks.map(task => renderCalendarSidebarTaskItem(task)).join('')}
                 ` : ''}
                 ${deferTasks.length > 0 ? `
                   <div class="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[#2B6CB0]">Starting</div>
-                  ${deferTasks.map(task => renderTaskItem(task)).join('')}
+                  ${deferTasks.map(task => renderCalendarSidebarTaskItem(task)).join('')}
                 ` : ''}
               </div>
             </div>

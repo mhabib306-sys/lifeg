@@ -3,6 +3,14 @@ import { saveTasksData } from '../data/storage.js';
 import { generateTaskId, getLocalDateString } from '../utils.js';
 import { startUndoCountdown } from './undo.js';
 
+function taskIdEquals(a, b) {
+  return String(a) === String(b);
+}
+
+function findTaskIndexById(taskId) {
+  return state.tasksData.findIndex(t => taskIdEquals(t.id, taskId));
+}
+
 /**
  * Create a new task with full configuration options
  *
@@ -78,7 +86,7 @@ export function createTask(title, options = {}) {
 }
 
 export function updateTask(taskId, updates) {
-  const idx = state.tasksData.findIndex(t => t.id === taskId);
+  const idx = findTaskIndexById(taskId);
   if (idx !== -1) {
     const task = state.tasksData[idx];
     if (updates.status === 'today') {
@@ -129,18 +137,18 @@ export function migrateTodayFlag() {
 }
 
 export function deleteTask(taskId) {
-  const taskToDelete = state.tasksData.find(t => t.id === taskId);
+  const taskToDelete = state.tasksData.find(t => taskIdEquals(t.id, taskId));
   if (taskToDelete && taskToDelete.gcalEventId) {
     window.deleteGCalEventIfConnected?.(taskToDelete);
   }
   // Promote child notes to root level (clear parentId)
   state.tasksData.forEach(t => {
-    if (t.parentId === taskId) {
+    if (taskIdEquals(t.parentId, taskId)) {
       t.parentId = null;
       t.indent = 0;
     }
   });
-  state.tasksData = state.tasksData.filter(t => t.id !== taskId);
+  state.tasksData = state.tasksData.filter(t => !taskIdEquals(t.id, taskId));
   // Clear inline editing state if deleting the task being edited
   if (state.inlineEditingTaskId === taskId) state.inlineEditingTaskId = null;
   saveTasksData();
@@ -149,11 +157,11 @@ export function deleteTask(taskId) {
 // Delete task with undo toast (replaces confirm() dialog)
 export function confirmDeleteTask(taskId) {
   state.inlineEditingTaskId = null;
-  const task = state.tasksData.find(t => t.id === taskId);
+  const task = state.tasksData.find(t => taskIdEquals(t.id, taskId));
   if (!task) return;
   const snapshot = JSON.parse(JSON.stringify(task));
   // Snapshot children that will be promoted so we can restore their parentId
-  const children = state.tasksData.filter(t => t.parentId === taskId).map(t => JSON.parse(JSON.stringify(t)));
+  const children = state.tasksData.filter(t => taskIdEquals(t.parentId, taskId)).map(t => JSON.parse(JSON.stringify(t)));
   deleteTask(taskId);
   startUndoCountdown(`"${snapshot.title}" deleted`, { task: snapshot, children }, (snap) => {
     state.tasksData.push(snap.task);
@@ -166,7 +174,7 @@ export function confirmDeleteTask(taskId) {
 }
 
 export function toggleTaskComplete(taskId) {
-  const task = state.tasksData.find(t => t.id === taskId);
+  const task = state.tasksData.find(t => taskIdEquals(t.id, taskId));
   if (task) {
     const wasCompleted = task.completed;
     task.completed = !task.completed;
@@ -192,6 +200,8 @@ export function toggleTaskComplete(taskId) {
 
     saveTasksData();
     window.render();
+  } else {
+    console.warn('toggleTaskComplete: task not found', taskId);
   }
 }
 
