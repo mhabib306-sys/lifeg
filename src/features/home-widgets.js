@@ -5,7 +5,35 @@
 // reset, and edit mode toggling.
 
 import { state } from '../state.js';
-import { HOME_WIDGETS_KEY, DEFAULT_HOME_WIDGETS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
+import { HOME_WIDGETS_KEY, DEFAULT_HOME_WIDGETS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, DELETED_ENTITY_TOMBSTONES_KEY } from '../constants.js';
+
+function ensureEntityTombstones() {
+  if (!state.deletedEntityTombstones || typeof state.deletedEntityTombstones !== 'object') {
+    state.deletedEntityTombstones = {};
+  }
+  return state.deletedEntityTombstones;
+}
+
+function persistEntityTombstones() {
+  localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(state.deletedEntityTombstones || {}));
+}
+
+function markWidgetDeleted(id) {
+  if (!id) return;
+  const tombstones = ensureEntityTombstones();
+  if (!tombstones.homeWidgets || typeof tombstones.homeWidgets !== 'object') tombstones.homeWidgets = {};
+  tombstones.homeWidgets[String(id)] = new Date().toISOString();
+  persistEntityTombstones();
+}
+
+function clearWidgetDeleted(id) {
+  if (!id) return;
+  const tombstones = ensureEntityTombstones();
+  if (tombstones.homeWidgets && tombstones.homeWidgets[String(id)] !== undefined) {
+    delete tombstones.homeWidgets[String(id)];
+    persistEntityTombstones();
+  }
+}
 
 // ---- Persistence ----
 
@@ -188,6 +216,7 @@ export function addPerspectiveWidget(perspectiveId) {
     order: maxOrder + 1,
     visible: true
   });
+  clearWidgetDeleted('perspective-' + perspectiveId);
 
   saveHomeWidgets();
   state.showAddWidgetPicker = false;
@@ -195,6 +224,7 @@ export function addPerspectiveWidget(perspectiveId) {
 }
 
 export function removePerspectiveWidget(widgetId) {
+  markWidgetDeleted(widgetId);
   state.homeWidgets = state.homeWidgets.filter(w => w.id !== widgetId);
   // Re-normalize order
   state.homeWidgets.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));

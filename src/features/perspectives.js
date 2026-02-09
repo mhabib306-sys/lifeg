@@ -1,5 +1,34 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
+import { DELETED_ENTITY_TOMBSTONES_KEY } from '../constants.js';
+
+function ensureEntityTombstones() {
+  if (!state.deletedEntityTombstones || typeof state.deletedEntityTombstones !== 'object') {
+    state.deletedEntityTombstones = {};
+  }
+  return state.deletedEntityTombstones;
+}
+
+function persistEntityTombstones() {
+  localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(state.deletedEntityTombstones || {}));
+}
+
+function markPerspectiveDeleted(id) {
+  if (!id) return;
+  const tombstones = ensureEntityTombstones();
+  if (!tombstones.customPerspectives || typeof tombstones.customPerspectives !== 'object') tombstones.customPerspectives = {};
+  tombstones.customPerspectives[String(id)] = new Date().toISOString();
+  persistEntityTombstones();
+}
+
+function clearPerspectiveDeleted(id) {
+  if (!id) return;
+  const tombstones = ensureEntityTombstones();
+  if (tombstones.customPerspectives && tombstones.customPerspectives[String(id)] !== undefined) {
+    delete tombstones.customPerspectives[String(id)];
+    persistEntityTombstones();
+  }
+}
 
 /**
  * Create a new custom perspective and persist it.
@@ -16,6 +45,7 @@ export function createPerspective(name, icon, filter) {
     filter: filter,
     builtin: false
   };
+  clearPerspectiveDeleted(perspective.id);
   state.customPerspectives.push(perspective);
   saveTasksData();
   return perspective;
@@ -27,6 +57,7 @@ export function createPerspective(name, icon, filter) {
  * @param {string} perspectiveId - ID of the perspective to delete
  */
 export function deletePerspective(perspectiveId) {
+  markPerspectiveDeleted(perspectiveId);
   state.customPerspectives = state.customPerspectives.filter(p => p.id !== perspectiveId);
   if (state.activePerspective === perspectiveId) state.activePerspective = 'inbox';
   saveTasksData();

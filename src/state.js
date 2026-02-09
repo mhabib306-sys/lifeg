@@ -27,6 +27,7 @@ import {
   HOME_WIDGETS_KEY,
   VIEW_STATE_KEY,
   DELETED_TASK_TOMBSTONES_KEY,
+  DELETED_ENTITY_TOMBSTONES_KEY,
   JANUARY_DATA,
   DEFAULT_WEIGHTS,
   DEFAULT_MAX_SCORES,
@@ -183,6 +184,7 @@ export const state = {
   // ---- Tasks system ----
   tasksData: safeJsonParse(TASKS_KEY, []),
   deletedTaskTombstones: safeJsonParse(DELETED_TASK_TOMBSTONES_KEY, {}),
+  deletedEntityTombstones: safeJsonParse(DELETED_ENTITY_TOMBSTONES_KEY, {}),
   taskCategories: safeJsonParse(TASK_CATEGORIES_KEY, null) || DEFAULT_TASK_CATEGORIES,
   taskLabels: safeJsonParse(TASK_LABELS_KEY, null) || DEFAULT_TASK_LABELS,
   taskPeople: safeJsonParse(TASK_PEOPLE_KEY, null) || DEFAULT_TASK_PEOPLE,

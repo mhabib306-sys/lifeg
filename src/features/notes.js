@@ -3,6 +3,7 @@ import { saveTasksData } from '../data/storage.js';
 import { generateTaskId, escapeHtml, formatSmartDate } from '../utils.js';
 import { TASK_CATEGORIES_KEY, TASK_LABELS_KEY, TASK_PEOPLE_KEY } from '../constants.js';
 import { startUndoCountdown } from './undo.js';
+import { recordTaskDeletionTombstone, clearTaskDeletionTombstone } from './tasks.js';
 
 // ============================================================================
 // Note Inline Autocomplete (contenteditable-compatible)
@@ -786,6 +787,7 @@ export function deleteNote(noteId, deleteChildren = false) {
         });
     };
     collectChildren(noteId);
+    toDelete.forEach(id => recordTaskDeletionTombstone(id));
     state.tasksData = state.tasksData.filter(t => !toDelete.has(t.id));
   } else {
     const allDescendants = [];
@@ -808,6 +810,7 @@ export function deleteNote(noteId, deleteChildren = false) {
         child.parentId = note.parentId;
       });
 
+    recordTaskDeletionTombstone(noteId);
     state.tasksData = state.tasksData.filter(t => t.id !== noteId);
   }
 
@@ -831,6 +834,7 @@ export function deleteNoteWithUndo(noteId, focusAfterDeleteId) {
     setTimeout(() => focusNote(focusAfterDeleteId), 60);
   }
   startUndoCountdown(`"${snapshot.title || 'Untitled'}" deleted`, { note: snapshot, children, wasCollapsed }, (snap) => {
+    clearTaskDeletionTombstone(snap.note.id);
     state.tasksData.push(snap.note);
     snap.children.forEach(c => {
       const existing = state.tasksData.find(t => t.id === c.id);

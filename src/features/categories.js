@@ -1,6 +1,35 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
 import { getLocalDateString } from '../utils.js';
+import { DELETED_ENTITY_TOMBSTONES_KEY } from '../constants.js';
+
+function ensureEntityTombstones() {
+  if (!state.deletedEntityTombstones || typeof state.deletedEntityTombstones !== 'object') {
+    state.deletedEntityTombstones = {};
+  }
+  return state.deletedEntityTombstones;
+}
+
+function persistEntityTombstones() {
+  localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(state.deletedEntityTombstones || {}));
+}
+
+function markEntityDeleted(type, id) {
+  if (!id) return;
+  const tombstones = ensureEntityTombstones();
+  if (!tombstones[type] || typeof tombstones[type] !== 'object') tombstones[type] = {};
+  tombstones[type][String(id)] = new Date().toISOString();
+  persistEntityTombstones();
+}
+
+function clearEntityDeleted(type, id) {
+  if (!id) return;
+  const tombstones = ensureEntityTombstones();
+  if (tombstones[type] && tombstones[type][String(id)] !== undefined) {
+    delete tombstones[type][String(id)];
+    persistEntityTombstones();
+  }
+}
 
 // ============ CATEGORY CRUD ============
 
@@ -13,6 +42,7 @@ export function createCategory(name) {
     color: nextColor,
     icon: '\uD83D\uDCC1'
   };
+  clearEntityDeleted('taskCategories', category.id);
   state.taskCategories.push(category);
   saveTasksData();
   return category;
@@ -27,6 +57,7 @@ export function updateCategory(categoryId, updates) {
 }
 
 export function deleteCategory(categoryId) {
+  markEntityDeleted('taskCategories', categoryId);
   state.taskCategories = state.taskCategories.filter(c => c.id !== categoryId);
   // Remove category from tasks that use it
   state.tasksData.forEach(task => {
@@ -47,6 +78,7 @@ export function createLabel(name, color) {
     name: name,
     color: color || '#6B7280'
   };
+  clearEntityDeleted('taskLabels', label.id);
   state.taskLabels.push(label);
   saveTasksData();
   return label;
@@ -61,6 +93,7 @@ export function updateLabel(labelId, updates) {
 }
 
 export function deleteLabel(labelId) {
+  markEntityDeleted('taskLabels', labelId);
   state.taskLabels = state.taskLabels.filter(l => l.id !== labelId);
   // Remove label from tasks that use it
   state.tasksData.forEach(task => {
@@ -82,6 +115,7 @@ export function createPerson(name) {
     id: 'person_' + Date.now(),
     name: name
   };
+  clearEntityDeleted('taskPeople', person.id);
   state.taskPeople.push(person);
   saveTasksData();
   return person;
@@ -96,6 +130,7 @@ export function updatePerson(personId, updates) {
 }
 
 export function deletePerson(personId) {
+  markEntityDeleted('taskPeople', personId);
   state.taskPeople = state.taskPeople.filter(p => p.id !== personId);
   // Remove person from tasks that use it
   state.tasksData.forEach(task => {

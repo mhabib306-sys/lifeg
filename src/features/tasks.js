@@ -33,6 +33,14 @@ function clearTaskDeletedMarker(taskId) {
   }
 }
 
+export function recordTaskDeletionTombstone(taskId) {
+  markTaskDeleted(taskId);
+}
+
+export function clearTaskDeletionTombstone(taskId) {
+  clearTaskDeletedMarker(taskId);
+}
+
 /**
  * Create a new task with full configuration options
  *

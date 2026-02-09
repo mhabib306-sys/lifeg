@@ -21,7 +21,8 @@ import {
   HOME_WIDGETS_KEY,
   MEETING_NOTES_KEY,
   CONFLICT_NOTIFICATIONS_KEY,
-  DELETED_TASK_TOMBSTONES_KEY
+  DELETED_TASK_TOMBSTONES_KEY,
+  DELETED_ENTITY_TOMBSTONES_KEY
 } from '../constants.js';
 
 // ---------------------------------------------------------------------------
@@ -246,6 +247,59 @@ function normalizeDeletedTaskTombstones(raw) {
   return normalized;
 }
 
+function normalizeDeletedEntityTombstones(raw) {
+  if (!raw || typeof raw !== 'object') return {};
+  const out = {};
+  Object.entries(raw).forEach(([collection, ids]) => {
+    if (!ids || typeof ids !== 'object') return;
+    out[collection] = normalizeDeletedTaskTombstones(ids);
+  });
+  return out;
+}
+
+function mergeDeletedEntityTombstones(cloudTombstones) {
+  const local = normalizeDeletedEntityTombstones(state.deletedEntityTombstones);
+  const cloud = normalizeDeletedEntityTombstones(cloudTombstones);
+  const merged = { ...local };
+  Object.entries(cloud).forEach(([collection, ids]) => {
+    const localIds = merged[collection] || {};
+    const nextIds = { ...localIds };
+    Object.entries(ids).forEach(([id, cloudTs]) => {
+      const localTs = parseTimestamp(localIds[id]);
+      const remoteTs = parseTimestamp(cloudTs);
+      if (remoteTs > localTs) nextIds[id] = cloudTs;
+    });
+    merged[collection] = nextIds;
+  });
+  state.deletedEntityTombstones = merged;
+  localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(merged));
+}
+
+function isEntityDeleted(collection, id) {
+  if (!collection || !id) return false;
+  const map = state.deletedEntityTombstones && typeof state.deletedEntityTombstones === 'object'
+    ? state.deletedEntityTombstones
+    : {};
+  return !!(map[collection] && map[collection][String(id)]);
+}
+
+function pruneDeletedEntitiesFromState() {
+  state.taskCategories = (state.taskCategories || []).filter(item => !isEntityDeleted('taskCategories', item?.id));
+  localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
+
+  state.taskLabels = (state.taskLabels || []).filter(item => !isEntityDeleted('taskLabels', item?.id));
+  localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
+
+  state.taskPeople = (state.taskPeople || []).filter(item => !isEntityDeleted('taskPeople', item?.id));
+  localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
+
+  state.customPerspectives = (state.customPerspectives || []).filter(item => !isEntityDeleted('customPerspectives', item?.id));
+  localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(state.customPerspectives));
+
+  state.homeWidgets = (state.homeWidgets || []).filter(item => !isEntityDeleted('homeWidgets', item?.id));
+  localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+}
+
 function mergeDeletedTaskTombstones(cloudTombstones) {
   const local = normalizeDeletedTaskTombstones(state.deletedTaskTombstones);
   const cloud = normalizeDeletedTaskTombstones(cloudTombstones);
@@ -275,13 +329,13 @@ function pruneDeletedTasksFromState() {
   }
 }
 
-function mergeEntityCollection(localItems = [], cloudItems = [], timestampFields = []) {
+function mergeEntityCollection(localItems = [], cloudItems = [], timestampFields = [], collectionType = '') {
   const localList = Array.isArray(localItems) ? localItems : [];
-  const cloudList = Array.isArray(cloudItems) ? cloudItems : [];
+  const cloudList = Array.isArray(cloudItems) ? cloudItems.filter(item => !isEntityDeleted(collectionType, item?.id)) : [];
   const byId = new Map();
 
   localList.forEach(item => {
-    if (isObjectRecord(item) && item.id) byId.set(item.id, item);
+    if (isObjectRecord(item) && item.id && !isEntityDeleted(collectionType, item.id)) byId.set(item.id, item);
   });
 
   cloudList.forEach(cloudItem => {
@@ -325,6 +379,8 @@ function mergeEntityCollection(localItems = [], cloudItems = [], timestampFields
 
 function mergeTaskCollectionsFromCloud(cloudData = {}) {
   mergeDeletedTaskTombstones(cloudData.deletedTaskTombstones);
+  mergeDeletedEntityTombstones(cloudData.deletedEntityTombstones);
+  pruneDeletedEntitiesFromState();
   pruneDeletedTasksFromState();
 
   const cloudTasks = Array.isArray(cloudData.tasks)
@@ -335,23 +391,23 @@ function mergeTaskCollectionsFromCloud(cloudData = {}) {
   state.tasksData = mergedTasks;
   localStorage.setItem(TASKS_KEY, JSON.stringify(state.tasksData));
 
-  const mergedCategories = mergeEntityCollection(state.taskCategories, cloudData.taskCategories);
+  const mergedCategories = mergeEntityCollection(state.taskCategories, cloudData.taskCategories, [], 'taskCategories');
   state.taskCategories = mergedCategories;
   localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
 
-  const mergedLabels = mergeEntityCollection(state.taskLabels, cloudData.taskLabels);
+  const mergedLabels = mergeEntityCollection(state.taskLabels, cloudData.taskLabels, [], 'taskLabels');
   state.taskLabels = mergedLabels;
   localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
 
-  const mergedPeople = mergeEntityCollection(state.taskPeople, cloudData.taskPeople);
+  const mergedPeople = mergeEntityCollection(state.taskPeople, cloudData.taskPeople, [], 'taskPeople');
   state.taskPeople = mergedPeople;
   localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
 
-  const mergedPerspectives = mergeEntityCollection(state.customPerspectives, cloudData.customPerspectives);
+  const mergedPerspectives = mergeEntityCollection(state.customPerspectives, cloudData.customPerspectives, [], 'customPerspectives');
   state.customPerspectives = mergedPerspectives;
   localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(state.customPerspectives));
 
-  const mergedWidgets = mergeEntityCollection(state.homeWidgets, cloudData.homeWidgets, ['updatedAt', 'createdAt']);
+  const mergedWidgets = mergeEntityCollection(state.homeWidgets, cloudData.homeWidgets, ['updatedAt', 'createdAt'], 'homeWidgets');
   state.homeWidgets = mergedWidgets;
   localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
 }
@@ -415,6 +471,7 @@ export async function saveToGithub() {
       maxScores: state.MAX_SCORES,
       tasks: state.tasksData,
       deletedTaskTombstones: normalizeDeletedTaskTombstones(state.deletedTaskTombstones),
+      deletedEntityTombstones: normalizeDeletedEntityTombstones(state.deletedEntityTombstones),
       taskCategories: state.taskCategories,
       taskLabels: state.taskLabels,
       taskPeople: state.taskPeople,
