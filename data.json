@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T15:44:27.429Z",
+  "lastUpdated": "2026-02-09T15:52:00.711Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1947,7 +1947,7 @@
       "id": "task_1769988612754_r5uemyqjd",
       "title": "Annual Merit increase for Dubai population",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
       "categoryId": null,
@@ -1959,10 +1959,11 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T23:30:12.754Z",
-      "updatedAt": "2026-02-08T22:32:25.344Z",
+      "updatedAt": "2026-02-09T15:51:57.947Z",
       "order": 1000,
-      "today": false,
-      "flagged": false
+      "today": true,
+      "flagged": false,
+      "isNote": false
     },
     {
       "id": "task_1770019730706_1pnzslxtt",
