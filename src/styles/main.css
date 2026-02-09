@@ -1012,6 +1012,7 @@ input[type="checkbox"]:focus {
 .mobile-bottom-nav-inner {
   display: flex;
   justify-content: space-around;
+  align-items: stretch;
   max-width: none;
   width: 100%;
   margin: 0 auto;
@@ -1019,12 +1020,13 @@ input[type="checkbox"]:focus {
 
 .mobile-nav-item {
   display: flex;
+  flex: 1 1 0;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   gap: 4px;
-  padding: 8px 12px;
-  min-height: 52px;
+  padding: 8px 6px;
+  min-height: 54px;
   border-radius: 12px;
   color: var(--text-muted);
   transition: all 0.2s ease;
@@ -1999,6 +2001,7 @@ input[type="checkbox"]:focus {
   max-height: 320px;
   overflow-y: auto;
   padding: 6px;
+  scrollbar-width: thin;
 }
 .calendar-view-toggle {
   display: inline-flex;
@@ -2007,6 +2010,13 @@ input[type="checkbox"]:focus {
   padding: 2px;
   border-radius: 999px;
   background: var(--bg-secondary);
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.calendar-view-toggle::-webkit-scrollbar {
+  display: none;
 }
 .calendar-view-toggle-btn {
   border: none;
@@ -2014,7 +2024,9 @@ input[type="checkbox"]:focus {
   color: var(--text-secondary);
   font-size: 11px;
   font-weight: 600;
-  padding: 5px 9px;
+  padding: 7px 10px;
+  min-height: 34px;
+  white-space: nowrap;
   border-radius: 999px;
   transition: all 0.14s ease;
 }
@@ -2166,42 +2178,42 @@ input[type="checkbox"]:focus {
   overflow: visible;
 }
 .calendar-task-line {
-  font-size: 10px;
-  line-height: 1.25;
+  font-size: 11px;
+  line-height: 1.3;
   color: var(--text-primary);
   display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  overflow: visible;
   max-width: 100%;
   padding: 2px 5px;
   border-radius: 4px;
   border: 1px solid transparent;
 }
 .calendar-task-line.due {
-  color: #8A3B14;
-  background: #FFF5EE;
-  border-color: #F2D8C8;
+  color: #7b3919;
+  background: #fff4ec;
+  border-color: #efd2c0;
 }
 .calendar-task-line.defer {
-  color: #2A5E91;
-  background: #F2F8FF;
-  border-color: #CFE0F4;
+  color: #24517e;
+  background: #eff6ff;
+  border-color: #c8dbf2;
 }
 .calendar-task-line.overdue {
-  color: #7B2D26;
-  background: #FDEEEE;
-  border-color: #F4CCCC;
+  color: #702620;
+  background: #fceceb;
+  border-color: #f0c8c5;
 }
 .calendar-task-line.event {
-  color: #2A6A49;
-  background: #F1FAF5;
-  border-color: #CFE9DA;
+  color: #245d40;
+  background: #eef8f2;
+  border-color: #c8e2d2;
 }
 .calendar-task-line.event.with-notes {
-  color: #8a3b14;
-  background: #fff4ed;
-  border-color: #f5d6c2;
+  color: #7a3a1b;
+  background: #fff3e8;
+  border-color: #efcfba;
   font-weight: 600;
 }
 .calendar-line-note-indicator {
@@ -2245,7 +2257,8 @@ input[type="checkbox"]:focus {
   align-items: center;
   gap: 12px;
   text-align: left;
-  padding: 12px 13px;
+  padding: 12px 14px;
+  min-height: 56px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--bg-input);
@@ -2258,6 +2271,11 @@ input[type="checkbox"]:focus {
 }
 .calendar-event-action:disabled {
   transform: none;
+}
+.calendar-event-action:focus-visible,
+.calendar-view-toggle-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .calendar-event-action-icon {
   width: 30px;
@@ -2291,6 +2309,11 @@ input[type="checkbox"]:focus {
 }
 .calendar-event-modal {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18);
+}
+.calendar-event-modal .modal-header-enhanced {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg-secondary) 55%, var(--bg-card)) 0%, var(--bg-card) 100%);
 }
 .calendar-meeting-notes-page {
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -2299,10 +2322,18 @@ input[type="checkbox"]:focus {
   flex-wrap: wrap;
 }
 .calendar-meeting-btn {
-  min-height: 36px;
+  min-height: 40px;
 }
 .calendar-meeting-notes-textarea {
   overscroll-behavior: contain;
+}
+.calendar-toolbar {
+  gap: 10px;
+}
+.calendar-toolbar-center {
+  min-width: 0;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 @media (max-width: 768px) {
   .calendar-page-grid {
@@ -2376,7 +2407,7 @@ input[type="checkbox"]:focus {
     height: 24px;
   }
   .calendar-task-line {
-    font-size: 9px;
+    font-size: 10px;
   }
   .calendar-task-tag {
     min-width: 24px;
@@ -2404,9 +2435,9 @@ input[type="checkbox"]:focus {
   .calendar-meeting-btn {
     flex: 1 1 calc(50% - 8px);
     text-align: center;
-    font-size: 12px;
-    padding: 8px 10px;
-    min-height: 34px;
+    font-size: 13px;
+    padding: 9px 10px;
+    min-height: 40px;
   }
   .calendar-meeting-notes-body {
     padding: 12px;
@@ -2417,6 +2448,24 @@ input[type="checkbox"]:focus {
     font-size: 14px;
     line-height: 1.45;
     padding: 12px;
+  }
+  .calendar-toolbar {
+    align-items: flex-start;
+  }
+  .calendar-toolbar-center {
+    justify-content: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

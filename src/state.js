@@ -143,6 +143,42 @@ try {
   initialCollapsedNotes = new Set();
 }
 
+function normalizeTombstones(raw) {
+  if (!raw || typeof raw !== 'object') return {};
+  const out = {};
+  Object.entries(raw).forEach(([id, ts]) => {
+    const parsed = ts ? new Date(ts).getTime() : 0;
+    if (!id || !Number.isFinite(parsed) || parsed <= 0) return;
+    out[String(id)] = new Date(parsed).toISOString();
+  });
+  return out;
+}
+
+function normalizeEntityTombstones(raw) {
+  if (!raw || typeof raw !== 'object') return {};
+  const out = {};
+  Object.entries(raw).forEach(([collection, ids]) => {
+    out[collection] = normalizeTombstones(ids);
+  });
+  return out;
+}
+
+const initialDeletedTaskTombstones = normalizeTombstones(safeJsonParse(DELETED_TASK_TOMBSTONES_KEY, {}));
+const initialDeletedEntityTombstones = normalizeEntityTombstones(safeJsonParse(DELETED_ENTITY_TOMBSTONES_KEY, {}));
+
+const isEntityDeleted = (collection, id) => !!(collection && id && initialDeletedEntityTombstones[collection]?.[String(id)]);
+const initialTasksData = (safeJsonParse(TASKS_KEY, []) || []).filter(task => !initialDeletedTaskTombstones[String(task?.id)]);
+const initialTaskCategories = (safeJsonParse(TASK_CATEGORIES_KEY, null) || DEFAULT_TASK_CATEGORIES)
+  .filter(item => !isEntityDeleted('taskCategories', item?.id));
+const initialTaskLabels = (safeJsonParse(TASK_LABELS_KEY, null) || DEFAULT_TASK_LABELS)
+  .filter(item => !isEntityDeleted('taskLabels', item?.id));
+const initialTaskPeople = (safeJsonParse(TASK_PEOPLE_KEY, null) || DEFAULT_TASK_PEOPLE)
+  .filter(item => !isEntityDeleted('taskPeople', item?.id));
+const initialCustomPerspectives = (safeJsonParse(PERSPECTIVES_KEY, []) || [])
+  .filter(item => !isEntityDeleted('customPerspectives', item?.id));
+const initialHomeWidgets = (safeJsonParse(HOME_WIDGETS_KEY, null) || DEFAULT_HOME_WIDGETS)
+  .filter(item => !isEntityDeleted('homeWidgets', item?.id));
+
 // ---------------------------------------------------------------------------
 // The single exported state object
 // ---------------------------------------------------------------------------
@@ -182,14 +218,14 @@ export const state = {
   bulkCategory: 'prayers',
 
   // ---- Tasks system ----
-  tasksData: safeJsonParse(TASKS_KEY, []),
-  deletedTaskTombstones: safeJsonParse(DELETED_TASK_TOMBSTONES_KEY, {}),
-  deletedEntityTombstones: safeJsonParse(DELETED_ENTITY_TOMBSTONES_KEY, {}),
-  taskCategories: safeJsonParse(TASK_CATEGORIES_KEY, null) || DEFAULT_TASK_CATEGORIES,
-  taskLabels: safeJsonParse(TASK_LABELS_KEY, null) || DEFAULT_TASK_LABELS,
-  taskPeople: safeJsonParse(TASK_PEOPLE_KEY, null) || DEFAULT_TASK_PEOPLE,
-  customPerspectives: safeJsonParse(PERSPECTIVES_KEY, []),
-  homeWidgets: safeJsonParse(HOME_WIDGETS_KEY, null) || DEFAULT_HOME_WIDGETS,
+  tasksData: initialTasksData,
+  deletedTaskTombstones: initialDeletedTaskTombstones,
+  deletedEntityTombstones: initialDeletedEntityTombstones,
+  taskCategories: initialTaskCategories,
+  taskLabels: initialTaskLabels,
+  taskPeople: initialTaskPeople,
+  customPerspectives: initialCustomPerspectives,
+  homeWidgets: initialHomeWidgets,
   editingHomeWidgets: false,
   showAddWidgetPicker: false,
   draggingWidgetId: null,

@@ -76,10 +76,24 @@ function extractMeetingLink(event) {
 
 function isCancelledEvent(event) {
   if (!event) return false;
-  if (event.status === 'cancelled') return true;
+  const normalizedStatus = String(event.status || '').toLowerCase();
+  if (normalizedStatus === 'cancelled' || normalizedStatus === 'canceled') return true;
   const summary = String(event.summary || '').trim();
   if (/^cance(?:l|ll)ed\b[:\s-]*/i.test(summary)) return true;
   return false;
+}
+
+function extractGCalServiceDisabledMessage(errBody) {
+  const details = errBody?.error?.details;
+  if (!Array.isArray(details)) return '';
+  const errorInfo = details.find(d => d?.['@type'] === 'type.googleapis.com/google.rpc.ErrorInfo');
+  if (!errorInfo || errorInfo.reason !== 'SERVICE_DISABLED') return '';
+  const serviceTitle = errorInfo.metadata?.serviceTitle || 'Google API';
+  const projectId = (errorInfo.metadata?.consumer || '').replace('projects/', '') || errorInfo.metadata?.containerInfo || '';
+  const activationUrl = errorInfo.metadata?.activationUrl || '';
+  const projectText = projectId ? ` (project ${projectId})` : '';
+  const linkText = activationUrl ? ` Enable it: ${activationUrl}` : '';
+  return `${serviceTitle} is disabled${projectText}.${linkText}`.trim();
 }
 
 // ---- Config getters/setters (localStorage-backed) ----
@@ -216,13 +230,15 @@ async function gcalFetch(endpoint, options = {}) {
 
     if (!res.ok) {
       let apiMessage = '';
+      let parsedError = null;
       try {
-        const errBody = await res.json();
-        apiMessage = errBody?.error?.message || '';
+        parsedError = await res.json();
+        apiMessage = parsedError?.error?.message || '';
       } catch { /* ignore parse errors */ }
 
       if (res.status === 403) {
-        state.gcalError = 'Calendar access was denied. Reconnect and grant Calendar permissions.';
+        const serviceDisabled = extractGCalServiceDisabledMessage(parsedError);
+        state.gcalError = serviceDisabled || 'Calendar access was denied. Reconnect and grant Calendar permissions.';
       } else if (apiMessage) {
         state.gcalError = `Google Calendar error: ${apiMessage}`;
       } else {
@@ -301,16 +317,20 @@ export async function fetchEventsForRange(timeMin, timeMax) {
   try {
     const allEvents = [];
     for (const calId of selected) {
-      const params = new URLSearchParams({
-        timeMin: new Date(timeMin).toISOString(),
-        timeMax: new Date(timeMax).toISOString(),
-        singleEvents: 'true',
-        orderBy: 'startTime',
-        maxResults: '250',
-      });
-      const data = await gcalFetch(`/calendars/${encodeURIComponent(calId)}/events?${params}`);
-      if (data && data.items) {
-        data.items.forEach(e => {
+      let nextPageToken = '';
+      do {
+        const params = new URLSearchParams({
+          timeMin: new Date(timeMin).toISOString(),
+          timeMax: new Date(timeMax).toISOString(),
+          singleEvents: 'true',
+          orderBy: 'startTime',
+          maxResults: '250',
+        });
+        if (nextPageToken) params.set('pageToken', nextPageToken);
+        const data = await gcalFetch(`/calendars/${encodeURIComponent(calId)}/events?${params}`);
+        if (!data) break;
+        const items = Array.isArray(data.items) ? data.items : [];
+        items.forEach(e => {
           if (isCancelledEvent(e)) return;
           const { meetingLink, meetingProvider } = extractMeetingLink(e);
           allEvents.push({
@@ -337,7 +357,8 @@ export async function fetchEventsForRange(timeMin, timeMax) {
             allDay: !!e.start.date,
           });
         });
-      }
+        nextPageToken = data.nextPageToken || '';
+      } while (nextPageToken);
     }
 
     state.gcalEvents = allEvents;
@@ -358,9 +379,16 @@ export function getGCalEventsForDate(dateStr) {
       const end = e.end.date;
       return dateStr >= start && dateStr < end;
     }
-    // Timed events: check if the event's start date matches
-    const eventDate = (e.start.dateTime || '').slice(0, 10);
-    return eventDate === dateStr;
+    // Timed events: include any day interval this event overlaps
+    const startIso = e.start?.dateTime || '';
+    const endIso = e.end?.dateTime || '';
+    if (!startIso) return false;
+    const eventStart = new Date(startIso);
+    const eventEnd = endIso ? new Date(endIso) : new Date(startIso);
+    if (!Number.isFinite(eventStart.getTime()) || !Number.isFinite(eventEnd.getTime())) return false;
+    const dayStart = new Date(`${dateStr}T00:00:00`);
+    const dayEnd = new Date(`${dateStr}T23:59:59.999`);
+    return eventStart <= dayEnd && eventEnd > dayStart;
   });
 }
 
@@ -570,13 +598,11 @@ export async function syncGCalNow() {
   if (!isGCalConnected()) return;
   if (!(await ensureValidToken())) return;
   if ((state.gcalCalendarList || []).length === 0) return;
-  // Fetch events for current month +/- 1 month
-  const year = state.calendarYear;
-  const month = state.calendarMonth;
-  const timeMin = `${year}-${String(month === 0 ? 12 : month).padStart(2, '0')}-01`;
-  const endMonth = month + 2 > 12 ? month + 2 - 12 : month + 2;
-  const endYear = month + 2 > 12 ? year + 1 : year;
-  const timeMax = `${endYear}-${String(endMonth).padStart(2, '0')}-28`;
+  // Fetch events for previous month start through next month end (no truncation)
+  const start = new Date(state.calendarYear, state.calendarMonth - 1, 1, 0, 0, 0, 0);
+  const end = new Date(state.calendarYear, state.calendarMonth + 2, 0, 23, 59, 59, 999);
+  const timeMin = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+  const timeMax = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
   await fetchEventsForRange(timeMin, timeMax);
 }
 

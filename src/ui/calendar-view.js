@@ -554,6 +554,13 @@ export function renderCalendarView() {
   }) : [];
 
   const gcalEvents = window.getGCalEventsForDate?.(state.calendarSelectedDate) || [];
+  const viewLabelMap = {
+    month: `${monthNames[state.calendarMonth]} ${state.calendarYear}`,
+    week: 'Week View',
+    '3days': '3-Day View',
+    daygrid: 'Day Timeline',
+    weekgrid: 'Week Timeline',
+  };
 
   const selDate = new Date(state.calendarSelectedDate + 'T12:00:00');
   const selectedLabel = isToday ? 'Today' :
@@ -572,8 +579,10 @@ export function renderCalendarView() {
         if (cell.outside) classes.push('outside');
         if (isCellToday) classes.push('today');
         if (isSelected) classes.push('selected');
+        const stackCount = cellTasks.length + cellEvents.length;
+        const dynamicMinHeight = Math.min(260, Math.max(94, 48 + (stackCount * 17)));
 
-        return `<div class="${classes.join(' ')}" onclick="calendarSelectDate('${cell.dateStr}')">
+        return `<div class="${classes.join(' ')}" style="min-height:${dynamicMinHeight}px" onclick="calendarSelectDate('${cell.dateStr}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); calendarSelectDate('${cell.dateStr}');}">
           <div class="calendar-day-num">${cell.day}</div>
           ${(cellTasks.length + cellEvents.length) > 0 ? `
             <div class="calendar-task-list">
@@ -727,7 +736,8 @@ export function renderCalendarView() {
   const selectedDateLabel = selDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   const eventsListHtml = gcalEvents.length > 0
     ? gcalEvents.map(e => {
-      const title = escapeHtml(e.summary.length > 60 ? e.summary.slice(0, 57) + '...' : e.summary);
+      const summary = String(e?.summary || '(No title)');
+      const title = escapeHtml(summary.length > 60 ? summary.slice(0, 57) + '...' : summary);
       const timeStr = formatEventTimeLabel(e) || 'All day';
       const withNotes = hasMeetingWorkspace(e);
       return `
@@ -749,7 +759,7 @@ export function renderCalendarView() {
         <section class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
           <div class="px-5 py-4 flex items-center justify-between border-b border-[var(--border-light)]">
             <div class="flex items-center gap-3">
-              <span class="text-2xl" style="color: #8B5CF6">${THINGS3_ICONS.calendar}</span>
+              <span class="text-2xl text-[var(--accent)]">${THINGS3_ICONS.calendar}</span>
               <h2 class="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
             </div>
             <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Task">
@@ -757,23 +767,23 @@ export function renderCalendarView() {
             </button>
           </div>
 
-          <div class="px-5 py-3 flex items-center justify-between border-b border-[var(--border-light)]">
-            <button onclick="calendarPrevMonth()" class="w-8 h-8 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
+          <div class="px-5 py-3 calendar-toolbar flex items-center justify-between border-b border-[var(--border-light)]">
+            <button onclick="calendarPrevMonth()" class="w-9 h-9 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]" aria-label="Previous period">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
             </button>
-          <div class="flex items-center gap-3">
-            <h3 class="text-[15px] font-semibold text-[var(--text-primary)]">${monthNames[state.calendarMonth]} ${state.calendarYear}</h3>
+          <div class="flex items-center gap-3 calendar-toolbar-center">
+            <h3 class="text-[15px] font-semibold text-[var(--text-primary)]">${viewLabelMap[state.calendarViewMode] || viewLabelMap.month}</h3>
             <div class="calendar-view-toggle">
-              <button onclick="setCalendarViewMode('month')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'month' ? 'active' : ''}">Month</button>
-              <button onclick="setCalendarViewMode('week')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'week' ? 'active' : ''}">Week</button>
-              <button onclick="setCalendarViewMode('3days')" class="calendar-view-toggle-btn ${state.calendarViewMode === '3days' ? 'active' : ''}">3 Days</button>
-              <button onclick="setCalendarViewMode('daygrid')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'daygrid' ? 'active' : ''}">Day Grid</button>
-              <button onclick="setCalendarViewMode('weekgrid')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'weekgrid' ? 'active' : ''}">Week Grid</button>
+              <button onclick="setCalendarViewMode('month')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'month' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'month'}">Month</button>
+              <button onclick="setCalendarViewMode('week')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'week' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'week'}">Week</button>
+              <button onclick="setCalendarViewMode('3days')" class="calendar-view-toggle-btn ${state.calendarViewMode === '3days' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === '3days'}">3 Days</button>
+              <button onclick="setCalendarViewMode('daygrid')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'daygrid' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'daygrid'}">Day Timeline</button>
+              <button onclick="setCalendarViewMode('weekgrid')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'weekgrid' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'weekgrid'}">Week Timeline</button>
             </div>
             <button onclick="calendarGoToday()" class="text-[11px] px-2.5 py-1 rounded-full bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--accent)] transition font-medium">Today</button>
             ${state.gcalSyncing ? '<span class="text-[10px] text-[var(--text-muted)]">Syncing...</span>' : ''}
           </div>
-            <button onclick="calendarNextMonth()" class="w-8 h-8 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
+            <button onclick="calendarNextMonth()" class="w-9 h-9 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]" aria-label="Next period">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
             </button>
           </div>

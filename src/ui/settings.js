@@ -116,6 +116,8 @@ function renderGCalSettingsCard() {
   const lastSyncText = lastSync
     ? new Date(parseInt(lastSync, 10)).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
     : 'Never';
+  const gcalErrorUrlMatch = gcalError ? gcalError.match(/https?:\/\/[^\s]+/) : null;
+  const gcalErrorUrl = gcalErrorUrlMatch ? gcalErrorUrlMatch[0] : '';
 
   // Writable calendars for the "push to" dropdown
   const writableCalendars = calendars.filter(c => c.accessRole === 'owner' || c.accessRole === 'writer');
@@ -167,6 +169,9 @@ function renderGCalSettingsCard() {
       ` : gcalError ? `
         <div class="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
           <p class="text-sm text-amber-800">${gcalError}</p>
+          ${gcalErrorUrl ? `
+            <a href="${gcalErrorUrl}" target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex text-xs font-medium text-amber-900 underline hover:text-amber-700">Open API setup in Google Cloud</a>
+          ` : ''}
           <button onclick="window.fetchCalendarList()" class="mt-2 px-3 py-1.5 bg-white border border-amber-300 rounded text-xs font-medium text-amber-800 hover:bg-amber-100 transition">
             Retry loading calendars
           </button>

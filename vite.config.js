@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
+      minify: false,
       includeAssets: ['icons/*.svg'],
       manifest: {
         name: 'Homebase - Life Gamification',

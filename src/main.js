@@ -93,10 +93,10 @@ function initApp() {
         render();
       }
     }
-    // Cmd/Ctrl + 1-4 = switch tabs
-    if ((e.metaKey || e.ctrlKey) && ['1', '2', '3', '4'].includes(e.key)) {
+    // Cmd/Ctrl + 1-5 = switch top tabs
+    if ((e.metaKey || e.ctrlKey) && ['1', '2', '3', '4', '5'].includes(e.key)) {
       e.preventDefault();
-      const tabs = ['home', 'tasks', 'life', 'settings'];
+      const tabs = ['home', 'tasks', 'life', 'calendar', 'settings'];
       window.switchTab(tabs[parseInt(e.key) - 1]);
     }
   });

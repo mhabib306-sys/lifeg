@@ -11,7 +11,7 @@
   --accent-dark: #C4432F;
   --accent-light: rgba(229, 83, 61, 0.1);
   --accent-hover: rgba(229, 83, 61, 0.08);
-  --notes-accent: #8B5CF6;
+  --notes-accent: #0F8B8D;
   --border: #E5E3DE;
   --border-light: #F0EEE9;
   --success: #22C55E;
@@ -56,7 +56,7 @@
   --accent-dark: #0066DC;
   --accent-light: rgba(20, 126, 251, 0.08);
   --accent-hover: rgba(0, 0, 0, 0.03);
-  --notes-accent: #8B5CF6;
+  --notes-accent: #0F8B8D;
 
   /* Borders */
   --border: #E5E5EA;

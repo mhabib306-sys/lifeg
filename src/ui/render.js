@@ -280,19 +280,19 @@ export function render() {
       <nav class="desktop-nav border-b border-[var(--border-light)] bg-[var(--bg-card)]">
         <div class="max-w-6xl mx-auto px-6">
           <div class="flex gap-0">
-            <button onclick="switchTab('home')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'home' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+            <button onclick="switchTab('home')" aria-label="Go to Home tab" aria-current="${state.activeTab === 'home' ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'home' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
               ${THINGS3_ICONS.home.replace('w-5 h-5', 'w-4 h-4')} Home
             </button>
-            <button onclick="switchTab('tasks')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'tasks' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+            <button onclick="switchTab('tasks')" aria-label="Go to Workspace tab" aria-current="${state.activeTab === 'tasks' ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'tasks' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
               ${THINGS3_ICONS.workspace} Workspace
             </button>
-            <button onclick="switchTab('life')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'life' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+            <button onclick="switchTab('life')" aria-label="Go to Life Score tab" aria-current="${state.activeTab === 'life' ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'life' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
               ${THINGS3_ICONS.lifeScore} Life Score
             </button>
-            <button onclick="switchTab('calendar')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${isCalendarTabActive ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+            <button onclick="switchTab('calendar')" aria-label="Go to Calendar tab" aria-current="${isCalendarTabActive ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${isCalendarTabActive ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
               ${THINGS3_ICONS.calendar} Calendar
             </button>
-            <button onclick="switchTab('settings')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'settings' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+            <button onclick="switchTab('settings')" aria-label="Go to Settings tab" aria-current="${state.activeTab === 'settings' ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'settings' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
               ${THINGS3_ICONS.settings} Settings
             </button>
           </div>
@@ -341,23 +341,23 @@ export function render() {
       <!-- Mobile Bottom Navigation (all tabs) -->
       <nav class="mobile-bottom-nav" aria-label="Main navigation">
         <div class="mobile-bottom-nav-inner" role="tablist">
-          <button onclick="switchTab('home')" class="mobile-nav-item ${state.activeTab === 'home' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'home'}">
+          <button onclick="switchTab('home')" class="mobile-nav-item ${state.activeTab === 'home' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'home'}" aria-label="Home">
             ${THINGS3_ICONS.home}
             <span class="mobile-nav-label">Home</span>
           </button>
-          <button onclick="switchTab('tasks')" class="mobile-nav-item ${state.activeTab === 'tasks' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'tasks'}">
+          <button onclick="switchTab('tasks')" class="mobile-nav-item ${state.activeTab === 'tasks' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'tasks'}" aria-label="Workspace">
             ${THINGS3_ICONS.workspace}
             <span class="mobile-nav-label">Tasks</span>
           </button>
-          <button onclick="switchTab('life')" class="mobile-nav-item ${state.activeTab === 'life' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'life'}">
+          <button onclick="switchTab('life')" class="mobile-nav-item ${state.activeTab === 'life' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'life'}" aria-label="Life Score">
             ${THINGS3_ICONS.lifeScore}
             <span class="mobile-nav-label">Life</span>
           </button>
-          <button onclick="switchTab('calendar')" class="mobile-nav-item ${isCalendarTabActive ? 'active' : ''}" role="tab" aria-selected="${isCalendarTabActive}">
+          <button onclick="switchTab('calendar')" class="mobile-nav-item ${isCalendarTabActive ? 'active' : ''}" role="tab" aria-selected="${isCalendarTabActive}" aria-label="Calendar">
             ${THINGS3_ICONS.calendar}
             <span class="mobile-nav-label">Calendar</span>
           </button>
-          <button onclick="switchTab('settings')" class="mobile-nav-item ${state.activeTab === 'settings' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'settings'}">
+          <button onclick="switchTab('settings')" class="mobile-nav-item ${state.activeTab === 'settings' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'settings'}" aria-label="Settings">
             ${THINGS3_ICONS.settings}
             <span class="mobile-nav-label">Settings</span>
           </button>
@@ -440,9 +440,11 @@ export function dismissCacheRefreshPrompt() {
 
 /**
  * Switch the active top-level tab, persist view state, and re-render
- * @param {string} tab - Tab id: 'home' | 'tasks' | 'life' | 'settings'
+ * @param {string} tab - Tab id: 'home' | 'tasks' | 'life' | 'calendar' | 'settings'
  */
 export function switchTab(tab) {
+  const validTabs = ['home', 'tasks', 'life', 'calendar', 'settings'];
+  if (!validTabs.includes(tab)) return;
   // Cleanup any open inline autocomplete popups
   document.querySelectorAll('.inline-autocomplete-popup').forEach(p => p.remove());
   if (state.mobileDrawerOpen) {

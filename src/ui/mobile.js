@@ -63,17 +63,25 @@ export function renderBottomNav() {
   return `
     <nav class="mobile-bottom-nav" aria-label="Main navigation">
       <div class="mobile-bottom-nav-inner" role="tablist">
-        <button onclick="switchTab('home')" class="mobile-nav-item ${state.activeTab === 'home' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'home'}">
+        <button onclick="switchTab('home')" class="mobile-nav-item ${state.activeTab === 'home' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'home'}" aria-label="Home">
           ${THINGS3_ICONS.home}
+          <span class="mobile-nav-label">Home</span>
         </button>
-        <button onclick="switchTab('tasks')" class="mobile-nav-item ${state.activeTab === 'tasks' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'tasks'}">
+        <button onclick="switchTab('tasks')" class="mobile-nav-item ${state.activeTab === 'tasks' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'tasks'}" aria-label="Workspace">
           ${THINGS3_ICONS.workspace}
+          <span class="mobile-nav-label">Tasks</span>
         </button>
-        <button onclick="switchTab('life')" class="mobile-nav-item ${state.activeTab === 'life' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'life'}">
+        <button onclick="switchTab('life')" class="mobile-nav-item ${state.activeTab === 'life' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'life'}" aria-label="Life Score">
           ${THINGS3_ICONS.lifeScore}
+          <span class="mobile-nav-label">Life</span>
         </button>
-        <button onclick="switchTab('settings')" class="mobile-nav-item ${state.activeTab === 'settings' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'settings'}">
+        <button onclick="switchTab('calendar')" class="mobile-nav-item ${state.activeTab === 'calendar' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'calendar'}" aria-label="Calendar">
+          ${THINGS3_ICONS.calendar}
+          <span class="mobile-nav-label">Calendar</span>
+        </button>
+        <button onclick="switchTab('settings')" class="mobile-nav-item ${state.activeTab === 'settings' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'settings'}" aria-label="Settings">
           ${THINGS3_ICONS.settings}
+          <span class="mobile-nav-label">Settings</span>
         </button>
       </div>
     </nav>
