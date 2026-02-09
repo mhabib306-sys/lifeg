@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T11:12:49.941Z",
+  "lastUpdated": "2026-02-09T11:12:57.715Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1536,7 +1536,7 @@
         "asr": "1",
         "maghrib": "",
         "isha": "",
-        "quran": 0
+        "quran": "1"
       },
       "glucose": {
         "avg": "",
@@ -1574,7 +1574,7 @@
         "asr": "",
         "maghrib": "",
         "isha": "",
-        "quran": 0
+        "quran": "1"
       },
       "glucose": {
         "avg": "165",
@@ -1611,7 +1611,8 @@
       },
       "prayers": {
         "maghrib": 1,
-        "isha": "1"
+        "isha": "1",
+        "quran": "1"
       },
       "glucose": {},
       "whoop": {},
