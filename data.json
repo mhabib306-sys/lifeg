@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T16:18:42.270Z",
+  "lastUpdated": "2026-02-09T16:18:54.889Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2537,28 +2537,6 @@
       "createdAt": "2026-02-08T15:19:35.208Z",
       "updatedAt": "2026-02-08T15:19:35.208Z",
       "today": false,
-      "flagged": false
-    },
-    {
-      "id": "task_1770565930160_cs8oj7kcs",
-      "title": "Todo",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "order": 3000,
-      "createdAt": "2026-02-08T15:52:10.160Z",
-      "updatedAt": "2026-02-08T15:52:10.160Z",
-      "today": true,
       "flagged": false
     },
     {
