@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T18:47:23.008Z",
+  "lastUpdated": "2026-02-09T18:48:36.499Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2899,6 +2899,29 @@
       "createdAt": "2026-02-09T18:40:19.906Z",
       "updatedAt": "2026-02-09T18:40:26.859Z",
       "gcalEventId": "gri0203aiaovpsv5th19i3tj64"
+    },
+    {
+      "id": "task_1770662913181_jr4o7478e",
+      "title": "Call Jana",
+      "notes": "",
+      "status": "inbox",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": "2026-02-09",
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "order": 39000,
+      "createdAt": "2026-02-09T18:48:33.181Z",
+      "updatedAt": "2026-02-09T18:48:33.718Z",
+      "gcalEventId": "m94vs65i4sjpeqq7l051k45jbc"
     }
   ],
   "taskCategories": [
