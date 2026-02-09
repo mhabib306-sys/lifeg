@@ -252,6 +252,19 @@ export const state = {
   scoresCache: new Map(),
   scoresCacheVersion: 0,
 
+  // ---- Undo toast ----
+  undoAction: null,           // { label, snapshot, restoreFn } or null
+  undoTimerRemaining: 0,      // seconds left (5→0)
+  undoTimerId: null,           // setInterval ID
+
+  // ---- Braindump ----
+  showBraindump: false,
+  braindumpRawText: '',
+  braindumpParsedItems: [],
+  braindumpStep: 'input',       // 'input' | 'review' | 'success'
+  braindumpEditingIndex: null,
+  braindumpSuccessMessage: '',
+
   // ---- Task modal state ----
   modalSelectedArea: null,
   modalSelectedStatus: 'inbox',

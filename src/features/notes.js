@@ -2,6 +2,7 @@ import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
 import { generateTaskId, escapeHtml, formatSmartDate } from '../utils.js';
 import { TASK_CATEGORIES_KEY, TASK_LABELS_KEY, TASK_PEOPLE_KEY } from '../constants.js';
+import { startUndoCountdown } from './undo.js';
 
 // ============================================================================
 // Note Inline Autocomplete (contenteditable-compatible)
@@ -822,6 +823,31 @@ export function deleteNote(noteId, deleteChildren = false) {
   persistAndRender();
 }
 
+/**
+ * Delete a note with undo toast support.
+ * Used by the trash button and backspace-on-empty (not blur auto-cleanup).
+ */
+export function deleteNoteWithUndo(noteId, focusAfterDeleteId) {
+  const note = state.tasksData.find(t => t.id === noteId && t.isNote);
+  if (!note) return;
+  const snapshot = JSON.parse(JSON.stringify(note));
+  const children = state.tasksData.filter(t => t.parentId === noteId).map(t => JSON.parse(JSON.stringify(t)));
+  const wasCollapsed = state.collapsedNotes.has(noteId);
+  deleteNote(noteId);
+  if (focusAfterDeleteId) {
+    setTimeout(() => focusNote(focusAfterDeleteId), 60);
+  }
+  startUndoCountdown(`"${snapshot.title || 'Untitled'}" deleted`, { note: snapshot, children, wasCollapsed }, (snap) => {
+    state.tasksData.push(snap.note);
+    snap.children.forEach(c => {
+      const existing = state.tasksData.find(t => t.id === c.id);
+      if (existing) { existing.parentId = c.parentId; existing.indent = c.indent; }
+    });
+    if (snap.wasCollapsed) state.collapsedNotes.add(snap.note.id);
+    saveTasksData();
+  });
+}
+
 // ============================================================================
 // Focus & Cursor (Selection API for contenteditable)
 // ============================================================================
@@ -967,10 +993,7 @@ export function handleNoteKeydown(event, noteId) {
     const visible = getNavigationNotes(note);
     const idx = visible.findIndex(n => n.id === noteId);
     const prevId = idx > 0 ? visible[idx - 1].id : null;
-    deleteNote(noteId);
-    if (prevId) {
-      setTimeout(() => focusNote(prevId), 60);
-    }
+    deleteNoteWithUndo(noteId, prevId);
     return;
   }
 
@@ -1305,7 +1328,7 @@ export function renderNoteItem(note) {
             class="note-action-btn" title="Add child note (Enter)" aria-label="Add child note">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
           </button>
-          <button onclick="event.stopPropagation(); deleteNote('${note.id}')"
+          <button onclick="event.stopPropagation(); deleteNoteWithUndo('${note.id}')"
             class="note-action-btn" title="Delete note" aria-label="Delete note">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>

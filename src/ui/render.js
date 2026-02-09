@@ -82,6 +82,21 @@ function setupInlineAutocomplete(inputId) {
   if (typeof window.setupInlineAutocomplete === 'function') return window.setupInlineAutocomplete(inputId);
 }
 
+function renderUndoToast() {
+  if (typeof window.renderUndoToastHtml === 'function') return window.renderUndoToastHtml();
+  return '';
+}
+
+function renderBraindumpOverlay() {
+  if (typeof window.renderBraindumpOverlay === 'function') return window.renderBraindumpOverlay();
+  return '';
+}
+
+function renderBraindumpFAB() {
+  if (typeof window.renderBraindumpFAB === 'function') return window.renderBraindumpFAB();
+  return '';
+}
+
 function getCurrentViewInfo() {
   if (typeof window.getCurrentViewInfo === 'function') return window.getCurrentViewInfo();
   return { name: 'Tasks' };
@@ -301,6 +316,9 @@ export function render() {
       ${renderCategoryModalHtml()}
       ${renderLabelModalHtml()}
       ${renderPersonModalHtml()}
+      ${renderBraindumpFAB()}
+      ${renderBraindumpOverlay()}
+      ${renderUndoToast()}
     `;
 
     // Setup date input handler (with cleanup to prevent memory leak)

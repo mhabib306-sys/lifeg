@@ -1,6 +1,7 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
 import { generateTaskId, getLocalDateString } from '../utils.js';
+import { startUndoCountdown } from './undo.js';
 
 /**
  * Create a new task with full configuration options
@@ -130,14 +131,23 @@ export function deleteTask(taskId) {
   saveTasksData();
 }
 
-// Delete task with confirmation
+// Delete task with undo toast (replaces confirm() dialog)
 export function confirmDeleteTask(taskId) {
-  // Cancel any inline editing first
   state.inlineEditingTaskId = null;
-  if (confirm('Delete this task?')) {
-    deleteTask(taskId);
-    window.render();
-  }
+  const task = state.tasksData.find(t => t.id === taskId);
+  if (!task) return;
+  const snapshot = JSON.parse(JSON.stringify(task));
+  // Snapshot children that will be promoted so we can restore their parentId
+  const children = state.tasksData.filter(t => t.parentId === taskId).map(t => JSON.parse(JSON.stringify(t)));
+  deleteTask(taskId);
+  startUndoCountdown(`"${snapshot.title}" deleted`, { task: snapshot, children }, (snap) => {
+    state.tasksData.push(snap.task);
+    snap.children.forEach(c => {
+      const existing = state.tasksData.find(t => t.id === c.id);
+      if (existing) { existing.parentId = c.parentId; existing.indent = c.indent; }
+    });
+    saveTasksData();
+  });
 }
 
 export function toggleTaskComplete(taskId) {

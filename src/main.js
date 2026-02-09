@@ -72,9 +72,16 @@ function initApp() {
       e.preventDefault();
       window.openNewTaskModal();
     }
-    // Escape = close modal
+    // Cmd/Ctrl + Shift + D = open Braindump
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'd') {
+      e.preventDefault();
+      window.openBraindump();
+    }
+    // Escape = close modal / braindump
     if (e.key === 'Escape') {
-      if (state.showTaskModal) {
+      if (state.showBraindump) {
+        window.closeBraindump();
+      } else if (state.showTaskModal) {
         window.closeTaskModal();
         render();
       } else if (state.mobileDrawerOpen) {

@@ -72,7 +72,7 @@ import {
   toggleNoteCollapse, getNotesHierarchy, noteHasChildren, getNoteChildren,
   countAllDescendants, isDescendantOf, getNoteAncestors,
   indentNote, outdentNote, createRootNote, createNoteAfter, createChildNote,
-  deleteNote, focusNote, handleNoteKeydown, handleNoteBlur, handleNoteFocus,
+  deleteNote, deleteNoteWithUndo, focusNote, handleNoteKeydown, handleNoteBlur, handleNoteFocus,
   handleNoteInput, removeNoteInlineMeta,
   initializeNoteOrders,
   zoomIntoNote, zoomOutOfNote, navigateToBreadcrumb, renderNotesBreadcrumb,
@@ -102,6 +102,14 @@ import {
   calendarPrevMonth, calendarNextMonth, calendarGoToday,
   calendarSelectDate, getTasksForDate
 } from './features/calendar.js';
+
+import {
+  startUndoCountdown, executeUndo, dismissUndo, renderUndoToastHtml
+} from './features/undo.js';
+
+import {
+  parseBraindump, submitBraindumpItems
+} from './features/braindump.js';
 
 // -- UI --
 import { render, switchTab, switchSubTab, setToday } from './ui/render.js';
@@ -135,6 +143,17 @@ import {
   parseDateQuery, setupInlineAutocomplete, renderInlineChips,
   removeInlineMeta, cleanupInlineAutocomplete
 } from './ui/task-modal.js';
+
+// -- Braindump UI --
+import {
+  openBraindump, closeBraindump, processBraindump, backToInput,
+  toggleBraindumpItemType, toggleBraindumpItemInclude, removeBraindumpItem,
+  editBraindumpItem, saveBraindumpItemEdit, cancelBraindumpItemEdit,
+  setBraindumpItemArea, addBraindumpItemLabel, removeBraindumpItemLabel,
+  addBraindumpItemPerson, removeBraindumpItemPerson,
+  setBraindumpItemDate, clearBraindumpItemDate,
+  submitBraindump, renderBraindumpOverlay, renderBraindumpFAB
+} from './ui/braindump.js';
 
 // -- Settings --
 import { renderSettingsTab, createWeightInput } from './ui/settings.js';
@@ -201,7 +220,7 @@ Object.assign(window, {
   toggleNoteCollapse, getNotesHierarchy, noteHasChildren, getNoteChildren,
   countAllDescendants, isDescendantOf, getNoteAncestors,
   indentNote, outdentNote, createRootNote, createNoteAfter, createChildNote,
-  deleteNote, focusNote, handleNoteKeydown, handleNoteBlur, handleNoteFocus,
+  deleteNote, deleteNoteWithUndo, focusNote, handleNoteKeydown, handleNoteBlur, handleNoteFocus,
   handleNoteInput, removeNoteInlineMeta,
   initializeNoteOrders,
   zoomIntoNote, zoomOutOfNote, navigateToBreadcrumb, renderNotesBreadcrumb,
@@ -227,6 +246,19 @@ Object.assign(window, {
   // Calendar
   calendarPrevMonth, calendarNextMonth, calendarGoToday,
   calendarSelectDate, getTasksForDate,
+
+  // Undo Toast
+  startUndoCountdown, executeUndo, dismissUndo, renderUndoToastHtml,
+
+  // Braindump
+  parseBraindump, submitBraindumpItems,
+  openBraindump, closeBraindump, processBraindump, backToInput,
+  toggleBraindumpItemType, toggleBraindumpItemInclude, removeBraindumpItem,
+  editBraindumpItem, saveBraindumpItemEdit, cancelBraindumpItemEdit,
+  setBraindumpItemArea, addBraindumpItemLabel, removeBraindumpItemLabel,
+  addBraindumpItemPerson, removeBraindumpItemPerson,
+  setBraindumpItemDate, clearBraindumpItemDate,
+  submitBraindump, renderBraindumpOverlay, renderBraindumpFAB,
 
   // Main UI
   render, switchTab, switchSubTab, setToday,
@@ -290,6 +322,8 @@ const stateProxies = [
   'zoomedNoteId', 'notesBreadcrumb',
   'draggedNoteId', 'dragOverNoteId', 'noteDragPosition',
   'inlineAutocompleteMeta',
+  'undoAction', 'undoTimerRemaining', 'undoTimerId',
+  'showBraindump', 'braindumpRawText', 'braindumpParsedItems', 'braindumpStep', 'braindumpEditingIndex', 'braindumpSuccessMessage',
 ];
 
 stateProxies.forEach(prop => {
