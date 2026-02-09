@@ -117,10 +117,18 @@ export function render() {
             <button onclick="openMobileDrawer()" class="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-secondary)] active:bg-[var(--bg-secondary)] transition" aria-label="Open sidebar">
               <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
             </button>
-          ` : ''}
+          ` : `
+            <svg class="w-8 h-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs><linearGradient id="mobileGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/></linearGradient></defs>
+              <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#mobileGrad)"/>
+              <path d="M50 20 L78 42 V78 H22 V42 Z" fill="white" opacity="0.25"/>
+              <path d="M50 32 C50 32 62 48 62 58 C62 65 56.5 70 50 70 C43.5 70 38 65 38 58 C38 48 50 32 50 32Z" fill="white"/>
+              <path d="M50 45 C50 45 56 53 56 58 C56 62 53.3 64.5 50 64.5 C46.7 64.5 44 62 44 58 C44 53 50 45 50 45Z" fill="#F59E0B"/>
+            </svg>
+          `}
         </div>
         <div class="mobile-header-center">
-          <h1 class="mobile-header-title text-[17px] font-bold text-[var(--text-primary)] truncate">${state.activeTab === 'home' ? 'Home' : state.activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : state.activeTab === 'life' ? 'Life Score' : 'Settings'}</h1>
+          <h1 class="mobile-header-title text-[17px] font-bold text-[var(--text-primary)] truncate">${state.activeTab === 'home' ? 'Homebase' : state.activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : state.activeTab === 'life' ? 'Life Score' : 'Settings'}</h1>
           <span class="mobile-version text-[10px] font-semibold text-[var(--text-muted)]">v${APP_VERSION}</span>
         </div>
         <div class="w-10 flex items-center justify-end">
