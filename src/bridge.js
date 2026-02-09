@@ -31,6 +31,8 @@ import {
 
 import { exportData, importData } from './data/export-import.js';
 
+import { signInWithGoogle, signOutUser, getCurrentUser, initAuth } from './data/firebase.js';
+
 import {
   getWhoopWorkerUrl, setWhoopWorkerUrl, getWhoopApiKey, setWhoopApiKey,
   getWhoopLastSync, isWhoopConnected, fetchWhoopData, syncWhoopNow,
@@ -92,7 +94,8 @@ import {
   moveWidgetUp, moveWidgetDown,
   handleWidgetDragStart, handleWidgetDragEnd,
   handleWidgetDragOver, handleWidgetDragLeave, handleWidgetDrop,
-  resetHomeWidgets, toggleEditHomeWidgets
+  resetHomeWidgets, toggleEditHomeWidgets,
+  addPerspectiveWidget, removePerspectiveWidget
 } from './features/home-widgets.js';
 
 import {
@@ -163,6 +166,9 @@ Object.assign(window, {
   // Export/Import
   exportData, importData,
 
+  // Firebase Auth
+  signInWithGoogle, signOutUser, getCurrentUser, initAuth,
+
   // Weather
   fetchWeather, detectUserLocation, initWeather, loadWeatherLocation, saveWeatherLocation,
 
@@ -216,6 +222,7 @@ Object.assign(window, {
   handleWidgetDragStart, handleWidgetDragEnd,
   handleWidgetDragOver, handleWidgetDragLeave, handleWidgetDrop,
   resetHomeWidgets, toggleEditHomeWidgets,
+  addPerspectiveWidget, removePerspectiveWidget,
 
   // Calendar
   calendarPrevMonth, calendarNextMonth, calendarGoToday,
@@ -258,11 +265,12 @@ Object.assign(window, {
 // (e.g., onclick="editingTaskId='abc'; showTaskModal=true; render()")
 // These need to be on window as property accessors that proxy to state
 const stateProxies = [
+  'currentUser', 'authLoading', 'authError',
   'editingTaskId', 'editingCategoryId', 'editingLabelId', 'editingPersonId', 'editingPerspectiveId',
   'showTaskModal', 'showPerspectiveModal', 'showCategoryModal', 'showLabelModal', 'showPersonModal',
   'showInlineTagInput', 'showInlinePersonInput',
   'activePerspective', 'activeFilterType', 'activeCategoryFilter', 'activeLabelFilter', 'activePersonFilter',
-  'editingHomeWidgets', 'draggingWidgetId',
+  'editingHomeWidgets', 'showAddWidgetPicker', 'draggingWidgetId',
   'editingNoteId', 'inlineEditingTaskId',
   'mobileDrawerOpen', 'activeTab', 'activeSubTab',
   'modalSelectedArea', 'modalSelectedStatus', 'modalSelectedToday', 'modalSelectedFlagged', 'modalSelectedTags', 'modalSelectedPeople',

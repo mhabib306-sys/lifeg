@@ -104,8 +104,28 @@ function renderWhoopSettingsCard() {
  * @returns {string} HTML string for the settings tab
  */
 export function renderSettingsTab() {
+  const user = state.currentUser;
   return `
     <div class="space-y-8">
+      ${user ? `
+      <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
+        <h3 class="font-semibold text-charcoal mb-4">Account <span class="text-coral">→</span></h3>
+        <div class="flex items-center gap-4">
+          ${user.photoURL
+            ? `<img src="${user.photoURL}" alt="" class="w-12 h-12 rounded-full border border-[var(--border)]" referrerpolicy="no-referrer">`
+            : `<div class="w-12 h-12 rounded-full bg-[var(--accent)] text-white flex items-center justify-center text-lg font-semibold">${(user.displayName || user.email || '?')[0].toUpperCase()}</div>`
+          }
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-[var(--text-primary)] truncate">${user.displayName || 'User'}</p>
+            <p class="text-sm text-[var(--text-muted)] truncate">${user.email || ''}</p>
+          </div>
+          <button onclick="signOutUser()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition">
+            Sign Out
+          </button>
+        </div>
+      </div>
+      ` : ''}
+
       <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
         <div class="flex justify-between items-center mb-4">
           <h3 class="font-semibold text-charcoal">Scoring Weights <span class="text-coral">→</span></h3>

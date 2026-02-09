@@ -142,6 +142,11 @@ try {
 // The single exported state object
 // ---------------------------------------------------------------------------
 export const state = {
+  // ---- Auth ----
+  currentUser: null,
+  authLoading: true,
+  authError: null,
+
   // ---- Sync / weather ----
   syncStatus: 'idle',                 // 'idle' | 'syncing' | 'success' | 'error'
   lastSyncTime: null,
@@ -179,6 +184,7 @@ export const state = {
   customPerspectives: safeJsonParse(PERSPECTIVES_KEY, []),
   homeWidgets: safeJsonParse(HOME_WIDGETS_KEY, null) || DEFAULT_HOME_WIDGETS,
   editingHomeWidgets: false,
+  showAddWidgetPicker: false,
   draggingWidgetId: null,
 
   // ---- Task view / filter state ----

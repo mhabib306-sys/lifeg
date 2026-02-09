@@ -1,6 +1,6 @@
 {
   "name": "homebase",
-  "version": "4.5.1",
+  "version": "4.6.0",
   "description": "Homebase - Life Gamification & Task Management",
   "type": "module",
   "scripts": {
@@ -29,6 +29,7 @@
     "vite-plugin-pwa": "^1.2.0"
   },
   "dependencies": {
-    "chart.js": "^4.5.1"
+    "chart.js": "^4.5.1",
+    "firebase": "^12.9.0"
   }
 }

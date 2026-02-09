@@ -4,8 +4,8 @@
 // This file is the Vite entry point. It:
 // 1. Imports styles (triggers Tailwind/PostCSS processing)
 // 2. Imports the bridge (wires all modules to window.*)
-// 3. Initializes task orders, weather, theme, and cloud data
-// 4. Runs the first render
+// 3. Applies stored theme (so login screen is themed)
+// 4. Calls initAuth — on auth ready, initializes the full app
 // 5. Sets up keyboard shortcuts and online/offline listeners
 
 // -- Styles (processed by Vite + PostCSS + Tailwind) --
@@ -21,17 +21,20 @@ import { initializeNoteOrders } from './features/notes.js';
 import { initWeather } from './features/weather.js';
 import { initWhoopSync } from './data/whoop-sync.js';
 import { applyStoredTheme, loadCloudData, debouncedSaveToGithub } from './data/github-sync.js';
+import { initAuth } from './data/firebase.js';
 import { render } from './ui/render.js';
 import { migrateTodayFlag } from './features/tasks.js';
 import { ensureHomeWidgets } from './features/home-widgets.js';
 
 // ============================================================================
-// App Initialization
+// App Initialization (called only after auth confirms a signed-in user)
 // ============================================================================
 
+let appInitialized = false;
+
 function initApp() {
-  // Apply saved theme
-  applyStoredTheme();
+  if (appInitialized) return;
+  appInitialized = true;
 
   // Initialize task ordering
   migrateTodayFlag();
@@ -100,9 +103,32 @@ function initApp() {
   console.log('Homebase initialized');
 }
 
+// ============================================================================
+// Bootstrap — applies theme, shows loading, waits for Firebase auth
+// ============================================================================
+
+function bootstrap() {
+  // Apply theme immediately so login screen is styled
+  applyStoredTheme();
+
+  // Show loading spinner
+  render();
+
+  // Wait for Firebase auth state
+  initAuth((user) => {
+    if (user) {
+      initApp();
+    } else {
+      // No user — render login screen
+      appInitialized = false;
+      render();
+    }
+  });
+}
+
 // Start when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
+  document.addEventListener('DOMContentLoaded', bootstrap);
 } else {
-  initApp();
+  bootstrap();
 }
