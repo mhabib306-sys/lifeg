@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T12:20:39.257Z",
+  "lastUpdated": "2026-02-09T12:21:09.224Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2088,24 +2088,6 @@
       "order": 18000
     },
     {
-      "id": "task_1770419503417_ps4ynftsw",
-      "title": "Breadfast note",
-      "notes": "",
-      "status": "inbox",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "work",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "createdAt": "2026-02-06T23:11:43.417Z",
-      "updatedAt": "2026-02-06T23:11:43.417Z",
-      "order": 2000
-    },
-    {
       "id": "task_1770450641886_r0ykcmc6m",
       "title": "Note",
       "notes": "",
@@ -2224,26 +2206,6 @@
       "createdAt": "2026-02-07T18:51:25.826Z",
       "updatedAt": "2026-02-07T20:07:24.844Z",
       "order": 6000
-    },
-    {
-      "id": "task_1770509778354_dbyy19ncj",
-      "title": "Task",
-      "notes": "",
-      "status": "inbox",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "work",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "createdAt": "2026-02-08T00:16:18.354Z",
-      "updatedAt": "2026-02-08T00:16:23.732Z",
-      "order": 7000
     },
     {
       "id": "task_1770510427575_jqc4ymb63",
