@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T11:12:25.117Z",
+  "lastUpdated": "2026-02-09T11:12:29.190Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1623,7 +1623,7 @@
         "asr": "",
         "maghrib": 1,
         "isha": 1,
-        "quran": 1
+        "quran": 0.9
       },
       "glucose": {
         "avg": 161,
