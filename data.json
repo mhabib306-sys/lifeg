@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T14:25:51.965Z",
+  "lastUpdated": "2026-02-09T14:26:03.196Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2884,7 +2884,7 @@
     },
     {
       "id": "task_1770647148591_tkt47epx4",
-      "title": "",
+      "title": "I want to be better",
       "notes": "",
       "status": "anytime",
       "completed": false,
@@ -2900,7 +2900,7 @@
       "indent": 0,
       "noteOrder": 2000,
       "createdAt": "2026-02-09T14:25:48.592Z",
-      "updatedAt": "2026-02-09T14:25:48.592Z"
+      "updatedAt": "2026-02-09T14:26:00.409Z"
     }
   ],
   "taskCategories": [
