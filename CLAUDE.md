@@ -45,6 +45,11 @@ npm run preview  # Preview production build locally
 npm run deploy   # Build + force-push dist/ to gh-pages branch (GitHub Pages)
 ```
 
+**Deployment target (always):**
+- Live URL: `https://mhabib306-sys.github.io/lifeg/`
+- Deployment branch: `gh-pages`
+- Deploy command: `npm run deploy`
+
 **Always run `npm run build` after changes to verify the build succeeds.** If the user asks you to deploy, run `npm run deploy`.
 
 ## Module Structure
