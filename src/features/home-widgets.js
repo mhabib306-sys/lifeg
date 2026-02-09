@@ -5,7 +5,7 @@
 // reset, and edit mode toggling.
 
 import { state } from '../state.js';
-import { HOME_WIDGETS_KEY, DEFAULT_HOME_WIDGETS } from '../constants.js';
+import { HOME_WIDGETS_KEY, DEFAULT_HOME_WIDGETS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
 
 // ---- Persistence ----
 
@@ -33,20 +33,14 @@ export function ensureHomeWidgets() {
     });
   });
 
-  // Preserve any unknown/custom widgets
+  // Preserve any unknown/custom widgets (except legacy daily-entry)
   (state.homeWidgets || []).forEach((w) => {
-    if (!defaultsById.has(w.id)) merged.push(w);
+    if (!defaultsById.has(w.id) && w.id !== 'daily-entry') merged.push(w);
   });
 
   // Normalize order
   merged.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   merged.forEach((w, i) => { w.order = i; });
-
-  // Ensure critical widgets stay visible
-  const todayWidget = merged.find(w => w.id === 'today-tasks');
-  if (todayWidget) todayWidget.visible = true;
-  const scoreWidget = merged.find(w => w.id === 'todays-score');
-  if (scoreWidget) scoreWidget.visible = true;
 
   state.homeWidgets = merged;
   saveHomeWidgets();
@@ -169,5 +163,42 @@ export function resetHomeWidgets() {
 
 export function toggleEditHomeWidgets() {
   state.editingHomeWidgets = !state.editingHomeWidgets;
+  if (!state.editingHomeWidgets) state.showAddWidgetPicker = false;
+  window.render();
+}
+
+// ---- Perspective Widgets ----
+
+export function addPerspectiveWidget(perspectiveId) {
+  // Guard against duplicates
+  if (state.homeWidgets.some(w => w.id === 'perspective-' + perspectiveId)) return;
+
+  // Look up perspective
+  const allPerspectives = [...BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, ...(state.customPerspectives || [])];
+  const perspective = allPerspectives.find(p => p.id === perspectiveId);
+  if (!perspective) return;
+
+  const maxOrder = state.homeWidgets.reduce((max, w) => Math.max(max, w.order ?? 0), -1);
+  state.homeWidgets.push({
+    id: 'perspective-' + perspectiveId,
+    type: 'perspective',
+    title: perspective.name,
+    perspectiveId: perspectiveId,
+    size: 'half',
+    order: maxOrder + 1,
+    visible: true
+  });
+
+  saveHomeWidgets();
+  state.showAddWidgetPicker = false;
+  window.render();
+}
+
+export function removePerspectiveWidget(widgetId) {
+  state.homeWidgets = state.homeWidgets.filter(w => w.id !== widgetId);
+  // Re-normalize order
+  state.homeWidgets.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  state.homeWidgets.forEach((w, i) => { w.order = i; });
+  saveHomeWidgets();
   window.render();
 }

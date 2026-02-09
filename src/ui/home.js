@@ -6,7 +6,7 @@
 
 import { state } from '../state.js';
 import { getLocalDateString } from '../utils.js';
-import { THINGS3_ICONS, WEATHER_ICONS, WEATHER_DESCRIPTIONS, defaultDayData } from '../constants.js';
+import { THINGS3_ICONS, WEATHER_ICONS, WEATHER_DESCRIPTIONS, defaultDayData, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // External function references — these will be replaced with proper module
@@ -36,6 +36,11 @@ function render() {
   if (typeof window.render === 'function') return window.render();
 }
 
+function getFilteredTasks(perspectiveId) {
+  if (typeof window.getFilteredTasks === 'function') return window.getFilteredTasks(perspectiveId);
+  return [];
+}
+
 // ============================================================================
 // renderHomeWidget — renders a single home dashboard widget
 // ============================================================================
@@ -62,6 +67,7 @@ export function renderHomeWidget(widget, isEditing) {
   const sizeLabels = { full: 'Full', half: 'Half', third: 'Third' };
 
   // Edit controls shown in edit mode
+  const isPerspectiveWidget = widget.type === 'perspective';
   const editControls = isEditing ? `
     <div class="flex items-center gap-1 ml-auto">
       <button onclick="event.stopPropagation(); toggleWidgetSize('${widget.id}')"
@@ -74,9 +80,15 @@ export function renderHomeWidget(widget, isEditing) {
         </svg>
         <span class="text-[11px] font-medium uppercase">${sizeLabels[widget.size] || 'Half'}</span>
       </button>
-      <button onclick="event.stopPropagation(); toggleWidgetVisibility('${widget.id}')" class="p-1.5 text-charcoal/40 hover:text-red-500 hover:bg-red-50 rounded transition" title="Hide widget">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.8 11.8 0 0 0 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>
-      </button>
+      ${isPerspectiveWidget ? `
+        <button onclick="event.stopPropagation(); removePerspectiveWidget('${widget.id}')" class="p-1.5 text-charcoal/40 hover:text-red-500 hover:bg-red-50 rounded transition" title="Remove widget">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      ` : `
+        <button onclick="event.stopPropagation(); toggleWidgetVisibility('${widget.id}')" class="p-1.5 text-charcoal/40 hover:text-red-500 hover:bg-red-50 rounded transition" title="Hide widget">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.8 11.8 0 0 0 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>
+        </button>
+      `}
     </div>
   ` : '';
 
@@ -213,125 +225,121 @@ export function renderHomeWidget(widget, isEditing) {
       break;
     }
 
-    case 'daily-entry': {
+    case 'prayers': {
       const todayData = state.allData[today] || JSON.parse(JSON.stringify(defaultDayData));
       const prayerData = todayData.prayers || {};
-      const glucoseData = todayData.glucose || {};
-      const whoopData = todayData.whoop || {};
-      const habitsData = todayData.habits || {};
-
-      // Calculate completion for progress indicators
       const prayerFields = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
       const prayersDone = prayerFields.filter(f => prayerData[f] && parseFloat(prayerData[f]) > 0).length;
+
+      content = `
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs text-[var(--text-muted)] font-medium">${prayersDone}/5</span>
+        </div>
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+          ${['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((p, i) => {
+            const shortLabels = ['F', 'D', 'A', 'M', 'I'];
+            return '<div class="text-center">' +
+              '<label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">' + shortLabels[i] + '</label>' +
+              '<input type="number" step="0.1" min="0" max="1" value="' + (prayerData[p] || '') + '" placeholder="0"' +
+              ' onchange="updateDailyField(\'prayers\', \'' + p + '\', this.value)"' +
+              ' class="w-full px-2 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">' +
+              '</div>';
+          }).join('')}
+          <div class="text-center">
+            <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">\uD83D\uDCD6</label>
+            <input type="number" step="0.1" value="${prayerData.quran || ''}" placeholder="0"
+              onchange="updateDailyField('prayers', 'quran', this.value)"
+              class="w-full px-2 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+          </div>
+        </div>
+      `;
+      break;
+    }
+
+    case 'glucose': {
+      const todayDataG = state.allData[today] || JSON.parse(JSON.stringify(defaultDayData));
+      const glucoseData = todayDataG.glucose || {};
+
+      content = `
+        <div class="grid grid-cols-3 gap-3">
+          <div class="text-center">
+            <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Avg</label>
+            <input type="number" value="${glucoseData.avg || ''}" placeholder="--"
+              onchange="updateDailyField('glucose', 'avg', this.value)"
+              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+          </div>
+          <div class="text-center">
+            <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">TIR %</label>
+            <input type="number" value="${glucoseData.tir || ''}" placeholder="--"
+              onchange="updateDailyField('glucose', 'tir', this.value)"
+              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+          </div>
+          <div class="text-center">
+            <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Insulin</label>
+            <input type="number" value="${glucoseData.insulin || ''}" placeholder="--"
+              onchange="updateDailyField('glucose', 'insulin', this.value)"
+              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+          </div>
+        </div>
+      `;
+      break;
+    }
+
+    case 'whoop': {
+      const todayDataW = state.allData[today] || JSON.parse(JSON.stringify(defaultDayData));
+      const whoopData = todayDataW.whoop || {};
+
+      content = `
+        <div class="grid grid-cols-3 gap-3">
+          <div class="text-center">
+            <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Sleep %</label>
+            <input type="number" value="${whoopData.sleepPerf || ''}" placeholder="--"
+              onchange="updateDailyField('whoop', 'sleepPerf', this.value)"
+              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+          </div>
+          <div class="text-center">
+            <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Recovery</label>
+            <input type="number" value="${whoopData.recovery || ''}" placeholder="--"
+              onchange="updateDailyField('whoop', 'recovery', this.value)"
+              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+          </div>
+          <div class="text-center">
+            <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Strain</label>
+            <input type="number" value="${whoopData.strain || ''}" placeholder="--"
+              onchange="updateDailyField('whoop', 'strain', this.value)"
+              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+          </div>
+        </div>
+      `;
+      break;
+    }
+
+    case 'habits': {
+      const todayDataH = state.allData[today] || JSON.parse(JSON.stringify(defaultDayData));
+      const habitsData = todayDataH.habits || {};
       const habitFields = ['exercise', 'reading', 'meditation', 'water', 'vitamins'];
       const habitsDone = habitFields.filter(f => habitsData[f]).length;
 
       content = `
-        <div class="space-y-4">
-          <!-- Prayers Section -->
-          <div class="bg-[var(--bg-secondary)] rounded-xl p-4 border border-[var(--border-light)]">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">\uD83D\uDD4C Prayers</span>
-              <span class="text-xs text-[var(--text-muted)] font-medium">${prayersDone}/5</span>
-            </div>
-            <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
-              ${['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((p, i) => {
-                const labels = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-                const shortLabels = ['F', 'D', 'A', 'M', 'I'];
-                return '<div class="text-center">' +
-                  '<label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">' + shortLabels[i] + '</label>' +
-                  '<input type="number" step="0.1" min="0" max="1" value="' + (prayerData[p] || '') + '" placeholder="0"' +
-                  ' onchange="updateDailyField(\'prayers\', \'' + p + '\', this.value)"' +
-                  ' class="w-full px-2 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">' +
-                  '</div>';
-              }).join('')}
-              <div class="text-center">
-                <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">\uD83D\uDCD6</label>
-                <input type="number" step="0.1" value="${prayerData.quran || ''}" placeholder="0"
-                  onchange="updateDailyField('prayers', 'quran', this.value)"
-                  class="w-full px-2 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
-              </div>
-            </div>
-          </div>
-
-          <!-- Glucose Section -->
-          <div class="bg-[var(--bg-secondary)] rounded-xl p-4 border border-[var(--border-light)]">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">\uD83D\uDC89 Glucose</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <div class="text-center">
-                <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Avg</label>
-                <input type="number" value="${glucoseData.avg || ''}" placeholder="--"
-                  onchange="updateDailyField('glucose', 'avg', this.value)"
-                  class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
-              </div>
-              <div class="text-center">
-                <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">TIR %</label>
-                <input type="number" value="${glucoseData.tir || ''}" placeholder="--"
-                  onchange="updateDailyField('glucose', 'tir', this.value)"
-                  class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
-              </div>
-              <div class="text-center">
-                <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Insulin</label>
-                <input type="number" value="${glucoseData.insulin || ''}" placeholder="--"
-                  onchange="updateDailyField('glucose', 'insulin', this.value)"
-                  class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
-              </div>
-            </div>
-          </div>
-
-          <!-- Whoop Section -->
-          <div class="bg-[var(--bg-secondary)] rounded-xl p-4 border border-[var(--border-light)]">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">\u23F1\uFE0F Whoop</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <div class="text-center">
-                <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Sleep %</label>
-                <input type="number" value="${whoopData.sleepPerf || ''}" placeholder="--"
-                  onchange="updateDailyField('whoop', 'sleepPerf', this.value)"
-                  class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
-              </div>
-              <div class="text-center">
-                <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Recovery</label>
-                <input type="number" value="${whoopData.recovery || ''}" placeholder="--"
-                  onchange="updateDailyField('whoop', 'recovery', this.value)"
-                  class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
-              </div>
-              <div class="text-center">
-                <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Strain</label>
-                <input type="number" value="${whoopData.strain || ''}" placeholder="--"
-                  onchange="updateDailyField('whoop', 'strain', this.value)"
-                  class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
-              </div>
-            </div>
-          </div>
-
-          <!-- Habits Section -->
-          <div class="bg-[var(--bg-secondary)] rounded-xl p-4 border border-[var(--border-light)]">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">\u2728 Habits</span>
-              <span class="text-xs text-[var(--text-muted)] font-medium">${habitsDone}/5</span>
-            </div>
-            <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
-              ${[
-                { field: 'exercise', icon: '\uD83C\uDFCB\uFE0F', label: 'Exercise' },
-                { field: 'reading', icon: '\uD83D\uDCDA', label: 'Read' },
-                { field: 'meditation', icon: '\uD83E\uDDD8', label: 'Meditate' },
-                { field: 'water', icon: '\uD83D\uDCA7', label: 'Water' },
-                { field: 'vitamins', icon: '\uD83D\uDC8A', label: 'Vitamins' }
-              ].map(h => {
-                const isChecked = habitsData[h.field];
-                return '<label class="flex flex-col items-center cursor-pointer">' +
-                  '<span class="text-lg mb-1">' + h.icon + '</span>' +
-                  '<input type="checkbox" ' + (isChecked ? 'checked' : '') +
-                  ' onchange="toggleDailyField(\'habits\', \'' + h.field + '\')"' +
-                  ' class="w-5 h-5 rounded border-2 border-purple-300 text-purple-500 focus:ring-purple-300 focus:ring-offset-0 cursor-pointer">' +
-                  '</label>';
-              }).join('')}
-            </div>
-          </div>
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs text-[var(--text-muted)] font-medium">${habitsDone}/5</span>
+        </div>
+        <div class="grid grid-cols-5 gap-2">
+          ${[
+            { field: 'exercise', icon: '\uD83C\uDFCB\uFE0F', label: 'Exercise' },
+            { field: 'reading', icon: '\uD83D\uDCDA', label: 'Read' },
+            { field: 'meditation', icon: '\uD83E\uDDD8', label: 'Meditate' },
+            { field: 'water', icon: '\uD83D\uDCA7', label: 'Water' },
+            { field: 'vitamins', icon: '\uD83D\uDC8A', label: 'Vitamins' }
+          ].map(h => {
+            const isChecked = habitsData[h.field];
+            return '<label class="flex flex-col items-center cursor-pointer">' +
+              '<span class="text-lg mb-1">' + h.icon + '</span>' +
+              '<input type="checkbox" ' + (isChecked ? 'checked' : '') +
+              ' onchange="toggleDailyField(\'habits\', \'' + h.field + '\')"' +
+              ' class="w-5 h-5 rounded border-2 border-purple-300 text-purple-500 focus:ring-purple-300 focus:ring-offset-0 cursor-pointer">' +
+              '</label>';
+          }).join('')}
         </div>
       `;
       break;
@@ -464,6 +472,51 @@ export function renderHomeWidget(widget, isEditing) {
       break;
     }
 
+    case 'perspective': {
+      // Look up perspective from builtins + notes + custom
+      const allPerspectives = [...BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, ...(state.customPerspectives || [])];
+      const perspective = allPerspectives.find(p => p.id === widget.perspectiveId);
+
+      if (!perspective) {
+        // Deleted custom perspective
+        content = `
+          <div class="py-6 text-center">
+            <p class="text-[var(--text-muted)] text-sm mb-2">View not found</p>
+            <button onclick="removePerspectiveWidget('${widget.id}')" class="text-xs text-red-500 hover:underline">Remove widget</button>
+          </div>
+        `;
+        break;
+      }
+
+      // Notes perspective — show note count + link
+      if (widget.perspectiveId === 'notes') {
+        const noteCount = state.tasksData.filter(t => t.isNote && !t.completed).length;
+        content = `
+          <div class="py-4 text-center">
+            <div class="text-2xl font-bold text-[var(--text-primary)] mb-1">${noteCount}</div>
+            <div class="text-xs text-[var(--text-muted)] mb-3">note${noteCount !== 1 ? 's' : ''}</div>
+            <button onclick="showPerspectiveTasks('notes')" class="text-xs text-[var(--accent)] hover:underline font-medium">Open Notes &rarr;</button>
+          </div>
+        `;
+        break;
+      }
+
+      const perspTasks = getFilteredTasks(widget.perspectiveId);
+      const taskCount = perspTasks.length;
+
+      if (taskCount === 0) {
+        content = `<div class="py-6 text-center text-[var(--text-muted)] text-sm">No tasks</div>`;
+      } else {
+        content = `
+          <div class="max-h-[300px] overflow-y-auto">
+            ${perspTasks.slice(0, 8).map(task => renderTaskItem(task, false, true)).join('')}
+            ${taskCount > 8 ? `<div class="px-2 py-2 text-center"><button onclick="showPerspectiveTasks('${widget.perspectiveId}')" class="text-xs text-[var(--accent)] hover:underline font-medium">View all ${taskCount} tasks &rarr;</button></div>` : ''}
+          </div>
+        `;
+      }
+      break;
+    }
+
     default:
       content = '<div class="py-4 text-center text-charcoal/30">Unknown widget type</div>';
   }
@@ -474,7 +527,10 @@ export function renderHomeWidget(widget, isEditing) {
     'quick-add': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>',
     'today-tasks': THINGS3_ICONS.today,
     'next-tasks': THINGS3_ICONS.next,
-    'daily-entry': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>',
+    'prayers': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>',
+    'glucose': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>',
+    'whoop': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>',
+    'habits': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>',
     'weather': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>',
     'score': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3v-8zm4-4h2v12H7V9zm4-4h2v16h-2V5zm4 8h2v8h-2v-8zm4-4h2v12h-2V9z"/></svg>'
   };
@@ -484,10 +540,23 @@ export function renderHomeWidget(widget, isEditing) {
     'quick-add': '#147EFB',
     'today-tasks': '#FFCA28',
     'next-tasks': '#8B5CF6',
-    'daily-entry': '#F97316',
+    'prayers': '#10B981',
+    'glucose': '#EF4444',
+    'whoop': '#3B82F6',
+    'habits': '#8B5CF6',
     'weather': '#F59E0B',
     'score': '#22C55E'
   };
+
+  // For perspective widgets, resolve icon and color from the perspective definition
+  if (widget.type === 'perspective') {
+    const allPersp = [...BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, ...(state.customPerspectives || [])];
+    const persp = allPersp.find(p => p.id === widget.perspectiveId);
+    if (persp) {
+      widgetIcons['perspective'] = persp.icon || '';
+      widgetColors['perspective'] = persp.color || '#6B7280';
+    }
+  }
 
   // Quick-add widget has minimal styling (no border, no background, no header)
   if (widget.type === 'quick-add' && !isEditing) {
@@ -509,7 +578,7 @@ export function renderHomeWidget(widget, isEditing) {
         <h3 class="widget-title text-sm font-medium text-[var(--text-primary)]">${widget.title}</h3>
         ${editControls}
       </div>
-      <div class="widget-body ${widget.type === 'today-tasks' || widget.type === 'next-tasks' ? 'px-2 py-1' : 'p-4'}">
+      <div class="widget-body ${widget.type === 'today-tasks' || widget.type === 'next-tasks' || widget.type === 'perspective' ? 'px-2 py-1' : 'p-4'}">
         ${content}
       </div>
     </div>
@@ -592,6 +661,10 @@ export function renderHomeTab() {
         </div>
         <div class="home-header-actions flex items-center gap-3">
           ${state.editingHomeWidgets ? `
+            <button onclick="showAddWidgetPicker = !showAddWidgetPicker; render()" class="text-sm text-charcoal/50 hover:text-charcoal px-3 py-1.5 rounded-lg hover:bg-charcoal/5 transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add Widget
+            </button>
             <button onclick="resetHomeWidgets()" class="text-sm text-charcoal/50 hover:text-charcoal px-3 py-1.5 rounded-lg hover:bg-charcoal/5 transition">
               Reset Layout
             </button>
@@ -601,6 +674,41 @@ export function renderHomeTab() {
           </button>
         </div>
       </div>
+
+      ${state.editingHomeWidgets && state.showAddWidgetPicker ? (() => {
+        // Gather all perspectives (skip calendar — it's a full view, not a list)
+        const pickerPerspectives = [
+          ...BUILTIN_PERSPECTIVES.filter(p => p.id !== 'calendar'),
+          NOTES_PERSPECTIVE,
+          ...(state.customPerspectives || [])
+        ];
+        const addedIds = new Set(state.homeWidgets.filter(w => w.type === 'perspective').map(w => w.perspectiveId));
+        return `
+          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-semibold text-[var(--text-primary)]">Add Perspective Widget</h3>
+              <button onclick="showAddWidgetPicker = false; render()" class="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded transition">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              </button>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              ${pickerPerspectives.map(p => {
+                const isAdded = addedIds.has(p.id);
+                return `
+                  <button ${isAdded ? 'disabled' : `onclick="addPerspectiveWidget('${p.id}')"`}
+                    class="flex items-center gap-2 px-3 py-2.5 rounded-lg border transition text-left ${isAdded
+                      ? 'border-[var(--border-light)] bg-[var(--bg-secondary)] opacity-50 cursor-default'
+                      : 'border-[var(--border-light)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 cursor-pointer'}">
+                    <span style="color: ${p.color}">${p.icon || ''}</span>
+                    <span class="text-sm text-[var(--text-primary)] truncate">${p.name}</span>
+                    ${isAdded ? '<svg class="w-3.5 h-3.5 text-green-500 ml-auto flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : ''}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      })() : ''}
 
       ${state.editingHomeWidgets && hiddenWidgets.length > 0 ? `
         <!-- Hidden Widgets -->

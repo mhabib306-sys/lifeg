@@ -226,74 +226,61 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
   const categoryColor = currentCategory.color || '#6366F1';
 
   return `
-    <div class="flex-1 space-y-6">
+    <div class="flex-1 space-y-4">
       <!-- Area Hero Header -->
       <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
-        <div class="relative h-32 flex items-end p-6" style="background: var(--bg-secondary);">
-          <div class="absolute top-4 right-4 opacity-10" style="color: ${categoryColor}">
-            <svg class="w-24 h-24" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
-          </div>
-          <div class="flex items-center gap-4 relative z-10">
-            <div class="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg" style="background: ${categoryColor}">
-              <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>
+        <div class="px-6 pt-6 pb-5">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0" style="background: ${categoryColor}">
+              <svg class="w-6 h-6 text-white/90" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>
             </div>
-            <div>
-              <h1 class="text-2xl font-bold text-charcoal">${currentCategory.name}</h1>
-              <p class="text-charcoal/50 text-sm mt-0.5">${totalTasks} item${totalTasks !== 1 ? 's' : ''} · ${completedTasks} completed</p>
-              <div class="mt-2 flex flex-wrap items-center gap-2">
-                <span class="area-chip">
-                  <span class="area-chip-dot" style="background:${categoryColor}"></span>
-                  ${activeTasks} active
-                </span>
-                <span class="area-chip">${noteItems.length} notes</span>
-                ${dueSoonCount > 0 ? `<span class="area-chip area-chip-warn">${dueSoonCount} due soon</span>` : ''}
-              </div>
+            <div class="flex-1 min-w-0">
+              <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${currentCategory.name}</h1>
+              <p class="text-[var(--text-muted)] text-[13px] mt-1">${activeTasks} active · ${completedTasks} completed${noteItems.length > 0 ? ` · ${noteItems.length} note${noteItems.length !== 1 ? 's' : ''}` : ''}</p>
             </div>
           </div>
         </div>
 
         <!-- Stats Bar -->
-        <div class="area-stats-bar px-6 py-4 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/30">
-          <div class="area-stats-row flex items-center gap-6">
-            <div class="flex items-center gap-3">
-              <div class="relative w-12 h-12">
-                <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
-                  <circle cx="18" cy="18" r="16" fill="none" stroke="var(--border)" stroke-width="3"/>
-                  <circle cx="18" cy="18" r="16" fill="none" stroke="${categoryColor}" stroke-width="3"
-                    stroke-dasharray="${completionRate} 100" stroke-linecap="round"/>
-                </svg>
-                <span class="absolute inset-0 flex items-center justify-center text-xs font-bold text-charcoal">${completionRate}%</span>
-              </div>
-              <div>
-                <div class="text-sm font-medium text-charcoal">Progress</div>
-                <div class="text-xs text-charcoal/50">${completedTasks} of ${activeTasks + completedTasks} tasks</div>
-              </div>
+        <div class="px-6 py-3.5 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/40 flex items-center gap-5">
+          <div class="flex items-center gap-3">
+            <div class="relative w-10 h-10">
+              <svg class="w-10 h-10 transform -rotate-90" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15" fill="none" stroke="var(--border)" stroke-width="2.5"/>
+                <circle cx="18" cy="18" r="15" fill="none" stroke="${categoryColor}" stroke-width="2.5"
+                  stroke-dasharray="${completionRate} 100" stroke-linecap="round"/>
+              </svg>
+              <span class="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-[var(--text-primary)]">${completionRate}%</span>
             </div>
-            ${overdueTasks.length > 0 ? `
-              <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 border border-red-100">
-                <svg class="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                <span class="text-sm font-medium text-red-600">${overdueTasks.length} overdue</span>
-              </div>
-            ` : ''}
-            ${todayTasks.length > 0 ? `
-              <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-100">
-                <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
-                <span class="text-sm font-medium text-amber-600">${todayTasks.length} today</span>
-              </div>
-            ` : ''}
-            <div class="flex-1"></div>
-            <div class="flex items-center gap-2">
-              <button onclick="window.createRootNote('${currentCategory.id}')"
-                class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-purple-100 text-purple-600 bg-purple-50 hover:bg-purple-100 transition">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Note
-              </button>
-              <button onclick="window.openNewTaskModal()"
-                class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${categoryColor}">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Add Task
-              </button>
+            <div>
+              <div class="text-[13px] font-medium text-[var(--text-primary)]">Progress</div>
+              <div class="text-[11px] text-[var(--text-muted)]">${completedTasks} of ${activeTasks + completedTasks}</div>
             </div>
+          </div>
+          ${overdueTasks.length > 0 ? `
+            <div class="flex items-center gap-1.5 text-[12px] font-medium text-red-500">
+              <span class="w-2 h-2 rounded-full bg-red-500"></span>
+              ${overdueTasks.length} overdue
+            </div>
+          ` : ''}
+          ${todayTasks.length > 0 ? `
+            <div class="flex items-center gap-1.5 text-[12px] font-medium text-amber-500">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              ${todayTasks.length} today
+            </div>
+          ` : ''}
+          <div class="flex-1"></div>
+          <div class="flex items-center gap-2">
+            <button onclick="window.createRootNote('${currentCategory.id}')"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-purple-600 hover:bg-purple-50 transition">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Note
+            </button>
+            <button onclick="window.openNewTaskModal()"
+              class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-white text-[13px] font-medium hover:opacity-90 transition" style="background: ${categoryColor}">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add Task
+            </button>
           </div>
         </div>
       </div>

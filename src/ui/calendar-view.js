@@ -146,20 +146,20 @@ export function renderCalendarView() {
 
         <!-- Month Navigation -->
         <div class="px-5 py-3 flex items-center justify-between border-b border-[var(--border-light)]">
-          <button onclick="calendarPrevMonth()" class="w-8 h-8 rounded-lg hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+          <button onclick="calendarPrevMonth()" class="w-8 h-8 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
           </button>
           <div class="flex items-center gap-3">
-            <h3 class="text-[16px] font-semibold text-[var(--text-primary)] truncate max-w-[180px] sm:max-w-none">${monthNames[state.calendarMonth]} ${state.calendarYear}</h3>
-            <button onclick="calendarGoToday()" class="text-xs px-2 py-1 rounded-md bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--accent)] transition font-medium">Today</button>
+            <h3 class="text-[15px] font-semibold text-[var(--text-primary)]">${monthNames[state.calendarMonth]} ${state.calendarYear}</h3>
+            <button onclick="calendarGoToday()" class="text-[11px] px-2.5 py-1 rounded-full bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--accent)] transition font-medium">Today</button>
           </div>
-          <button onclick="calendarNextMonth()" class="w-8 h-8 rounded-lg hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+          <button onclick="calendarNextMonth()" class="w-8 h-8 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
           </button>
         </div>
 
         <!-- Calendar Grid -->
-        <div class="px-2 pt-2 pb-1">
+        <div class="px-3 pt-2 pb-2">
           ${calendarHtml}
         </div>
 
