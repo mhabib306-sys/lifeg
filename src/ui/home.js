@@ -161,33 +161,33 @@ export function renderHomeWidget(widget, isEditing) {
       const totalCount = allTodayTasks.length;
 
       content = totalCount === 0 ? `
-        <div class="py-8 text-center text-[var(--text-muted)] text-sm">No tasks for today</div>
+        <div class="py-6 text-center text-[var(--text-muted)] text-sm">No tasks for today</div>
       ` : `
-        <div class="max-h-[300px] overflow-y-auto px-1">
+        <div class="max-h-[300px] overflow-y-auto">
           ${dueTasks.length > 0 ? `
-            <div class="px-3 pt-2 pb-1">
+            <div class="px-2 pt-1 pb-0.5">
               <div class="flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M18.7 12.4a6.06 6.06 0 00-.86-3.16l4.56-3.56L20.16 2l-4.13 4.15A7.94 7.94 0 0012 5a8 8 0 00-8 8c0 4.42 3.58 8 8 8a7.98 7.98 0 007.43-5.1l4.15 1.83.57-3.66-6.45 1.33zM12 19a6 6 0 116-6 6 6 0 01-6 6z"/><path d="M12.5 8H11v6l4.75 2.85.75-1.23-4-2.37z"/></svg>
-                <span class="text-[11px] font-semibold text-red-500 uppercase tracking-wider">Due</span>
+                <svg class="w-3 h-3 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M18.7 12.4a6.06 6.06 0 00-.86-3.16l4.56-3.56L20.16 2l-4.13 4.15A7.94 7.94 0 0012 5a8 8 0 00-8 8c0 4.42 3.58 8 8 8a7.98 7.98 0 007.43-5.1l4.15 1.83.57-3.66-6.45 1.33zM12 19a6 6 0 116-6 6 6 0 01-6 6z"/><path d="M12.5 8H11v6l4.75 2.85.75-1.23-4-2.37z"/></svg>
+                <span class="text-[10px] font-semibold text-red-500 uppercase tracking-wider">Due</span>
                 <span class="text-[10px] text-red-400">${dueTasks.length}</span>
               </div>
             </div>
-            <div class="space-y-0.5">${dueTasks.map(task => renderTaskItem(task, false, true)).join('')}</div>
+            <div>${dueTasks.map(task => renderTaskItem(task, false, true)).join('')}</div>
           ` : ''}
           ${otherTodayTasks.length > 0 ? `
-            <div class="space-y-0.5">${otherTodayTasks.map(task => renderTaskItem(task, false, true)).join('')}</div>
+            <div>${otherTodayTasks.map(task => renderTaskItem(task, false, true)).join('')}</div>
           ` : ''}
           ${startingTasks.length > 0 ? `
-            <div class="px-3 pt-2 pb-1 ${dueTasks.length > 0 || otherTodayTasks.length > 0 ? 'mt-1 border-t border-[var(--border-light)]' : ''}">
+            <div class="px-2 pt-1 pb-0.5 ${dueTasks.length > 0 || otherTodayTasks.length > 0 ? 'mt-0.5 border-t border-[var(--border-light)]' : ''}">
               <div class="flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                <span class="text-[11px] font-semibold text-blue-500 uppercase tracking-wider">Starting</span>
+                <svg class="w-3 h-3 text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                <span class="text-[10px] font-semibold text-blue-500 uppercase tracking-wider">Starting</span>
                 <span class="text-[10px] text-blue-400">${startingTasks.length}</span>
               </div>
             </div>
-            <div class="space-y-0.5">${startingTasks.map(task => renderTaskItem(task, false, true)).join('')}</div>
+            <div>${startingTasks.map(task => renderTaskItem(task, false, true)).join('')}</div>
           ` : ''}
-          ${totalCount > 8 ? '<div class="px-3 py-3 text-center"><button onclick="showPerspectiveTasks(\'today\')" class="text-sm text-[var(--accent)] hover:underline font-medium">View all ' + totalCount + ' tasks \u2192</button></div>' : ''}
+          ${totalCount > 8 ? '<div class="px-2 py-2 text-center"><button onclick="showPerspectiveTasks(\'today\')" class="text-xs text-[var(--accent)] hover:underline font-medium">View all ' + totalCount + ' tasks \u2192</button></div>' : ''}
         </div>
       `;
       break;
@@ -203,11 +203,11 @@ export function renderHomeWidget(widget, isEditing) {
       }) : [];
 
       content = nextTasks.length === 0 ? `
-        <div class="py-8 text-center text-[var(--text-muted)] text-sm">No tasks tagged "Next"</div>
+        <div class="py-6 text-center text-[var(--text-muted)] text-sm">No tasks tagged "Next"</div>
       ` : `
-        <div class="space-y-0.5 max-h-[300px] overflow-y-auto px-1">
+        <div class="max-h-[300px] overflow-y-auto">
           ${nextTasks.slice(0, 8).map(task => renderTaskItem(task, false, true)).join('')}
-          ${nextTasks.length > 8 ? '<div class="px-3 py-3 text-center"><button onclick="showLabelTasks(\'' + nextLabel.id + '\')" class="text-sm text-[var(--accent)] hover:underline font-medium">View all ' + nextTasks.length + ' tasks \u2192</button></div>' : ''}
+          ${nextTasks.length > 8 ? '<div class="px-2 py-2 text-center"><button onclick="showLabelTasks(\'' + nextLabel.id + '\')" class="text-xs text-[var(--accent)] hover:underline font-medium">View all ' + nextTasks.length + ' tasks \u2192</button></div>' : ''}
         </div>
       `;
       break;
@@ -509,7 +509,7 @@ export function renderHomeWidget(widget, isEditing) {
         <h3 class="widget-title text-sm font-medium text-[var(--text-primary)]">${widget.title}</h3>
         ${editControls}
       </div>
-      <div class="widget-body p-4">
+      <div class="widget-body ${widget.type === 'today-tasks' || widget.type === 'next-tasks' ? 'px-2 py-1' : 'p-4'}">
         ${content}
       </div>
     </div>

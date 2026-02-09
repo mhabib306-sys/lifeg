@@ -83,9 +83,9 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
   // Compact mode for widgets - clean single line Things 3 style
   if (compact) {
     return `
-      <div class="task-item group relative hover:bg-[var(--bg-secondary)]/50 rounded-lg transition cursor-pointer"
+      <div class="task-item compact-task group relative hover:bg-[var(--bg-secondary)]/50 rounded-lg transition cursor-pointer"
         onclick="window.inlineEditingTaskId=null; window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render()">
-        <div class="flex items-center min-h-[40px] px-3 py-1.5">
+        <div class="flex items-center min-h-[32px] px-2 py-0.5">
           ${task.isNote ? `
             <div class="w-5 h-5 flex items-center justify-center flex-shrink-0">
               <div class="w-1.5 h-1.5 rounded-full bg-[var(--notes-accent)]"></div>
@@ -97,12 +97,12 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
               ${task.completed ? '<svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>' : ''}
             </button>
           `}
-          <span class="flex-1 ml-3 text-[14px] leading-snug truncate ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">
-            ${task.flagged ? `<span class="inline-flex items-center text-amber-500 mr-1.5">${THINGS3_ICONS.flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
+          <span class="flex-1 ml-2.5 text-[13px] leading-snug truncate ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">
+            ${task.flagged ? `<span class="inline-flex items-center text-amber-500 mr-1">${THINGS3_ICONS.flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
             ${escapeHtml(task.title)}
           </span>
-          <div class="flex items-center gap-2 ml-2 flex-shrink-0 text-[11px]">
-            ${category ? `<span class="text-[var(--text-muted)] truncate max-w-[80px]">${escapeHtml(category.name)}</span>` : ''}
+          <div class="flex items-center gap-1.5 ml-2 flex-shrink-0 text-[10px]">
+            ${category ? `<span class="text-[var(--text-muted)] truncate max-w-[70px]">${escapeHtml(category.name)}</span>` : ''}
             ${task.dueDate ? `<span class="${isOverdue ? 'text-red-500 font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : isDueSoon ? 'text-amber-500 font-medium' : 'text-[var(--text-muted)]'}">${formatSmartDate(task.dueDate)}</span>` : ''}
             ${task.repeat && task.repeat.type !== 'none' ? `<span class="text-[var(--text-muted)]" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8A5.87 5.87 0 0 1 6 12c0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></span>` : ''}
           </div>
