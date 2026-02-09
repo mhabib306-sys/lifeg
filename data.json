@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T15:43:45.450Z",
+  "lastUpdated": "2026-02-09T15:43:58.727Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2261,7 +2261,9 @@
       "completedAt": null,
       "categoryId": "personal",
       "labels": [],
-      "people": [],
+      "people": [
+        "person_1770651835950"
+      ],
       "deferDate": null,
       "dueDate": null,
       "repeat": null,
@@ -2269,7 +2271,7 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-07T10:01:53.599Z",
-      "updatedAt": "2026-02-07T10:02:19.548Z",
+      "updatedAt": "2026-02-09T15:43:55.951Z",
       "order": 23000,
       "today": false,
       "flagged": false
@@ -2908,6 +2910,11 @@
       "id": "person_1770591589441",
       "name": "Nadine",
       "color": "#4A90A4"
+    },
+    {
+      "id": "person_1770651835950",
+      "name": "Eman",
+      "color": "#6B8E5A"
     }
   ],
   "customPerspectives": [
