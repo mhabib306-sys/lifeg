@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T18:35:05.912Z",
+  "lastUpdated": "2026-02-09T18:35:18.032Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2230,9 +2230,9 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-07T09:20:58.835Z",
-      "updatedAt": "2026-02-08T14:45:57.270Z",
+      "updatedAt": "2026-02-09T18:35:12.707Z",
       "order": 1000,
-      "today": true,
+      "today": false,
       "flagged": false
     },
     {
@@ -2240,8 +2240,8 @@
       "title": "Finish the tomb registration thing",
       "notes": "",
       "status": "anytime",
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-09T18:35:14.490Z",
       "categoryId": null,
       "labels": [],
       "people": [],
@@ -2252,7 +2252,7 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-07T09:24:35.106Z",
-      "updatedAt": "2026-02-08T15:43:21.642Z",
+      "updatedAt": "2026-02-09T18:35:14.490Z",
       "order": 18000,
       "today": false,
       "flagged": false
