@@ -121,7 +121,7 @@ import {
 } from './features/braindump.js';
 
 // -- UI --
-import { render, switchTab, switchSubTab, setToday } from './ui/render.js';
+import { render, switchTab, switchSubTab, setToday, forceHardRefresh } from './ui/render.js';
 import { renderHomeTab, renderHomeWidget, homeQuickAddTask } from './ui/home.js';
 import { renderTrackingTab } from './ui/tracking.js';
 import { setBulkMonth, setBulkCategory, updateBulkData, updateBulkSummary, getDaysInMonth, renderBulkEntryTab } from './ui/bulk-entry.js';
@@ -278,7 +278,7 @@ Object.assign(window, {
   submitBraindump, renderBraindumpOverlay, renderBraindumpFAB,
 
   // Main UI
-  render, switchTab, switchSubTab, setToday,
+  render, switchTab, switchSubTab, setToday, forceHardRefresh,
   renderHomeTab, renderHomeWidget, homeQuickAddTask,
   renderTrackingTab,
   setBulkMonth, setBulkCategory, updateBulkData, updateBulkSummary, getDaysInMonth, renderBulkEntryTab,

@@ -476,9 +476,12 @@ export function renderSettingsTab() {
             Import Data
             <input type="file" accept=".json" class="hidden" onchange="window.importData(event)">
           </label>
+          <button onclick="window.forceHardRefresh()" class="px-4 py-2 bg-coral/10 text-coral rounded-lg text-sm font-medium hover:bg-coral/20 transition">
+            Force Refresh
+          </button>
         </div>
         <p class="text-xs text-charcoal/40 mt-3">
-          Export creates a local backup JSON file. Import merges data from a backup file.
+          Export creates a local backup JSON file. Import merges data from a backup file. Force Refresh clears the app cache and reloads — useful when updates aren't showing on mobile.
         </p>
       </div>
 

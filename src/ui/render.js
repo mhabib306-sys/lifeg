@@ -176,12 +176,14 @@ export function render() {
               <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
             </button>
           ` : `
-            <svg class="w-8 h-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <defs><linearGradient id="mobileGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/></linearGradient></defs>
-              <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#mobileGrad)"/>
-              <path d="M50 26 L72 44 V74 H28 V44 Z" fill="white"/>
-              <rect x="43" y="55" width="14" height="19" rx="2" fill="#D97706"/>
-            </svg>
+            <a href="javascript:void(0)" onclick="switchTab('home')" class="flex items-center">
+              <svg class="w-8 h-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs><linearGradient id="mobileGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/></linearGradient></defs>
+                <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#mobileGrad)"/>
+                <path d="M50 26 L72 44 V74 H28 V44 Z" fill="white"/>
+                <rect x="43" y="55" width="14" height="19" rx="2" fill="#D97706"/>
+              </svg>
+            </a>
           `}
         </div>
         <div class="mobile-header-center">
@@ -205,7 +207,7 @@ export function render() {
       <header class="border-b border-softborder desktop-header-content" style="background: var(--bg-primary);">
         <div class="max-w-6xl mx-auto px-6 py-6">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-4">
+            <a href="javascript:void(0)" onclick="switchTab('home')" class="flex items-center gap-4 no-underline cursor-pointer hover:opacity-80 transition">
               <svg class="w-12 h-12 app-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="homebaseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -224,7 +226,7 @@ export function render() {
                 </div>
                 <p class="text-sm text-charcoal/60 mt-0.5">Your life, all in one place <span class="text-coral">\u2022</span> habits, health, productivity</p>
               </div>
-            </div>
+            </a>
             <div class="flex items-center gap-4">
               <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-warmgray border border-softborder" title="Cloud sync status">
                 <div id="sync-indicator" class="w-2 h-2 rounded-full ${getGithubToken() ? 'bg-green-500' : 'bg-charcoal/30'}"></div>
@@ -409,4 +411,31 @@ export function switchSubTab(subTab) {
 export function setToday() {
   state.currentDate = getLocalDateString();
   render();
+}
+
+// ============================================================================
+// forceHardRefresh — clear service worker cache and reload
+// ============================================================================
+
+/**
+ * Unregister service workers, clear caches, and force a full page reload.
+ * Essential on mobile where stale PWA caches persist.
+ */
+export async function forceHardRefresh() {
+  try {
+    // Unregister all service workers
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map(r => r.unregister()));
+    }
+    // Clear all caches (workbox precache, runtime caches, etc.)
+    if ('caches' in window) {
+      const names = await caches.keys();
+      await Promise.all(names.map(name => caches.delete(name)));
+    }
+  } catch (err) {
+    console.warn('Cache clear error:', err);
+  }
+  // Force reload from network
+  window.location.reload(true);
 }
