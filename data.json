@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T09:41:09.693Z",
+  "lastUpdated": "2026-02-09T09:41:21.347Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1793,23 +1793,6 @@
       "order": 6000
     },
     {
-      "id": "task_1769983575696_3yq56ixj0",
-      "title": "task",
-      "notes": "",
-      "status": "inbox",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "createdAt": "2026-02-01T22:06:15.696Z",
-      "updatedAt": "2026-02-01T22:06:15.696Z",
-      "order": 9000
-    },
-    {
       "id": "task_1769984504582_xua0ibokb",
       "title": "Quran Memorization Gift",
       "notes": "",
@@ -2214,26 +2197,6 @@
       "createdAt": "2026-02-07T10:01:53.599Z",
       "updatedAt": "2026-02-07T10:02:19.548Z",
       "order": 23000
-    },
-    {
-      "id": "task_1770485272782_1l1ycs1mk",
-      "title": "",
-      "notes": "",
-      "status": "inbox",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "createdAt": "2026-02-07T17:27:52.782Z",
-      "updatedAt": "2026-02-07T17:27:52.782Z",
-      "order": 2000
     },
     {
       "id": "task_1770490285825_vgowyp7kn",
