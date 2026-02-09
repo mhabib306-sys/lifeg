@@ -9,3 +9,4 @@ This folder contains full project documentation for Homebase.
 - `sync.md` — Local + GitHub sync behavior and conflict resolution
 - `ui.md` — UI patterns, mobile behavior, and design rules
 - `development.md` — Dev workflow, scripts, and release checklist
+- `pm-reliability-playbook.md` — Product/reliability checklists for sync-heavy features

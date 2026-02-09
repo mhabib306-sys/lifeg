@@ -1,5 +1,11 @@
 # Data Model
 
+## Ownership Matrix
+- Task execution state (`completed`, `completedAt`, `status`, `today`, `categoryId`, `labels`, `people`, dates): `tasks[]` entity by `id`
+- Daily life tracking: `allData[YYYY-MM-DD]`
+- Meeting notes for calendar events: `meetingNotesByEvent[eventKey]`
+- Taxonomy/config (categories, labels, people, perspectives, home widgets): collection entries by `id`
+
 ## Task Object
 ```
 {
@@ -21,6 +27,19 @@
   parentId: string | null,
   indent: number,
   order: number,
+  createdAt: ISO string,
+  updatedAt: ISO string
+}
+```
+
+## Meeting Notes Object
+```
+{
+  eventKey: string,          // "<calendarId>::<eventId>"
+  calendarId: string,
+  eventId: string,
+  title: string,
+  content: string,
   createdAt: ISO string,
   updatedAt: ISO string
 }
@@ -54,3 +73,11 @@
 - `lifeGamificationGithubToken` — GitHub PAT
 - `lifeGamificationTheme` — Theme name
 - `lastUpdated` — Last local update timestamp
+- `nucleusMeetingNotes` — Meeting notes keyed by eventKey
+
+## Data Integrity Requirements
+- `tasks[].id` is globally unique.
+- `tasks[].updatedAt` must be refreshed on every mutation.
+- Completed tasks set `completedAt`; incomplete tasks clear `completedAt`.
+- Collection IDs (`cat_*`, `label_*`, `person_*`, etc.) are immutable after creation.
+- `meetingNotesByEvent[eventKey]` keys are deterministic and stable.

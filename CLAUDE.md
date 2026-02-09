@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents (Claude Code, Codex, etc.) when 
 
 ## Project Overview
 
-**Homebase** (v4.10.2 - Homebase) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
+**Homebase** (v4.10.3 - Homebase) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
 
 ## Git Workflow
 
@@ -110,6 +110,7 @@ lifeg/
 - `docs/sync.md`
 - `docs/ui.md`
 - `docs/development.md`
+- `docs/pm-reliability-playbook.md`
 
 ## Import Direction (one-way, no circular deps)
 
@@ -152,6 +153,35 @@ All prefixed with `lifeGamification`: `Data_v3`, `Weights_v1`, `Tasks`, `TaskCat
 - **Modal cleanup**: Always use `closeTaskModal()` — never manually set `showTaskModal = false` without cleaning up autocomplete state
 - **Task IDs**: Generated via `generateTaskId()` using timestamp + random string
 - **Entity IDs**: Categories/labels/people use `cat_`, `label_`, `person_` prefixes + timestamp
+
+## PM Reliability Defaults (Mandatory For New Features)
+
+When shipping any feature that mutates data, crosses views, or syncs to cloud, treat these as required:
+
+1. **Source-of-truth declaration**
+- Define exactly which entity owns each field.
+- Use shared domain actions across entry points (no duplicate business logic per view).
+
+2. **Persistence contract**
+- Local write path (state + localStorage) must be explicit.
+- Cloud payload inclusion and cloud load merge behavior must be explicit.
+
+3. **Conflict policy**
+- Choose one: newest-wins, local-wins, gap-fill, or manual resolution.
+- Document the policy in `docs/sync.md` and `docs/data-model.md`.
+
+4. **Failure/expiry states**
+- Define UX for loading, syncing, success, error, offline, and expired sessions.
+- Ensure failed cloud writes never revert successful local user actions.
+
+5. **QA + release gates**
+- Add/execute smoke checks in `docs/development.md`.
+- For sync behavior changes, update `docs/pm-reliability-playbook.md` acceptance criteria mapping.
+
+6. **Observability**
+- Add logs/telemetry for save attempt/success/failure and merge decision paths for high-risk entities.
+
+If any item above is skipped, call it out explicitly in PR/hand-off notes with rationale and risk.
 
 ## Adding New Functions (Checklist)
 
