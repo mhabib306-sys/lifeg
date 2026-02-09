@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T12:11:32.604Z",
+  "lastUpdated": "2026-02-09T12:11:44.343Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3006,17 +3006,17 @@
   ],
   "homeWidgets": [
     {
-      "id": "today-tasks",
-      "type": "today-tasks",
-      "title": "Today",
+      "id": "quick-add",
+      "type": "quick-add",
+      "title": "Quick Add Task",
       "size": "half",
       "order": 0,
       "visible": true
     },
     {
-      "id": "quick-add",
-      "type": "quick-add",
-      "title": "Quick Add Task",
+      "id": "today-tasks",
+      "type": "today-tasks",
+      "title": "Today",
       "size": "half",
       "order": 1,
       "visible": true
