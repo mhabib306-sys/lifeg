@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T11:56:40.143Z",
+  "lastUpdated": "2026-02-09T11:56:44.265Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2754,26 +2754,6 @@
       "noteOrder": 2000,
       "createdAt": "2026-02-09T11:56:16.897Z",
       "updatedAt": "2026-02-09T11:56:22.897Z"
-    },
-    {
-      "id": "task_1770638184176_vwic9k5fb",
-      "title": "Sub note of the main note",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": "task_1770638172030_rerbvp7gp",
-      "indent": 2,
-      "noteOrder": 1000,
-      "createdAt": "2026-02-09T11:56:24.176Z",
-      "updatedAt": "2026-02-09T11:56:28.005Z"
     }
   ],
   "taskCategories": [
