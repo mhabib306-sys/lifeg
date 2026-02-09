@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T06:35:30.712Z",
+  "lastUpdated": "2026-02-09T06:36:19.088Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2082,26 +2082,6 @@
       "order": 2000
     },
     {
-      "id": "task_1770452185946_qf81xc7bb",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "createdAt": "2026-02-07T08:16:25.946Z",
-      "updatedAt": "2026-02-07T08:16:25.946Z",
-      "order": 15000
-    },
-    {
       "id": "task_1770407048879_4e86e0ajn",
       "title": "Another note",
       "notes": "",
@@ -2564,45 +2544,6 @@
       "createdAt": "2026-02-08T11:36:07.385Z",
       "updatedAt": "2026-02-08T11:36:07.385Z",
       "order": 3000
-    },
-    {
-      "id": "task_1770553008518_bibjv9j22",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "indent": 0,
-      "createdAt": "2026-02-07T16:00:23.998Z",
-      "updatedAt": "2026-02-08T12:16:48.518Z",
-      "order": 4000
-    },
-    {
-      "id": "task_1770553010031_lwcanyodd",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": "task_1770553008518_bibjv9j22",
-      "indent": 1,
-      "createdAt": "2026-02-08T02:08:37.514Z",
-      "updatedAt": "2026-02-08T12:16:51.172Z",
-      "order": 5000
     },
     {
       "id": "task_1770553013226_bqy65nkk4",
