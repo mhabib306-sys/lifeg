@@ -266,6 +266,7 @@ export const state = {
   braindumpSuccessMessage: '',
   braindumpProcessing: false,    // true while AI is classifying
   braindumpAIError: null,        // string error message if AI failed
+  braindumpFullPage: false,      // true = full-width review, false = 640px container
 
   // ---- Task modal state ----
   modalSelectedArea: null,

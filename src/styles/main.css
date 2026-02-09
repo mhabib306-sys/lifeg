@@ -2654,9 +2654,9 @@ input[type="checkbox"]:focus {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #06B6D4, #0891B2);
+  background: var(--btn-bg);
   border: none;
-  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 40%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2667,7 +2667,7 @@ input[type="checkbox"]:focus {
 }
 .braindump-fab:hover {
   transform: scale(1.08);
-  box-shadow: 0 6px 24px rgba(6, 182, 212, 0.5);
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--accent) 50%, transparent);
 }
 .braindump-fab:active {
   transform: scale(0.95);
@@ -2713,7 +2713,7 @@ input[type="checkbox"]:focus {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #06B6D4, #0891B2);
+  background: var(--btn-bg);
   color: white;
   display: flex;
   align-items: center;
@@ -2766,8 +2766,8 @@ input[type="checkbox"]:focus {
 }
 .braindump-textarea:focus {
   outline: none;
-  border-color: #06B6D4;
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
 }
 .braindump-textarea::placeholder {
   color: var(--text-muted);
@@ -2803,7 +2803,7 @@ input[type="checkbox"]:focus {
   font-weight: 600;
   border: none;
   color: white;
-  background: linear-gradient(135deg, #06B6D4, #0891B2);
+  background: var(--btn-bg);
   transition: opacity 0.2s, transform 0.15s;
 }
 .braindump-process-btn:hover,
@@ -2837,9 +2837,6 @@ input[type="checkbox"]:focus {
 .braindump-item-excluded {
   opacity: 0.4;
 }
-.braindump-item-low-conf {
-  border-left: 3px solid #F59E0B;
-}
 .braindump-item-top {
   display: flex;
   align-items: center;
@@ -2851,7 +2848,7 @@ input[type="checkbox"]:focus {
 .braindump-item-check input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #06B6D4;
+  accent-color: var(--accent);
 }
 .braindump-type-toggle {
   display: flex;
@@ -2906,60 +2903,122 @@ input[type="checkbox"]:focus {
   color: var(--text-primary);
   outline: none;
 }
-.braindump-item-meta {
+/* Braindump metadata row — structured selectors */
+.braindump-meta-row {
   display: flex;
+  flex-direction: column;
   gap: 6px;
-  flex-wrap: wrap;
 }
-.braindump-chip {
-  display: inline-flex;
+.braindump-meta-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+}
+.braindump-meta-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 48px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+.braindump-meta-select {
+  font-size: 13px;
+  padding: 4px 24px 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%236B7280'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  min-height: 28px;
+}
+.braindump-meta-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+.braindump-pills-row {
+  display: flex;
   align-items: center;
   gap: 4px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.braindump-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   font-size: 11px;
   font-weight: 500;
   padding: 2px 8px;
   border-radius: 20px;
-  background: color-mix(in srgb, var(--chip-color, var(--accent)) 12%, transparent);
-  color: var(--chip-color, var(--accent));
+  background: color-mix(in srgb, var(--pill-color, var(--accent)) 12%, transparent);
+  color: var(--pill-color, var(--accent));
+  white-space: nowrap;
 }
-.braindump-chip-date {
-  --chip-color: #8B5CF6;
+.braindump-pill-date {
+  --pill-color: #8B5CF6;
 }
-.braindump-chip-remove {
+.braindump-pill-remove {
   background: none;
   border: none;
   color: inherit;
   padding: 0;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1;
   opacity: 0.6;
   cursor: pointer;
 }
-.braindump-chip-remove:hover {
+.braindump-pill-remove:hover {
   opacity: 1;
 }
-.braindump-confidence-row {
+.braindump-add-select {
+  font-size: 11px;
+  padding: 2px 6px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  min-height: 24px;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.braindump-add-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+/* Full-page mode */
+.braindump-container.braindump-fullpage {
+  max-width: 100%;
+  padding: 0 24px;
+}
+
+/* Expand/collapse button */
+.braindump-expand-btn {
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
 }
-.braindump-confidence-bar {
-  flex: 1;
-  height: 3px;
+.braindump-expand-btn:hover {
   background: var(--bg-secondary);
-  border-radius: 2px;
-  overflow: hidden;
-}
-.braindump-confidence-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.3s ease;
-}
-.braindump-confidence-label {
-  font-size: 10px;
-  font-weight: 600;
-  min-width: 30px;
-  text-align: right;
+  color: var(--text-primary);
 }
 
 /* Braindump AI error banner */
@@ -2989,7 +3048,7 @@ input[type="checkbox"]:focus {
   width: 40px;
   height: 40px;
   border: 3px solid var(--border);
-  border-top-color: #06B6D4;
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: braindumpSpin 0.8s linear infinite;
 }

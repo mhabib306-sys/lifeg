@@ -291,10 +291,11 @@ function renderReviewStep() {
   const items = state.braindumpParsedItems;
   const taskCount = items.filter(i => i.included && i.type === 'task').length;
   const noteCount = items.filter(i => i.included && i.type === 'note').length;
+  const isFullPage = state.braindumpFullPage || window.innerWidth < 768;
 
   return `
     <div class="braindump-overlay" onclick="if(event.target===this)closeBraindump()">
-      <div class="braindump-container braindump-review">
+      <div class="braindump-container braindump-review ${isFullPage ? 'braindump-fullpage' : ''}">
         <div class="braindump-header">
           <div class="flex items-center gap-3">
             <button onclick="backToInput()" class="braindump-back" aria-label="Back">
@@ -305,9 +306,18 @@ function renderReviewStep() {
               <p class="text-xs text-[var(--text-muted)]">${taskCount} task${taskCount !== 1 ? 's' : ''}, ${noteCount} note${noteCount !== 1 ? 's' : ''}</p>
             </div>
           </div>
-          <button onclick="closeBraindump()" class="braindump-close" aria-label="Close">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="state.braindumpFullPage = !state.braindumpFullPage; render()" class="braindump-expand-btn hide-mobile" aria-label="${isFullPage ? 'Collapse' : 'Expand'}" title="${isFullPage ? 'Collapse' : 'Expand'}">
+              ${isFullPage ? `
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              ` : `
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              `}
+            </button>
+            <button onclick="closeBraindump()" class="braindump-close" aria-label="Close">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+          </div>
         </div>
 
         ${state.braindumpAIError ? `
@@ -336,15 +346,20 @@ function renderReviewStep() {
 // ---- Item Card ----
 function renderBraindumpItemCard(item, index) {
   const isEditing = state.braindumpEditingIndex === index;
-  const lowConfidence = item.confidence < 0.5;
   const cat = item.categoryId ? state.taskCategories.find(c => c.id === item.categoryId) : null;
 
-  // Confidence color
-  const confColor = item.confidence >= 0.8 ? 'var(--accent)' :
-                    item.confidence >= 0.5 ? '#F59E0B' : '#EF4444';
+  // Build area select options
+  const areaOptions = state.taskCategories.map(c =>
+    `<option value="${c.id}" ${item.categoryId === c.id ? 'selected' : ''}>${escapeHtml(c.name)}</option>`
+  ).join('');
+
+  // Available people (not already assigned)
+  const availablePeople = state.taskPeople.filter(p => !item.people.includes(p.id));
+  // Available labels (not already assigned)
+  const availableLabels = state.taskLabels.filter(l => !item.labels.includes(l.id));
 
   return `
-    <div class="braindump-item ${!item.included ? 'braindump-item-excluded' : ''} ${lowConfidence ? 'braindump-item-low-conf' : ''}">
+    <div class="braindump-item ${!item.included ? 'braindump-item-excluded' : ''}">
       <div class="braindump-item-top">
         <label class="braindump-item-check">
           <input type="checkbox" ${item.included ? 'checked' : ''}
@@ -372,50 +387,76 @@ function renderBraindumpItemCard(item, index) {
         `}
       </div>
 
-      <div class="braindump-item-meta">
-        ${cat ? `
-          <span class="braindump-chip braindump-chip-area" style="--chip-color: ${cat.color}">
-            ${escapeHtml(cat.name)}
-            <button onclick="event.stopPropagation(); setBraindumpItemArea(${index}, null)" class="braindump-chip-remove">&times;</button>
-          </span>
-        ` : ''}
-        ${item.labels.map(lid => {
-          const label = state.taskLabels.find(l => l.id === lid);
-          return label ? `
-            <span class="braindump-chip braindump-chip-tag" style="--chip-color: ${label.color}">
-              ${escapeHtml(label.name)}
-              <button onclick="event.stopPropagation(); removeBraindumpItemLabel(${index}, '${lid}')" class="braindump-chip-remove">&times;</button>
-            </span>
-          ` : '';
-        }).join('')}
-        ${item.people.map(pid => {
-          const person = state.taskPeople.find(p => p.id === pid);
-          return person ? `
-            <span class="braindump-chip braindump-chip-person" style="--chip-color: ${person.color}">
-              ${escapeHtml(person.name)}
-              <button onclick="event.stopPropagation(); removeBraindumpItemPerson(${index}, '${pid}')" class="braindump-chip-remove">&times;</button>
-            </span>
-          ` : '';
-        }).join('')}
-        ${item.deferDate ? `
-          <span class="braindump-chip braindump-chip-date">
-            ${item.deferDate}
-            <button onclick="event.stopPropagation(); clearBraindumpItemDate(${index})" class="braindump-chip-remove">&times;</button>
-          </span>
-        ` : ''}
-        ${item.dueDate ? `
-          <span class="braindump-chip braindump-chip-date">
-            Due: ${item.dueDate}
-            <button onclick="event.stopPropagation(); clearBraindumpItemDate(${index})" class="braindump-chip-remove">&times;</button>
-          </span>
-        ` : ''}
-      </div>
-
-      <div class="braindump-confidence-row">
-        <div class="braindump-confidence-bar">
-          <div class="braindump-confidence-fill" style="width: ${item.confidence * 100}%; background: ${confColor};"></div>
+      <div class="braindump-meta-row">
+        <div class="braindump-meta-field">
+          <span class="braindump-meta-label">Area</span>
+          <select class="braindump-meta-select" onchange="setBraindumpItemArea(${index}, this.value || null)">
+            <option value="" ${!item.categoryId ? 'selected' : ''}>No Area</option>
+            ${areaOptions}
+          </select>
         </div>
-        <span class="braindump-confidence-label" style="color: ${confColor}">${Math.round(item.confidence * 100)}%</span>
+
+        <div class="braindump-meta-field">
+          <span class="braindump-meta-label">People</span>
+          <div class="braindump-pills-row">
+            ${item.people.map(pid => {
+              const person = state.taskPeople.find(p => p.id === pid);
+              return person ? `
+                <span class="braindump-pill" style="--pill-color: ${person.color}">
+                  ${escapeHtml(person.name)}
+                  <button onclick="event.stopPropagation(); removeBraindumpItemPerson(${index}, '${pid}')" class="braindump-pill-remove">&times;</button>
+                </span>
+              ` : '';
+            }).join('')}
+            ${availablePeople.length > 0 ? `
+              <select class="braindump-add-select" onchange="if(this.value){addBraindumpItemPerson(${index}, this.value); this.value=''}">
+                <option value="">+ Add</option>
+                ${availablePeople.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('')}
+              </select>
+            ` : ''}
+          </div>
+        </div>
+
+        <div class="braindump-meta-field">
+          <span class="braindump-meta-label">Tags</span>
+          <div class="braindump-pills-row">
+            ${item.labels.map(lid => {
+              const label = state.taskLabels.find(l => l.id === lid);
+              return label ? `
+                <span class="braindump-pill" style="--pill-color: ${label.color}">
+                  ${escapeHtml(label.name)}
+                  <button onclick="event.stopPropagation(); removeBraindumpItemLabel(${index}, '${lid}')" class="braindump-pill-remove">&times;</button>
+                </span>
+              ` : '';
+            }).join('')}
+            ${availableLabels.length > 0 ? `
+              <select class="braindump-add-select" onchange="if(this.value){addBraindumpItemLabel(${index}, this.value); this.value=''}">
+                <option value="">+ Add</option>
+                ${availableLabels.map(l => `<option value="${l.id}">${escapeHtml(l.name)}</option>`).join('')}
+              </select>
+            ` : ''}
+          </div>
+        </div>
+
+        ${item.deferDate || item.dueDate ? `
+          <div class="braindump-meta-field">
+            <span class="braindump-meta-label">Dates</span>
+            <div class="braindump-pills-row">
+              ${item.deferDate ? `
+                <span class="braindump-pill braindump-pill-date">
+                  Defer: ${item.deferDate}
+                  <button onclick="event.stopPropagation(); clearBraindumpItemDate(${index})" class="braindump-pill-remove">&times;</button>
+                </span>
+              ` : ''}
+              ${item.dueDate ? `
+                <span class="braindump-pill braindump-pill-date">
+                  Due: ${item.dueDate}
+                  <button onclick="event.stopPropagation(); clearBraindumpItemDate(${index})" class="braindump-pill-remove">&times;</button>
+                </span>
+              ` : ''}
+            </div>
+          </div>
+        ` : ''}
       </div>
     </div>
   `;
