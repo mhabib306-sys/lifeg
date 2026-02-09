@@ -10,3 +10,4 @@ This folder contains full project documentation for Homebase.
 - `ui.md` — UI patterns, mobile behavior, and design rules
 - `development.md` — Dev workflow, scripts, and release checklist
 - `pm-reliability-playbook.md` — Product/reliability checklists for sync-heavy features
+- `mcp.md` — Local MCP server integration with Claude
