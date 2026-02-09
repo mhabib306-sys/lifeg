@@ -220,6 +220,8 @@ export const state = {
   editingLabelId: null,
   editingPersonId: null,
   editingPerspectiveId: null,
+  perspectiveEmojiPickerOpen: false,
+  emojiSearchQuery: '',
 
   // ---- Sidebar drag & drop ----
   draggedSidebarItem: null,

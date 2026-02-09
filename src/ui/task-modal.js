@@ -1874,6 +1874,19 @@ export function cleanupInlineAutocomplete(inputId) {
 // ============================================================================
 
 /**
+ * Select an emoji for the perspective icon and close the picker.
+ */
+export function selectPerspectiveEmoji(emoji) {
+  const iconInput = document.getElementById('perspective-icon');
+  const iconDisplay = document.getElementById('perspective-icon-display');
+  if (iconInput) iconInput.value = emoji;
+  if (iconDisplay) iconDisplay.textContent = emoji;
+  state.perspectiveEmojiPickerOpen = false;
+  state.emojiSearchQuery = '';
+  window.render();
+}
+
+/**
  * Render the perspective (custom view) create/edit modal.
  * @returns {string} HTML string, or '' if modal is closed
  */
@@ -1882,149 +1895,228 @@ export function renderPerspectiveModalHtml() {
   const editingPerspective = state.editingPerspectiveId
     ? (state.customPerspectives || []).find(p => p.id === state.editingPerspectiveId)
     : null;
+  const currentIcon = editingPerspective?.icon || '\uD83D\uDCCC';
   return `
-    <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showPerspectiveModal=false; editingPerspectiveId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="perspective-modal-title">
-      <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-md mx-4" onclick="event.stopPropagation()">
-        <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
-          <h3 id="perspective-modal-title" class="font-semibold text-charcoal">${editingPerspective ? 'Edit Custom View' : 'New Custom View'}</h3>
-          <button onclick="showPerspectiveModal=false; editingPerspectiveId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="perspective-modal-title">
+      <div class="modal-enhanced w-full max-w-lg mx-4" onclick="event.stopPropagation()">
+        <!-- Mobile drag handle -->
+        <div class="flex justify-center pt-3 pb-1 md:hidden">
+          <div class="w-10 h-1 rounded-full bg-[var(--text-muted)]/30"></div>
         </div>
-        <div class="p-6 space-y-4">
-          <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Name</label>
-            <input type="text" id="perspective-name" placeholder="e.g., Work Projects" autofocus maxlength="100"
-              onkeydown="if(event.key==='Enter'){event.preventDefault();savePerspectiveFromModal();}"
-              class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
-          </div>
-          <div class="flex items-center gap-4">
-            <div class="flex-1">
-              <label class="text-sm text-charcoal/70 block mb-1">Icon (emoji)</label>
-              <input type="text" id="perspective-icon" value="📌" maxlength="2"
-                class="w-20 px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-center text-xl">
-            </div>
-            <div class="flex-1">
-              <label class="text-sm text-charcoal/70 block mb-1">Match</label>
-              <select id="perspective-logic" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
-                <option value="all">All rules</option>
-                <option value="any">Any rule</option>
-                <option value="none">No rules</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Availability (OmniFocus-style)</label>
-              <select id="perspective-availability" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
-                <option value="available">Available</option>
-                <option value="">Any availability</option>
-                <option value="remaining">Remaining</option>
-                <option value="completed">Completed</option>
-              </select>
-            </div>
-          <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Filter by Area</label>
-            <select id="perspective-category" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
-              <option value="">Any area</option>
-              ${(state.taskCategories || []).map(cat => `<option value="${cat.id}">${escapeHtml(cat.name)}</option>`).join('')}
-            </select>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="text-sm text-charcoal/70 block mb-1">Filter by Status</label>
-              <select id="perspective-status" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
-                <option value="">Any status</option>
-                <option value="inbox">Inbox</option>
-                <option value="today">Today</option>
-                <option value="anytime">Anytime</option>
-                <option value="someday">Someday</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-sm text-charcoal/70 block mb-1">Special Status</label>
-              <select id="perspective-status-rule" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
-                <option value="">None</option>
-                <option value="flagged">Flagged</option>
-                <option value="dueSoon">Due Soon (next 7 days)</option>
-              </select>
+        <!-- Header -->
+        <div class="modal-header-enhanced">
+          <h3 id="perspective-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingPerspective ? 'Edit Custom View' : 'New Custom View'}</h3>
+          <button onclick="showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body-enhanced">
+          <!-- Name & Icon -->
+          <div class="modal-section">
+            <div class="flex items-start gap-3">
+              <div class="relative">
+                <button type="button" onclick="perspectiveEmojiPickerOpen=!perspectiveEmojiPickerOpen; render()"
+                  class="w-12 h-12 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-center text-2xl hover:border-[var(--accent)] transition cursor-pointer" title="Pick icon">
+                  <span id="perspective-icon-display">${currentIcon}</span>
+                </button>
+                <input type="hidden" id="perspective-icon" value="${currentIcon}">
+                ${state.perspectiveEmojiPickerOpen ? renderEmojiPicker() : ''}
+              </div>
+              <div class="flex-1">
+                <input type="text" id="perspective-name" placeholder="View name, e.g. Work Projects" autofocus maxlength="100"
+                  onkeydown="if(event.key==='Enter'){event.preventDefault();savePerspectiveFromModal();}"
+                  class="modal-input-enhanced title-input">
+              </div>
             </div>
           </div>
-          <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Filter by Person</label>
-            <select id="perspective-person" class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
-              <option value="">Any person</option>
-              ${(state.taskPeople || []).map(person => `<option value="${person.id}">${escapeHtml(person.name)}</option>`).join('')}
-            </select>
+
+          <!-- Filters -->
+          <div class="modal-section">
+            <div class="modal-section-label">Filters</div>
+            <div class="space-y-3">
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Match</label>
+                  <select id="perspective-logic" class="modal-input-enhanced">
+                    <option value="all">All rules</option>
+                    <option value="any">Any rule</option>
+                    <option value="none">No rules</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Availability</label>
+                  <select id="perspective-availability" class="modal-input-enhanced">
+                    <option value="available">Available</option>
+                    <option value="">Any</option>
+                    <option value="remaining">Remaining</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Area</label>
+                  <select id="perspective-category" class="modal-input-enhanced">
+                    <option value="">Any area</option>
+                    ${(state.taskCategories || []).map(cat => `<option value="${cat.id}">${escapeHtml(cat.name)}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Person</label>
+                  <select id="perspective-person" class="modal-input-enhanced">
+                    <option value="">Any person</option>
+                    ${(state.taskPeople || []).map(person => `<option value="${person.id}">${escapeHtml(person.name)}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Status</label>
+                  <select id="perspective-status" class="modal-input-enhanced">
+                    <option value="">Any status</option>
+                    <option value="inbox">Inbox</option>
+                    <option value="today">Today</option>
+                    <option value="anytime">Anytime</option>
+                    <option value="someday">Someday</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Special</label>
+                  <select id="perspective-status-rule" class="modal-input-enhanced">
+                    <option value="">None</option>
+                    <option value="flagged">Flagged</option>
+                    <option value="dueSoon">Due Soon (7 days)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="text-sm text-charcoal/70">Filter by Tags</label>
-              <select id="perspective-tags-mode" class="px-2 py-1 text-xs border border-softborder rounded">
+
+          <!-- Tags -->
+          <div class="modal-section">
+            <div class="flex items-center justify-between mb-2">
+              <div class="modal-section-label mb-0">Tags</div>
+              <select id="perspective-tags-mode" class="px-2 py-1 text-[11px] border border-[var(--border)] rounded-md bg-[var(--bg-secondary)] text-[var(--text-secondary)]">
                 <option value="any">Match any</option>
                 <option value="all">Match all</option>
               </select>
             </div>
-            <div class="border border-softborder rounded p-2 max-h-32 overflow-y-auto space-y-1">
+            <div class="border border-[var(--border)] rounded-lg p-2 max-h-28 overflow-y-auto space-y-0.5">
               ${(state.taskLabels || []).length > 0 ? state.taskLabels.map(label => `
-                <label class="flex items-center gap-2 px-2 py-1 rounded hover:bg-warmgray cursor-pointer">
-                  <input type="checkbox" class="perspective-tag-checkbox rounded border-softborder" value="${label.id}">
-                  <span class="w-2 h-2 rounded-full" style="background-color: ${label.color}"></span>
-                  <span class="text-sm text-charcoal/80">${escapeHtml(label.name)}</span>
+                <label class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[var(--bg-secondary)] cursor-pointer transition">
+                  <input type="checkbox" class="perspective-tag-checkbox rounded border-[var(--border)]" value="${label.id}">
+                  <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: ${label.color}"></span>
+                  <span class="text-[13px] text-[var(--text-primary)]">${escapeHtml(label.name)}</span>
                 </label>
-              `).join('') : '<p class="text-sm text-charcoal/40 text-center py-2">No tags created yet</p>'}
+              `).join('') : '<p class="text-[13px] text-[var(--text-muted)] text-center py-3">No tags created yet</p>'}
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-2">
-            <label class="flex items-center gap-2 text-sm text-charcoal/70">
-              <input type="checkbox" id="perspective-due" class="rounded border-softborder">
-              Has due date
-            </label>
-            <label class="flex items-center gap-2 text-sm text-charcoal/70">
-              <input type="checkbox" id="perspective-defer" class="rounded border-softborder">
-              Has defer date
-            </label>
-            <label class="flex items-center gap-2 text-sm text-charcoal/70">
-              <input type="checkbox" id="perspective-repeat" class="rounded border-softborder">
-              Repeating
-            </label>
-            <label class="flex items-center gap-2 text-sm text-charcoal/70">
-              <input type="checkbox" id="perspective-untagged" class="rounded border-softborder">
-              Untagged
-            </label>
-            <label class="flex items-center gap-2 text-sm text-charcoal/70">
-              <input type="checkbox" id="perspective-inbox" class="rounded border-softborder">
-              Inbox only
-            </label>
+
+          <!-- Conditions -->
+          <div class="modal-section">
+            <div class="modal-section-label">Conditions</div>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+              <label class="flex items-center gap-2 text-[13px] text-[var(--text-secondary)] cursor-pointer">
+                <input type="checkbox" id="perspective-due" class="rounded border-[var(--border)]">
+                Has due date
+              </label>
+              <label class="flex items-center gap-2 text-[13px] text-[var(--text-secondary)] cursor-pointer">
+                <input type="checkbox" id="perspective-defer" class="rounded border-[var(--border)]">
+                Has defer date
+              </label>
+              <label class="flex items-center gap-2 text-[13px] text-[var(--text-secondary)] cursor-pointer">
+                <input type="checkbox" id="perspective-repeat" class="rounded border-[var(--border)]">
+                Repeating
+              </label>
+              <label class="flex items-center gap-2 text-[13px] text-[var(--text-secondary)] cursor-pointer">
+                <input type="checkbox" id="perspective-untagged" class="rounded border-[var(--border)]">
+                Untagged
+              </label>
+              <label class="flex items-center gap-2 text-[13px] text-[var(--text-secondary)] cursor-pointer">
+                <input type="checkbox" id="perspective-inbox" class="rounded border-[var(--border)]">
+                Inbox only
+              </label>
+            </div>
           </div>
-          <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Date Range</label>
+
+          <!-- Date Range -->
+          <div class="modal-section">
+            <div class="modal-section-label">Date Range</div>
             <div class="grid grid-cols-3 gap-2">
-              <select id="perspective-range-type" class="px-2 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-sm">
+              <select id="perspective-range-type" class="modal-input-enhanced text-[13px]">
                 <option value="either">Due or Defer</option>
                 <option value="due">Due only</option>
                 <option value="defer">Defer only</option>
               </select>
-              <input type="date" id="perspective-range-start" class="px-2 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-sm">
-              <input type="date" id="perspective-range-end" class="px-2 py-2 border border-softborder rounded focus:border-coral focus:outline-none text-sm">
+              <input type="date" id="perspective-range-start" class="modal-input-enhanced text-[13px]">
+              <input type="date" id="perspective-range-end" class="modal-input-enhanced text-[13px]">
             </div>
           </div>
-          <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Search Terms</label>
+
+          <!-- Search Terms -->
+          <div class="modal-section">
+            <div class="modal-section-label">Search Terms</div>
             <input type="text" id="perspective-search" placeholder="Title or notes contains..."
-              class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              class="modal-input-enhanced">
           </div>
         </div>
-        <div class="px-6 py-4 border-t border-softborder flex justify-between">
+
+        <!-- Footer -->
+        <div class="modal-footer-enhanced">
           ${editingPerspective ? `
-            <button onclick="if(confirm('Delete this custom view?')){deletePerspective('${editingPerspective.id}'); showPerspectiveModal=false; editingPerspectiveId=null; render();}"
-              class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
-          ` : '<div></div>'}
-          <div class="flex gap-3">
-            <button onclick="showPerspectiveModal=false; editingPerspectiveId=null; render()"
-              class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
-            <button onclick="savePerspectiveFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
-              ${editingPerspective ? 'Save' : 'Create'}
-            </button>
-          </div>
+            <button onclick="if(confirm('Delete this custom view?')){deletePerspective('${editingPerspective.id}'); showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render();}"
+              class="px-4 py-2 text-[13px] text-red-500 hover:text-red-700 mr-auto">Delete</button>
+          ` : ''}
+          <button onclick="showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()"
+            class="px-4 py-2 text-[13px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">Cancel</button>
+          <button onclick="savePerspectiveFromModal()" class="px-5 py-2 rounded-lg text-[13px] font-medium text-white bg-[var(--accent)] hover:opacity-90 transition">
+            ${editingPerspective ? 'Save' : 'Create'}
+          </button>
         </div>
+      </div>
+    </div>
+  `;
+}
+
+// Emoji picker data and renderer for perspective icon selection
+const EMOJI_CATEGORIES = {
+  'Smileys': '\uD83D\uDE00\uD83D\uDE03\uD83D\uDE04\uD83D\uDE01\uD83D\uDE06\uD83D\uDE05\uD83E\uDD23\uD83D\uDE02\uD83D\uDE42\uD83D\uDE09\uD83D\uDE0A\uD83D\uDE07\uD83E\uDD70\uD83D\uDE0D\uD83E\uDD29\uD83D\uDE18\uD83D\uDE1A\uD83E\uDD14\uD83E\uDD28\uD83D\uDE10\uD83D\uDE11\uD83D\uDE36\uD83D\uDE44\uD83D\uDE0F\uD83D\uDE12\uD83D\uDE1E\uD83D\uDE22\uD83D\uDE2D\uD83D\uDE24\uD83E\uDD2F\uD83D\uDE31\uD83D\uDE28\uD83E\uDD75\uD83E\uDD76',
+  'Objects': '\uD83D\uDCCC\uD83D\uDCCB\uD83D\uDCC5\uD83D\uDCCA\uD83D\uDD0D\uD83D\uDCA1\uD83D\uDD14\u2B50\uD83C\uDF1F\uD83D\uDD25\u2764\uFE0F\uD83D\uDC8E\uD83C\uDFC6\uD83C\uDF96\uFE0F\uD83C\uDFAF\uD83D\uDE80\u2708\uFE0F\uD83D\uDCE6\uD83D\uDCE7\u2709\uFE0F\uD83D\uDCDD\uD83D\uDCD3\uD83D\uDCD6\uD83D\uDCDA\uD83D\uDCBB\uD83D\uDCF1\u2328\uFE0F\uD83D\uDDA5\uFE0F\uD83C\uDFA8\uD83C\uDFB5\uD83C\uDFAC\uD83D\uDCF7\uD83C\uDFAE\u26BD\uD83C\uDFC0',
+  'Nature': '\uD83C\uDF33\uD83C\uDF32\uD83C\uDF3F\u2618\uFE0F\uD83C\uDF40\uD83C\uDF3A\uD83C\uDF39\uD83C\uDF3B\uD83C\uDF3C\uD83C\uDF37\uD83C\uDF1E\uD83C\uDF19\u2B50\u26A1\uD83C\uDF08\u2744\uFE0F\uD83D\uDCA7\uD83C\uDF0A\uD83D\uDD25\uD83C\uDF3E\uD83C\uDF43\uD83C\uDF42\uD83C\uDF41\uD83D\uDC1D\uD83E\uDD8B',
+  'People': '\uD83D\uDC64\uD83D\uDC65\uD83D\uDC68\u200D\uD83D\uDCBB\uD83D\uDC69\u200D\uD83D\uDCBB\uD83D\uDC68\u200D\uD83D\uDD2C\uD83D\uDC69\u200D\uD83D\uDD2C\uD83D\uDC68\u200D\uD83C\uDFEB\uD83D\uDC69\u200D\uD83C\uDFEB\uD83E\uDDD1\u200D\uD83D\uDCBC\uD83E\uDDD1\u200D\uD83D\uDD27\uD83E\uDDD1\u200D\uD83C\uDFA8\uD83D\uDC77\uD83E\uDDB8\uD83E\uDDB9\uD83E\uDDD9',
+  'Symbols': '\u2705\u274C\u2757\u2753\u26A0\uFE0F\u267B\uFE0F\uD83D\uDD04\u2195\uFE0F\u2194\uFE0F\u25B6\uFE0F\u23F8\uFE0F\u23F9\uFE0F\uD83D\uDD00\uD83D\uDD01\uD83D\uDD02\u2795\u2796\u2716\uFE0F\u2797\uD83D\uDFF0\uD83D\uDFF1\uD83D\uDFE2\uD83D\uDFE1\uD83D\uDFE0\uD83D\uDD34\uD83D\uDFE3\uD83D\uDFE4\u26AB\u26AA\uD83D\uDD35\uD83D\uDFE6'
+};
+
+
+function renderEmojiPicker() {
+  const searchQuery = state.emojiSearchQuery || '';
+  let emojiGridHtml = '';
+
+  for (const [category, emojiStr] of Object.entries(EMOJI_CATEGORIES)) {
+    const emojis = [...new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(emojiStr)].map(s => s.segment).filter(e => e.trim());
+    const filtered = searchQuery
+      ? emojis.filter(() => category.toLowerCase().includes(searchQuery.toLowerCase()))
+      : emojis;
+    if (filtered.length === 0) continue;
+    emojiGridHtml += `
+      <div class="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider px-1 pt-2 pb-1">${category}</div>
+      <div class="grid grid-cols-8 gap-0.5">
+        ${filtered.map(e => `<button type="button" class="w-8 h-8 flex items-center justify-center text-lg rounded-md hover:bg-[var(--accent-light)] transition cursor-pointer" onclick="event.stopPropagation(); selectPerspectiveEmoji('${e.replace(/'/g, "\\'")}')">${e}</button>`).join('')}
+      </div>
+    `;
+  }
+
+  return `
+    <div class="absolute top-14 left-0 z-[400] w-72 bg-[var(--modal-bg)] rounded-xl border border-[var(--border-light)] shadow-xl overflow-hidden" onclick="event.stopPropagation()">
+      <div class="p-2 border-b border-[var(--border-light)]">
+        <input type="text" id="emoji-search-input" placeholder="Search emojis..." value="${escapeHtml(searchQuery)}"
+          oninput="emojiSearchQuery=this.value; render()"
+          class="w-full px-3 py-1.5 text-[13px] border border-[var(--border)] rounded-lg bg-[var(--bg-secondary)] focus:outline-none focus:border-[var(--accent)]">
+      </div>
+      <div class="p-2 max-h-52 overflow-y-auto">
+        ${emojiGridHtml || '<p class="text-center text-[13px] text-[var(--text-muted)] py-4">No matches</p>'}
       </div>
     </div>
   `;
