@@ -2,6 +2,7 @@ import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
 import { generateTaskId, getLocalDateString } from '../utils.js';
 import { startUndoCountdown } from './undo.js';
+import { DELETED_TASK_TOMBSTONES_KEY } from '../constants.js';
 
 function taskIdEquals(a, b) {
   return String(a) === String(b);
@@ -9,6 +10,27 @@ function taskIdEquals(a, b) {
 
 function findTaskIndexById(taskId) {
   return state.tasksData.findIndex(t => taskIdEquals(t.id, taskId));
+}
+
+function persistDeletedTaskTombstones() {
+  localStorage.setItem(DELETED_TASK_TOMBSTONES_KEY, JSON.stringify(state.deletedTaskTombstones || {}));
+}
+
+function markTaskDeleted(taskId) {
+  if (!taskId) return;
+  if (!state.deletedTaskTombstones || typeof state.deletedTaskTombstones !== 'object') {
+    state.deletedTaskTombstones = {};
+  }
+  state.deletedTaskTombstones[String(taskId)] = new Date().toISOString();
+  persistDeletedTaskTombstones();
+}
+
+function clearTaskDeletedMarker(taskId) {
+  if (!taskId || !state.deletedTaskTombstones || typeof state.deletedTaskTombstones !== 'object') return;
+  if (state.deletedTaskTombstones[String(taskId)] !== undefined) {
+    delete state.deletedTaskTombstones[String(taskId)];
+    persistDeletedTaskTombstones();
+  }
 }
 
 /**
@@ -79,6 +101,7 @@ export function createTask(title, options = {}) {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
+  clearTaskDeletedMarker(task.id);
   state.tasksData.push(task);
   saveTasksData();
   if (!task.isNote && (task.deferDate || task.dueDate)) {
@@ -151,6 +174,7 @@ export function deleteTask(taskId) {
     }
   });
   state.tasksData = state.tasksData.filter(t => !taskIdEquals(t.id, taskId));
+  markTaskDeleted(taskId);
   // Clear inline editing state if deleting the task being edited
   if (state.inlineEditingTaskId === taskId) state.inlineEditingTaskId = null;
   saveTasksData();
@@ -166,6 +190,7 @@ export function confirmDeleteTask(taskId) {
   const children = state.tasksData.filter(t => taskIdEquals(t.parentId, taskId)).map(t => JSON.parse(JSON.stringify(t)));
   deleteTask(taskId);
   startUndoCountdown(`"${snapshot.title}" deleted`, { task: snapshot, children }, (snap) => {
+    clearTaskDeletedMarker(snap.task.id);
     state.tasksData.push(snap.task);
     snap.children.forEach(c => {
       const existing = state.tasksData.find(t => t.id === c.id);
