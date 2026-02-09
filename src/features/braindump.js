@@ -434,6 +434,9 @@ export function parseBraindumpHeuristic(rawText) {
 // ============================================================================
 
 export async function parseBraindump(rawText) {
+  // Clear previous error
+  state.braindumpAIError = null;
+
   // If no API key, skip AI entirely
   if (!getAnthropicKey()) {
     return parseBraindumpHeuristic(rawText);
@@ -443,8 +446,10 @@ export async function parseBraindump(rawText) {
     const items = await classifyWithAI(rawText);
     if (items && items.length > 0) return items;
     // Empty result from AI — fall through to heuristic
+    state.braindumpAIError = 'AI returned empty results';
   } catch (err) {
     console.warn('AI classification failed, falling back to heuristic:', err.message);
+    state.braindumpAIError = err.message;
   }
 
   return parseBraindumpHeuristic(rawText);

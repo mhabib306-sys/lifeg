@@ -2962,6 +2962,19 @@ input[type="checkbox"]:focus {
   text-align: right;
 }
 
+/* Braindump AI error banner */
+.braindump-ai-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  margin: 0 0 -4px;
+  border-radius: 8px;
+  background: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+}
+
 /* Braindump processing state */
 .braindump-processing-body {
   flex: 1;

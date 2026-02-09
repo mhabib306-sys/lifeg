@@ -310,6 +310,13 @@ function renderReviewStep() {
           </button>
         </div>
 
+        ${state.braindumpAIError ? `
+          <div class="braindump-ai-error">
+            <span class="text-xs font-semibold">AI failed:</span>
+            <span class="text-xs">${escapeHtml(state.braindumpAIError)}</span>
+          </div>
+        ` : ''}
+
         <div class="braindump-body braindump-items-list">
           ${items.map((item, i) => renderBraindumpItemCard(item, i)).join('')}
         </div>

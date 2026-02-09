@@ -325,7 +325,7 @@ const stateProxies = [
   'draggedNoteId', 'dragOverNoteId', 'noteDragPosition',
   'inlineAutocompleteMeta',
   'undoAction', 'undoTimerRemaining', 'undoTimerId',
-  'showBraindump', 'braindumpRawText', 'braindumpParsedItems', 'braindumpStep', 'braindumpEditingIndex', 'braindumpSuccessMessage', 'braindumpProcessing',
+  'showBraindump', 'braindumpRawText', 'braindumpParsedItems', 'braindumpStep', 'braindumpEditingIndex', 'braindumpSuccessMessage', 'braindumpProcessing', 'braindumpAIError',
 ];
 
 stateProxies.forEach(prop => {

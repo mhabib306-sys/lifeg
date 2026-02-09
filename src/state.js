@@ -265,6 +265,7 @@ export const state = {
   braindumpEditingIndex: null,
   braindumpSuccessMessage: '',
   braindumpProcessing: false,    // true while AI is classifying
+  braindumpAIError: null,        // string error message if AI failed
 
   // ---- Task modal state ----
   modalSelectedArea: null,
