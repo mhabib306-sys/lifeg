@@ -1072,26 +1072,37 @@ export function navigateToBreadcrumb(noteId) {
 export function renderNotesBreadcrumb() {
   if (!state.zoomedNoteId || state.notesBreadcrumb.length === 0) return '';
 
-  const crumbs = [
-    `<button onclick="navigateToBreadcrumb(null)" class="notes-breadcrumb-item text-purple-400 hover:text-purple-600 transition text-sm font-medium">All Notes</button>`
-  ];
+  // The current (last) breadcrumb entry is the zoomed-in note
+  const currentCrumb = state.notesBreadcrumb[state.notesBreadcrumb.length - 1];
+  // The parent label for the back button
+  const ancestors = state.notesBreadcrumb.slice(0, -1);
+  const parentLabel = ancestors.length > 0
+    ? ancestors[ancestors.length - 1].title
+    : 'All Notes';
 
-  state.notesBreadcrumb.forEach((crumb, i) => {
-    const isLast = i === state.notesBreadcrumb.length - 1;
-    crumbs.push(`<span class="text-charcoal/20 mx-1.5">/</span>`);
-    if (isLast) {
-      crumbs.push(`<span class="text-sm font-semibold text-charcoal">${escapeHtml(crumb.title)}</span>`);
-    } else {
-      crumbs.push(`<button onclick="navigateToBreadcrumb('${crumb.id}')" class="notes-breadcrumb-item text-purple-400 hover:text-purple-600 transition text-sm font-medium">${escapeHtml(crumb.title)}</button>`);
-    }
-  });
+  // Build trail for the full path (shown below back button)
+  const trail = ['All Notes', ...ancestors.map(a => escapeHtml(a.title))];
 
   return `
-    <div class="notes-breadcrumb flex items-center px-4 py-2.5 overflow-x-auto" style="scrollbar-width: none;">
-      <button onclick="zoomOutOfNote()" class="flex items-center justify-center w-6 h-6 rounded-md text-purple-400 hover:text-purple-600 hover:bg-purple-50 transition mr-2 flex-shrink-0" title="Zoom out (Cmd+Backspace)">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-      </button>
-      ${crumbs.join('')}
+    <div class="notes-breadcrumb-bar">
+      <div class="flex items-center gap-2 mb-1">
+        <button onclick="zoomOutOfNote()" class="notes-back-btn" title="Go back (Cmd+Backspace)">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+          <span>${escapeHtml(parentLabel)}</span>
+        </button>
+      </div>
+      <div class="notes-breadcrumb-title">${escapeHtml(currentCrumb.title || 'Untitled')}</div>
+      ${trail.length > 1 ? `
+        <div class="notes-breadcrumb-trail">
+          ${trail.map((t, i) => {
+            if (i < trail.length - 1) {
+              const crumbId = i === 0 ? null : ancestors[i - 1].id;
+              return `<button onclick="navigateToBreadcrumb(${crumbId ? `'${crumbId}'` : 'null'})" class="notes-trail-link">${t}</button><span class="notes-trail-sep">/</span>`;
+            }
+            return `<span class="notes-trail-current">${t}</span>`;
+          }).join('')}
+        </div>
+      ` : ''}
     </div>
   `;
 }
