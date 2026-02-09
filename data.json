@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T13:38:15.214Z",
+  "lastUpdated": "2026-02-09T13:39:07.688Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2805,30 +2805,6 @@
       "order": 39000,
       "createdAt": "2026-02-09T13:12:50.390Z",
       "updatedAt": "2026-02-09T13:12:50.390Z"
-    },
-    {
-      "id": "task_1770644292738_lrecq6fo6",
-      "title": "Journal entry",
-      "notes": "",
-      "status": "inbox",
-      "today": false,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [
-        "label_1770644268551"
-      ],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "order": 40000,
-      "createdAt": "2026-02-09T13:38:12.738Z",
-      "updatedAt": "2026-02-09T13:38:12.738Z"
     }
   ],
   "taskCategories": [
