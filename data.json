@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T14:08:14.074Z",
+  "lastUpdated": "2026-02-09T14:10:03.105Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2831,6 +2831,30 @@
       "order": 41000,
       "createdAt": "2026-02-09T13:42:00.022Z",
       "updatedAt": "2026-02-09T13:42:00.022Z"
+    },
+    {
+      "id": "task_1770646200473_mro173qyq",
+      "title": "The Care PL issue",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [
+        "person-1770510421604"
+      ],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": null,
+      "indent": 0,
+      "order": 41000,
+      "createdAt": "2026-02-09T14:10:00.473Z",
+      "updatedAt": "2026-02-09T14:10:00.473Z"
     }
   ],
   "taskCategories": [
