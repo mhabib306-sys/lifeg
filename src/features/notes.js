@@ -958,7 +958,7 @@ export function handleNoteKeydown(event, noteId) {
       note.updatedAt = new Date().toISOString();
       saveTasksData();
     }
-    createNoteAfter(noteId);
+    createChildNote(noteId);
     return;
   }
 
@@ -1292,8 +1292,8 @@ export function renderNoteItem(note) {
         ` : ''}
 
         <div class="note-actions md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
-          <button onclick="event.stopPropagation(); createNoteAfter('${note.id}')"
-            class="note-action-btn" title="Add note below (Enter)" aria-label="Add note below">
+          <button onclick="event.stopPropagation(); createChildNote('${note.id}')"
+            class="note-action-btn" title="Add child note (Enter)" aria-label="Add child note">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
           </button>
           <button onclick="event.stopPropagation(); deleteNote('${note.id}')"
