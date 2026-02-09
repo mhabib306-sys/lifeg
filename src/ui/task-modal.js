@@ -200,6 +200,12 @@ export function quickAddTask(inputElement) {
     options.status = 'anytime'; // Notes go to anytime by default
   }
 
+  // If quick-add toggle is set to note mode
+  if (state.quickAddIsNote) {
+    options.isNote = true;
+    options.status = 'anytime';
+  }
+
   // Apply category/label/person context
   if (state.activeFilterType === 'category' && state.activeCategoryFilter) {
     options.categoryId = state.activeCategoryFilter;
@@ -247,6 +253,7 @@ export function quickAddTask(inputElement) {
 
   createTask(title, options);
   inputElement.value = '';
+  state.quickAddIsNote = false;
   cleanupInlineAutocomplete('quick-add-input');
   window.render();
 

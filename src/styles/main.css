@@ -1044,6 +1044,22 @@ input[type="checkbox"]:focus {
   letter-spacing: 0.02em;
 }
 
+/* Quick-add task/note type toggle */
+.quick-add-type-toggle {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.quick-add-type-toggle:hover {
+  background: var(--accent-light, rgba(0,0,0,0.05));
+}
+
 /* Mobile Header Compact */
 .mobile-header-compact {
   display: none;

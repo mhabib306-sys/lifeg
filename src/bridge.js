@@ -306,7 +306,7 @@ const stateProxies = [
   'activePerspective', 'activeFilterType', 'activeCategoryFilter', 'activeLabelFilter', 'activePersonFilter',
   'editingHomeWidgets', 'showAddWidgetPicker', 'draggingWidgetId',
   'perspectiveEmojiPickerOpen', 'emojiSearchQuery',
-  'editingNoteId', 'inlineEditingTaskId',
+  'editingNoteId', 'inlineEditingTaskId', 'quickAddIsNote',
   'mobileDrawerOpen', 'activeTab', 'activeSubTab',
   'modalSelectedArea', 'modalSelectedStatus', 'modalSelectedToday', 'modalSelectedFlagged', 'modalSelectedTags', 'modalSelectedPeople',
   'modalIsNote', 'modalRepeatEnabled', 'modalStateInitialized',

@@ -288,9 +288,15 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
       <!-- Quick Add -->
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] px-4 py-3">
         <div class="flex items-center gap-3">
-          <div class="w-5 h-5 rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${categoryColor}40"></div>
+          <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
+            class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
+            ${state.quickAddIsNote
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
+              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${categoryColor}40"></div>`
+            }
+          </div>
           <input type="text" id="quick-add-input"
-            placeholder="Quick add to ${currentCategory.name}... (press Enter)"
+            placeholder="${state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
             onkeydown="window.handleQuickAddKeydown(event, this)"
             class="flex-1 text-[15px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none focus:ring-0">
           <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
@@ -718,14 +724,20 @@ export function renderTasksTab() {
             ${state.activePerspective === 'notes' ? `
               <div class="w-2 h-2 rounded-full border-2 border-dashed border-[#8B5CF6]/40 flex-shrink-0 ml-1.5"></div>
             ` : `
-              <div class="w-5 h-5 rounded-full border-2 border-dashed border-[var(--text-muted)]/30 flex-shrink-0"></div>
+              <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
+                class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
+                ${state.quickAddIsNote
+                  ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
+                  : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed border-[var(--text-muted)]/30 flex-shrink-0"></div>`
+                }
+              </div>
             `}
             <input type="text" id="quick-add-input"
-              placeholder="${state.activePerspective === 'notes' ? 'New Note' : 'New To-Do'}"
+              placeholder="${state.activePerspective === 'notes' || state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
               onkeydown="window.handleQuickAddKeydown(event, this)"
               class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)]/50 bg-transparent border-0 outline-none focus:ring-0">
             <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
-              class="text-[var(--text-muted)] hover:text-[var(--accent)] transition p-1" title="${state.activePerspective === 'notes' ? 'Add Note' : 'Add to ' + viewInfo.name}">
+              class="text-[var(--text-muted)] hover:text-[var(--accent)] transition p-1" title="${state.activePerspective === 'notes' || state.quickAddIsNote ? 'Add Note' : 'Add to ' + viewInfo.name}">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
             </button>
           </div>
