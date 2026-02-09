@@ -83,6 +83,7 @@ export function saveTasksData() {
   safeLocalStorageSet(TASK_LABELS_KEY, state.taskLabels);
   safeLocalStorageSet(TASK_PEOPLE_KEY, state.taskPeople);
   safeLocalStorageSet(PERSPECTIVES_KEY, state.customPerspectives);
+  localStorage.setItem('lastUpdated', Date.now().toString());
   window.debouncedSaveToGithub();
 }
 

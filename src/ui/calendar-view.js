@@ -1,78 +1,309 @@
 // ============================================================================
 // CALENDAR VIEW MODULE
 // ============================================================================
-// Renders the OmniFocus Forecast-style calendar view with month grid,
-// task dots (due/defer/overdue), Google Calendar events, and selected day task list.
 
 import { state } from '../state.js';
 import { getTasksForDate } from '../features/calendar.js';
-import { THINGS3_ICONS } from '../constants.js';
+import { THINGS3_ICONS, MEETING_NOTES_KEY } from '../constants.js';
 import { escapeHtml, getLocalDateString } from '../utils.js';
+
+function getEventKey(event) {
+  if (!event) return '';
+  return `${event.calendarId}::${event.id}`;
+}
+
+function persistMeetingNotes() {
+  localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(state.meetingNotesByEvent || {}));
+  if (typeof window.debouncedSaveToGithub === 'function') {
+    window.debouncedSaveToGithub();
+  }
+}
+
+function findCalendarEvent(calendarId, eventId) {
+  return (state.gcalEvents || []).find(e => e.calendarId === calendarId && e.id === eventId) || null;
+}
+
+function ensureMeetingNoteDoc(event) {
+  const eventKey = getEventKey(event);
+  if (!eventKey) return null;
+
+  if (!state.meetingNotesByEvent) state.meetingNotesByEvent = {};
+  if (!state.meetingNotesByEvent[eventKey]) {
+    state.meetingNotesByEvent[eventKey] = {
+      eventKey,
+      calendarId: event.calendarId,
+      eventId: event.id,
+      title: event.summary || 'Untitled Event',
+      content: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    persistMeetingNotes();
+  }
+
+  return state.meetingNotesByEvent[eventKey];
+}
+
+function getMeetingNotesEvent() {
+  const key = state.calendarMeetingNotesEventKey;
+  if (!key) return null;
+  const [calendarId, eventId] = key.split('::');
+  return findCalendarEvent(calendarId, eventId) || null;
+}
+
+function getSelectedModalEvent() {
+  if (!state.calendarEventModalOpen) return null;
+  return findCalendarEvent(state.calendarEventModalCalendarId, state.calendarEventModalEventId);
+}
+
+function formatEventDateLabel(event) {
+  if (!event) return '';
+  if (event.allDay && event.start?.date) {
+    const d = new Date(event.start.date + 'T12:00:00');
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+  if (event.start?.dateTime) {
+    const d = new Date(event.start.dateTime);
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+  return '';
+}
+
+function formatEventTimeLabel(event) {
+  if (!event) return '';
+  if (event.allDay) return 'All day';
+  if (!event.start?.dateTime) return '';
+
+  const start = new Date(event.start.dateTime);
+  const startTime = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  if (!event.end?.dateTime) return startTime;
+
+  const end = new Date(event.end.dateTime);
+  const endTime = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  return `${startTime} - ${endTime}`;
+}
+
+function q(str) {
+  return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+function dateToStr(dateObj) {
+  return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+}
+
+export function openCalendarEventActions(calendarId, eventId) {
+  state.calendarEventModalOpen = true;
+  state.calendarEventModalCalendarId = calendarId;
+  state.calendarEventModalEventId = eventId;
+  window.render();
+}
+
+export function closeCalendarEventActions() {
+  state.calendarEventModalOpen = false;
+  state.calendarEventModalCalendarId = null;
+  state.calendarEventModalEventId = null;
+  window.render();
+}
+
+export function openCalendarMeetingNotes(calendarId, eventId) {
+  const event = findCalendarEvent(calendarId, eventId);
+  if (!event) return;
+  const doc = ensureMeetingNoteDoc(event);
+  if (!doc) return;
+
+  state.calendarMeetingNotesEventKey = doc.eventKey;
+  state.calendarEventModalOpen = false;
+  state.calendarEventModalCalendarId = null;
+  state.calendarEventModalEventId = null;
+  window.render();
+}
+
+export function closeCalendarMeetingNotes() {
+  state.calendarMeetingNotesEventKey = null;
+  window.render();
+}
+
+export function updateCalendarMeetingNotesContent(content) {
+  const key = state.calendarMeetingNotesEventKey;
+  if (!key) return;
+
+  if (!state.meetingNotesByEvent) state.meetingNotesByEvent = {};
+  if (!state.meetingNotesByEvent[key]) {
+    const event = getMeetingNotesEvent();
+    if (!event) return;
+    ensureMeetingNoteDoc(event);
+  }
+
+  state.meetingNotesByEvent[key].content = content;
+  state.meetingNotesByEvent[key].updatedAt = new Date().toISOString();
+  persistMeetingNotes();
+}
+
+function renderMeetingNotesPage() {
+  const event = getMeetingNotesEvent();
+  if (!event) {
+    return `
+      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-8 text-center">
+        <p class="text-sm text-[var(--text-muted)] mb-4">This event is no longer in the current sync window.</p>
+        <button onclick="closeCalendarMeetingNotes()" class="px-4 py-2 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] text-sm font-medium">Back to Calendar</button>
+      </div>
+    `;
+  }
+
+  const key = getEventKey(event);
+  const doc = ensureMeetingNoteDoc(event);
+  const notes = doc?.content || '';
+  const eventDate = formatEventDateLabel(event);
+  const eventTime = formatEventTimeLabel(event);
+
+  return `
+    <div class="calendar-meeting-notes-page bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+      <div class="calendar-meeting-notes-header px-5 py-4 border-b border-[var(--border-light)] flex flex-wrap items-center justify-between gap-3">
+        <div class="min-w-0">
+          <div class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Meeting Notes</div>
+          <h2 class="text-lg font-semibold text-[var(--text-primary)] truncate">${escapeHtml(event.summary || 'Untitled Event')}</h2>
+          <p class="text-sm text-[var(--text-muted)]">${escapeHtml(eventDate)}${eventTime ? ` • ${escapeHtml(eventTime)}` : ''}</p>
+        </div>
+        <div class="calendar-meeting-notes-actions flex items-center gap-2">
+          <button onclick="closeCalendarMeetingNotes()" class="calendar-meeting-btn px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] text-sm font-medium hover:opacity-90 transition">Back</button>
+          <button onclick="window.open('${q(event.htmlLink)}','_blank')" class="calendar-meeting-btn px-3 py-1.5 rounded-lg bg-coral/10 text-coral text-sm font-medium hover:bg-coral/20 transition ${event.htmlLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.htmlLink ? '' : 'disabled'}>
+            Open Event
+          </button>
+          <button onclick="window.open('${q(event.meetingLink)}','_blank')" class="calendar-meeting-btn px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-sm font-medium hover:bg-emerald-200 transition ${event.meetingLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.meetingLink ? '' : 'disabled'}>
+            ${event.meetingProvider ? `Join ${escapeHtml(event.meetingProvider)}` : 'Join Meeting'}
+          </button>
+        </div>
+      </div>
+
+      <div class="calendar-meeting-notes-body p-5">
+        <textarea
+          id="meeting-notes-textarea"
+          class="calendar-meeting-notes-textarea w-full min-h-[58vh] p-4 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-[var(--accent-light)] focus:border-[var(--accent)]"
+          placeholder="Capture agenda, decisions, blockers, and action items..."
+          oninput="updateCalendarMeetingNotesContent(this.value)"
+        >${escapeHtml(notes)}</textarea>
+        <div class="mt-2 text-xs text-[var(--text-muted)]">Saved automatically for this event.</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderEventActionsModal(event) {
+  if (!event) return '';
+  const notesKey = getEventKey(event);
+  const hasNotes = !!state.meetingNotesByEvent?.[notesKey]?.content?.trim();
+  const meetingActionLabel = event.meetingProvider ? `Join ${escapeHtml(event.meetingProvider)}` : 'Open Meeting Link';
+  const meetingSubLabel = event.meetingLink
+    ? (event.meetingProvider ? `Launch ${escapeHtml(event.meetingProvider)} directly` : 'Open the detected call URL')
+    : 'No Meet/Zoom/Teams link found in this event';
+  const notesActionLabel = hasNotes ? 'Open Meeting Notes' : 'Create Meeting Notes';
+  const notesSubLabel = hasNotes ? 'Continue your existing notes for this event' : 'Start a dedicated notes page for this event';
+
+  return `
+    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[320]" onclick="if(event.target===this) closeCalendarEventActions()">
+      <div class="modal-enhanced calendar-event-modal w-full max-w-md mx-4" onclick="event.stopPropagation()">
+        <div class="modal-header-enhanced">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="calendar-event-modal-header-icon">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 15H5V10h14v9zM7 12h5v5H7z"/></svg>
+            </div>
+            <div class="min-w-0">
+              <h3 class="text-lg font-semibold text-[var(--text-primary)] truncate">${escapeHtml(event.summary || 'Event')}</h3>
+              <p class="text-xs text-[var(--text-muted)] mt-1">${escapeHtml(formatEventDateLabel(event))}${formatEventTimeLabel(event) ? ` • ${escapeHtml(formatEventTimeLabel(event))}` : ''}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            ${event.meetingProvider ? `<span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-emerald-100 text-emerald-800">${escapeHtml(event.meetingProvider)}</span>` : ''}
+            <button onclick="closeCalendarEventActions()" class="w-8 h-8 rounded-lg hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]" aria-label="Close">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-body-enhanced space-y-2.5">
+          <button onclick="window.open('${q(event.htmlLink)}', '_blank'); closeCalendarEventActions()" class="calendar-event-action ${event.htmlLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.htmlLink ? '' : 'disabled'}>
+            <span class="calendar-event-action-icon">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 15H5V10h14v9zM7 12h5v5H7z"/></svg>
+            </span>
+            <span class="calendar-event-action-text">
+              <span class="calendar-event-action-title">Open In Google Calendar</span>
+              <span class="calendar-event-action-sub">View full details, guests, and edits</span>
+            </span>
+          </button>
+          <button onclick="window.open('${q(event.meetingLink)}', '_blank'); closeCalendarEventActions()" class="calendar-event-action ${event.meetingLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.meetingLink ? '' : 'disabled'}>
+            <span class="calendar-event-action-icon">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-3.5l4 4v-11l-4 4z"/></svg>
+            </span>
+            <span class="calendar-event-action-text">
+              <span class="calendar-event-action-title">${meetingActionLabel}</span>
+              <span class="calendar-event-action-sub">${meetingSubLabel}</span>
+            </span>
+          </button>
+          <button onclick="openCalendarMeetingNotes('${q(event.calendarId)}','${q(event.id)}')" class="calendar-event-action">
+            <span class="calendar-event-action-icon">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </span>
+            <span class="calendar-event-action-text">
+              <span class="calendar-event-action-title">${notesActionLabel}</span>
+              <span class="calendar-event-action-sub">${notesSubLabel}</span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
 
 /**
  * Render the full calendar view.
- *
- * Builds a month grid with day cells, each showing colored dots for tasks:
- *   - Red dots: due tasks
- *   - Blue dots: defer (start) tasks
- *   - Dark red dots: overdue tasks
- *   - Green dots: Google Calendar events
- *
- * Below the grid, shows the selected day's tasks split into "Due", "Starting",
- * and "Events" sections.
- * Uses state.calendarMonth (0-11), state.calendarYear, state.calendarSelectedDate.
- *
- * @returns {string} HTML string for the calendar perspective view
+ * @returns {string} HTML string for the calendar tab
  */
 export function renderCalendarView() {
+  if (state.calendarMeetingNotesEventKey) {
+    return renderMeetingNotesPage();
+  }
+
   const today = getLocalDateString();
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  // Build calendar grid
   const firstDay = new Date(state.calendarYear, state.calendarMonth, 1);
   const lastDay = new Date(state.calendarYear, state.calendarMonth + 1, 0);
-  const startDow = firstDay.getDay(); // 0=Sun
+  const startDow = firstDay.getDay();
   const daysInMonth = lastDay.getDate();
 
-  // Previous month padding
   const prevMonthLast = new Date(state.calendarYear, state.calendarMonth, 0).getDate();
   const cells = [];
 
-  // Add previous month days
   for (let i = startDow - 1; i >= 0; i--) {
     const d = prevMonthLast - i;
     const m = state.calendarMonth === 0 ? 12 : state.calendarMonth;
     const y = state.calendarMonth === 0 ? state.calendarYear - 1 : state.calendarYear;
-    const dateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     cells.push({ day: d, dateStr, outside: true });
   }
 
-  // Current month days
   for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = `${state.calendarYear}-${String(state.calendarMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dateStr = `${state.calendarYear}-${String(state.calendarMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     cells.push({ day: d, dateStr, outside: false });
   }
 
-  // Next month padding to fill grid
   const remaining = 7 - (cells.length % 7);
   if (remaining < 7) {
     for (let d = 1; d <= remaining; d++) {
       const m = state.calendarMonth === 11 ? 1 : state.calendarMonth + 2;
       const y = state.calendarMonth === 11 ? state.calendarYear + 1 : state.calendarYear;
-      const dateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       cells.push({ day: d, dateStr, outside: true });
     }
   }
 
-  // Build a map of date -> tasks for the visible range
   const dateTaskMap = {};
   cells.forEach(cell => {
     dateTaskMap[cell.dateStr] = getTasksForDate(cell.dateStr);
   });
 
-  // Selected date tasks
   const selectedTasks = getTasksForDate(state.calendarSelectedDate);
   const dueTasks = selectedTasks.filter(t => t.dueDate === state.calendarSelectedDate);
   const deferTasks = selectedTasks.filter(t => t.deferDate === state.calendarSelectedDate && t.dueDate !== state.calendarSelectedDate);
@@ -84,25 +315,14 @@ export function renderCalendarView() {
     const isScheduledForToday = t.deferDate && t.deferDate <= today;
     return t.today || isDueToday || isOverdue || isScheduledForToday;
   }) : [];
-  const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
-  const nextTasks = nextLabel ? activeTasks.filter(t => {
-    if (!(t.labels || []).includes(nextLabel.id)) return false;
-    const isDated = t.dueDate || t.deferDate || t.today;
-    return !isDated;
-  }) : [];
 
-  // Google Calendar events for selected date
   const gcalEvents = window.getGCalEventsForDate?.(state.calendarSelectedDate) || [];
-  const gcalConnected = window.isGCalConnected?.() || false;
 
-  // Format selected date label
   const selDate = new Date(state.calendarSelectedDate + 'T12:00:00');
   const selectedLabel = isToday ? 'Today' :
     selDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-  const taskCount = isToday ? todayTasks.length : selectedTasks.length;
-  const selectedCount = taskCount + gcalEvents.length;
 
-  const calendarHtml = `
+  const buildMonthGrid = () => `
     <div class="calendar-grid">
       ${dayNames.map(d => `<div class="calendar-header-cell">${d}</div>`).join('')}
       ${cells.map(cell => {
@@ -111,8 +331,6 @@ export function renderCalendarView() {
         const isCellToday = cell.dateStr === today;
         const isSelected = cell.dateStr === state.calendarSelectedDate;
         const cellTasks = tasks.filter(t => t.dueDate === cell.dateStr || t.deferDate === cell.dateStr);
-        const allItems = [...cellTasks.slice(0, 2), ...cellEvents.slice(0, cellTasks.length >= 2 ? 1 : 2)];
-        const totalItems = cellTasks.length + cellEvents.length;
         const classes = ['calendar-day'];
         if (cell.outside) classes.push('outside');
         if (isCellToday) classes.push('today');
@@ -120,18 +338,17 @@ export function renderCalendarView() {
 
         return `<div class="${classes.join(' ')}" onclick="calendarSelectDate('${cell.dateStr}')">
           <div class="calendar-day-num">${cell.day}</div>
-          ${allItems.length > 0 ? `
+          ${(cellTasks.length + cellEvents.length) > 0 ? `
             <div class="calendar-task-list">
-              ${cellTasks.slice(0, 2).map(t => {
+              ${cellTasks.map(t => {
                 const isDue = t.dueDate === cell.dateStr;
                 const isOver = isDue && t.dueDate < today;
                 const cls = isOver ? 'overdue' : isDue ? 'due' : 'defer';
                 return `<div class="calendar-task-line ${cls}">${escapeHtml(t.title)}</div>`;
               }).join('')}
-              ${cellEvents.slice(0, cellTasks.length >= 2 ? 1 : 2).map(e =>
-                `<div class="calendar-task-line event">${escapeHtml(e.summary)}</div>`
+              ${cellEvents.map(e =>
+                `<div class="calendar-task-line event" onclick="event.stopPropagation(); openCalendarEventActions('${q(e.calendarId)}','${q(e.id)}')">${escapeHtml(e.summary)}</div>`
               ).join('')}
-              ${totalItems > 3 ? `<div class="calendar-more-line">+${totalItems - 3} more</div>` : ''}
             </div>
           ` : ''}
         </div>`;
@@ -139,10 +356,67 @@ export function renderCalendarView() {
     </div>
   `;
 
-  // renderTaskItem is called via window since it may not be extracted yet
+  const selectedDateObj = new Date(state.calendarSelectedDate + 'T12:00:00');
+  const rangeDates = [];
+  if (state.calendarViewMode === 'week') {
+    const start = new Date(selectedDateObj);
+    start.setDate(start.getDate() - start.getDay());
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      rangeDates.push(d);
+    }
+  } else if (state.calendarViewMode === '3days') {
+    for (let i = -1; i <= 1; i++) {
+      const d = new Date(selectedDateObj);
+      d.setDate(d.getDate() + i);
+      rangeDates.push(d);
+    }
+  }
+
+  const buildRangeGrid = () => `
+    <div class="calendar-range-grid calendar-range-grid-${rangeDates.length}">
+      ${rangeDates.map(d => {
+        const dateStr = dateToStr(d);
+        const tasks = getTasksForDate(dateStr).filter(t => t.dueDate === dateStr || t.deferDate === dateStr);
+        const events = window.getGCalEventsForDate?.(dateStr) || [];
+        const isSelected = dateStr === state.calendarSelectedDate;
+        const isTodayDay = dateStr === today;
+        const allItems = [
+          ...tasks.map(t => ({ type: 'task', task: t })),
+          ...events.map(e => ({ type: 'event', event: e }))
+        ];
+
+        return `
+          <div class="calendar-range-day ${isSelected ? 'selected' : ''}" onclick="calendarSelectDate('${dateStr}')">
+            <div class="calendar-range-day-head ${isTodayDay ? 'today' : ''}">
+              <div class="calendar-range-day-name">${d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+              <div class="calendar-range-day-date">${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+            </div>
+            <div class="calendar-range-day-list">
+              ${allItems.length === 0
+                ? '<div class="calendar-range-empty">No items</div>'
+                : allItems.map(item => {
+                  if (item.type === 'event') {
+                    return `<div class="calendar-task-line event" onclick="event.stopPropagation(); openCalendarEventActions('${q(item.event.calendarId)}','${q(item.event.id)}')">${escapeHtml(item.event.summary)}</div>`;
+                  }
+                  const t = item.task;
+                  const isDue = t.dueDate === dateStr;
+                  const isOver = isDue && t.dueDate < today;
+                  const cls = isOver ? 'overdue' : isDue ? 'due' : 'defer';
+                  return `<div class="calendar-task-line ${cls}">${escapeHtml(t.title)}</div>`;
+                }).join('')}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  const calendarHtml = state.calendarViewMode === 'month' ? buildMonthGrid() : buildRangeGrid();
+
   const renderTaskItem = window.renderTaskItem || ((task) => `<div class="px-5 py-2 text-sm text-[var(--text-primary)]">${escapeHtml(task.title)}</div>`);
 
-  // Token expired banner
   const tokenBanner = state.gcalTokenExpired ? `
     <div class="mx-5 my-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between">
       <span class="text-sm text-amber-700">Google Calendar session expired</span>
@@ -150,119 +424,106 @@ export function renderCalendarView() {
     </div>
   ` : '';
 
-  // Render GCal events section
-  const eventsSection = gcalEvents.length > 0 ? `
-    <div class="px-5 py-1 ${(dueTasks.length > 0 || deferTasks.length > 0 || (isToday && todayTasks.length > 0)) ? 'mt-2' : ''}">
-      <div class="text-[11px] font-semibold text-[#10B981] uppercase tracking-wider mb-1">Events</div>
-    </div>
-    ${gcalEvents.map(e => {
-      let timeStr = 'All day';
-      if (!e.allDay && e.start.dateTime) {
-        const d = new Date(e.start.dateTime);
-        timeStr = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-      }
-      const title = escapeHtml(e.summary.length > 40 ? e.summary.slice(0, 37) + '...' : e.summary);
-      const link = e.htmlLink ? `onclick="window.open('${e.htmlLink.replace(/'/g, "\\'")}', '_blank')"` : '';
+  const todayListHtml = todayTasks.length > 0
+    ? todayTasks.map(task => renderTaskItem(task, false)).join('')
+    : `<div class="px-4 py-4 text-sm text-[var(--text-muted)]">No tasks for today.</div>`;
+
+  const selectedDateLabel = selDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  const eventsListHtml = gcalEvents.length > 0
+    ? gcalEvents.map(e => {
+      const title = escapeHtml(e.summary.length > 60 ? e.summary.slice(0, 57) + '...' : e.summary);
+      const timeStr = formatEventTimeLabel(e) || 'All day';
       return `
-        <div class="px-5 py-2 flex items-center gap-3 hover:bg-[var(--bg-secondary)] transition cursor-pointer" ${link}>
-          <span class="w-2 h-2 rounded-full bg-[#10B981] flex-shrink-0"></span>
+        <button onclick="openCalendarEventActions('${q(e.calendarId)}','${q(e.id)}')" class="w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-[var(--bg-secondary)] transition rounded-lg">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#2F9B6A] flex-shrink-0"></span>
           <span class="text-sm text-[var(--text-primary)] flex-1 truncate">${title}</span>
-          <span class="text-xs text-[var(--text-muted)] flex-shrink-0">${timeStr}</span>
-        </div>
+          <span class="text-xs text-[var(--text-muted)] flex-shrink-0">${escapeHtml(timeStr)}</span>
+        </button>
       `;
-    }).join('')}
-  ` : '';
+    }).join('')
+    : `<div class="px-4 py-4 text-sm text-[var(--text-muted)]">No events for ${selectedDateLabel}.</div>`;
+
+  const modalEvent = getSelectedModalEvent();
 
   return `
     <div class="flex-1">
-      <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
-        <!-- Calendar Header -->
-        <div class="px-5 py-4 flex items-center justify-between border-b border-[var(--border-light)]">
-          <div class="flex items-center gap-3">
-            <span class="text-2xl" style="color: #8B5CF6">${THINGS3_ICONS.calendar}</span>
-            <h2 class="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
+      <div class="calendar-page-grid">
+        <section class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
+          <div class="px-5 py-4 flex items-center justify-between border-b border-[var(--border-light)]">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl" style="color: #8B5CF6">${THINGS3_ICONS.calendar}</span>
+              <h2 class="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
+            </div>
+            <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Task">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
           </div>
-          <button onclick="openNewTaskModal()"
-            class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Task">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-          </button>
-        </div>
 
-        <!-- Month Navigation -->
-        <div class="px-5 py-3 flex items-center justify-between border-b border-[var(--border-light)]">
-          <button onclick="calendarPrevMonth()" class="w-8 h-8 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-          </button>
+          <div class="px-5 py-3 flex items-center justify-between border-b border-[var(--border-light)]">
+            <button onclick="calendarPrevMonth()" class="w-8 h-8 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </button>
           <div class="flex items-center gap-3">
             <h3 class="text-[15px] font-semibold text-[var(--text-primary)]">${monthNames[state.calendarMonth]} ${state.calendarYear}</h3>
+            <div class="calendar-view-toggle">
+              <button onclick="setCalendarViewMode('month')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'month' ? 'active' : ''}">Month</button>
+              <button onclick="setCalendarViewMode('week')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'week' ? 'active' : ''}">Week</button>
+              <button onclick="setCalendarViewMode('3days')" class="calendar-view-toggle-btn ${state.calendarViewMode === '3days' ? 'active' : ''}">3 Days</button>
+            </div>
             <button onclick="calendarGoToday()" class="text-[11px] px-2.5 py-1 rounded-full bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--accent)] transition font-medium">Today</button>
             ${state.gcalSyncing ? '<span class="text-[10px] text-[var(--text-muted)]">Syncing...</span>' : ''}
           </div>
-          <button onclick="calendarNextMonth()" class="w-8 h-8 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-          </button>
-        </div>
-
-        ${tokenBanner}
-
-        <!-- Calendar Grid -->
-        <div class="px-3 pt-2 pb-2">
-          ${calendarHtml}
-        </div>
-
-        <!-- Selected Day Tasks -->
-        <div class="border-t border-[var(--border-light)]">
-          <div class="px-5 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <h4 class="text-[14px] font-semibold text-[var(--text-primary)]">${selectedLabel}</h4>
-              ${selectedCount > 0 ? `<span class="text-xs px-2 py-0.5 rounded-full bg-[var(--bg-secondary)] text-[var(--text-muted)] font-medium">${selectedCount}</span>` : ''}
-            </div>
-            ${!isToday ? `
-              <div class="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full calendar-legend-dot-due inline-block"></span>Due</span>
-                <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full calendar-legend-dot-start inline-block"></span>Start</span>
-                ${gcalConnected ? '<span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#10B981] inline-block"></span>Event</span>' : ''}
-              </div>
-            ` : ''}
+            <button onclick="calendarNextMonth()" class="w-8 h-8 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </button>
           </div>
-          <div class="min-h-[120px]">
-            ${selectedCount === 0 ? `
-              <div class="flex flex-col items-center justify-center py-12 text-[var(--text-muted)]">
-                <svg class="w-10 h-10 mb-2 opacity-30" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
-                <p class="text-[14px]">No tasks on this date</p>
+
+          ${tokenBanner}
+
+          <div class="px-3 pt-2 pb-2">
+            ${calendarHtml}
+          </div>
+        </section>
+
+        <aside class="space-y-3">
+          <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)] overflow-hidden">
+            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+              <h4 class="text-sm font-semibold text-[var(--text-primary)]">Today</h4>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--bg-secondary)] text-[var(--text-muted)] font-medium">${todayTasks.length}</span>
+            </div>
+            <div class="calendar-side-list">${todayListHtml}</div>
+          </div>
+
+          <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)] overflow-hidden">
+            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+              <h4 class="text-sm font-semibold text-[var(--text-primary)]">Events</h4>
+              <span class="text-xs text-[var(--text-muted)]">${selectedLabel}</span>
+            </div>
+            <div class="calendar-side-list">${eventsListHtml}</div>
+          </div>
+
+          ${(dueTasks.length > 0 || deferTasks.length > 0) ? `
+            <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)] overflow-hidden">
+              <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+                <h4 class="text-sm font-semibold text-[var(--text-primary)]">Scheduled</h4>
+                <span class="text-xs text-[var(--text-muted)]">${selectedDateLabel}</span>
               </div>
-            ` : `
-              ${isToday ? `
-                <div class="px-5 py-1">
-                  <div class="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1">Today</div>
-                </div>
-                ${todayTasks.map(task => renderTaskItem(task, false)).join('')}
-                ${nextTasks.length > 0 ? `
-                  <div class="px-5 py-1 mt-3">
-                    <div class="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1">Next</div>
-                  </div>
-                  ${nextTasks.map(task => renderTaskItem(task)).join('')}
-                ` : ''}
-                ${eventsSection}
-              ` : `
+              <div class="calendar-side-list">
                 ${dueTasks.length > 0 ? `
-                  <div class="px-5 py-1">
-                    <div class="text-[11px] font-semibold text-[#EF5350] uppercase tracking-wider mb-1">Due</div>
-                  </div>
+                  <div class="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[#B55322]">Due</div>
                   ${dueTasks.map(task => renderTaskItem(task, false)).join('')}
                 ` : ''}
                 ${deferTasks.length > 0 ? `
-                  <div class="px-5 py-1 ${dueTasks.length > 0 ? 'mt-2' : ''}">
-                    <div class="text-[11px] font-semibold text-[#42A5F5] uppercase tracking-wider mb-1">Starting</div>
-                  </div>
+                  <div class="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[#2B6CB0]">Starting</div>
                   ${deferTasks.map(task => renderTaskItem(task)).join('')}
                 ` : ''}
-                ${eventsSection}
-              `}
-            `}
-          </div>
-        </div>
+              </div>
+            </div>
+          ` : ''}
+        </aside>
       </div>
+
+      ${renderEventActionsModal(modalEvent)}
     </div>
   `;
 }

@@ -108,7 +108,7 @@ import {
 
 import {
   calendarPrevMonth, calendarNextMonth, calendarGoToday,
-  calendarSelectDate, getTasksForDate
+  calendarSelectDate, getTasksForDate, setCalendarViewMode
 } from './features/calendar.js';
 
 import {
@@ -127,7 +127,14 @@ import { renderTrackingTab } from './ui/tracking.js';
 import { setBulkMonth, setBulkCategory, updateBulkData, updateBulkSummary, getDaysInMonth, renderBulkEntryTab } from './ui/bulk-entry.js';
 import { renderDashboardTab } from './ui/dashboard.js';
 import { renderTaskItem, buildAreaTaskListHtml, renderTasksTab } from './ui/tasks-tab.js';
-import { renderCalendarView } from './ui/calendar-view.js';
+import {
+  renderCalendarView,
+  openCalendarEventActions,
+  closeCalendarEventActions,
+  openCalendarMeetingNotes,
+  closeCalendarMeetingNotes,
+  updateCalendarMeetingNotesContent
+} from './ui/calendar-view.js';
 import { createPrayerInput, createToggle, createNumberInput, createCounter, createScoreCard, createCard } from './ui/input-builders.js';
 import {
   openMobileDrawer, closeMobileDrawer, renderMobileDrawer, renderBottomNav,
@@ -211,6 +218,8 @@ Object.assign(window, {
   getGCalEventsForDate, pushTaskToGCalIfConnected, deleteGCalEventIfConnected,
   syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
   initGCalSync, toggleCalendarSelection,
+  openCalendarEventActions, closeCalendarEventActions,
+  openCalendarMeetingNotes, closeCalendarMeetingNotes, updateCalendarMeetingNotesContent,
 
   // Scoring
   parsePrayer, calcPrayerScore, invalidateScoresCache,
@@ -261,7 +270,7 @@ Object.assign(window, {
 
   // Calendar
   calendarPrevMonth, calendarNextMonth, calendarGoToday,
-  calendarSelectDate, getTasksForDate,
+  calendarSelectDate, getTasksForDate, setCalendarViewMode,
 
   // Undo Toast
   startUndoCountdown, executeUndo, dismissUndo, renderUndoToastHtml,
@@ -327,7 +336,9 @@ const stateProxies = [
   'modalIsNote', 'modalRepeatEnabled', 'modalStateInitialized',
   'draggedTaskId', 'dragOverTaskId', 'dragPosition',
   'draggedSidebarItem', 'draggedSidebarType', 'sidebarDragPosition',
-  'calendarMonth', 'calendarYear', 'calendarSelectedDate',
+  'calendarMonth', 'calendarYear', 'calendarSelectedDate', 'calendarViewMode',
+  'calendarEventModalOpen', 'calendarEventModalCalendarId', 'calendarEventModalEventId',
+  'calendarMeetingNotesEventKey', 'meetingNotesByEvent',
   'currentDate', 'bulkMonth', 'bulkYear', 'bulkCategory',
   'tasksData', 'taskCategories', 'taskLabels', 'taskPeople',
   'customPerspectives', 'homeWidgets', 'allData',

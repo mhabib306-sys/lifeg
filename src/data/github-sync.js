@@ -18,7 +18,8 @@ import {
   TASK_LABELS_KEY,
   TASK_PEOPLE_KEY,
   PERSPECTIVES_KEY,
-  HOME_WIDGETS_KEY
+  HOME_WIDGETS_KEY,
+  MEETING_NOTES_KEY
 } from '../constants.js';
 
 // ---------------------------------------------------------------------------
@@ -172,6 +173,97 @@ function mergeCloudAllData(cloudAllData) {
   });
 }
 
+function parseTimestamp(value) {
+  const ts = value ? new Date(value).getTime() : 0;
+  return Number.isFinite(ts) ? ts : 0;
+}
+
+function mergeMeetingNotesData(cloudMeetingNotes = {}) {
+  if (!cloudMeetingNotes || typeof cloudMeetingNotes !== 'object') return;
+
+  const local = state.meetingNotesByEvent && typeof state.meetingNotesByEvent === 'object'
+    ? state.meetingNotesByEvent
+    : {};
+  const merged = { ...local };
+
+  Object.entries(cloudMeetingNotes).forEach(([eventKey, cloudNote]) => {
+    if (!cloudNote || typeof cloudNote !== 'object') return;
+    const localNote = merged[eventKey];
+    if (!localNote) {
+      merged[eventKey] = cloudNote;
+      return;
+    }
+    const localTs = parseTimestamp(localNote.updatedAt || localNote.createdAt);
+    const cloudTs = parseTimestamp(cloudNote.updatedAt || cloudNote.createdAt);
+    if (cloudTs > localTs) merged[eventKey] = cloudNote;
+  });
+
+  state.meetingNotesByEvent = merged;
+  localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(merged));
+}
+
+function isObjectRecord(value) {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function mergeEntityCollection(localItems = [], cloudItems = [], timestampFields = []) {
+  const localList = Array.isArray(localItems) ? localItems : [];
+  const cloudList = Array.isArray(cloudItems) ? cloudItems : [];
+  const byId = new Map();
+
+  localList.forEach(item => {
+    if (isObjectRecord(item) && item.id) byId.set(item.id, item);
+  });
+
+  cloudList.forEach(cloudItem => {
+    if (!isObjectRecord(cloudItem) || !cloudItem.id) return;
+    const localItem = byId.get(cloudItem.id);
+    if (!localItem) {
+      byId.set(cloudItem.id, cloudItem);
+      return;
+    }
+    if (!timestampFields.length) {
+      return; // Keep local on conflict when no timestamp exists.
+    }
+    const localTs = parseTimestamp(timestampFields.map(field => localItem[field]).find(Boolean));
+    const cloudTs = parseTimestamp(timestampFields.map(field => cloudItem[field]).find(Boolean));
+    if (cloudTs > localTs) byId.set(cloudItem.id, cloudItem);
+  });
+
+  localList.forEach(item => {
+    if (!isObjectRecord(item) || !item.id || byId.has(item.id)) return;
+    byId.set(item.id, item);
+  });
+
+  return Array.from(byId.values());
+}
+
+function mergeTaskCollectionsFromCloud(cloudData = {}) {
+  const mergedTasks = mergeEntityCollection(state.tasksData, cloudData.tasks, ['updatedAt', 'createdAt']);
+  state.tasksData = mergedTasks;
+  localStorage.setItem(TASKS_KEY, JSON.stringify(state.tasksData));
+
+  const mergedCategories = mergeEntityCollection(state.taskCategories, cloudData.taskCategories);
+  state.taskCategories = mergedCategories;
+  localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
+
+  const mergedLabels = mergeEntityCollection(state.taskLabels, cloudData.taskLabels);
+  state.taskLabels = mergedLabels;
+  localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
+
+  const mergedPeople = mergeEntityCollection(state.taskPeople, cloudData.taskPeople);
+  state.taskPeople = mergedPeople;
+  localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
+
+  const mergedPerspectives = mergeEntityCollection(state.customPerspectives, cloudData.customPerspectives);
+  state.customPerspectives = mergedPerspectives;
+  localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(state.customPerspectives));
+
+  const mergedWidgets = mergeEntityCollection(state.homeWidgets, cloudData.homeWidgets, ['updatedAt', 'createdAt']);
+  state.homeWidgets = mergedWidgets;
+  localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+}
+
 // ---------------------------------------------------------------------------
 // Save to GitHub
 // ---------------------------------------------------------------------------
@@ -212,6 +304,12 @@ export async function saveToGithub() {
         if (cloudData?.data) {
           mergeCloudAllData(cloudData.data);
         }
+        if (cloudData) {
+          mergeTaskCollectionsFromCloud(cloudData);
+        }
+        if (cloudData?.meetingNotesByEvent) {
+          mergeMeetingNotesData(cloudData.meetingNotesByEvent);
+        }
       } catch (mergeErr) {
         console.warn('Cloud merge skipped:', mergeErr.message);
       }
@@ -228,7 +326,8 @@ export async function saveToGithub() {
       taskLabels: state.taskLabels,
       taskPeople: state.taskPeople,
       customPerspectives: state.customPerspectives,
-      homeWidgets: state.homeWidgets
+      homeWidgets: state.homeWidgets,
+      meetingNotesByEvent: state.meetingNotesByEvent || {}
     };
 
     // Modern UTF-8 safe base64 encoding (replaces deprecated unescape)
@@ -349,29 +448,9 @@ export async function loadCloudData() {
           state.MAX_SCORES = cloudData.maxScores;
           localStorage.setItem(MAX_SCORES_KEY, JSON.stringify(state.MAX_SCORES));
         }
-        if (cloudData.tasks) {
-          state.tasksData = cloudData.tasks;
-          localStorage.setItem(TASKS_KEY, JSON.stringify(state.tasksData));
-        }
-        if (cloudData.taskCategories) {
-          state.taskCategories = cloudData.taskCategories;
-          localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
-        }
-        if (cloudData.taskLabels) {
-          state.taskLabels = cloudData.taskLabels;
-          localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
-        }
-        if (cloudData.taskPeople) {
-          state.taskPeople = cloudData.taskPeople;
-          localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
-        }
-        if (cloudData.customPerspectives) {
-          state.customPerspectives = cloudData.customPerspectives;
-          localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(state.customPerspectives));
-        }
-        if (cloudData.homeWidgets) {
-          state.homeWidgets = cloudData.homeWidgets;
-          localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+        mergeTaskCollectionsFromCloud(cloudData);
+        if (cloudData.meetingNotesByEvent) {
+          mergeMeetingNotesData(cloudData.meetingNotesByEvent);
         }
         console.log('Loaded from GitHub');
         updateSyncStatus('success', 'Loaded from GitHub');
@@ -383,36 +462,14 @@ export async function loadCloudData() {
     const response = await fetch(DATA_URL + '?t=' + Date.now());
     if (response.ok) {
       const cloudData = await response.json();
-      const localData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-
       mergeLifeData(cloudData);
       if (cloudData.weights) {
         state.WEIGHTS = cloudData.weights;
         localStorage.setItem(WEIGHTS_KEY, JSON.stringify(state.WEIGHTS));
       }
-      if (cloudData.tasks) {
-        state.tasksData = cloudData.tasks;
-        localStorage.setItem(TASKS_KEY, JSON.stringify(state.tasksData));
-      }
-      if (cloudData.taskCategories) {
-        state.taskCategories = cloudData.taskCategories;
-        localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
-      }
-      if (cloudData.taskLabels) {
-        state.taskLabels = cloudData.taskLabels;
-        localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
-      }
-      if (cloudData.taskPeople) {
-        state.taskPeople = cloudData.taskPeople;
-        localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
-      }
-      if (cloudData.customPerspectives) {
-        state.customPerspectives = cloudData.customPerspectives;
-        localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(state.customPerspectives));
-      }
-      if (cloudData.homeWidgets) {
-        state.homeWidgets = cloudData.homeWidgets;
-        localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+      mergeTaskCollectionsFromCloud(cloudData);
+      if (cloudData.meetingNotesByEvent) {
+        mergeMeetingNotesData(cloudData.meetingNotesByEvent);
       }
       console.log('Cloud data synced (static file)');
       invalidateScoresCache();

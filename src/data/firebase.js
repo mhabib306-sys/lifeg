@@ -41,20 +41,34 @@ export function getCurrentUser() {
   return auth.currentUser;
 }
 
-export async function signInWithGoogleCalendar() {
+export async function signInWithGoogleCalendar(options = {}) {
+  const { mode = 'interactive' } = options;
   const provider = new GoogleAuthProvider();
   provider.addScope('https://www.googleapis.com/auth/calendar');
+  const customParams = { include_granted_scopes: 'true' };
+  if (mode === 'silent') {
+    customParams.prompt = 'none';
+    if (auth.currentUser?.email) customParams.login_hint = auth.currentUser.email;
+  } else {
+    customParams.prompt = 'consent';
+  }
+  provider.setCustomParameters(customParams);
   try {
     const result = await signInWithPopup(auth, provider);
     const credential = GoogleAuthProvider.credentialFromResult(result);
-    if (credential && credential.accessToken) {
-      localStorage.setItem(GCAL_ACCESS_TOKEN_KEY, credential.accessToken);
+    const accessToken = credential?.accessToken || result?._tokenResponse?.oauthAccessToken || null;
+    if (accessToken) {
+      localStorage.setItem(GCAL_ACCESS_TOKEN_KEY, accessToken);
       localStorage.setItem(GCAL_TOKEN_TIMESTAMP_KEY, String(Date.now()));
-      return credential.accessToken;
+      return accessToken;
     }
     return null;
   } catch (err) {
-    console.error('Google Calendar sign-in failed:', err);
+    if (mode !== 'silent') {
+      console.error('Google Calendar sign-in failed:', err);
+    } else {
+      console.warn('Silent Google Calendar refresh failed:', err?.code || err?.message || err);
+    }
     return null;
   }
 }

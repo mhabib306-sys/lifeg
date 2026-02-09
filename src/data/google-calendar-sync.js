@@ -15,8 +15,48 @@ import {
 const GCAL_API = 'https://www.googleapis.com/calendar/v3';
 const TOKEN_MAX_AGE_MS = 55 * 60 * 1000; // 55 minutes (tokens last ~60 min)
 const SYNC_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
+const GCAL_FETCH_TIMEOUT_MS = 15000; // Prevent indefinite loading on hung requests
 
 let syncIntervalId = null;
+let tokenRefreshPromise = null;
+
+function detectMeetingProvider(url = '') {
+  const u = String(url).toLowerCase();
+  if (u.includes('meet.google.com') || u.includes('google.com/meet')) return 'Google Meet';
+  if (u.includes('zoom.us')) return 'Zoom';
+  if (u.includes('teams.microsoft.com')) return 'Microsoft Teams';
+  return '';
+}
+
+function extractMeetingLink(event) {
+  const candidates = [];
+  if (event?.hangoutLink) candidates.push(event.hangoutLink);
+
+  const entryPoints = event?.conferenceData?.entryPoints || [];
+  entryPoints.forEach(ep => {
+    if (ep?.uri) candidates.push(ep.uri);
+  });
+
+  const urlRegex = /(https?:\/\/[^\s<>"')]+)/gi;
+  const descriptionLinks = String(event?.description || '').match(urlRegex) || [];
+  const locationLinks = String(event?.location || '').match(urlRegex) || [];
+  candidates.push(...descriptionLinks, ...locationLinks);
+
+  const preferred = candidates.find(link => detectMeetingProvider(link));
+  const meetingLink = preferred || candidates[0] || '';
+  return {
+    meetingLink,
+    meetingProvider: detectMeetingProvider(meetingLink),
+  };
+}
+
+function isCancelledEvent(event) {
+  if (!event) return false;
+  if (event.status === 'cancelled') return true;
+  const summary = String(event.summary || '').trim();
+  if (/^cance(?:l|ll)ed\b[:\s-]*/i.test(summary)) return true;
+  return false;
+}
 
 // ---- Config getters/setters (localStorage-backed) ----
 
@@ -62,57 +102,153 @@ export function isTokenValid() {
 
 function handleTokenExpired() {
   state.gcalTokenExpired = true;
+  state.gcalError = 'Google Calendar session expired. Reconnect to continue.';
   window.render();
+}
+
+async function refreshAccessTokenSilent() {
+  if (tokenRefreshPromise) return tokenRefreshPromise;
+
+  tokenRefreshPromise = (async () => {
+    try {
+      const token = await window.signInWithGoogleCalendar?.({ mode: 'silent' });
+      if (token) {
+        state.gcalTokenExpired = false;
+        state.gcalError = null;
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.warn('Silent token refresh error:', err);
+      return false;
+    } finally {
+      tokenRefreshPromise = null;
+    }
+  })();
+
+  return tokenRefreshPromise;
+}
+
+async function ensureValidToken() {
+  if (isTokenValid()) return true;
+  const refreshed = await refreshAccessTokenSilent();
+  if (!refreshed) {
+    handleTokenExpired();
+    return false;
+  }
+  return true;
 }
 
 // ---- API helper ----
 
 async function gcalFetch(endpoint, options = {}) {
+  const tokenOk = await ensureValidToken();
+  if (!tokenOk) return null;
   const token = getAccessToken();
-  if (!token) { handleTokenExpired(); return null; }
 
-  const res = await fetch(`${GCAL_API}${endpoint}`, {
-    ...options,
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), GCAL_FETCH_TIMEOUT_MS);
+  if (options.signal) {
+    if (options.signal.aborted) controller.abort();
+    else options.signal.addEventListener('abort', () => controller.abort(), { once: true });
+  }
 
-  if (res.status === 401) {
-    handleTokenExpired();
+  const { signal: _ignoredSignal, _retry401, ...restOptions } = options;
+
+  try {
+    const res = await fetch(`${GCAL_API}${endpoint}`, {
+      ...restOptions,
+      signal: controller.signal,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      },
+    });
+
+    if (res.status === 401) {
+      const refreshed = options._retry401 ? false : await refreshAccessTokenSilent();
+      if (refreshed) {
+        return gcalFetch(endpoint, { ...options, _retry401: true });
+      }
+      handleTokenExpired();
+      return null;
+    }
+
+    if (!res.ok) {
+      let apiMessage = '';
+      try {
+        const errBody = await res.json();
+        apiMessage = errBody?.error?.message || '';
+      } catch { /* ignore parse errors */ }
+
+      if (res.status === 403) {
+        state.gcalError = 'Calendar access was denied. Reconnect and grant Calendar permissions.';
+      } else if (apiMessage) {
+        state.gcalError = `Google Calendar error: ${apiMessage}`;
+      } else {
+        state.gcalError = `Google Calendar request failed (${res.status}).`;
+      }
+
+      console.warn(`GCal API error: ${res.status} ${endpoint}${apiMessage ? ` — ${apiMessage}` : ''}`);
+      return null;
+    }
+
+    state.gcalError = null;
+    if (res.status === 204) return {}; // DELETE returns no body
+    return res.json();
+  } catch (err) {
+    if (err?.name === 'AbortError') {
+      state.gcalError = 'Google Calendar request timed out. Check connection and try again.';
+    } else {
+      state.gcalError = 'Network error while contacting Google Calendar.';
+    }
+    console.warn('GCal network error:', err);
     return null;
+  } finally {
+    clearTimeout(timeoutId);
   }
-  if (!res.ok) {
-    console.warn(`GCal API error: ${res.status} ${endpoint}`);
-    return null;
-  }
-  if (res.status === 204) return {}; // DELETE returns no body
-  return res.json();
 }
 
 // ---- Read functions ----
 
 export async function fetchCalendarList() {
-  const data = await gcalFetch('/users/me/calendarList?minAccessRole=reader');
-  if (!data || !data.items) return;
-  state.gcalCalendarList = data.items.map(c => ({
-    id: c.id,
-    summary: c.summary || c.id,
-    backgroundColor: c.backgroundColor || '#4285f4',
-    primary: !!c.primary,
-    accessRole: c.accessRole,
-  }));
+  state.gcalCalendarsLoading = true;
+  state.gcalError = null;
+  window.render();
 
-  // Auto-select all calendars on first connect if none selected
-  if (getSelectedCalendars().length === 0) {
-    setSelectedCalendars(state.gcalCalendarList.map(c => c.id));
-  }
-  // Auto-set target to primary calendar if not set
-  if (!getTargetCalendar()) {
-    const primary = state.gcalCalendarList.find(c => c.primary);
-    if (primary) setTargetCalendar(primary.id);
+  try {
+    const data = await gcalFetch('/users/me/calendarList?minAccessRole=reader');
+    if (!data || !Array.isArray(data.items)) return false;
+
+    state.gcalCalendarList = data.items.map(c => ({
+      id: c.id,
+      summary: c.summary || c.id,
+      backgroundColor: c.backgroundColor || '#4285f4',
+      primary: !!c.primary,
+      accessRole: c.accessRole,
+    }));
+
+    // Auto-select all calendars on first connect if none selected
+    if (getSelectedCalendars().length === 0) {
+      setSelectedCalendars(state.gcalCalendarList.map(c => c.id));
+    }
+
+    // Auto-set target to primary calendar if not set
+    if (!getTargetCalendar()) {
+      const primary = state.gcalCalendarList.find(c => c.primary);
+      if (primary) setTargetCalendar(primary.id);
+    }
+
+    // Fallback target if no primary was found
+    if (!getTargetCalendar() && state.gcalCalendarList.length > 0) {
+      setTargetCalendar(state.gcalCalendarList[0].id);
+    }
+
+    return true;
+  } finally {
+    state.gcalCalendarsLoading = false;
+    window.render();
   }
 }
 
@@ -123,41 +259,51 @@ export async function fetchEventsForRange(timeMin, timeMax) {
   state.gcalSyncing = true;
   window.render();
 
-  const allEvents = [];
-  for (const calId of selected) {
-    const params = new URLSearchParams({
-      timeMin: new Date(timeMin).toISOString(),
-      timeMax: new Date(timeMax).toISOString(),
-      singleEvents: 'true',
-      orderBy: 'startTime',
-      maxResults: '250',
-    });
-    const data = await gcalFetch(`/calendars/${encodeURIComponent(calId)}/events?${params}`);
-    if (data && data.items) {
-      data.items.forEach(e => {
-        allEvents.push({
-          id: e.id,
-          calendarId: calId,
-          summary: e.summary || '(No title)',
-          description: e.description || '',
-          start: e.start,
-          end: e.end,
-          htmlLink: e.htmlLink || '',
-          allDay: !!e.start.date,
-        });
+  try {
+    const allEvents = [];
+    for (const calId of selected) {
+      const params = new URLSearchParams({
+        timeMin: new Date(timeMin).toISOString(),
+        timeMax: new Date(timeMax).toISOString(),
+        singleEvents: 'true',
+        orderBy: 'startTime',
+        maxResults: '250',
       });
+      const data = await gcalFetch(`/calendars/${encodeURIComponent(calId)}/events?${params}`);
+      if (data && data.items) {
+        data.items.forEach(e => {
+          if (isCancelledEvent(e)) return;
+          const { meetingLink, meetingProvider } = extractMeetingLink(e);
+          allEvents.push({
+            id: e.id,
+            calendarId: calId,
+            status: e.status || '',
+            summary: e.summary || '(No title)',
+            description: e.description || '',
+            start: e.start,
+            end: e.end,
+            location: e.location || '',
+            htmlLink: e.htmlLink || '',
+            meetingLink,
+            meetingProvider,
+            allDay: !!e.start.date,
+          });
+        });
+      }
     }
-  }
 
-  state.gcalEvents = allEvents;
-  state.gcalSyncing = false;
-  localStorage.setItem(GCAL_EVENTS_CACHE_KEY, JSON.stringify(allEvents));
-  localStorage.setItem(GCAL_LAST_SYNC_KEY, String(Date.now()));
-  window.render();
+    state.gcalEvents = allEvents;
+    localStorage.setItem(GCAL_EVENTS_CACHE_KEY, JSON.stringify(allEvents));
+    localStorage.setItem(GCAL_LAST_SYNC_KEY, String(Date.now()));
+  } finally {
+    state.gcalSyncing = false;
+    window.render();
+  }
 }
 
 export function getGCalEventsForDate(dateStr) {
   return state.gcalEvents.filter(e => {
+    if (isCancelledEvent(e)) return false;
     if (e.allDay) {
       // Google uses exclusive end date for all-day events
       const start = e.start.date;
@@ -224,14 +370,16 @@ export async function deleteGCalEvent(task) {
 }
 
 export async function pushTaskToGCalIfConnected(task) {
-  if (!isGCalConnected() || !isTokenValid()) return;
+  if (!isGCalConnected()) return;
+  if (!(await ensureValidToken())) return;
   if (task.isNote) return;
   if (!task.deferDate && !task.dueDate) return;
   try { await pushTaskToGCal(task); } catch (err) { console.warn('GCal push failed:', err); }
 }
 
 export async function deleteGCalEventIfConnected(task) {
-  if (!isGCalConnected() || !isTokenValid()) return;
+  if (!isGCalConnected()) return;
+  if (!(await ensureValidToken())) return;
   if (!task.gcalEventId) return;
   try { await deleteGCalEvent(task); } catch (err) { console.warn('GCal delete failed:', err); }
 }
@@ -243,8 +391,9 @@ export async function connectGCal() {
   if (!token) return;
   localStorage.setItem(GCAL_CONNECTED_KEY, 'true');
   state.gcalTokenExpired = false;
-  await fetchCalendarList();
-  await syncGCalNow();
+  state.gcalError = null;
+  const loaded = await fetchCalendarList();
+  if (loaded) await syncGCalNow();
   window.render();
 }
 
@@ -258,6 +407,8 @@ export function disconnectGCal() {
   localStorage.removeItem(GCAL_LAST_SYNC_KEY);
   state.gcalEvents = [];
   state.gcalCalendarList = [];
+  state.gcalCalendarsLoading = false;
+  state.gcalError = null;
   state.gcalSyncing = false;
   state.gcalTokenExpired = false;
   if (syncIntervalId) { clearInterval(syncIntervalId); syncIntervalId = null; }
@@ -268,13 +419,16 @@ export async function reconnectGCal() {
   const token = await window.signInWithGoogleCalendar();
   if (!token) return;
   state.gcalTokenExpired = false;
-  await fetchCalendarList();
-  await syncGCalNow();
+  state.gcalError = null;
+  const loaded = await fetchCalendarList();
+  if (loaded) await syncGCalNow();
   window.render();
 }
 
 export async function syncGCalNow() {
-  if (!isGCalConnected() || !isTokenValid()) return;
+  if (!isGCalConnected()) return;
+  if (!(await ensureValidToken())) return;
+  if ((state.gcalCalendarList || []).length === 0) return;
   // Fetch events for current month +/- 1 month
   const year = state.calendarYear;
   const month = state.calendarMonth;
@@ -302,19 +456,21 @@ export function initGCalSync() {
   // Load cached events
   try {
     const cached = localStorage.getItem(GCAL_EVENTS_CACHE_KEY);
-    if (cached) state.gcalEvents = JSON.parse(cached);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      state.gcalEvents = Array.isArray(parsed) ? parsed.filter(e => !isCancelledEvent(e)) : [];
+      localStorage.setItem(GCAL_EVENTS_CACHE_KEY, JSON.stringify(state.gcalEvents));
+    }
   } catch { /* ignore */ }
 
   if (!isGCalConnected()) return;
 
-  // Check token validity
-  if (!isTokenValid()) {
-    state.gcalTokenExpired = true;
-    return;
-  }
-
-  // Load calendar list, then sync
-  fetchCalendarList().then(() => syncGCalNow());
+  const startSync = async () => {
+    if (!(await ensureValidToken())) return;
+    const loaded = await fetchCalendarList();
+    if (loaded) syncGCalNow();
+  };
+  startSync();
 
   // Periodic sync every 30 minutes
   syncIntervalId = setInterval(() => {

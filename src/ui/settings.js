@@ -107,6 +107,8 @@ function renderWhoopSettingsCard() {
 function renderGCalSettingsCard() {
   const connected = isGCalConnected();
   const tokenExpired = state.gcalTokenExpired;
+  const calendarsLoading = state.gcalCalendarsLoading;
+  const gcalError = state.gcalError;
   const calendars = state.gcalCalendarList || [];
   const selected = getSelectedCalendars();
   const targetCal = getTargetCalendar();
@@ -160,7 +162,16 @@ function renderGCalSettingsCard() {
       <h3 class="font-semibold text-charcoal mb-4">Google Calendar <span class="text-coral">→</span></h3>
       <p class="text-sm text-charcoal/50 mb-4">Select calendars to show events from and choose which calendar to push tasks to.</p>
 
-      ${calendars.length > 0 ? `
+      ${calendarsLoading ? `
+        <p class="text-sm text-charcoal/40 mb-4">Loading calendars...</p>
+      ` : gcalError ? `
+        <div class="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
+          <p class="text-sm text-amber-800">${gcalError}</p>
+          <button onclick="window.fetchCalendarList()" class="mt-2 px-3 py-1.5 bg-white border border-amber-300 rounded text-xs font-medium text-amber-800 hover:bg-amber-100 transition">
+            Retry loading calendars
+          </button>
+        </div>
+      ` : calendars.length > 0 ? `
         <div class="mb-4">
           <label class="text-sm text-charcoal/70 block mb-2">Show events from:</label>
           <div class="space-y-1.5 max-h-40 overflow-y-auto">
@@ -185,7 +196,7 @@ function renderGCalSettingsCard() {
             `).join('')}
           </select>
         </div>
-      ` : '<p class="text-sm text-charcoal/40 mb-4">Loading calendars...</p>'}
+      ` : '<p class="text-sm text-charcoal/40 mb-4">No calendars found for this account.</p>'}
 
       <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
         <button onclick="window.syncGCalNow()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">

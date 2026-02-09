@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents (Claude Code, Codex, etc.) when 
 
 ## Project Overview
 
-**Homebase** (v4.9.0 - Homebase) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
+**Homebase** (v4.10.1 - Homebase) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
 
 ## Git Workflow
 
@@ -130,7 +130,7 @@ onclick handlers go through `window.functionName()` (via bridge), not direct imp
 - `state.allData` — Daily tracking entries keyed by `YYYY-MM-DD`
 - `state.tasksData` — Array of task objects
 - `state.taskCategories` / `state.taskLabels` / `state.taskPeople` — Entity arrays
-- `state.activeTab` — Current tab: `'home'` | `'tasks'` | `'life'` | `'settings'`
+- `state.activeTab` — Current tab: `'home'` | `'tasks'` | `'life'` | `'calendar'` | `'settings'`
 - `state.activeFilterType` / `state.activePerspective` — Task view filtering state
 - `state.currentDate` — Selected date for tracking (YYYY-MM-DD)
 
@@ -140,11 +140,12 @@ CSS custom properties in `src/styles/themes.css` — `:root` (simplebits) and `[
 
 ## localStorage Keys
 
-All prefixed with `lifeGamification`: `Data_v3`, `Weights_v1`, `Tasks`, `TaskCategories`, `TaskLabels`, `TaskPeople`, `Perspectives`, `HomeWidgets`, `Theme`, `GithubToken`, `ViewState`. Also `nucleusWeatherCache`, `nucleusWeatherLocation`, `collapsedNotes`, `nucleusWhoopWorkerUrl`, `nucleusWhoopApiKey`, `nucleusWhoopLastSync`, `nucleusWhoopConnected`, `nucleusGCalAccessToken`, `nucleusGCalTokenTimestamp`, `nucleusGCalSelectedCalendars`, `nucleusGCalTargetCalendar`, `nucleusGCalEventsCache`, `nucleusGCalLastSync`, `nucleusGCalConnected`.
+All prefixed with `lifeGamification`: `Data_v3`, `Weights_v1`, `Tasks`, `TaskCategories`, `TaskLabels`, `TaskPeople`, `Perspectives`, `HomeWidgets`, `Theme`, `GithubToken`, `ViewState`. Also `nucleusWeatherCache`, `nucleusWeatherLocation`, `collapsedNotes`, `nucleusWhoopWorkerUrl`, `nucleusWhoopApiKey`, `nucleusWhoopLastSync`, `nucleusWhoopConnected`, `nucleusGCalAccessToken`, `nucleusGCalTokenTimestamp`, `nucleusGCalSelectedCalendars`, `nucleusGCalTargetCalendar`, `nucleusGCalEventsCache`, `nucleusGCalLastSync`, `nucleusGCalConnected`, `nucleusMeetingNotes`.
 
 ## Important Patterns
 
 - **After any state mutation**, call `saveTasksData()` (or the relevant save function) then `window.render()`
+- **Cross-device by default for new features**: any new user-generated entity must be persisted locally and included in GitHub cloud sync (`saveToGithub` payload + `loadCloudData` restore/merge). Do not ship local-only data unless explicitly requested.
 - **Scores cache**: Call `invalidateScoresCache()` when changing weights, max scores, or tracking data
 - **Window bridge**: All functions called from onclick handlers must be on `window.*` via `bridge.js`. Use `window.render()` and `window.debouncedSaveToGithub()` to avoid circular imports.
 - **State proxies**: `bridge.js` creates `Object.defineProperty` proxies on `window` for state properties, so `onclick="editingTaskId='abc'; render()"` works

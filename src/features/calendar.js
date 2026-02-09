@@ -7,9 +7,30 @@
 import { state } from '../state.js';
 import { getLocalDateString } from '../utils.js';
 
+function shiftSelectedDate(days) {
+  const base = new Date(state.calendarSelectedDate + 'T12:00:00');
+  base.setDate(base.getDate() + days);
+  const dateStr = `${base.getFullYear()}-${String(base.getMonth() + 1).padStart(2, '0')}-${String(base.getDate()).padStart(2, '0')}`;
+  state.calendarSelectedDate = dateStr;
+  state.calendarMonth = base.getMonth();
+  state.calendarYear = base.getFullYear();
+}
+
 // ---- Navigation ----
 
 export function calendarPrevMonth() {
+  if (state.calendarViewMode === 'week') {
+    shiftSelectedDate(-7);
+    if (window.isGCalConnected?.()) window.syncGCalNow?.();
+    window.render();
+    return;
+  }
+  if (state.calendarViewMode === '3days') {
+    shiftSelectedDate(-3);
+    if (window.isGCalConnected?.()) window.syncGCalNow?.();
+    window.render();
+    return;
+  }
   state.calendarMonth--;
   if (state.calendarMonth < 0) { state.calendarMonth = 11; state.calendarYear--; }
   if (window.isGCalConnected?.()) window.syncGCalNow?.();
@@ -17,6 +38,18 @@ export function calendarPrevMonth() {
 }
 
 export function calendarNextMonth() {
+  if (state.calendarViewMode === 'week') {
+    shiftSelectedDate(7);
+    if (window.isGCalConnected?.()) window.syncGCalNow?.();
+    window.render();
+    return;
+  }
+  if (state.calendarViewMode === '3days') {
+    shiftSelectedDate(3);
+    if (window.isGCalConnected?.()) window.syncGCalNow?.();
+    window.render();
+    return;
+  }
   state.calendarMonth++;
   if (state.calendarMonth > 11) { state.calendarMonth = 0; state.calendarYear++; }
   if (window.isGCalConnected?.()) window.syncGCalNow?.();
@@ -28,6 +61,13 @@ export function calendarGoToday() {
   state.calendarMonth = now.getMonth();
   state.calendarYear = now.getFullYear();
   state.calendarSelectedDate = getLocalDateString();
+  window.render();
+}
+
+export function setCalendarViewMode(mode) {
+  if (!['month', 'week', '3days'].includes(mode)) return;
+  state.calendarViewMode = mode;
+  if (window.isGCalConnected?.()) window.syncGCalNow?.();
   window.render();
 }
 

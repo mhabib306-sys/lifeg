@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.9.0 - Homebase';
+export const APP_VERSION = '4.10.1 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -102,6 +102,7 @@ export const GCAL_TARGET_CALENDAR_KEY = 'nucleusGCalTargetCalendar';
 export const GCAL_EVENTS_CACHE_KEY = 'nucleusGCalEventsCache';
 export const GCAL_LAST_SYNC_KEY = 'nucleusGCalLastSync';
 export const GCAL_CONNECTED_KEY = 'nucleusGCalConnected';
+export const MEETING_NOTES_KEY = 'nucleusMeetingNotes';
 
 // Default home widgets configuration
 export const DEFAULT_HOME_WIDGETS = [

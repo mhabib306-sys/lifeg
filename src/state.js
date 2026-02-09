@@ -31,6 +31,7 @@ import {
   DEFAULT_MAX_SCORES,
   MAX_SCORES_KEY,
   WEIGHTS_KEY,
+  MEETING_NOTES_KEY,
 } from './constants.js';
 
 // ---------------------------------------------------------------------------
@@ -117,7 +118,7 @@ if (initialActiveTab === 'track' || initialActiveTab === 'bulk' || initialActive
   initialActiveTab = 'life';
 }
 // Ensure valid tab values
-if (!['home', 'life', 'tasks', 'settings'].includes(initialActiveTab)) {
+if (!['home', 'life', 'tasks', 'calendar', 'settings'].includes(initialActiveTab)) {
   initialActiveTab = 'home';
 }
 
@@ -198,6 +199,12 @@ export const state = {
   calendarMonth: new Date().getMonth(),   // 0-11
   calendarYear: new Date().getFullYear(),
   calendarSelectedDate: getLocalDateString(),
+  calendarViewMode: 'month',    // 'month' | 'week' | '3days'
+  calendarEventModalOpen: false,
+  calendarEventModalCalendarId: null,
+  calendarEventModalEventId: null,
+  calendarMeetingNotesEventKey: null,
+  meetingNotesByEvent: safeJsonParse(MEETING_NOTES_KEY, {}),
 
   // ---- Task editing state ----
   editingTaskId: null,
@@ -272,6 +279,8 @@ export const state = {
   // ---- Google Calendar ----
   gcalEvents: [],            // Cached Google Calendar events
   gcalCalendarList: [],      // Available calendars from user's account
+  gcalCalendarsLoading: false, // True while loading calendar list
+  gcalError: null,           // Last Google Calendar error message
   gcalSyncing: false,        // True during active sync
   gcalTokenExpired: false,   // True when token needs refresh
 

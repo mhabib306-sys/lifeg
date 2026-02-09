@@ -133,6 +133,15 @@ export function showLabelTasks(labelId) {
  * @param {string} perspectiveId - The perspective ID to activate
  */
 export function showPerspectiveTasks(perspectiveId) {
+  if (perspectiveId === 'calendar') {
+    closeMobileDrawer();
+    state.activeTab = 'calendar';
+    saveViewState();
+    window.render();
+    scrollToContent();
+    return;
+  }
+
   state.activeFilterType = 'perspective';
   state.activePerspective = perspectiveId;
   state.activeCategoryFilter = null;

@@ -62,6 +62,7 @@ function initApp() {
     .catch(err => {
       console.warn('Cloud data load failed (will use local):', err.message);
       initWhoopSync();
+      initGCalSync();
     });
 
   // Initialize weather

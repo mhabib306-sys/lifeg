@@ -122,6 +122,7 @@ function getGithubToken() {
 export function render() {
   try {
     const app = document.getElementById('app');
+    const isCalendarTabActive = state.activeTab === 'calendar';
 
     // ---- Auth gate: loading spinner ----
     if (state.authLoading) {
@@ -187,7 +188,7 @@ export function render() {
           `}
         </div>
         <div class="mobile-header-center">
-          <h1 class="mobile-header-title text-[17px] font-bold text-[var(--text-primary)] truncate">${state.activeTab === 'home' ? 'Homebase' : state.activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : state.activeTab === 'life' ? 'Life Score' : 'Settings'}</h1>
+          <h1 class="mobile-header-title text-[17px] font-bold text-[var(--text-primary)] truncate">${state.activeTab === 'home' ? 'Homebase' : state.activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : state.activeTab === 'life' ? 'Life Score' : state.activeTab === 'calendar' ? 'Calendar' : 'Settings'}</h1>
           <span class="mobile-version text-[10px] font-semibold text-[var(--text-muted)]">v${APP_VERSION}</span>
         </div>
         <div class="w-10 flex items-center justify-end">
@@ -197,6 +198,10 @@ export function render() {
             </button>
           ` : state.activeTab === 'settings' ? `
             <span class="w-8 h-8"></span>
+          ` : state.activeTab === 'calendar' ? `
+            <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center shadow-sm active:opacity-80 transition" aria-label="New task">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
           ` : `
             <button onclick="setToday()" class="mobile-header-action text-[13px] font-semibold text-[var(--accent)] active:opacity-60">Today</button>
           `}
@@ -254,6 +259,9 @@ export function render() {
             <button onclick="switchTab('life')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'life' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
               ${THINGS3_ICONS.lifeScore} Life Score
             </button>
+            <button onclick="switchTab('calendar')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${isCalendarTabActive ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+              ${THINGS3_ICONS.calendar} Calendar
+            </button>
             <button onclick="switchTab('settings')" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'settings' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
               ${THINGS3_ICONS.settings} Settings
             </button>
@@ -283,12 +291,19 @@ export function render() {
       <main class="max-w-6xl mx-auto px-6 py-8">
         ${state.activeTab === 'home' ? renderHomeTab() :
           state.activeTab === 'life' ? (state.activeSubTab === 'daily' ? renderTrackingTab() : state.activeSubTab === 'bulk' ? renderBulkEntryTab() : renderDashboardTab()) :
+          state.activeTab === 'calendar' ? (typeof window.renderCalendarView === 'function' ? window.renderCalendarView() : '<div class="p-8 text-center text-[var(--text-muted)]">Loading calendar...</div>') :
           state.activeTab === 'tasks' ? renderTasksTab() :
           renderSettingsTab()}
       </main>
 
       <footer class="border-t border-softborder py-8 mt-12">
-        <p class="text-center text-charcoal/40 text-sm">${getGithubToken() ? 'Data synced to GitHub' : 'Data saved locally'} <span class="text-coral">\u2022</span> Homebase</p>
+        <div class="flex flex-col items-center gap-3">
+          <button onclick="window.forceHardRefresh()" class="px-4 py-2 bg-coral/10 text-coral rounded-lg text-sm font-medium hover:bg-coral/20 transition inline-flex items-center gap-2">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>
+            Force Hard Refresh
+          </button>
+          <p class="text-center text-charcoal/40 text-sm">${getGithubToken() ? 'Data synced to GitHub' : 'Data saved locally'} <span class="text-coral">\u2022</span> Homebase</p>
+        </div>
       </footer>
 
       <!-- Mobile Bottom Navigation (all tabs) -->
@@ -305,6 +320,10 @@ export function render() {
           <button onclick="switchTab('life')" class="mobile-nav-item ${state.activeTab === 'life' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'life'}">
             ${THINGS3_ICONS.lifeScore}
             <span class="mobile-nav-label">Life</span>
+          </button>
+          <button onclick="switchTab('calendar')" class="mobile-nav-item ${isCalendarTabActive ? 'active' : ''}" role="tab" aria-selected="${isCalendarTabActive}">
+            ${THINGS3_ICONS.calendar}
+            <span class="mobile-nav-label">Calendar</span>
           </button>
           <button onclick="switchTab('settings')" class="mobile-nav-item ${state.activeTab === 'settings' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'settings'}">
             ${THINGS3_ICONS.settings}
