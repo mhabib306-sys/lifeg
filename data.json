@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T19:28:34.972Z",
+  "lastUpdated": "2026-02-09T19:28:39.779Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2946,6 +2946,29 @@
       "createdAt": "2026-02-09T19:22:23.054Z",
       "updatedAt": "2026-02-09T19:22:23.054Z",
       "noteOrder": 12000
+    },
+    {
+      "id": "task_1770665317331_0ufby0muz",
+      "title": "Test bullet",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260209T083000Z",
+      "order": 41000,
+      "createdAt": "2026-02-09T19:28:37.331Z",
+      "updatedAt": "2026-02-09T19:28:37.331Z"
     }
   ],
   "taskCategories": [
