@@ -50,7 +50,7 @@ npm run deploy   # Build + force-push dist/ to gh-pages branch (GitHub Pages)
 - Deployment branch: `gh-pages`
 - Deploy command: `npm run deploy`
 
-**Always run `npm run build` after changes to verify the build succeeds.** If the user asks you to deploy, run `npm run deploy`.
+**Always run `npm run build` after changes to verify the build succeeds.** After committing and pushing to main, **always run `npm run deploy`** to deploy to GitHub Pages. Every change must go live.
 
 ## Module Structure
 
