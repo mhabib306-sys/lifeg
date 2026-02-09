@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T15:52:00.711Z",
+  "lastUpdated": "2026-02-09T15:52:14.868Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1959,9 +1959,9 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T23:30:12.754Z",
-      "updatedAt": "2026-02-09T15:51:57.947Z",
+      "updatedAt": "2026-02-09T15:52:12.357Z",
       "order": 1000,
-      "today": true,
+      "today": false,
       "flagged": false,
       "isNote": false
     },
