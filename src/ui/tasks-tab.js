@@ -39,11 +39,62 @@ function getTasksByLabel(labelId) {
 function renderCalendarView() {
   return window.renderCalendarView();
 }
-function renderNotesOutliner(categoryId) {
-  return window.renderNotesOutliner(categoryId);
+function renderNotesOutliner(filter) {
+  return window.renderNotesOutliner(filter);
 }
 function renderNotesBreadcrumb() {
   return window.renderNotesBreadcrumb();
+}
+
+// ============================================================================
+// buildLabelPersonNotesSection — Notes outliner for label/person views
+// ============================================================================
+function buildLabelPersonNotesSection(filteredTasks, viewInfo) {
+  const isLabelView = state.activeFilterType === 'label' && state.activeLabelFilter;
+  const isPersonView = state.activeFilterType === 'person' && state.activePersonFilter;
+  if (!isLabelView && !isPersonView) return '';
+
+  const noteCount = filteredTasks.filter(t => t.isNote).length;
+  const filterObj = isLabelView ? { labelId: state.activeLabelFilter } : { personId: state.activePersonFilter };
+  const filterArg = isLabelView ? `{labelId:'${state.activeLabelFilter}'}` : `{personId:'${state.activePersonFilter}'}`;
+
+  return `
+    <!-- Notes Section -->
+    <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden mt-4">
+      <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>
+          <span class="text-sm font-semibold text-charcoal">Notes</span>
+          <span class="text-xs text-charcoal/40 ml-1">${noteCount}</span>
+        </div>
+        <button onclick="window.createRootNote(${filterArg})"
+          class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-purple-600 hover:bg-purple-50 rounded-lg transition">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          Add Note
+        </button>
+      </div>
+      ${noteCount > 0 ? `
+        ${renderNotesBreadcrumb()}
+        <div class="py-2">${renderNotesOutliner(filterObj)}</div>
+        <div class="px-4 py-2 border-t border-[var(--border-light)]">
+          <button onclick="window.createRootNote(${filterArg})"
+            class="flex items-center gap-2 px-3 py-2 w-full text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50/50 rounded-lg transition text-left">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Add another note...
+          </button>
+        </div>
+      ` : `
+        <div class="px-4 py-8 text-center">
+          <p class="text-sm text-charcoal/40 mb-3">No notes here yet</p>
+          <button onclick="window.createRootNote(${filterArg})"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-600 text-sm font-medium rounded-lg hover:bg-purple-100 transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Create your first note
+          </button>
+        </div>
+      `}
+    </div>
+  `;
 }
 
 // ============================================================================
@@ -876,8 +927,9 @@ export function renderTasksTab() {
           ` : `
             <!-- Regular task list -->
             <div class="task-list">
-              ${filteredTasks.map(task => renderTaskItem(task)).join('')}
+              ${filteredTasks.filter(t => !t.isNote || !(state.activeFilterType === 'label' || state.activeFilterType === 'person')).map(task => renderTaskItem(task)).join('')}
             </div>
+            ${buildLabelPersonNotesSection(filteredTasks, viewInfo)}
           `))))}
         </div>
       </div>

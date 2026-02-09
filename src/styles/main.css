@@ -552,7 +552,7 @@ input[type="checkbox"]:focus {
 .note-item.has-children:not(.note-collapsed)::after {
   content: '';
   position: absolute;
-  top: 32px;
+  top: 34px;
   left: calc(26px + (var(--note-depth) * 24px));
   width: 1.5px;
   bottom: 0;
@@ -566,7 +566,7 @@ input[type="checkbox"]:focus {
   display: flex;
   align-items: flex-start;
   gap: 6px;
-  padding: 3px 12px 3px calc(12px + (var(--note-depth) * 24px));
+  padding: 5px 12px 5px calc(12px + (var(--note-depth) * 24px));
   position: relative;
   z-index: 1;
 }

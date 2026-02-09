@@ -423,9 +423,19 @@ function getOrderBetween(before, after) {
 // Data Helpers
 // ============================================================================
 
-function getFilteredNotes(categoryId = null) {
+function parseFilter(filter) {
+  if (!filter) return {};
+  if (typeof filter === 'string') return { categoryId: filter };
+  return filter;
+}
+
+function getFilteredNotes(filter = null) {
+  const { categoryId, labelId, personId } = parseFilter(filter);
   const all = state.tasksData.filter(t => t.isNote && !t.completed);
-  return categoryId ? all.filter(n => n.categoryId === categoryId) : all;
+  if (categoryId) return all.filter(n => n.categoryId === categoryId);
+  if (labelId) return all.filter(n => (n.labels || []).includes(labelId));
+  if (personId) return all.filter(n => (n.people || []).includes(personId));
+  return all;
 }
 
 function getChildrenByParent(notes) {
@@ -441,8 +451,8 @@ function getChildrenByParent(notes) {
   return map;
 }
 
-function normalizeNotesForCategory(categoryId = null) {
-  const notes = getFilteredNotes(categoryId).slice().sort(compareNotes);
+function normalizeNotesForCategory(filter = null) {
+  const notes = getFilteredNotes(filter).slice().sort(compareNotes);
   const notesById = new Map(notes.map(n => [n.id, n]));
   const normalized = notes.map(note => ({
     ...note,
@@ -475,8 +485,8 @@ function normalizeNotesForCategory(categoryId = null) {
   return ordered;
 }
 
-function getVisibleOrderedNotes(categoryId = null) {
-  const ordered = normalizeNotesForCategory(categoryId);
+function getVisibleOrderedNotes(filter = null) {
+  const ordered = normalizeNotesForCategory(filter);
   const byParent = getChildrenByParent(ordered);
   const visible = [];
 
@@ -500,10 +510,19 @@ function getVisibleOrderedNotes(categoryId = null) {
   return visible;
 }
 
-function getNavigationNotes(currentNote) {
+function getCurrentNoteFilter(currentNote) {
+  if (state.activeFilterType === 'label' && state.activeLabelFilter) {
+    return { labelId: state.activeLabelFilter };
+  }
+  if (state.activeFilterType === 'person' && state.activePersonFilter) {
+    return { personId: state.activePersonFilter };
+  }
   const categoryFilter = state.activeCategoryFilter || null;
-  const navCategory = categoryFilter || currentNote.categoryId || null;
-  return getVisibleOrderedNotes(navCategory);
+  return categoryFilter || currentNote?.categoryId || null;
+}
+
+function getNavigationNotes(currentNote) {
+  return getVisibleOrderedNotes(getCurrentNoteFilter(currentNote));
 }
 
 function persistAndRender(focusId = null) {
@@ -536,8 +555,8 @@ export function toggleNoteCollapse(noteId) {
 // Hierarchy Helpers
 // ============================================================================
 
-export function getNotesHierarchy(categoryId = null) {
-  return normalizeNotesForCategory(categoryId);
+export function getNotesHierarchy(filter = null) {
+  return normalizeNotesForCategory(filter);
 }
 
 export function noteHasChildren(noteId) {
@@ -605,7 +624,8 @@ export function getNoteAncestors(noteId) {
 // CRUD Operations
 // ============================================================================
 
-export function createRootNote(categoryId = null) {
+export function createRootNote(filter = null) {
+  const { categoryId = null, labelId = null, personId = null } = parseFilter(filter);
   const siblings = state.tasksData
     .filter(t => t.isNote && !t.completed && !t.parentId && (categoryId ? t.categoryId === categoryId : true))
     .sort(compareNotes);
@@ -623,8 +643,8 @@ export function createRootNote(categoryId = null) {
     completed: false,
     completedAt: null,
     categoryId,
-    labels: [],
-    people: [],
+    labels: labelId ? [labelId] : [],
+    people: personId ? [personId] : [],
     deferDate: null,
     dueDate: null,
     repeat: null,
@@ -644,7 +664,7 @@ export function indentNote(noteId) {
   const note = state.tasksData.find(t => t.id === noteId && t.isNote && !t.completed);
   if (!note) return;
 
-  const ordered = getNotesHierarchy(state.activeCategoryFilter || note.categoryId || null);
+  const ordered = getNotesHierarchy(getCurrentNoteFilter(note));
   const noteIdx = ordered.findIndex(n => n.id === noteId);
   if (noteIdx <= 0) return;
 
@@ -1029,7 +1049,7 @@ export function handleNoteBlur(event, noteId) {
   const newTitle = event.target.textContent.trim();
   const previousTitle = note.title || '';
 
-  if (newTitle === '' && previousTitle === '' && !noteHasChildren(noteId)) {
+  if (newTitle === '' && !noteHasChildren(noteId)) {
     deleteNote(noteId);
     return;
   }
@@ -1338,8 +1358,8 @@ export function renderNoteItem(note) {
   `;
 }
 
-export function renderNotesOutliner(categoryId = null) {
-  const visibleNotes = getVisibleOrderedNotes(categoryId);
+export function renderNotesOutliner(filter = null) {
+  const visibleNotes = getVisibleOrderedNotes(filter);
 
   if (visibleNotes.length === 0 && !state.zoomedNoteId) {
     return `
