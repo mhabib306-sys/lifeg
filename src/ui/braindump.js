@@ -246,7 +246,7 @@ function renderInputStep() {
         <div class="braindump-body">
           <textarea id="braindump-textarea" class="braindump-textarea"
             placeholder="Type freely... tasks, notes, ideas. One per line, or just let it flow."
-            oninput="state.braindumpRawText = this.value"
+            oninput="state.braindumpRawText = this.value; document.getElementById('braindump-process-btn').disabled = !this.value.trim(); var c = this.value.split('\\n').filter(l=>l.trim()).length; document.getElementById('braindump-count').textContent = c > 0 ? c + ' item' + (c!==1?'s':'') : '';"
           >${escapeHtml(state.braindumpRawText)}</textarea>
 
           <div class="braindump-tips">
@@ -258,8 +258,8 @@ function renderInputStep() {
         </div>
 
         <div class="braindump-footer">
-          ${lineCount > 0 ? `<span class="text-xs text-[var(--text-muted)]">${lineCount} item${lineCount !== 1 ? 's' : ''}</span>` : '<span></span>'}
-          <button onclick="processBraindump()" class="braindump-process-btn" ${!state.braindumpRawText.trim() ? 'disabled' : ''}>
+          <span id="braindump-count" class="text-xs text-[var(--text-muted)]">${lineCount > 0 ? `${lineCount} item${lineCount !== 1 ? 's' : ''}` : ''}</span>
+          <button id="braindump-process-btn" onclick="processBraindump()" class="braindump-process-btn" ${!state.braindumpRawText.trim() ? 'disabled' : ''}>
             Process
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
           </button>
