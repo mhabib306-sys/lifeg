@@ -2255,19 +2255,19 @@ input[type="checkbox"]:focus {
   background: var(--modal-bg);
 }
 .modal-body-enhanced {
-  padding: 20px 22px 22px;
+  padding: 20px 24px 24px;
   overflow-y: auto;
   flex: 1;
   min-height: 0;
   overscroll-behavior: contain;
 }
 .modal-footer-enhanced {
-  padding: 16px 24px;
+  padding: 20px 24px;
   border-top: 1px solid var(--border-light);
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  background: var(--bg-secondary);
+  background: var(--modal-bg);
 }
 .modal-section {
   margin-bottom: 18px;
@@ -2275,6 +2275,13 @@ input[type="checkbox"]:focus {
 .modal-section:last-child {
   margin-bottom: 0;
 }
+.modal-divider {
+  border: none;
+  border-top: 1px solid var(--border-light);
+  margin: 4px -24px 18px;
+}
+.date-row + .date-quick-row { margin-top: 8px; }
+.date-quick-row + .date-row { margin-top: 12px; }
 .modal-section-label {
   font-size: 12px;
   font-weight: 600;
@@ -2312,13 +2319,14 @@ input[type="checkbox"]:focus {
 }
 .modal-hint-chip {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-muted);
   padding: 4px 8px;
   border-radius: 999px;
-  background: var(--bg-secondary);
+  background: transparent;
+  border: 1px solid var(--border-light);
 }
 .modal-hint-text {
   font-size: 11px;
@@ -2544,15 +2552,17 @@ input[type="checkbox"]:focus {
   gap: 10px;
   padding: 12px;
   border-radius: 10px;
-  background: var(--bg-secondary);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 .repeat-toggle:hover {
-  background: var(--border);
+  background: var(--bg-secondary);
 }
 .repeat-toggle.active {
   background: var(--accent-light);
+  border-color: var(--accent);
 }
 .repeat-toggle:focus-visible {
   outline: 2px solid var(--accent);

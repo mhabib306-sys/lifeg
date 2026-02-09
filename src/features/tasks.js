@@ -158,9 +158,21 @@ export function toggleTaskComplete(taskId) {
     task.completedAt = task.completed ? new Date().toISOString() : null;
     task.updatedAt = new Date().toISOString();
 
-    // Handle repeating tasks - create next occurrence when completed
-    if (task.completed && task.repeat && task.repeat.type !== 'none') {
-      createNextRepeatOccurrence(task);
+    // Handle repeating tasks
+    if (task.repeat && task.repeat.type !== 'none') {
+      if (task.completed) {
+        // Create next occurrence when completed
+        const newTask = createNextRepeatOccurrence(task);
+        // Store the ID of the spawned occurrence so we can clean up on uncomplete
+        task._spawnedRepeatId = newTask ? newTask.id : null;
+      } else if (wasCompleted && task._spawnedRepeatId) {
+        // Uncompleting: remove the spawned repeat occurrence to prevent duplicates
+        const spawnedIdx = state.tasksData.findIndex(t => t.id === task._spawnedRepeatId);
+        if (spawnedIdx !== -1) {
+          state.tasksData.splice(spawnedIdx, 1);
+        }
+        task._spawnedRepeatId = null;
+      }
     }
 
     saveTasksData();
@@ -221,14 +233,16 @@ export function createNextRepeatOccurrence(completedTask) {
     newDueDate = calculateNextRepeatDate(baseDate, completedTask.repeat);
   }
 
-  // Create new task with ALL same properties (including people!)
+  // Create new task with ALL same properties (including people, today, flagged!)
   // Keep the same status (Today tasks stay in Today with new date)
-  createTask(completedTask.title, {
+  return createTask(completedTask.title, {
     notes: completedTask.notes,
     status: completedTask.status,
+    today: completedTask.today || false,
+    flagged: completedTask.flagged || false,
     categoryId: completedTask.categoryId,
     labels: [...(completedTask.labels || [])],
-    people: [...(completedTask.people || [])], // BUG FIX: Was missing - people now preserved
+    people: [...(completedTask.people || [])],
     deferDate: newDeferDate,
     dueDate: newDueDate,
     repeat: { ...completedTask.repeat }

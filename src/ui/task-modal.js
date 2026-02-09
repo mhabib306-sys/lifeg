@@ -770,7 +770,7 @@ export function renderAreaInput() {
   const area = state.taskCategories.find(c => c.id === state.modalSelectedArea);
 
   container.innerHTML = `
-    <div id="area-display" class="modal-token-shell mb-2 area-display-shell" onclick="document.getElementById('area-search').focus()">
+    <div id="area-display" class="modal-token-shell area-display-shell" onclick="document.getElementById('area-search').focus()">
       ${area
         ? `<span class="tag-pill" style="background: ${area.color}20; color: ${area.color}">
              ${area.icon || '\uD83D\uDCC1'} ${escapeHtml(area.name)}
@@ -1168,10 +1168,10 @@ export function renderTaskModalHtml() {
             <h3 id="task-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingTask ? 'Edit' : 'New'}</h3>
             <div class="type-switcher">
               <div class="type-option ${!state.modalIsNote ? 'active' : ''}" data-type="task" onclick="setModalType(false)">
-                <span class="mr-1.5">\u25CB</span>Task
+                <svg class="inline-block mr-1.5 w-4 h-4 -mt-px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/></svg>Task
               </div>
               <div class="type-option ${state.modalIsNote ? 'active' : ''}" data-type="note" onclick="setModalType(true)">
-                <span class="mr-1.5">\u25C9</span>Note
+                <svg class="inline-block mr-1.5 w-4 h-4 -mt-px" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="5"/></svg>Note
               </div>
             </div>
           </div>
@@ -1205,6 +1205,8 @@ export function renderTaskModalHtml() {
               onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();saveTaskFromModal();}"
               class="modal-textarea-enhanced">${editingTask?.notes || ''}</textarea>
           </div>
+
+          <hr class="modal-divider">
 
           <!-- When (Status Pills) - Tasks only -->
           ${!state.modalIsNote ? `
@@ -1241,7 +1243,7 @@ export function renderTaskModalHtml() {
           <div class="modal-section">
             <label class="modal-section-label">Schedule</label>
             <!-- Defer Until -->
-            <div class="date-row mb-2" onclick="openDatePicker('defer')">
+            <div class="date-row" onclick="openDatePicker('defer')">
               <svg class="date-row-icon w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5V19L19 12z"/></svg>
               <div class="flex-1 min-w-0">
                 <div class="text-[11px] font-medium uppercase tracking-wide text-[var(--text-muted)]">Defer Until</div>
@@ -1254,7 +1256,7 @@ export function renderTaskModalHtml() {
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
               </button>
             </div>
-            <div class="date-quick-row mb-3">
+            <div class="date-quick-row">
               <button type="button" class="date-quick-pill" onclick="event.stopPropagation(); setQuickDate('defer', 0)">Today</button>
               <button type="button" class="date-quick-pill" onclick="event.stopPropagation(); setQuickDate('defer', 1)">Tomorrow</button>
               <button type="button" class="date-quick-pill" onclick="event.stopPropagation(); setQuickDate('defer', 7)">Next Week</button>
@@ -1315,6 +1317,8 @@ export function renderTaskModalHtml() {
           </div>
           ` : ''}
 
+          <hr class="modal-divider">
+
           <!-- Tags (Autocomplete) -->
           <div class="modal-section">
             <label class="modal-section-label">Tags</label>
@@ -1331,7 +1335,7 @@ export function renderTaskModalHtml() {
         <!-- Footer -->
         <div class="modal-footer-enhanced">
           <button onclick="closeTaskModal()"
-            class="px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-light)] rounded-lg transition">
+            class="px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
             Cancel
           </button>
           <button onclick="saveTaskFromModal()" class="sb-btn px-5 py-2.5 rounded-lg text-sm font-medium">
