@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T12:11:47.689Z",
+  "lastUpdated": "2026-02-09T12:11:54.357Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3038,27 +3038,19 @@
       "visible": true
     },
     {
-      "id": "todays-score",
-      "type": "score",
-      "title": "Today's Score",
+      "id": "next-tasks",
+      "type": "next-tasks",
+      "title": "Next",
       "size": "half",
       "order": 4,
       "visible": true
     },
     {
-      "id": "next-tasks",
-      "type": "next-tasks",
-      "title": "Next",
+      "id": "todays-score",
+      "type": "score",
+      "title": "Today's Score",
       "size": "half",
       "order": 5,
-      "visible": true
-    },
-    {
-      "id": "prayers",
-      "type": "prayers",
-      "title": "Prayers",
-      "size": "half",
-      "order": 6,
       "visible": true
     },
     {
@@ -3066,6 +3058,14 @@
       "type": "perspective",
       "title": "Nancy: Active Topics",
       "perspectiveId": "custom_1770017177816",
+      "size": "half",
+      "order": 6,
+      "visible": true
+    },
+    {
+      "id": "prayers",
+      "type": "prayers",
+      "title": "Prayers",
       "size": "half",
       "order": 7,
       "visible": true
