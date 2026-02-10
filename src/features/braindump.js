@@ -85,7 +85,7 @@ async function classifyWithAI(rawText) {
   if (!apiKey) throw new Error('No API key configured');
 
   // Gather user's areas, tags, people for the prompt
-  const areas = state.taskCategories.map(c => c.name);
+  const areas = state.taskAreas.map(c => c.name);
   const tags = state.taskLabels.map(l => l.name);
   const people = state.taskPeople.map(p => p.name);
 
@@ -172,12 +172,12 @@ Respond with ONLY valid JSON — no markdown, no explanation. The JSON must be a
     // Map AI results to our item shape
     return items.map((item, index) => {
       // Resolve area name to ID
-      let categoryId = null;
+      let areaId = null;
       if (item.area) {
-        const cat = state.taskCategories.find(
+        const cat = state.taskAreas.find(
           c => c.name.toLowerCase() === item.area.toLowerCase()
         );
-        if (cat) categoryId = cat.id;
+        if (cat) areaId = cat.id;
       }
 
       // Resolve tag names to IDs
@@ -207,7 +207,7 @@ Respond with ONLY valid JSON — no markdown, no explanation. The JSON must be a
         type: item.type === 'note' ? 'note' : 'task',
         score: item.type === 'task' ? 50 : -50,
         confidence: Math.max(0, Math.min(1, item.confidence || 0.8)),
-        categoryId,
+        areaId,
         labels: labelIds,
         people: personIds,
         deferDate: item.deferDate || null,
@@ -363,11 +363,11 @@ export function classifyItem(text) {
 
 /**
  * Extract #area, @tag, &person, and date phrases.
- * Returns { title, categoryId, labels[], people[], deferDate }
+ * Returns { title, areaId, labels[], people[], deferDate }
  */
 export function extractMetadata(text) {
   let title = text;
-  let categoryId = null;
+  let areaId = null;
   const labels = [];
   const people = [];
   let deferDate = null;
@@ -378,9 +378,9 @@ export function extractMetadata(text) {
   if (areaMatches) {
     for (const match of areaMatches) {
       const name = match.slice(1).toLowerCase();
-      const cat = state.taskCategories.find(c => c.name.toLowerCase() === name);
+      const cat = state.taskAreas.find(c => c.name.toLowerCase() === name);
       if (cat) {
-        categoryId = cat.id;
+        areaId = cat.id;
         title = title.replace(match, '').trim();
       }
     }
@@ -452,7 +452,7 @@ export function extractMetadata(text) {
   // Clean up extra whitespace
   title = title.replace(/\s{2,}/g, ' ').trim();
 
-  return { title, categoryId, labels, people, deferDate, dueDate };
+  return { title, areaId, labels, people, deferDate, dueDate };
 }
 
 // ============================================================================
@@ -521,12 +521,12 @@ export function submitBraindumpItems(items) {
     const isNote = item.type === 'note';
     createTask(item.title, {
       isNote,
-      categoryId: item.categoryId,
+      areaId: item.areaId,
       labels: item.labels,
       people: item.people,
       deferDate: item.deferDate,
       dueDate: item.dueDate,
-      status: item.categoryId ? 'anytime' : 'inbox',
+      status: item.areaId ? 'anytime' : 'inbox',
     });
     if (isNote) noteCount++;
     else taskCount++;

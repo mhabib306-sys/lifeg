@@ -14,7 +14,7 @@
 // Imports — constants
 // ---------------------------------------------------------------------------
 import {
-  DEFAULT_TASK_CATEGORIES,
+  DEFAULT_TASK_AREAS,
   DEFAULT_TASK_LABELS,
   DEFAULT_TASK_PEOPLE,
   DEFAULT_HOME_WIDGETS,
@@ -23,6 +23,7 @@ import {
   TASK_CATEGORIES_KEY,
   TASK_LABELS_KEY,
   TASK_PEOPLE_KEY,
+  CATEGORIES_KEY,
   PERSPECTIVES_KEY,
   HOME_WIDGETS_KEY,
   VIEW_STATE_KEY,
@@ -177,7 +178,7 @@ const initialDeletedEntityTombstones = normalizeEntityTombstones(safeJsonParse(D
 
 const isEntityDeleted = (collection, id) => !!(collection && id && initialDeletedEntityTombstones[collection]?.[String(id)]);
 const initialTasksData = (safeJsonParse(TASKS_KEY, []) || []).filter(task => !initialDeletedTaskTombstones[String(task?.id)]);
-const initialTaskCategories = (safeJsonParse(TASK_CATEGORIES_KEY, null) || DEFAULT_TASK_CATEGORIES)
+const initialTaskAreas = (safeJsonParse(TASK_CATEGORIES_KEY, null) || DEFAULT_TASK_AREAS)
   .filter(item => !isEntityDeleted('taskCategories', item?.id));
 const initialTaskLabels = (safeJsonParse(TASK_LABELS_KEY, null) || DEFAULT_TASK_LABELS)
   .filter(item => !isEntityDeleted('taskLabels', item?.id));
@@ -190,6 +191,8 @@ const initialTaskPeople = (safeJsonParse(TASK_PEOPLE_KEY, null) || DEFAULT_TASK_
   }));
 const initialCustomPerspectives = (safeJsonParse(PERSPECTIVES_KEY, []) || [])
   .filter(item => !isEntityDeleted('customPerspectives', item?.id));
+const initialCategories = (safeJsonParse(CATEGORIES_KEY, []) || [])
+  .filter(item => !isEntityDeleted('categories', item?.id));
 const initialHomeWidgets = (safeJsonParse(HOME_WIDGETS_KEY, null) || DEFAULT_HOME_WIDGETS)
   .filter(item => !isEntityDeleted('homeWidgets', item?.id));
 
@@ -235,9 +238,10 @@ export const state = {
   tasksData: initialTasksData,
   deletedTaskTombstones: initialDeletedTaskTombstones,
   deletedEntityTombstones: initialDeletedEntityTombstones,
-  taskCategories: initialTaskCategories,
+  taskAreas: initialTaskAreas,
   taskLabels: initialTaskLabels,
   taskPeople: initialTaskPeople,
+  taskCategories: initialCategories,
   customPerspectives: initialCustomPerspectives,
   homeWidgets: initialHomeWidgets,
   editingHomeWidgets: false,
@@ -246,8 +250,8 @@ export const state = {
 
   // ---- Task view / filter state ----
   activePerspective: initialActivePerspective,
-  activeFilterType: savedViewState.activeFilterType || 'perspective',
-  activeCategoryFilter: savedViewState.activeCategoryFilter || null,
+  activeFilterType: (savedViewState.activeFilterType === 'category' ? 'area' : savedViewState.activeFilterType) || 'perspective',
+  activeAreaFilter: savedViewState.activeAreaFilter || savedViewState.activeCategoryFilter || null,
   activeLabelFilter: savedViewState.activeLabelFilter || null,
   activePersonFilter: savedViewState.activePersonFilter || null,
 
@@ -270,8 +274,8 @@ export const state = {
   quickAddIsNote: false,
   showAllSidebarPeople: false,
   showAllSidebarLabels: false,
-  newTaskContext: { categoryId: null, labelId: null, personId: null, status: 'inbox' },
-  inlineAutocompleteMeta: new Map(),      // Maps inputId -> { categoryId, labels[], people[] }
+  newTaskContext: { areaId: null, labelId: null, personId: null, status: 'inbox' },
+  inlineAutocompleteMeta: new Map(),      // Maps inputId -> { areaId, labels[], people[] }
 
   // ---- Mobile drawer ----
   mobileDrawerOpen: false,
@@ -279,12 +283,15 @@ export const state = {
   // ---- Modal visibility flags ----
   showTaskModal: false,
   showPerspectiveModal: false,
-  showCategoryModal: false,
+  showAreaModal: false,
   showLabelModal: false,
   showPersonModal: false,
+  showCategoryModal: false,
+  editingCategoryId: null,
+  activeCategoryFilter: null,
 
   // ---- Entity editing IDs ----
-  editingCategoryId: null,
+  editingAreaId: null,
   editingLabelId: null,
   editingPersonId: null,
   editingPerspectiveId: null,
@@ -364,6 +371,7 @@ export const state = {
 
   // ---- Task modal state ----
   modalSelectedArea: null,
+  modalSelectedCategory: null,
   modalSelectedStatus: 'inbox',
   modalSelectedToday: false,
   modalSelectedFlagged: false,

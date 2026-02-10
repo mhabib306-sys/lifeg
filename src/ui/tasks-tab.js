@@ -7,7 +7,7 @@
 import { state } from '../state.js';
 import { THINGS3_ICONS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
 import { escapeHtml, formatSmartDate, getLocalDateString } from '../utils.js';
-import { getCategoryById, getLabelById, getPersonById, getTasksByPerson } from '../features/categories.js';
+import { getAreaById, getLabelById, getPersonById, getTasksByPerson, getCategoriesByArea, getCategoryById } from '../features/areas.js';
 import { saveViewState } from '../data/storage.js';
 
 // ---------------------------------------------------------------------------
@@ -108,7 +108,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
   const isTouch = typeof window !== 'undefined'
     && window.matchMedia
     && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-  const category = getCategoryById(task.categoryId);
+  const category = getAreaById(task.areaId);
   const labels = (task.labels || []).map(lid => getLabelById(lid)).filter(Boolean);
   const people = (task.people || []).map(pid => getPersonById(pid)).filter(Boolean);
   const today = getLocalDateString();
@@ -246,7 +246,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
 
   const areaTasks = filteredTasks;
   const totalTasks = areaTasks.length;
-  const completedTasks = state.tasksData.filter(t => t.categoryId === state.activeCategoryFilter && t.completed && !t.isNote).length;
+  const completedTasks = state.tasksData.filter(t => t.areaId === state.activeAreaFilter && t.completed && !t.isNote).length;
   const activeTasks = areaTasks.filter(t => !t.isNote).length;
   const noteItems = areaTasks.filter(t => t.isNote);
   const taskItems = areaTasks.filter(t => !t.isNote);
@@ -353,13 +353,13 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           </button>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2">
-          <button onclick="window.createTask('', { status: 'inbox', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'inbox', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-inbox">+ Inbox</button>
-          <button onclick="window.createTask('', { status: 'anytime', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Anytime</button>
-          <button onclick="window.createTask('', { status: 'someday', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'someday' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'someday', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'someday' && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-someday">+ Someday</button>
-          <button onclick="window.createTask('', { status: 'anytime', today: true, categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.today && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.today && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-today">+ Today</button>
           <button onclick="window.createRootNote('${currentCategory.id}')"
             class="area-chip area-chip-action area-chip-note">+ Note</button>
@@ -388,7 +388,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
             <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'anytime', today: true, categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.today && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+              <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.today && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                 class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-500 hover:text-amber-600 hover:bg-amber-50/50 rounded-lg transition text-left">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Add to Today...
@@ -428,7 +428,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
             <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'inbox', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+              <button onclick="window.createTask('', { status: 'inbox', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                 class="flex items-center gap-2 px-3 py-2 w-full text-sm text-blue-500 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition text-left">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Add to Inbox...
@@ -446,7 +446,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
             <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'anytime', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+              <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                 class="flex items-center gap-2 px-3 py-2 w-full text-sm text-teal-500 hover:text-teal-600 hover:bg-teal-50/50 rounded-lg transition text-left">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Add to Anytime...
@@ -464,7 +464,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
             <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'someday', categoryId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'someday' && t.categoryId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+              <button onclick="window.createTask('', { status: 'someday', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'someday' && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                 class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-600 hover:text-amber-700 hover:bg-amber-50/50 rounded-lg transition text-left">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Add to Someday...
@@ -530,6 +530,249 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
 }
 
 // ============================================================================
+// buildCategoryTaskListHtml — Category (sub-area) detail view
+// ============================================================================
+/**
+ * Build a landing page for a category (subcategory under an area).
+ * @param {Object} category - Category object
+ * @param {Array} filteredTasks - Pre-filtered tasks for this category
+ * @param {string} todayDate - Today's date string (YYYY-MM-DD)
+ * @returns {string} HTML string
+ */
+export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
+  if (!category) return '';
+  const parentArea = getAreaById(category.areaId);
+
+  const catTasks = filteredTasks;
+  const completedTasks = state.tasksData.filter(t => t.categoryId === state.activeCategoryFilter && t.completed && !t.isNote).length;
+  const activeTasks = catTasks.filter(t => !t.isNote).length;
+  const noteItems = catTasks.filter(t => t.isNote);
+  const taskItems = catTasks.filter(t => !t.isNote);
+  const overdueTasks = taskItems.filter(t => t.dueDate && t.dueDate < todayDate);
+  const todayTasks = taskItems.filter(t =>
+    !overdueTasks.includes(t) && (t.today || t.dueDate === todayDate));
+  const upcomingTasks = taskItems.filter(t =>
+    t.dueDate && t.dueDate > todayDate && !todayTasks.includes(t));
+  const deferredTasks = taskItems.filter(t =>
+    t.deferDate && t.deferDate > todayDate &&
+    !overdueTasks.includes(t) && !upcomingTasks.includes(t));
+  const anytimeTasks = taskItems.filter(t =>
+    t.status === 'anytime' && !overdueTasks.includes(t) &&
+    !todayTasks.includes(t) && !upcomingTasks.includes(t) &&
+    !deferredTasks.includes(t));
+  const somedayTasks = taskItems.filter(t => t.status === 'someday');
+  const inboxTasks = taskItems.filter(t => t.status === 'inbox');
+
+  const completionRate = activeTasks + completedTasks > 0 ? Math.round((completedTasks / (activeTasks + completedTasks)) * 100) : 0;
+  const categoryColor = category.color || '#6366F1';
+
+  return `
+    <div class="flex-1 space-y-4">
+      <!-- Category Hero Header -->
+      <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+        <div class="px-6 pt-6 pb-5">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0" style="background: ${categoryColor}">
+              <svg class="w-6 h-6 text-white/90" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 6h-2v2h-2v-2h-2v-2h2v-2h2v2h2v2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(category.name)}</h1>
+              <div class="flex items-center gap-2 mt-1">
+                ${parentArea ? `
+                  <button onclick="window.showAreaTasks('${parentArea.id}')" class="inline-flex items-center gap-1.5 text-[13px] text-[var(--text-muted)] hover:text-[var(--accent)] transition">
+                    <span class="w-2 h-2 rounded-full" style="background:${parentArea.color || '#6366F1'}"></span>
+                    ${escapeHtml(parentArea.name)}
+                  </button>
+                  <span class="text-[var(--text-muted)]">&middot;</span>
+                ` : ''}
+                <p class="text-[var(--text-muted)] text-[13px]">${activeTasks} active &middot; ${completedTasks} completed${noteItems.length > 0 ? ` &middot; ${noteItems.length} note${noteItems.length !== 1 ? 's' : ''}` : ''}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="px-6 py-3.5 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/40 flex items-center gap-5">
+          <div class="flex items-center gap-3">
+            <div class="relative w-10 h-10">
+              <svg class="w-10 h-10 transform -rotate-90" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15" fill="none" stroke="var(--border)" stroke-width="2.5"/>
+                <circle cx="18" cy="18" r="15" fill="none" stroke="${categoryColor}" stroke-width="2.5"
+                  stroke-dasharray="${completionRate} 100" stroke-linecap="round"/>
+              </svg>
+              <span class="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-[var(--text-primary)]">${completionRate}%</span>
+            </div>
+            <div>
+              <div class="text-[13px] font-medium text-[var(--text-primary)]">Progress</div>
+              <div class="text-[11px] text-[var(--text-muted)]">${completedTasks} of ${activeTasks + completedTasks}</div>
+            </div>
+          </div>
+          ${overdueTasks.length > 0 ? `
+            <div class="flex items-center gap-1.5 text-[12px] font-medium text-red-500">
+              <span class="w-2 h-2 rounded-full bg-red-500"></span>
+              ${overdueTasks.length} overdue
+            </div>
+          ` : ''}
+          ${todayTasks.length > 0 ? `
+            <div class="flex items-center gap-1.5 text-[12px] font-medium text-amber-500">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              ${todayTasks.length} today
+            </div>
+          ` : ''}
+          <div class="flex-1"></div>
+          <div class="flex items-center gap-2">
+            <button onclick="window.createRootNote('${category.areaId}')"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] transition">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Note
+            </button>
+            <button onclick="window.openNewTaskModal()"
+              class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-white text-[13px] font-medium hover:opacity-90 transition" style="background: ${categoryColor}">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add Task
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Add -->
+      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] px-4 py-3">
+        <div class="flex items-center gap-3">
+          <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
+            class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
+            ${state.quickAddIsNote
+              ? '<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>'
+              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${categoryColor}40"></div>`
+            }
+          </div>
+          <input type="text" id="quick-add-input"
+            placeholder="${state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
+            onkeydown="window.handleQuickAddKeydown(event, this)"
+            class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] bg-transparent border-0 outline-none focus:ring-0">
+          <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
+            class="text-[var(--text-muted)] hover:opacity-70 transition p-1" style="color: ${categoryColor}">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+          </button>
+        </div>
+        <div class="mt-3 flex flex-wrap items-center gap-2">
+          <button onclick="window.createTask('', { status: 'inbox', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-inbox">+ Inbox</button>
+          <button onclick="window.createTask('', { status: 'anytime', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-anytime">+ Anytime</button>
+          <button onclick="window.createTask('', { status: 'someday', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'someday' && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-someday">+ Someday</button>
+          <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.today && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-today">+ Today</button>
+          <button onclick="window.createRootNote('${category.areaId}')"
+            class="area-chip area-chip-action area-chip-note">+ Note</button>
+        </div>
+      </div>
+
+      <!-- Task Sections -->
+      <div class="space-y-4">
+        ${overdueTasks.length > 0 ? `
+          <div class="bg-[var(--bg-card)] rounded-xl border border-red-100 overflow-hidden">
+            <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-center gap-2">
+              <svg class="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+              <span class="text-sm font-semibold text-red-700">Overdue</span>
+              <span class="text-xs text-red-400 ml-1">${overdueTasks.length}</span>
+            </div>
+            <div class="task-list">${overdueTasks.map(task => renderTaskItem(task)).join('')}</div>
+          </div>
+        ` : ''}
+
+        ${todayTasks.length > 0 ? `
+          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+            <div class="px-4 py-3 bg-amber-50/50 border-b border-[var(--border-light)] flex items-center gap-2">
+              <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Today</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${todayTasks.length}</span>
+            </div>
+            <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
+          </div>
+        ` : ''}
+
+        ${upcomingTasks.length > 0 ? `
+          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
+              <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Upcoming</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${upcomingTasks.length}</span>
+            </div>
+            <div class="task-list">${upcomingTasks.map(task => renderTaskItem(task)).join('')}</div>
+          </div>
+        ` : ''}
+
+        ${deferredTasks.length > 0 ? `
+          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
+              <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
+              <span class="text-sm font-semibold text-[var(--text-muted)]">Deferred</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${deferredTasks.length}</span>
+            </div>
+            <div class="task-list">${deferredTasks.map(task => renderTaskItem(task)).join('')}</div>
+          </div>
+        ` : ''}
+
+        ${inboxTasks.length > 0 ? `
+          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
+              <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h4.18c.26 1.7 1.74 3 3.57 3h2.5c1.83 0 3.31-1.3 3.57-3H21v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6zm0-2l3-7h12l3 7h-4.18c-.26-1.7-1.74-3-3.57-3h-2.5c-1.83 0-3.31 1.3-3.57 3H3z"/></svg>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Inbox</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${inboxTasks.length}</span>
+            </div>
+            <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
+          </div>
+        ` : ''}
+
+        ${anytimeTasks.length > 0 ? `
+          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
+              <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-14h2v6h-2zm0 8h2v2h-2z"/></svg>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Anytime</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${anytimeTasks.length}</span>
+            </div>
+            <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
+          </div>
+        ` : ''}
+
+        ${somedayTasks.length > 0 ? `
+          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
+              <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              <span class="text-sm font-semibold text-[var(--text-muted)]">Someday</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${somedayTasks.length}</span>
+            </div>
+            <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
+          </div>
+        ` : ''}
+
+        ${noteItems.length > 0 ? `
+          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
+              <svg class="w-4 h-4 text-[#8B5CF6]" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Notes</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${noteItems.length}</span>
+            </div>
+            <div class="task-list">${noteItems.map(task => renderTaskItem(task)).join('')}</div>
+          </div>
+        ` : ''}
+
+        ${filteredTasks.length === 0 ? `
+          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+            <div class="empty-state flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
+              <svg class="w-16 h-16 mb-4 opacity-30" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 6h-2v2h-2v-2h-2v-2h2v-2h2v2h2v2z"/></svg>
+              <p class="text-[15px] font-medium">No tasks in ${escapeHtml(category.name)}</p>
+              <p class="text-[13px] mt-1">Add a task to get started</p>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================================
 // renderTasksTab — Full tasks workspace view
 // ============================================================================
 /**
@@ -547,7 +790,7 @@ export function renderTasksTab() {
   const allPerspectives = [...BUILTIN_PERSPECTIVES, ...state.customPerspectives];
   const filteredTasks = getCurrentFilteredTasks();
   const viewInfo = getCurrentViewInfo();
-  const activeNotesCategory = state.activeCategoryFilter ? getCategoryById(state.activeCategoryFilter) : null;
+  const activeNotesCategory = state.activeAreaFilter ? getAreaById(state.activeAreaFilter) : null;
 
   // Count tasks per perspective
   const taskCounts = {};
@@ -569,7 +812,7 @@ export function renderTasksTab() {
 
   // Count tasks per category
   const categoryCounts = {};
-  state.taskCategories.forEach(cat => {
+  state.taskAreas.forEach(cat => {
     categoryCounts[cat.id] = getTasksByCategory(cat.id).length;
   });
 
@@ -587,7 +830,8 @@ export function renderTasksTab() {
 
   // Check if perspective is active
   const isPerspectiveActive = (pId) => state.activeFilterType === 'perspective' && state.activePerspective === pId;
-  const isCategoryActive = (cId) => state.activeFilterType === 'category' && state.activeCategoryFilter === cId;
+  const isAreaActive = (cId) => state.activeFilterType === 'area' && state.activeAreaFilter === cId;
+  const isSubcatActive = (scId) => state.activeFilterType === 'subcategory' && state.activeCategoryFilter === scId;
   const isLabelActive = (lId) => state.activeFilterType === 'label' && state.activeLabelFilter === lId;
   const isPersonActive = (pId) => state.activeFilterType === 'person' && state.activePersonFilter === pId;
 
@@ -656,28 +900,45 @@ export function renderTasksTab() {
       <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
           <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">Areas</h3>
-          <button onclick="window.editingCategoryId=null; window.showCategoryModal=true; window.render()" aria-label="Add new area" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition p-1.5 -mr-1 rounded-lg hover:bg-[var(--bg-secondary)]">
+          <button onclick="window.editingAreaId=null; window.showAreaModal=true; window.render()" aria-label="Add new area" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition p-1.5 -mr-1 rounded-lg hover:bg-[var(--bg-secondary)]">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
           </button>
         </div>
         <div class="py-2 px-2">
-          ${state.taskCategories.map(cat => `
-            <div onclick="window.showCategoryTasks('${cat.id}')"
-              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.showCategoryTasks('${cat.id}');}"
+          ${state.taskAreas.map(cat => {
+            const subcats = getCategoriesByArea(cat.id);
+            return `
+            <div onclick="window.showAreaTasks('${cat.id}')"
+              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.showAreaTasks('${cat.id}');}"
               tabindex="0"
               role="button"
               aria-label="View ${escapeHtml(cat.name)} area"
-              class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isCategoryActive(cat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}"
+              class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isAreaActive(cat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}"
               draggable="true"
               data-id="${cat.id}"
-              data-type="category">
+              data-type="area">
               <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-[var(--text-muted)]">${THINGS3_ICONS.area}</span>
-              <span class="flex-1 text-[14px] ${isCategoryActive(cat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(cat.name)}</span>
+              <span class="flex-1 text-[14px] ${isAreaActive(cat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(cat.name)}</span>
               <span class="min-w-[20px] text-right text-[12px] group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${categoryCounts[cat.id] || ''}</span>
-              <span onclick="event.stopPropagation(); window.editingCategoryId='${cat.id}'; window.showCategoryModal=true; window.render()"
+              <span onclick="event.stopPropagation(); window.editingAreaId='${cat.id}'; window.showAreaModal=true; window.render()"
                 class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
             </div>
-          `).join('')}
+            ${subcats.map(subcat => `
+              <div onclick="window.showCategoryTasks('${subcat.id}')"
+                class="sidebar-item w-full pl-10 pr-3 py-1.5 flex items-center gap-2.5 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isSubcatActive(subcat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
+                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: ${subcat.color}"></span>
+                <span class="flex-1 text-[13px] ${isSubcatActive(subcat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(subcat.name)}</span>
+                <span onclick="event.stopPropagation(); window.editingCategoryId='${subcat.id}'; window.showCategoryModal=true; window.render()"
+                  class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
+              </div>
+            `).join('')}
+            <button onclick="event.stopPropagation(); window.editingCategoryId=null; window.showCategoryModal=true; window.modalSelectedArea='${cat.id}'; window.render()"
+              class="w-full pl-10 pr-3 py-1 flex items-center gap-2 text-[12px] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add Category
+            </button>
+          `;
+          }).join('')}
         </div>
       </div>
 
@@ -797,12 +1058,14 @@ export function renderTasksTab() {
     </div>
   `;
 
-  // Check if viewing an area (category) - render special area view
-  const isAreaView = state.activeFilterType === 'category' && state.activeCategoryFilter;
-  const currentCategory = isAreaView ? getCategoryById(state.activeCategoryFilter) : null;
+  // Check if viewing an area or category - render special views
+  const isAreaView = state.activeFilterType === 'area' && state.activeAreaFilter;
+  const isCategoryView = state.activeFilterType === 'subcategory' && state.activeCategoryFilter;
+  const currentArea = isAreaView ? getAreaById(state.activeAreaFilter) : null;
+  const currentSubcategory = isCategoryView ? getCategoryById(state.activeCategoryFilter) : null;
 
-  // Build task list (default view for non-area views)
-  const taskListHtml = isAreaView ? buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate) : `
+  // Build task list (area view, category view, or default perspective view)
+  const taskListHtml = isAreaView ? buildAreaTaskListHtml(currentArea, filteredTasks, todayDate) : (isCategoryView ? buildCategoryTaskListHtml(currentSubcategory, filteredTasks, todayDate) : `
     <div class="flex-1">
       <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
         <div class="task-list-header-desktop px-5 py-4 flex items-center justify-between">
@@ -964,7 +1227,7 @@ export function renderTasksTab() {
                   ` : ''}
                   <span class="text-xs text-[var(--text-muted)]">${taskCounts['notes'] || 0} notes</span>
                 </div>
-                <button onclick="window.createRootNote(${state.activeCategoryFilter ? `'${state.activeCategoryFilter}'` : 'null'})"
+                <button onclick="window.createRootNote(${state.activeAreaFilter ? `'${state.activeAreaFilter}'` : 'null'})"
                   class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition">
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                   New note
@@ -972,7 +1235,7 @@ export function renderTasksTab() {
               </div>
               ${renderNotesBreadcrumb()}
               <div class="py-2">
-                ${renderNotesOutliner(state.activeCategoryFilter)}
+                ${renderNotesOutliner(state.activeAreaFilter)}
               </div>
             </div>
           ` : `
@@ -985,7 +1248,7 @@ export function renderTasksTab() {
         </div>
       </div>
     </div>
-  `;
+  `);
 
   return `
     <!-- Mobile Sidebar Drawer (hidden on desktop) -->

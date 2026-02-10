@@ -162,7 +162,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
   const isModal = config.isModal || false;
   if (!isModal && !state.inlineAutocompleteMeta.has(inputId)) {
     state.inlineAutocompleteMeta.set(inputId, {
-      categoryId: config.initialMeta?.categoryId || null,
+      areaId: config.initialMeta?.areaId || null,
       labels: config.initialMeta?.labels ? [...config.initialMeta.labels] : [],
       people: config.initialMeta?.people ? [...config.initialMeta.people] : [],
       deferDate: config.initialMeta?.deferDate || null
@@ -175,14 +175,14 @@ export function setupInlineAutocomplete(inputId, config = {}) {
   let triggerPos = -1;
 
   function getMeta() {
-    if (isModal) return { categoryId: state.modalSelectedArea, labels: state.modalSelectedTags, people: state.modalSelectedPeople, deferDate: document.getElementById('task-defer')?.value || null };
-    return state.inlineAutocompleteMeta.get(inputId) || { categoryId: null, labels: [], people: [], deferDate: null };
+    if (isModal) return { areaId: state.modalSelectedArea, labels: state.modalSelectedTags, people: state.modalSelectedPeople, deferDate: document.getElementById('task-defer')?.value || null };
+    return state.inlineAutocompleteMeta.get(inputId) || { areaId: null, labels: [], people: [], deferDate: null };
   }
 
   function setMeta(key, value) {
     if (isModal) {
       // Use window.* bridge to call task-modal functions (avoids circular imports)
-      if (key === 'categoryId') { state.modalSelectedArea = value; window.renderAreaInput(); }
+      if (key === 'areaId') { state.modalSelectedArea = value; window.renderAreaInput(); }
       else if (key === 'labels') { state.modalSelectedTags = value; window.renderTagsInput(); }
       else if (key === 'people') { state.modalSelectedPeople = value; window.renderPeopleInput(); }
       else if (key === 'deferDate') {
@@ -200,7 +200,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
 
   function getItems(query) {
     const meta = getMeta();
-    if (triggerChar === '#') return state.taskCategories;
+    if (triggerChar === '#') return state.taskAreas;
     if (triggerChar === '@') return state.taskLabels.filter(l => !(meta.labels || []).includes(l.id));
     if (triggerChar === '&') return state.taskPeople.filter(p => !(meta.people || []).includes(p.id));
     if (triggerChar === '!') return parseDateQuery(query || '');
@@ -210,8 +210,8 @@ export function setupInlineAutocomplete(inputId, config = {}) {
   function getCreateFn() {
     if (triggerChar === '#') return (name) => {
       const c = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '\uD83D\uDCC1' };
-      state.taskCategories.push(c);
-      localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
+      state.taskAreas.push(c);
+      localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
       debouncedSaveToGithub();
       return c;
     };
@@ -246,7 +246,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
 
     // Apply metadata
     if (triggerChar === '#') {
-      setMeta('categoryId', item.id);
+      setMeta('areaId', item.id);
     } else if (triggerChar === '@') {
       const meta = getMeta();
       const labels = [...(meta.labels || [])];
@@ -474,8 +474,8 @@ export function renderInlineChips(inputId) {
 
   let html = '';
   // Area chip
-  if (meta.categoryId) {
-    const cat = state.taskCategories.find(c => c.id === meta.categoryId);
+  if (meta.areaId) {
+    const cat = state.taskAreas.find(c => c.id === meta.areaId);
     if (cat) {
       html += `<span class="inline-meta-chip" style="background:${cat.color}20;color:${cat.color}">
         ${cat.icon || '\uD83D\uDCC1'} ${escapeHtml(cat.name)}
@@ -531,7 +531,7 @@ export function renderInlineChips(inputId) {
 export function removeInlineMeta(inputId, type, id) {
   const meta = state.inlineAutocompleteMeta.get(inputId);
   if (!meta) return;
-  if (type === 'category') meta.categoryId = null;
+  if (type === 'category') meta.areaId = null;
   else if (type === 'label') meta.labels = (meta.labels || []).filter(l => l !== id);
   else if (type === 'person') meta.people = (meta.people || []).filter(p => p !== id);
   else if (type === 'deferDate') meta.deferDate = null;

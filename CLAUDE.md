@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents (Claude Code, Codex, etc.) when 
 
 ## Project Overview
 
-**Homebase** (v4.19.0 - Homebase) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
+**Homebase** (v4.20.0 - Homebase) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
 
 ## Git Workflow
 
@@ -135,7 +135,7 @@ onclick handlers go through `window.functionName()` (via bridge), not direct imp
 
 - `state.allData` — Daily tracking entries keyed by `YYYY-MM-DD`
 - `state.tasksData` — Array of task objects
-- `state.taskCategories` / `state.taskLabels` / `state.taskPeople` — Entity arrays
+- `state.taskAreas` / `state.taskCategories` / `state.taskLabels` / `state.taskPeople` — Entity arrays (areas, sub-area categories, tags, people)
 - `state.activeTab` — Current tab: `'home'` | `'tasks'` | `'life'` | `'calendar'` | `'settings'`
 - `state.activeFilterType` / `state.activePerspective` — Task view filtering state
 - `state.currentDate` — Selected date for tracking (YYYY-MM-DD)

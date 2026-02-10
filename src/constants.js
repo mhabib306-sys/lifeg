@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.19.0 - Homebase';
+export const APP_VERSION = '4.20.0 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -91,6 +91,7 @@ export const PERSPECTIVES_KEY = 'lifeGamificationPerspectives';
 export const TASK_CATEGORIES_KEY = 'lifeGamificationTaskCategories';
 export const TASK_LABELS_KEY = 'lifeGamificationTaskLabels';
 export const TASK_PEOPLE_KEY = 'lifeGamificationTaskPeople';
+export const CATEGORIES_KEY = 'lifeGamificationCategories';
 export const HOME_WIDGETS_KEY = 'lifeGamificationHomeWidgets';
 export const VIEW_STATE_KEY = 'lifeGamificationViewState';
 export const DELETED_TASK_TOMBSTONES_KEY = 'lifeGamificationDeletedTaskTombstones';
@@ -144,8 +145,8 @@ export const DEFAULT_HOME_WIDGETS = [
   { id: 'gsheet-yesterday', type: 'gsheet-yesterday', title: 'Yesterday', size: 'half', order: 11, visible: true }
 ];
 
-// Default categories (Areas)
-export const DEFAULT_TASK_CATEGORIES = [
+// Default areas
+export const DEFAULT_TASK_AREAS = [
   { id: 'personal', name: 'Personal', color: '#4A90A4' },
   { id: 'work', name: 'Work', color: '#6B8E5A' },
   { id: 'health', name: 'Health', color: '#E5533D' },

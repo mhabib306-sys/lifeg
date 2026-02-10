@@ -223,7 +223,7 @@ export function setupSidebarDragDrop() {
       }
 
       let arr;
-      if (type === 'category') arr = state.taskCategories;
+      if (type === 'area') arr = state.taskAreas;
       else if (type === 'label') arr = state.taskLabels;
       else if (type === 'person') arr = state.taskPeople;
       else if (type === 'perspective') arr = state.customPerspectives;

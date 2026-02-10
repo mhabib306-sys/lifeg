@@ -267,10 +267,10 @@ export function cancelBraindumpItemEdit() {
   window.render();
 }
 
-export function setBraindumpItemArea(index, categoryId) {
+export function setBraindumpItemArea(index, areaId) {
   const item = state.braindumpParsedItems[index];
   if (!item) return;
-  item.categoryId = categoryId || null;
+  item.areaId = areaId || null;
   window.render();
 }
 
@@ -511,11 +511,11 @@ function renderReviewStep() {
 // ---- Item Card ----
 function renderBraindumpItemCard(item, index) {
   const isEditing = state.braindumpEditingIndex === index;
-  const cat = item.categoryId ? state.taskCategories.find(c => c.id === item.categoryId) : null;
+  const cat = item.areaId ? state.taskAreas.find(c => c.id === item.areaId) : null;
 
   // Build area select options
-  const areaOptions = state.taskCategories.map(c =>
-    `<option value="${c.id}" ${item.categoryId === c.id ? 'selected' : ''}>${escapeHtml(c.name)}</option>`
+  const areaOptions = state.taskAreas.map(c =>
+    `<option value="${c.id}" ${item.areaId === c.id ? 'selected' : ''}>${escapeHtml(c.name)}</option>`
   ).join('');
 
   // Available people (not already assigned)
@@ -556,7 +556,7 @@ function renderBraindumpItemCard(item, index) {
         <div class="braindump-meta-field">
           <span class="braindump-meta-label">Area</span>
           <select class="braindump-meta-select" onchange="setBraindumpItemArea(${index}, this.value || null)">
-            <option value="" ${!item.categoryId ? 'selected' : ''}>No Area</option>
+            <option value="" ${!item.areaId ? 'selected' : ''}>No Area</option>
             ${areaOptions}
           </select>
         </div>

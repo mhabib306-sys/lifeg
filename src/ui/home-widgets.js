@@ -33,6 +33,44 @@ function getTierForScore(score) {
 
 const formatHomeEventTime = formatEventTime;
 
+function normalizeGSheetResponseHtml(rawHtml) {
+  const html = String(rawHtml || '');
+
+  // Fallback for non-browser contexts.
+  if (typeof document === 'undefined') {
+    return html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  // Parse in an isolated template so malformed/unbalanced tags are repaired
+  // before insertion into the widget card.
+  const template = document.createElement('template');
+  template.innerHTML = html;
+
+  const allowedTags = new Set([
+    'DIV', 'SPAN', 'STRONG', 'EM', 'BR', 'UL', 'OL', 'LI',
+    'TABLE', 'TBODY', 'THEAD', 'TR', 'TD', 'TH'
+  ]);
+  const allowedAttrs = new Set(['style', 'colspan', 'rowspan']);
+
+  const allElements = Array.from(template.content.querySelectorAll('*'));
+  for (const el of allElements) {
+    if (!allowedTags.has(el.tagName)) {
+      const text = document.createTextNode(el.textContent || '');
+      el.replaceWith(text);
+      continue;
+    }
+
+    for (const attr of Array.from(el.attributes)) {
+      const name = attr.name.toLowerCase();
+      if (!allowedAttrs.has(name) || name.startsWith('on')) {
+        el.removeAttribute(attr.name);
+      }
+    }
+  }
+
+  return template.innerHTML;
+}
+
 // ---------------------------------------------------------------------------
 // Widget content renderers
 // ---------------------------------------------------------------------------
@@ -707,9 +745,10 @@ export function renderGSheetWidget(today) {
       </div>`;
   } else if (response) {
     const isError = response.startsWith('Error:');
+    const responseContent = isError ? response.replace(/</g, '&lt;') : normalizeGSheetResponseHtml(response);
     responseHtml = `
       <div class="max-h-[300px] overflow-y-auto">
-        <div class="gsheet-response text-sm leading-relaxed ${isError ? 'text-red-500' : 'text-[var(--text-primary)]'}">${isError ? response.replace(/</g, '&lt;') : response}</div>
+        <div class="gsheet-response text-sm leading-relaxed ${isError ? 'text-red-500' : 'text-[var(--text-primary)]'}">${responseContent}</div>
       </div>
     `;
   } else {

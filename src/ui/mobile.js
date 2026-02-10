@@ -76,7 +76,7 @@ export function closeMobileDrawer() {
   state.mobileDrawerOpen = false;
   document.body.style.overflow = '';
   document.body.classList.remove('drawer-open');
-  if (!state.showTaskModal && !state.showPerspectiveModal && !state.showCategoryModal && !state.showLabelModal && !state.showPersonModal && !state.showBraindump && !state.calendarEventModalOpen) {
+  if (!state.showTaskModal && !state.showPerspectiveModal && !state.showAreaModal && !state.showLabelModal && !state.showPersonModal && !state.showCategoryModal && !state.showBraindump && !state.calendarEventModalOpen) {
     document.body.classList.remove('body-modal-open');
   }
   if (drawerKeydownHandlerBound) {
@@ -152,9 +152,9 @@ export function renderBottomNav() {
  * saves view state, re-renders, and scrolls to content.
  * @param {string} categoryId - The category/area ID to filter by
  */
-export function showCategoryTasks(categoryId) {
-  state.activeFilterType = 'category';
-  state.activeCategoryFilter = categoryId;
+export function showAreaTasks(categoryId) {
+  state.activeFilterType = 'area';
+  state.activeAreaFilter = categoryId;
   state.activeLabelFilter = null;
   state.activePersonFilter = null;
   closeMobileDrawer();
@@ -176,7 +176,7 @@ export function showCategoryTasks(categoryId) {
 export function showLabelTasks(labelId) {
   state.activeFilterType = 'label';
   state.activeLabelFilter = labelId;
-  state.activeCategoryFilter = null;
+  state.activeAreaFilter = null;
   state.activePersonFilter = null;
   closeMobileDrawer();
   // Switch to tasks tab when navigating from Quick Stats or other widgets
@@ -206,7 +206,7 @@ export function showPerspectiveTasks(perspectiveId) {
 
   state.activeFilterType = 'perspective';
   state.activePerspective = perspectiveId;
-  state.activeCategoryFilter = null;
+  state.activeAreaFilter = null;
   state.activeLabelFilter = null;
   state.activePersonFilter = null;
   closeMobileDrawer();
@@ -229,8 +229,31 @@ export function showPersonTasks(personId) {
   state.activeFilterType = 'person';
   state.activePersonFilter = personId;
   state.activePerspective = null;
-  state.activeCategoryFilter = null;
+  state.activeAreaFilter = null;
   state.activeLabelFilter = null;
+  closeMobileDrawer();
+  // Switch to tasks tab when navigating from Quick Stats or other widgets
+  if (state.activeTab !== 'tasks') {
+    state.activeTab = 'tasks';
+  }
+  saveViewState();
+  window.render();
+  scrollToContent();
+}
+
+/**
+ * Switch to category (sub-area) view.
+ * Clears other filters, closes mobile drawer, switches to tasks tab if needed,
+ * saves view state, re-renders, and scrolls to content.
+ * @param {string} categoryId - The category/sub-area ID to filter by
+ */
+export function showCategoryTasks(categoryId) {
+  state.activeFilterType = 'subcategory';
+  state.activeCategoryFilter = categoryId;
+  state.activePerspective = null;
+  state.activeAreaFilter = null;
+  state.activeLabelFilter = null;
+  state.activePersonFilter = null;
   closeMobileDrawer();
   // Switch to tasks tab when navigating from Quick Stats or other widgets
   if (state.activeTab !== 'tasks') {

@@ -1,37 +1,59 @@
 // ============================================================================
 // ENTITY MODAL RENDERERS
 // ============================================================================
-// Category, Label, Person, and Perspective modal save functions and HTML renderers.
+// Area, Label, Person, and Perspective modal save functions and HTML renderers.
 // Extracted from ui/task-modal.js for maintainability.
 
 import { state } from '../state.js';
 import {
-  createCategory, updateCategory,
+  createArea, updateArea,
   createLabel, updateLabel,
-  createPerson, updatePerson
-} from '../features/categories.js';
+  createPerson, updatePerson,
+  createCategory, updateCategory, deleteCategory
+} from '../features/areas.js';
 import { createPerspective, deletePerspective } from '../features/perspectives.js';
 import { saveTasksData } from '../data/storage.js';
 import { escapeHtml } from '../utils.js';
 
 // ============================================================================
-// ENTITY MODAL SAVE FUNCTIONS (Category, Label, Person)
+// ENTITY MODAL SAVE FUNCTIONS (Area, Label, Person)
 // ============================================================================
 
 /**
- * Save or update a category (area) from its modal.
+ * Save or update an area from its modal.
  */
-export function saveCategoryFromModal() {
-  const name = document.getElementById('category-name').value.trim();
+export function saveAreaFromModal() {
+  const name = document.getElementById('area-name').value.trim();
   if (!name) {
     alert('Please enter an area name');
     return;
   }
 
-  if (state.editingCategoryId) {
-    updateCategory(state.editingCategoryId, { name });
+  if (state.editingAreaId) {
+    updateArea(state.editingAreaId, { name });
   } else {
-    createCategory(name);
+    createArea(name);
+  }
+  state.showAreaModal = false;
+  state.editingAreaId = null;
+  window.render();
+}
+
+/**
+ * Save or update a category (sub-area) from its modal.
+ */
+export function saveCategoryFromModal() {
+  const name = document.getElementById('category-name')?.value?.trim();
+  const areaId = document.getElementById('category-area')?.value;
+  const color = document.getElementById('category-color')?.value || '#6366F1';
+  if (!name) { alert('Please enter a name'); return; }
+  if (!areaId) { alert('Please select an area'); return; }
+
+  if (state.editingCategoryId) {
+    updateCategory(state.editingCategoryId, { name, areaId, color });
+  } else {
+    const cat = createCategory(name, areaId);
+    if (color !== cat.color) updateCategory(cat.id, { color });
   }
   state.showCategoryModal = false;
   state.editingCategoryId = null;
@@ -291,7 +313,7 @@ export function renderPerspectiveModalHtml() {
                   <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Area</label>
                   <select id="perspective-category" class="modal-input-enhanced">
                     <option value="">Any area</option>
-                    ${(state.taskCategories || []).map(cat => `<option value="${cat.id}">${escapeHtml(cat.name)}</option>`).join('')}
+                    ${(state.taskAreas || []).map(cat => `<option value="${cat.id}">${escapeHtml(cat.name)}</option>`).join('')}
                   </select>
                 </div>
                 <div>
@@ -412,41 +434,90 @@ export function renderPerspectiveModalHtml() {
 }
 
 /**
- * Render the category (area) create/edit modal.
+ * Render the area create/edit modal.
  * @returns {string} HTML string, or '' if modal is closed
  */
-export function renderCategoryModalHtml() {
-  if (!state.showCategoryModal) return '';
-  const editingCategory = state.editingCategoryId
-    ? (state.taskCategories || []).find(c => c.id === state.editingCategoryId)
+export function renderAreaModalHtml() {
+  if (!state.showAreaModal) return '';
+  const editingArea = state.editingAreaId
+    ? (state.taskAreas || []).find(c => c.id === state.editingAreaId)
     : null;
   return `
-    <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showCategoryModal=false; editingCategoryId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showAreaModal=false; editingAreaId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
       <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
         <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
-          <h3 id="category-modal-title" class="font-semibold text-charcoal">${editingCategory ? 'Edit Area' : 'New Area'}</h3>
-          <button onclick="showCategoryModal=false; editingCategoryId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+          <h3 id="area-modal-title" class="font-semibold text-charcoal">${editingArea ? 'Edit Area' : 'New Area'}</h3>
+          <button onclick="showAreaModal=false; editingAreaId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
         </div>
         <div class="p-6 space-y-4">
           <div>
             <label class="text-sm text-charcoal/70 block mb-1">Name</label>
-            <input type="text" id="category-name" value="${editingCategory?.name ? escapeHtml(editingCategory.name) : ''}"
+            <input type="text" id="area-name" value="${editingArea?.name ? escapeHtml(editingArea.name) : ''}"
               placeholder="e.g., Work, Personal, Health" autofocus maxlength="100"
-              onkeydown="if(event.key==='Enter'){event.preventDefault();saveCategoryFromModal();}"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();saveAreaFromModal();}"
               class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
           </div>
         </div>
         <div class="px-6 py-4 border-t border-softborder flex justify-between">
-          ${editingCategory ? `
-            <button onclick="if(confirm('Delete this area?')){deleteCategory('${editingCategory.id}'); showCategoryModal=false; editingCategoryId=null; render();}"
+          ${editingArea ? `
+            <button onclick="if(confirm('Delete this area?')){deleteArea('${editingArea.id}'); showAreaModal=false; editingAreaId=null; render();}"
               class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
           ` : '<div></div>'}
           <div class="flex gap-3">
-            <button onclick="showCategoryModal=false; editingCategoryId=null; render()"
+            <button onclick="showAreaModal=false; editingAreaId=null; render()"
               class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
-            <button onclick="saveCategoryFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
-              ${editingCategory ? 'Save' : 'Create'}
+            <button onclick="saveAreaFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+              ${editingArea ? 'Save' : 'Create'}
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render the category (sub-area) create/edit modal.
+ * @returns {string} HTML string, or '' if modal is closed
+ */
+export function renderCategoryModalHtml() {
+  if (!state.showCategoryModal) return '';
+  const editing = state.editingCategoryId ? (state.taskCategories || []).find(c => c.id === state.editingCategoryId) : null;
+  const defaultAreaId = editing ? editing.areaId : (state.modalSelectedArea || (state.taskAreas[0]?.id || ''));
+  const defaultArea = state.taskAreas.find(a => a.id === defaultAreaId);
+  const defaultColor = editing ? editing.color : (defaultArea ? defaultArea.color : '#6366F1');
+
+  return `
+    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showCategoryModal=false;editingCategoryId=null;render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+      <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
+        <div class="modal-header-enhanced">
+          <h3 id="category-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editing ? 'Edit' : 'New'} Category</h3>
+          <button onclick="showCategoryModal=false;editingCategoryId=null;render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
+        </div>
+        <div class="modal-body-enhanced space-y-4">
+          <div>
+            <label class="modal-section-label">Name</label>
+            <input type="text" id="category-name" value="${editing ? escapeHtml(editing.name) : ''}" placeholder="Category name"
+              class="modal-input-enhanced w-full" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();saveCategoryFromModal();}">
+          </div>
+          <div>
+            <label class="modal-section-label">Area</label>
+            <select id="category-area" class="modal-input-enhanced w-full">
+              ${(state.taskAreas || []).map(a => `<option value="${a.id}" ${a.id === defaultAreaId ? 'selected' : ''}>${escapeHtml(a.name)}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="modal-section-label">Color</label>
+            <input type="color" id="category-color" value="${defaultColor}" class="w-10 h-10 rounded cursor-pointer border-0">
+          </div>
+        </div>
+        <div class="modal-footer-enhanced">
+          ${editing ? `<button onclick="window.deleteCategory('${editing.id}'); showCategoryModal=false; editingCategoryId=null; render()" class="px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-lg transition">Delete</button>` : '<div></div>'}
+          <div class="flex gap-2">
+            <button onclick="showCategoryModal=false;editingCategoryId=null;render()" class="px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">Cancel</button>
+            <button onclick="saveCategoryFromModal()" class="sb-btn px-5 py-2.5 rounded-lg text-sm font-medium">Save</button>
           </div>
         </div>
       </div>

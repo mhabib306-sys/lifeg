@@ -11,6 +11,7 @@ import {
   TASK_CATEGORIES_KEY,
   TASK_LABELS_KEY,
   TASK_PEOPLE_KEY,
+  CATEGORIES_KEY,
   PERSPECTIVES_KEY,
   HOME_WIDGETS_KEY,
   VIEW_STATE_KEY,
@@ -86,9 +87,10 @@ export function updateData(category, field, value) {
  */
 export function saveTasksData() {
   safeLocalStorageSet(TASKS_KEY, state.tasksData);
-  safeLocalStorageSet(TASK_CATEGORIES_KEY, state.taskCategories);
+  safeLocalStorageSet(TASK_CATEGORIES_KEY, state.taskAreas);
   safeLocalStorageSet(TASK_LABELS_KEY, state.taskLabels);
   safeLocalStorageSet(TASK_PEOPLE_KEY, state.taskPeople);
+  safeLocalStorageSet(CATEGORIES_KEY, state.taskCategories);
   safeLocalStorageSet(PERSPECTIVES_KEY, state.customPerspectives);
   localStorage.setItem(LAST_UPDATED_KEY, Date.now().toString());
   window.debouncedSaveToGithub();
@@ -140,9 +142,10 @@ export function saveViewState() {
     activeSubTab: state.activeSubTab,
     activePerspective: safePerspective,
     activeFilterType: state.activeFilterType,
-    activeCategoryFilter: state.activeCategoryFilter,
+    activeAreaFilter: state.activeAreaFilter,
     activeLabelFilter: state.activeLabelFilter,
-    activePersonFilter: state.activePersonFilter
+    activePersonFilter: state.activePersonFilter,
+    activeCategoryFilter: state.activeCategoryFilter
   }));
 }
 

@@ -2,7 +2,7 @@ import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
 import { getLocalDateString } from '../utils.js';
 import { BUILTIN_PERSPECTIVES } from '../constants.js';
-import { getTasksByPerson, getCategoryById, getLabelById, getPersonById } from './categories.js';
+import { getTasksByPerson, getAreaById, getLabelById, getPersonById, getCategoryById } from './areas.js';
 
 /**
  * Initialize task order properties
@@ -26,7 +26,7 @@ export function initializeTaskOrders() {
  * CRITICAL: This is the main filtering function for all task views
  *
  * PERSPECTIVE RULES:
- * - inbox: status='inbox' AND no categoryId
+ * - inbox: status='inbox' AND no areaId
  * - today: today=true OR dueDate=today OR overdue OR deferDate<=today
  * - flagged: flagged=true
  * - upcoming: has future dueDate
@@ -131,7 +131,7 @@ export function getFilteredTasks(perspectiveId) {
     // Inbox: Unprocessed tasks (no area assigned)
     // Things 3 logic: Inbox and Areas are mutually exclusive
     if (perspectiveId === 'inbox') {
-      return task.status === 'inbox' && !task.categoryId;
+      return task.status === 'inbox' && !task.areaId;
     }
 
     // Flagged: OmniFocus-style flagged items
@@ -148,9 +148,9 @@ export function getFilteredTasks(perspectiveId) {
         if (filter.status === 'today') rules.push(!!task.today);
         else rules.push(task.status === filter.status);
       }
-      if (filter.categoryId) rules.push(task.categoryId === filter.categoryId);
+      if (filter.categoryId) rules.push(task.areaId === filter.categoryId);
       if (filter.personId) rules.push((task.people || []).includes(filter.personId));
-      if (filter.inboxOnly) rules.push(task.status === 'inbox' && !task.categoryId);
+      if (filter.inboxOnly) rules.push(task.status === 'inbox' && !task.areaId);
       if (filter.hasLabel) rules.push((task.labels || []).some(l => l === filter.hasLabel));
 
       if (filter.labelIds && filter.labelIds.length > 0) {
@@ -298,11 +298,11 @@ export function groupTasksByCompletionDate(tasks) {
   });
 }
 
-// Get tasks by category
+// Get tasks by area
 export function getTasksByCategory(categoryId) {
   const today = getLocalDateString();
   return state.tasksData.filter(task => {
-    if (task.categoryId !== categoryId) return false;
+    if (task.areaId !== categoryId) return false;
     if (task.completed) return false;
     // Hide deferred tasks (deferDate in the future)
     if (task.deferDate && task.deferDate > today) return false;
@@ -332,14 +332,32 @@ export function getTasksByLabel(labelId) {
     });
 }
 
+// Get tasks by subcategory (category entity under an area)
+export function getTasksBySubcategory(categoryId) {
+  const today = getLocalDateString();
+  return state.tasksData.filter(task => {
+    if (task.categoryId !== categoryId) return false;
+    if (task.completed) return false;
+    if (task.deferDate && task.deferDate > today) return false;
+    return true;
+  }).sort((a, b) => {
+    if (a.dueDate && !b.dueDate) return -1;
+    if (!a.dueDate && b.dueDate) return 1;
+    if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
+    return new Date(a.createdAt) - new Date(b.createdAt);
+  });
+}
+
 // Get current filtered tasks based on active filter type
 export function getCurrentFilteredTasks() {
-  if (state.activeFilterType === 'category' && state.activeCategoryFilter) {
-    return getTasksByCategory(state.activeCategoryFilter);
+  if (state.activeFilterType === 'area' && state.activeAreaFilter) {
+    return getTasksByCategory(state.activeAreaFilter);
   } else if (state.activeFilterType === 'label' && state.activeLabelFilter) {
     return getTasksByLabel(state.activeLabelFilter);
   } else if (state.activeFilterType === 'person' && state.activePersonFilter) {
     return getTasksByPerson(state.activePersonFilter);
+  } else if (state.activeFilterType === 'subcategory' && state.activeCategoryFilter) {
+    return getTasksBySubcategory(state.activeCategoryFilter);
   } else {
     return getFilteredTasks(state.activePerspective);
   }
@@ -347,15 +365,19 @@ export function getCurrentFilteredTasks() {
 
 // Get current view info
 export function getCurrentViewInfo() {
-  if (state.activeFilterType === 'category' && state.activeCategoryFilter) {
-    const cat = getCategoryById(state.activeCategoryFilter);
-    return { icon: '\u{1F4C1}', name: cat?.name || 'Category', color: cat?.color };
+  if (state.activeFilterType === 'area' && state.activeAreaFilter) {
+    const cat = getAreaById(state.activeAreaFilter);
+    return { icon: '\u{1F4C1}', name: cat?.name || 'Area', color: cat?.color };
   } else if (state.activeFilterType === 'label' && state.activeLabelFilter) {
     const label = getLabelById(state.activeLabelFilter);
     return { icon: '\u{1F3F7}\uFE0F', name: label?.name || 'Tag', color: label?.color };
   } else if (state.activeFilterType === 'person' && state.activePersonFilter) {
     const person = getPersonById(state.activePersonFilter);
     return { icon: '\u{1F464}', name: person?.name || 'Person', color: person?.color, email: person?.email || '', jobTitle: person?.jobTitle || '' };
+  } else if (state.activeFilterType === 'subcategory' && state.activeCategoryFilter) {
+    const cat = getCategoryById(state.activeCategoryFilter);
+    const parentArea = cat ? getAreaById(cat.areaId) : null;
+    return { icon: '\u{1F4C2}', name: cat?.name || 'Category', color: cat?.color, parentArea: parentArea?.name };
   } else {
     const allPerspectives = [...BUILTIN_PERSPECTIVES, ...state.customPerspectives];
     const p = allPerspectives.find(p => p.id === state.activePerspective) || BUILTIN_PERSPECTIVES[0];

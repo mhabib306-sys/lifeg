@@ -6,7 +6,7 @@
 
 import { state } from '../state.js';
 import { HOME_WIDGETS_KEY, DEFAULT_HOME_WIDGETS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
-import { ensureEntityTombstones, persistEntityTombstones } from './categories.js';
+import { ensureEntityTombstones, persistEntityTombstones } from './areas.js';
 
 function markWidgetDeleted(id) {
   if (!id) return;

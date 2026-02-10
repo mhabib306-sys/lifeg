@@ -65,7 +65,7 @@ function setCaretOffset(el, offset) {
 
 function noteAcGetItems(query) {
   const note = noteAcNoteId ? state.tasksData.find(t => t.id === noteAcNoteId && t.isNote) : null;
-  if (noteAcTriggerChar === '#') return state.taskCategories;
+  if (noteAcTriggerChar === '#') return state.taskAreas;
   if (noteAcTriggerChar === '@') {
     const existing = note?.labels || [];
     return state.taskLabels.filter(l => !existing.includes(l.id));
@@ -84,8 +84,8 @@ function noteAcGetItems(query) {
 function noteAcGetCreateFn() {
   if (noteAcTriggerChar === '#') return (name) => {
     const c = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '\uD83D\uDCC1' };
-    state.taskCategories.push(c);
-    localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
+    state.taskAreas.push(c);
+    localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
     debouncedSaveToGithubSafe();
     return c;
   };
@@ -129,7 +129,7 @@ function noteAcSelectItem(item) {
 
   // Apply metadata to note
   if (noteAcTriggerChar === '#') {
-    note.categoryId = item.id;
+    note.areaId = item.id;
   } else if (noteAcTriggerChar === '@') {
     if (!note.labels) note.labels = [];
     if (!note.labels.includes(item.id)) note.labels.push(item.id);
@@ -291,8 +291,8 @@ function renderNoteMetaChipsDOM(noteId, note) {
 /** Build HTML for note metadata (plain text with bullet separators, matching task style). */
 function buildNoteMetaChipsHtml(note) {
   const metaParts = [];
-  if (note.categoryId) {
-    const cat = state.taskCategories.find(c => c.id === note.categoryId);
+  if (note.areaId) {
+    const cat = state.taskAreas.find(c => c.id === note.areaId);
     if (cat) metaParts.push(escapeHtml(cat.name));
   }
   (note.labels || []).forEach(lid => {
@@ -313,7 +313,7 @@ function buildNoteMetaChipsHtml(note) {
 export function removeNoteInlineMeta(noteId, type, id) {
   const note = state.tasksData.find(t => t.id === noteId && t.isNote);
   if (!note) return;
-  if (type === 'category') note.categoryId = null;
+  if (type === 'category') note.areaId = null;
   else if (type === 'label') note.labels = (note.labels || []).filter(l => l !== id);
   else if (type === 'person') note.people = (note.people || []).filter(p => p !== id);
   else if (type === 'deferDate') note.deferDate = null;
@@ -399,14 +399,14 @@ function getOrderBetween(before, after) {
 
 function parseFilter(filter) {
   if (!filter) return {};
-  if (typeof filter === 'string') return { categoryId: filter };
+  if (typeof filter === 'string') return { areaId: filter };
   return filter;
 }
 
 function getFilteredNotes(filter = null) {
-  const { categoryId, labelId, personId } = parseFilter(filter);
+  const { areaId, labelId, personId } = parseFilter(filter);
   const all = state.tasksData.filter(t => t.isNote && !t.completed);
-  if (categoryId) return all.filter(n => n.categoryId === categoryId);
+  if (areaId) return all.filter(n => n.areaId === areaId);
   if (labelId) return all.filter(n => (n.labels || []).includes(labelId));
   if (personId) return all.filter(n => (n.people || []).includes(personId));
   return all;
@@ -491,8 +491,8 @@ function getCurrentNoteFilter(currentNote) {
   if (state.activeFilterType === 'person' && state.activePersonFilter) {
     return { personId: state.activePersonFilter };
   }
-  const categoryFilter = state.activeCategoryFilter || null;
-  return categoryFilter || currentNote?.categoryId || null;
+  const areaFilter = state.activeAreaFilter || null;
+  return areaFilter || currentNote?.areaId || null;
 }
 
 function getNavigationNotes(currentNote) {
@@ -599,9 +599,9 @@ export function getNoteAncestors(noteId) {
 // ============================================================================
 
 export function createRootNote(filter = null) {
-  const { categoryId = null, labelId = null, personId = null } = parseFilter(filter);
+  const { areaId = null, labelId = null, personId = null } = parseFilter(filter);
   const siblings = state.tasksData
-    .filter(t => t.isNote && !t.completed && !t.parentId && (categoryId ? t.categoryId === categoryId : true))
+    .filter(t => t.isNote && !t.completed && !t.parentId && (areaId ? t.areaId === areaId : true))
     .sort(compareNotes);
 
   // If zoomed, create as child of zoomed note instead
@@ -616,7 +616,7 @@ export function createRootNote(filter = null) {
     status: 'anytime',
     completed: false,
     completedAt: null,
-    categoryId,
+    areaId,
     labels: labelId ? [labelId] : [],
     people: personId ? [personId] : [],
     deferDate: null,
@@ -675,7 +675,7 @@ export function outdentNote(noteId) {
 
   // Get new siblings for ordering
   const newSiblings = state.tasksData
-    .filter(t => t.isNote && !t.completed && t.parentId === newParentId && t.categoryId === note.categoryId)
+    .filter(t => t.isNote && !t.completed && t.parentId === newParentId && t.areaId === note.areaId)
     .sort(compareNotes);
 
   // Place after the old parent in the new siblings list
@@ -694,7 +694,7 @@ export function createNoteAfter(noteId) {
   if (!note) return;
 
   const siblings = state.tasksData
-    .filter(t => t.isNote && !t.completed && t.parentId === note.parentId && t.categoryId === note.categoryId)
+    .filter(t => t.isNote && !t.completed && t.parentId === note.parentId && t.areaId === note.areaId)
     .sort(compareNotes);
 
   const siblingIdx = siblings.findIndex(s => s.id === noteId);
@@ -708,7 +708,7 @@ export function createNoteAfter(noteId) {
     status: 'anytime',
     completed: false,
     completedAt: null,
-    categoryId: note.categoryId,
+    areaId: note.areaId,
     labels: [],
     people: [],
     deferDate: null,
@@ -742,7 +742,7 @@ export function createChildNote(noteId) {
     status: 'anytime',
     completed: false,
     completedAt: null,
-    categoryId: note.categoryId,
+    areaId: note.areaId,
     labels: [],
     people: [],
     deferDate: null,
@@ -1239,7 +1239,7 @@ export function reorderNotes(draggedId, targetId, position) {
     dragged.indent = target.indent || 0;
 
     const siblings = state.tasksData
-      .filter(t => t.isNote && !t.completed && t.parentId === target.parentId && t.categoryId === target.categoryId && t.id !== draggedId)
+      .filter(t => t.isNote && !t.completed && t.parentId === target.parentId && t.areaId === target.areaId && t.id !== draggedId)
       .sort(compareNotes);
 
     const targetIdx = siblings.findIndex(s => s.id === targetId);
@@ -1274,7 +1274,7 @@ export function renderNoteItem(note) {
   const isEditing = state.editingNoteId === note.id;
   const descendantCount = hasChildren && isCollapsed ? countAllDescendants(note.id) : 0;
 
-  const hasMetaChips = note.categoryId || (note.labels && note.labels.length > 0) || (note.people && note.people.length > 0) || note.deferDate;
+  const hasMetaChips = note.areaId || (note.labels && note.labels.length > 0) || (note.people && note.people.length > 0) || note.deferDate;
 
   const isTouch = typeof window !== 'undefined'
     && window.matchMedia

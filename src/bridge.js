@@ -78,10 +78,11 @@ import {
 } from './features/scoring.js';
 
 import {
-  createCategory, updateCategory, deleteCategory, getCategoryById,
+  createArea, updateArea, deleteArea, getAreaById,
+  createCategory, updateCategory, deleteCategory, getCategoryById, getCategoriesByArea,
   createLabel, updateLabel, deleteLabel, getLabelById,
   createPerson, updatePerson, deletePerson, getPersonById, getTasksByPerson
-} from './features/categories.js';
+} from './features/areas.js';
 
 import {
   createTask, updateTask, deleteTask, confirmDeleteTask,
@@ -92,7 +93,7 @@ import {
 import {
   initializeTaskOrders, getFilteredTasks, groupTasksByDate,
   groupTasksByCompletionDate, getTasksByCategory, getTasksByLabel,
-  getCurrentFilteredTasks, getCurrentViewInfo
+  getTasksBySubcategory, getCurrentFilteredTasks, getCurrentViewInfo
 } from './features/task-filter.js';
 
 import {
@@ -167,7 +168,7 @@ import {
 import { createPrayerInput, createToggle, createNumberInput, createCounter, createScoreCard, createCard } from './ui/input-builders.js';
 import {
   openMobileDrawer, closeMobileDrawer, renderMobileDrawer, renderBottomNav,
-  showCategoryTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, scrollToContent
+  showAreaTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, showCategoryTasks, scrollToContent
 } from './ui/mobile.js';
 
 // -- Task Modal --
@@ -178,6 +179,7 @@ import {
   initModalState, setModalType, setModalStatus, toggleModalFlagged,
   updateDateDisplay, clearDateField, setQuickDate, openDatePicker,
   selectArea, renderAreaInput,
+  selectCategory, renderCategoryInput,
   addTag, removeTag, renderTagsInput,
   addPerson as addPersonModal, removePerson as removePersonModal, renderPeopleInput,
   toggleRepeat, initModalAutocomplete,
@@ -187,9 +189,10 @@ import {
 
 // -- Entity Modals (category, label, person, perspective) --
 import {
-  saveCategoryFromModal, saveLabelFromModal, savePersonFromModal,
+  saveAreaFromModal, saveLabelFromModal, savePersonFromModal,
+  saveCategoryFromModal,
   savePerspectiveFromModal, selectPerspectiveEmoji,
-  renderPerspectiveModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml
+  renderPerspectiveModalHtml, renderAreaModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml
 } from './ui/entity-modals.js';
 
 // -- Inline Autocomplete (Todoist-style #, @, &, !) --
@@ -285,8 +288,9 @@ Object.assign(window, {
   saveXP, saveStreak, saveAchievements, saveCategoryWeights,
   updateCategoryWeight, resetCategoryWeights, rebuildGamification,
 
-  // Categories / Labels / People
-  createCategory, updateCategory, deleteCategory, getCategoryById,
+  // Areas / Labels / People
+  createArea, updateArea, deleteArea, getAreaById,
+  createCategory, updateCategory, deleteCategory, getCategoryById, getCategoriesByArea,
   createLabel, updateLabel, deleteLabel, getLabelById,
   createPerson, updatePerson, deletePerson, getPersonById, getTasksByPerson,
 
@@ -298,7 +302,7 @@ Object.assign(window, {
   // Task Filtering
   initializeTaskOrders, getFilteredTasks, groupTasksByDate,
   groupTasksByCompletionDate, getTasksByCategory, getTasksByLabel,
-  getCurrentFilteredTasks, getCurrentViewInfo,
+  getTasksBySubcategory, getCurrentFilteredTasks, getCurrentViewInfo,
 
   // Notes
   toggleNoteCollapse, getNotesHierarchy, noteHasChildren, getNoteChildren,
@@ -358,22 +362,23 @@ Object.assign(window, {
 
   // Mobile
   openMobileDrawer, closeMobileDrawer, renderMobileDrawer, renderBottomNav,
-  showCategoryTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, scrollToContent,
+  showAreaTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, showCategoryTasks, scrollToContent,
 
   // Task Modal
   startInlineEdit, saveInlineEdit, cancelInlineEdit, handleInlineEditKeydown,
   openNewTaskModal, quickAddTask, handleQuickAddKeydown,
   toggleInlineTagInput, addInlineTag, toggleInlinePersonInput, addInlinePerson,
-  saveCategoryFromModal, saveLabelFromModal, savePersonFromModal,
+  saveAreaFromModal, saveLabelFromModal, savePersonFromModal, saveCategoryFromModal,
   initModalState, setModalType, setModalStatus, toggleModalFlagged,
   updateDateDisplay, clearDateField, setQuickDate, openDatePicker,
   selectArea, renderAreaInput,
+  selectCategory, renderCategoryInput,
   addTag, removeTag, renderTagsInput,
   addPersonModal, removePersonModal, renderPeopleInput,
   toggleRepeat, initModalAutocomplete,
   closeTaskModal, saveTaskFromModal, savePerspectiveFromModal, selectPerspectiveEmoji,
   renderTaskModalHtml,
-  renderPerspectiveModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml,
+  renderPerspectiveModalHtml, renderAreaModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml,
   parseDateQuery, setupInlineAutocomplete, renderInlineChips,
   removeInlineMeta, cleanupInlineAutocomplete,
 });
@@ -383,10 +388,10 @@ Object.assign(window, {
 // These need to be on window as property accessors that proxy to state
 const stateProxies = [
   'currentUser', 'authLoading', 'authError',
-  'editingTaskId', 'editingCategoryId', 'editingLabelId', 'editingPersonId', 'editingPerspectiveId',
-  'showTaskModal', 'showPerspectiveModal', 'showCategoryModal', 'showLabelModal', 'showPersonModal',
+  'editingTaskId', 'editingAreaId', 'editingLabelId', 'editingPersonId', 'editingPerspectiveId',
+  'showTaskModal', 'showPerspectiveModal', 'showAreaModal', 'showLabelModal', 'showPersonModal',
   'showInlineTagInput', 'showInlinePersonInput',
-  'activePerspective', 'activeFilterType', 'activeCategoryFilter', 'activeLabelFilter', 'activePersonFilter',
+  'activePerspective', 'activeFilterType', 'activeAreaFilter', 'activeLabelFilter', 'activePersonFilter',
   'editingHomeWidgets', 'showAddWidgetPicker', 'draggingWidgetId',
   'perspectiveEmojiPickerOpen', 'emojiSearchQuery',
   'editingNoteId', 'inlineEditingTaskId', 'quickAddIsNote', 'showAllSidebarPeople', 'showAllSidebarLabels',
@@ -400,7 +405,8 @@ const stateProxies = [
   'draggedCalendarEvent',
   'calendarMeetingNotesEventKey', 'calendarMeetingNotesScope', 'meetingNotesByEvent',
   'currentDate', 'bulkMonth', 'bulkYear', 'bulkCategory',
-  'tasksData', 'taskCategories', 'taskLabels', 'taskPeople',
+  'tasksData', 'taskAreas', 'taskLabels', 'taskPeople', 'taskCategories',
+  'showCategoryModal', 'editingCategoryId', 'activeCategoryFilter', 'modalSelectedCategory',
   'customPerspectives', 'homeWidgets', 'allData',
   'WEIGHTS', 'MAX_SCORES',
   'weatherData', 'weatherLocation',

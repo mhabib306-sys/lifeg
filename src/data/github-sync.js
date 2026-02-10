@@ -17,6 +17,7 @@ import {
   TASK_CATEGORIES_KEY,
   TASK_LABELS_KEY,
   TASK_PEOPLE_KEY,
+  CATEGORIES_KEY,
   PERSPECTIVES_KEY,
   HOME_WIDGETS_KEY,
   MEETING_NOTES_KEY,
@@ -289,8 +290,11 @@ function isEntityDeleted(collection, id) {
 }
 
 function pruneDeletedEntitiesFromState() {
-  state.taskCategories = (state.taskCategories || []).filter(item => !isEntityDeleted('taskCategories', item?.id));
-  localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
+  state.taskAreas = (state.taskAreas || []).filter(item => !isEntityDeleted('taskCategories', item?.id));
+  localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
+
+  state.taskCategories = (state.taskCategories || []).filter(item => !isEntityDeleted('categories', item?.id));
+  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(state.taskCategories));
 
   state.taskLabels = (state.taskLabels || []).filter(item => !isEntityDeleted('taskLabels', item?.id));
   localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
@@ -396,9 +400,13 @@ function mergeTaskCollectionsFromCloud(cloudData = {}) {
   state.tasksData = mergedTasks;
   localStorage.setItem(TASKS_KEY, JSON.stringify(state.tasksData));
 
-  const mergedCategories = mergeEntityCollection(state.taskCategories, cloudData.taskCategories, [], 'taskCategories');
+  const mergedAreas = mergeEntityCollection(state.taskAreas, cloudData.taskCategories, [], 'taskCategories');
+  state.taskAreas = mergedAreas;
+  localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
+
+  const mergedCategories = mergeEntityCollection(state.taskCategories, cloudData.categories, [], 'categories');
   state.taskCategories = mergedCategories;
-  localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
+  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(state.taskCategories));
 
   const mergedLabels = mergeEntityCollection(state.taskLabels, cloudData.taskLabels, [], 'taskLabels');
   state.taskLabels = mergedLabels;
@@ -482,7 +490,8 @@ export async function saveToGithub() {
       tasks: state.tasksData,
       deletedTaskTombstones: normalizeDeletedTaskTombstones(state.deletedTaskTombstones),
       deletedEntityTombstones: normalizeDeletedEntityTombstones(state.deletedEntityTombstones),
-      taskCategories: state.taskCategories,
+      taskCategories: state.taskAreas,
+      categories: state.taskCategories,
       taskLabels: state.taskLabels,
       taskPeople: state.taskPeople,
       customPerspectives: state.customPerspectives,

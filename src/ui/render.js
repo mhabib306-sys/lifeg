@@ -69,8 +69,8 @@ function renderPerspectiveModalHtml() {
   return '';
 }
 
-function renderCategoryModalHtml() {
-  if (typeof window.renderCategoryModalHtml === 'function') return window.renderCategoryModalHtml();
+function renderAreaModalHtml() {
+  if (typeof window.renderAreaModalHtml === 'function') return window.renderAreaModalHtml();
   return '';
 }
 
@@ -81,6 +81,12 @@ function renderLabelModalHtml() {
 
 function renderPersonModalHtml() {
   if (typeof window.renderPersonModalHtml === 'function') return window.renderPersonModalHtml();
+  return '';
+}
+
+function renderCategoryModalWrapper() {
+  if (!state.showCategoryModal) return '';
+  if (typeof window.renderCategoryModalHtml === 'function') return window.renderCategoryModalHtml();
   return '';
 }
 
@@ -354,9 +360,10 @@ export function render() {
 
       ${renderTaskModalHtml()}
       ${renderPerspectiveModalHtml()}
-      ${renderCategoryModalHtml()}
+      ${renderAreaModalHtml()}
       ${renderLabelModalHtml()}
       ${renderPersonModalHtml()}
+      ${renderCategoryModalWrapper()}
       ${renderBraindumpFAB()}
       ${renderBraindumpOverlay()}
       ${renderUndoToast()}
@@ -402,9 +409,10 @@ export function render() {
     const anyModalOpen = !!(
       state.showTaskModal ||
       state.showPerspectiveModal ||
-      state.showCategoryModal ||
+      state.showAreaModal ||
       state.showLabelModal ||
       state.showPersonModal ||
+      state.showCategoryModal ||
       state.showBraindump ||
       state.calendarEventModalOpen
     );

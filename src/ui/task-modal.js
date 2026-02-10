@@ -9,7 +9,7 @@
 
 import { state } from '../state.js';
 import { createTask, updateTask } from '../features/tasks.js';
-import { createLabel, createPerson } from '../features/categories.js';
+import { createLabel, createPerson, getCategoriesByArea, getCategoryById } from '../features/areas.js';
 import { escapeHtml, formatSmartDate } from '../utils.js';
 import {
   THINGS3_ICONS,
@@ -52,7 +52,7 @@ export function startInlineEdit(taskId) {
       if (task) {
         setupInlineAutocomplete('inline-edit-input', {
           initialMeta: {
-            categoryId: task.categoryId || null,
+            areaId: task.areaId || null,
             labels: task.labels ? [...task.labels] : [],
             people: task.people ? [...task.people] : []
           }
@@ -76,7 +76,7 @@ export function saveInlineEdit(taskId) {
       // Merge inline autocomplete metadata
       const inlineMeta = state.inlineAutocompleteMeta.get('inline-edit-input');
       if (inlineMeta) {
-        if (inlineMeta.categoryId !== undefined) updates.categoryId = inlineMeta.categoryId;
+        if (inlineMeta.areaId !== undefined) updates.areaId = inlineMeta.areaId;
         if (inlineMeta.labels) updates.labels = inlineMeta.labels;
         if (inlineMeta.people) updates.people = inlineMeta.people;
         if (inlineMeta.deferDate) updates.deferDate = inlineMeta.deferDate;
@@ -126,12 +126,15 @@ export function handleInlineEditKeydown(event, taskId) {
 export function openNewTaskModal() {
   state.editingTaskId = null;
   // Set context based on current view
-  if (state.activeFilterType === 'category' && state.activeCategoryFilter) {
-    state.newTaskContext = { categoryId: state.activeCategoryFilter, labelId: null, labelIds: null, personId: null, status: 'inbox' };
+  if (state.activeFilterType === 'subcategory' && state.activeCategoryFilter) {
+    const subcat = getCategoryById(state.activeCategoryFilter);
+    state.newTaskContext = { areaId: subcat?.areaId || null, categoryId: state.activeCategoryFilter, labelId: null, labelIds: null, personId: null, status: 'inbox' };
+  } else if (state.activeFilterType === 'area' && state.activeAreaFilter) {
+    state.newTaskContext = { areaId: state.activeAreaFilter, categoryId: null, labelId: null, labelIds: null, personId: null, status: 'inbox' };
   } else if (state.activeFilterType === 'label' && state.activeLabelFilter) {
-    state.newTaskContext = { categoryId: null, labelId: state.activeLabelFilter, labelIds: null, personId: null, status: 'inbox' };
+    state.newTaskContext = { areaId: null, labelId: state.activeLabelFilter, labelIds: null, personId: null, status: 'inbox' };
   } else if (state.activeFilterType === 'person' && state.activePersonFilter) {
-    state.newTaskContext = { categoryId: null, labelId: null, labelIds: null, personId: state.activePersonFilter, status: 'inbox' };
+    state.newTaskContext = { areaId: null, labelId: null, labelIds: null, personId: state.activePersonFilter, status: 'inbox' };
   } else if (state.activeFilterType === 'perspective') {
     // Check if it's a custom perspective
     const customPerspective = state.customPerspectives.find(p => p.id === state.activePerspective);
@@ -140,7 +143,7 @@ export function openNewTaskModal() {
       const customStatus = customPerspective.filter.status === 'today' ? 'anytime' : (customPerspective.filter.status || 'inbox');
       const customToday = customPerspective.filter.status === 'today';
       state.newTaskContext = {
-        categoryId: customPerspective.filter.categoryId || null,
+        areaId: customPerspective.filter.categoryId || null,
         labelId: null,
         labelIds: customPerspective.filter.labelIds || null,
         personId: null,
@@ -152,7 +155,7 @@ export function openNewTaskModal() {
       // Built-in perspective - set status based on perspective
       const statusMap = { inbox: 'inbox', today: 'anytime', anytime: 'anytime', someday: 'someday' };
       state.newTaskContext = {
-        categoryId: null,
+        areaId: null,
         labelId: null,
         labelIds: null,
         personId: null,
@@ -162,7 +165,7 @@ export function openNewTaskModal() {
       };
     }
   } else {
-    state.newTaskContext = { categoryId: null, labelId: null, labelIds: null, personId: null, status: 'inbox' };
+    state.newTaskContext = { areaId: null, labelId: null, labelIds: null, personId: null, status: 'inbox' };
   }
   state.showTaskModal = true;
   window.render();
@@ -202,8 +205,12 @@ export function quickAddTask(inputElement) {
   }
 
   // Apply category/label/person context
-  if (state.activeFilterType === 'category' && state.activeCategoryFilter) {
+  if (state.activeFilterType === 'subcategory' && state.activeCategoryFilter) {
+    const subcat = getCategoryById(state.activeCategoryFilter);
+    options.areaId = subcat?.areaId || null;
     options.categoryId = state.activeCategoryFilter;
+  } else if (state.activeFilterType === 'area' && state.activeAreaFilter) {
+    options.areaId = state.activeAreaFilter;
   } else if (state.activeFilterType === 'label' && state.activeLabelFilter) {
     options.labels = [state.activeLabelFilter];
   } else if (state.activeFilterType === 'person' && state.activePersonFilter) {
@@ -221,7 +228,7 @@ export function quickAddTask(inputElement) {
           options.status = customPerspective.filter.status;
         }
       }
-      if (customPerspective.filter.categoryId) options.categoryId = customPerspective.filter.categoryId;
+      if (customPerspective.filter.categoryId) options.areaId = customPerspective.filter.categoryId;
       if (customPerspective.filter.labelIds && customPerspective.filter.labelIds.length > 0) {
         options.labels = customPerspective.filter.labelIds;
       }
@@ -240,7 +247,7 @@ export function quickAddTask(inputElement) {
   // Merge inline autocomplete metadata
   const inlineMeta = state.inlineAutocompleteMeta.get('quick-add-input');
   if (inlineMeta) {
-    if (inlineMeta.categoryId) options.categoryId = inlineMeta.categoryId;
+    if (inlineMeta.areaId) options.areaId = inlineMeta.areaId;
     if (inlineMeta.labels && inlineMeta.labels.length) options.labels = [...(options.labels || []), ...inlineMeta.labels.filter(l => !(options.labels || []).includes(l))];
     if (inlineMeta.people && inlineMeta.people.length) options.people = [...(options.people || []), ...inlineMeta.people.filter(p => !(options.people || []).includes(p))];
     if (inlineMeta.deferDate) options.deferDate = inlineMeta.deferDate;
@@ -529,7 +536,8 @@ export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDispl
  */
 export function initModalState(editingTask) {
   if (editingTask) {
-    state.modalSelectedArea = editingTask.categoryId || null;
+    state.modalSelectedArea = editingTask.areaId || null;
+    state.modalSelectedCategory = editingTask.categoryId || null;
     state.modalSelectedStatus = editingTask.status || 'inbox';
     state.modalSelectedToday = !!editingTask.today;
     state.modalSelectedFlagged = !!editingTask.flagged;
@@ -538,7 +546,8 @@ export function initModalState(editingTask) {
     state.modalIsNote = editingTask.isNote || false;
     state.modalRepeatEnabled = editingTask.repeat && editingTask.repeat.type !== 'none';
   } else {
-    state.modalSelectedArea = state.newTaskContext.categoryId || null;
+    state.modalSelectedArea = state.newTaskContext.areaId || null;
+    state.modalSelectedCategory = state.newTaskContext.categoryId || null;
     state.modalSelectedStatus = state.newTaskContext.status || 'inbox';
     state.modalSelectedToday = !!state.newTaskContext.today;
     state.modalSelectedFlagged = !!state.newTaskContext.flagged;
@@ -687,6 +696,8 @@ export function selectArea(area) {
          </span>`
       : '<span class="text-[var(--text-muted)] text-sm">No area selected</span>';
   }
+  // Re-render category input when area changes (categories filter by area)
+  renderCategoryInput();
 }
 
 /**
@@ -697,7 +708,7 @@ export function renderAreaInput() {
   const container = document.getElementById('area-autocomplete-container');
   if (!container) return;
 
-  const area = state.taskCategories.find(c => c.id === state.modalSelectedArea);
+  const area = state.taskAreas.find(c => c.id === state.modalSelectedArea);
 
   container.innerHTML = `
     <div id="area-display" class="modal-token-shell area-display-shell" onclick="document.getElementById('area-search').focus()">
@@ -720,19 +731,94 @@ export function renderAreaInput() {
   setupAutocomplete(
     'area-search',
     'area-dropdown',
-    state.taskCategories,
+    state.taskAreas,
     (item) => { selectArea(item); renderAreaInput(); },
     (item) => item.name,
     (item) => `<div class="autocomplete-option-icon" style="background: ${item.color}20; color: ${item.color}">${item.icon || '\uD83D\uDCC1'}</div>`,
     true,
     (name) => {
       const newCat = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '\uD83D\uDCC1' };
-      state.taskCategories.push(newCat);
-      localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
+      state.taskAreas.push(newCat);
+      localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
       debouncedSaveToGithub();
       selectArea(newCat);
       renderAreaInput();
     }
+  );
+}
+
+/**
+ * Select a category (sub-area) in the modal and update its display.
+ * @param {object|null} category - Category object or null to clear
+ */
+export function selectCategory(category) {
+  state.modalSelectedCategory = category ? category.id : null;
+  const display = document.getElementById('category-display');
+  if (display) {
+    display.innerHTML = category
+      ? `<span class="tag-pill" style="background: ${category.color}20; color: ${category.color}">
+           📂 ${escapeHtml(category.name)}
+           <span class="tag-pill-remove" onclick="event.stopPropagation(); selectCategory(null); renderCategoryInput();">
+             <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+           </span>
+         </span>`
+      : '<span class="text-[var(--text-muted)] text-sm">No category selected</span>';
+  }
+}
+
+/**
+ * Render the category autocomplete input inside the modal.
+ * Filters categories by the currently selected area.
+ */
+export function renderCategoryInput() {
+  const container = document.getElementById('category-autocomplete-container');
+  if (!container) return;
+
+  const availableCategories = state.modalSelectedArea
+    ? getCategoriesByArea(state.modalSelectedArea)
+    : state.taskCategories;
+
+  // Clear selection if category doesn't belong to the selected area
+  if (state.modalSelectedCategory && state.modalSelectedArea) {
+    const cat = getCategoryById(state.modalSelectedCategory);
+    if (cat && cat.areaId !== state.modalSelectedArea) {
+      state.modalSelectedCategory = null;
+    }
+  }
+
+  const category = state.modalSelectedCategory ? getCategoryById(state.modalSelectedCategory) : null;
+
+  if (availableCategories.length === 0 && !category) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = `
+    <div id="category-display" class="modal-token-shell area-display-shell" onclick="document.getElementById('category-search')?.focus()">
+      ${category
+        ? `<span class="tag-pill" style="background: ${category.color}20; color: ${category.color}">
+             📂 ${escapeHtml(category.name)}
+             <span class="tag-pill-remove" onclick="event.stopPropagation(); selectCategory(null); renderCategoryInput();">
+               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+             </span>
+           </span>`
+        : '<span class="text-[var(--text-muted)] text-sm">No category selected</span>'}
+    </div>
+    <div class="autocomplete-container">
+      <input type="text" id="category-search" class="autocomplete-input modal-input-enhanced" placeholder="Search categories...">
+      <svg class="autocomplete-icon w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <div id="category-dropdown" class="autocomplete-dropdown"></div>
+    </div>
+  `;
+
+  setupAutocomplete(
+    'category-search',
+    'category-dropdown',
+    availableCategories,
+    (item) => { selectCategory(item); renderCategoryInput(); },
+    (item) => item.name,
+    (item) => `<div class="autocomplete-option-icon" style="background: ${item.color}20; color: ${item.color}">📂</div>`,
+    false
   );
 }
 
@@ -884,6 +970,7 @@ export function toggleRepeat() {
 export function initModalAutocomplete() {
   setTimeout(() => {
     renderAreaInput();
+    renderCategoryInput();
     renderTagsInput();
     renderPeopleInput();
 
@@ -961,7 +1048,8 @@ export function saveTaskFromModal() {
     status: state.modalSelectedStatus,
     today: state.modalSelectedToday,
     flagged: state.modalSelectedFlagged,
-    categoryId: state.modalSelectedArea,
+    areaId: state.modalSelectedArea,
+    categoryId: state.modalSelectedCategory || null,
     deferDate: deferDateValue,
     dueDate: document.getElementById('task-due')?.value || null,
     repeat: repeat,
@@ -971,7 +1059,7 @@ export function saveTaskFromModal() {
   };
 
   // Things 3 logic: Assigning an Area to an Inbox task moves it to Anytime (not for notes)
-  if (!state.modalIsNote && taskData.status === 'inbox' && taskData.categoryId) {
+  if (!state.modalIsNote && taskData.status === 'inbox' && taskData.areaId) {
     taskData.status = 'anytime';
   }
   // Today flag implies availability (not Inbox/Someday)
@@ -1091,6 +1179,12 @@ export function renderTaskModalHtml() {
           <div class="modal-section">
             <label class="modal-section-label">Area</label>
             <div id="area-autocomplete-container"></div>
+          </div>
+
+          <!-- Category (Sub-area, Autocomplete) -->
+          <div class="modal-section" id="category-section">
+            <label class="modal-section-label">Category</label>
+            <div id="category-autocomplete-container"></div>
           </div>
 
           <!-- Dates - Tasks only -->

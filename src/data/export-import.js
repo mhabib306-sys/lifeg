@@ -8,6 +8,7 @@ import {
   TASK_CATEGORIES_KEY,
   TASK_LABELS_KEY,
   TASK_PEOPLE_KEY,
+  CATEGORIES_KEY,
   PERSPECTIVES_KEY
 } from '../constants.js';
 import { getLocalDateString } from '../utils.js';
@@ -26,7 +27,8 @@ export function exportData() {
     data: state.allData,
     weights: state.WEIGHTS,
     tasks: state.tasksData,
-    taskCategories: state.taskCategories,
+    taskCategories: state.taskAreas,
+    categories: state.taskCategories,
     taskLabels: state.taskLabels,
     taskPeople: state.taskPeople,
     customPerspectives: state.customPerspectives,
@@ -70,8 +72,12 @@ export function importData(event) {
         localStorage.setItem(TASKS_KEY, JSON.stringify(state.tasksData));
       }
       if (imported.taskCategories) {
-        state.taskCategories = imported.taskCategories;
-        localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskCategories));
+        state.taskAreas = imported.taskCategories;
+        localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
+      }
+      if (imported.categories) {
+        state.taskCategories = imported.categories;
+        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(state.taskCategories));
       }
       if (imported.taskLabels) {
         state.taskLabels = imported.taskLabels;

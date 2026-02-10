@@ -54,7 +54,7 @@ export function clearTaskDeletionTombstone(taskId) {
  * @property {boolean} flagged - True if flagged (OmniFocus-style)
  * @property {boolean} completed - Completion state
  * @property {string|null} completedAt - ISO timestamp when completed
- * @property {string|null} categoryId - Area/category assignment
+ * @property {string|null} areaId - Area assignment
  * @property {string[]} labels - Array of label IDs (tags)
  * @property {string[]} people - Array of person IDs (delegation)
  * @property {string|null} deferDate - Start date (YYYY-MM-DD)
@@ -68,8 +68,8 @@ export function clearTaskDeletionTombstone(taskId) {
  * @property {string} updatedAt - ISO last modified timestamp
  *
  * THINGS 3 BEHAVIOR:
- * - Inbox tasks have no category
- * - Assigning a category moves Inbox -> Anytime
+ * - Inbox tasks have no area
+ * - Assigning an area moves Inbox -> Anytime
  * - "Today" is a flag (non-exclusive) and does not replace status
  * - "Flagged" is a separate boolean (OmniFocus-style)
  * - "Someday" hides task from active views
@@ -80,10 +80,10 @@ export function clearTaskDeletionTombstone(taskId) {
  */
 export function createTask(title, options = {}) {
   let normalizedStatus = options.status === 'today' ? 'anytime' : (options.status || 'inbox');
-  const hasCategory = !!options.categoryId;
+  const hasArea = !!options.areaId;
   const isToday = !!options.today;
   // Things 3 logic: assigning an Area to an Inbox task moves it to Anytime
-  if (!options.isNote && normalizedStatus === 'inbox' && (hasCategory || isToday)) {
+  if (!options.isNote && normalizedStatus === 'inbox' && (hasArea || isToday)) {
     normalizedStatus = 'anytime';
   }
   const task = {
@@ -95,6 +95,7 @@ export function createTask(title, options = {}) {
     flagged: options.flagged || false,
     completed: false,
     completedAt: null,
+    areaId: options.areaId || null,
     categoryId: options.categoryId || null,
     labels: options.labels || [],
     people: options.people || [],       // Array of person IDs
@@ -127,7 +128,7 @@ export function updateTask(taskId, updates) {
       updates.today = true;
     }
     // Things 3 logic: Assigning Area to Inbox task moves it to Anytime
-    if (task.status === 'inbox' && updates.categoryId && !task.categoryId) {
+    if (task.status === 'inbox' && updates.areaId && !task.areaId) {
       updates.status = 'anytime';
     }
     const nextStatus = updates.status ?? task.status;
@@ -324,7 +325,7 @@ export function createNextRepeatOccurrence(completedTask) {
     status: completedTask.status,
     today: completedTask.today || false,
     flagged: completedTask.flagged || false,
-    categoryId: completedTask.categoryId,
+    areaId: completedTask.areaId,
     labels: [...(completedTask.labels || [])],
     people: [...(completedTask.people || [])],
     deferDate: newDeferDate,

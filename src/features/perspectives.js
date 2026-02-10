@@ -1,6 +1,6 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
-import { ensureEntityTombstones, persistEntityTombstones } from './categories.js';
+import { ensureEntityTombstones, persistEntityTombstones } from './areas.js';
 
 function markPerspectiveDeleted(id) {
   if (!id) return;
