@@ -58,7 +58,7 @@ import {
   syncGoogleContactsNow, initGoogleContactsSync
 } from './data/google-contacts-sync.js';
 import {
-  syncGSheetNow, initGSheetSync
+  syncGSheetNow, initGSheetSync, askGSheet
 } from './data/google-sheets-sync.js';
 
 // -- Features --
@@ -142,7 +142,7 @@ import {
 
 // -- UI --
 import { render, switchTab, switchSubTab, setToday, forceHardRefresh, dismissCacheRefreshPrompt } from './ui/render.js';
-import { renderHomeTab, renderHomeWidget, homeQuickAddTask } from './ui/home.js';
+import { renderHomeTab, renderHomeWidget, homeQuickAddTask, handleGSheetAsk } from './ui/home.js';
 import { renderTrackingTab } from './ui/tracking.js';
 import { setBulkMonth, setBulkCategory, updateBulkData, updateBulkSummary, getDaysInMonth, renderBulkEntryTab } from './ui/bulk-entry.js';
 import { renderTaskItem, buildAreaTaskListHtml, renderTasksTab } from './ui/tasks-tab.js';
@@ -256,7 +256,7 @@ Object.assign(window, {
   syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
   initGCalSync, toggleCalendarSelection,
   syncGoogleContactsNow, initGoogleContactsSync,
-  syncGSheetNow, initGSheetSync,
+  syncGSheetNow, initGSheetSync, askGSheet,
   openCalendarEventActions, closeCalendarEventActions,
   openCalendarMeetingNotes, openCalendarMeetingNotesByEventKey, openCalendarMeetingWorkspaceByEventKey, closeCalendarMeetingNotes, setCalendarMeetingNotesScope,
   addDiscussionItemToMeeting,
@@ -339,7 +339,7 @@ Object.assign(window, {
 
   // Main UI
   render, switchTab, switchSubTab, setToday, forceHardRefresh, dismissCacheRefreshPrompt,
-  renderHomeTab, renderHomeWidget, homeQuickAddTask,
+  renderHomeTab, renderHomeWidget, homeQuickAddTask, handleGSheetAsk,
   renderTrackingTab,
   setBulkMonth, setBulkCategory, updateBulkData, updateBulkSummary, getDaysInMonth, renderBulkEntryTab,
   renderTaskItem, buildAreaTaskListHtml, renderTasksTab,
@@ -406,7 +406,7 @@ const stateProxies = [
   'gcalEvents', 'gcalCalendarList', 'gcalSyncing', 'gcalTokenExpired', 'gcalOfflineQueue',
   'conflictNotifications', 'renderPerf', 'showCacheRefreshPrompt', 'cacheRefreshPromptMessage',
   'CATEGORY_WEIGHTS', 'xp', 'streak', 'achievements', 'dailyFocusDismissed',
-  'gsheetData', 'gsheetSyncing', 'gsheetError',
+  'gsheetData', 'gsheetSyncing', 'gsheetError', 'gsheetPrompt', 'gsheetResponse', 'gsheetAsking',
 ];
 
 stateProxies.forEach(prop => {

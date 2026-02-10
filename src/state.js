@@ -389,4 +389,7 @@ export const state = {
   gsheetData: safeJsonParse(GSHEET_CACHE_KEY, null),
   gsheetSyncing: false,
   gsheetError: null,
+  gsheetPrompt: '',
+  gsheetResponse: null,
+  gsheetAsking: false,
 };

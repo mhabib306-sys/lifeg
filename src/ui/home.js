@@ -65,6 +65,30 @@ function formatHomeEventTime(event) {
 // ============================================================================
 
 /**
+ * Handle gsheet AI prompt submission.
+ */
+export async function handleGSheetAsk() {
+  const input = document.getElementById('gsheet-prompt-input');
+  const prompt = (input?.value || state.gsheetPrompt || '').trim();
+  if (!prompt) return;
+
+  state.gsheetPrompt = prompt;
+  state.gsheetAsking = true;
+  state.gsheetResponse = null;
+  window.render();
+
+  try {
+    const response = await window.askGSheet(prompt);
+    state.gsheetResponse = response;
+  } catch (err) {
+    state.gsheetResponse = `Error: ${err.message || 'Something went wrong'}`;
+  } finally {
+    state.gsheetAsking = false;
+    window.render();
+  }
+}
+
+/**
  * Render a single home widget card
  * @param {object}  widget    - Widget config { id, type, title, size, order, visible }
  * @param {boolean} isEditing - True when the user is in widget-customise mode
@@ -668,9 +692,21 @@ export function renderHomeWidget(widget, isEditing) {
 
     case 'gsheet-yesterday': {
       const connected = typeof window.isGCalConnected === 'function' ? window.isGCalConnected() : false;
-      const sheetData = state.gsheetData;
+      const hasApiKey = !!(typeof window.getAnthropicKey === 'function' && window.getAnthropicKey());
       const syncing = state.gsheetSyncing;
-      const sheetError = state.gsheetError;
+      const asking = state.gsheetAsking;
+      const response = state.gsheetResponse;
+      const promptVal = state.gsheetPrompt || '';
+
+      if (!hasApiKey) {
+        content = `
+          <div class="py-6 text-center">
+            <p class="text-sm text-[var(--text-muted)] mb-2">Claude API key not configured</p>
+            <button onclick="switchTab('settings')" class="text-xs text-[var(--accent)] hover:underline font-medium">Add in Settings &rarr;</button>
+          </div>
+        `;
+        break;
+      }
 
       if (!connected) {
         content = `
@@ -682,47 +718,47 @@ export function renderHomeWidget(widget, isEditing) {
         break;
       }
 
-      if (syncing && !sheetData) {
-        content = `<div class="py-6 text-center text-[var(--text-muted)] text-sm">Loading sheet data...</div>`;
-        break;
-      }
+      // Prompt input row
+      const promptHtml = `
+        <div class="flex items-center gap-2">
+          <input id="gsheet-prompt-input" type="text" placeholder="Ask about your data..."
+            value="${(promptVal).replace(/"/g, '&quot;')}"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();handleGSheetAsk()}"
+            class="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-light)] bg-[var(--bg-primary)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition"
+            ${asking ? 'disabled' : ''}
+          />
+          <button onclick="handleGSheetAsk()" class="px-3 py-2 rounded-lg text-[13px] font-medium text-white bg-[var(--accent)] hover:opacity-90 transition flex-shrink-0 ${asking ? 'opacity-50 pointer-events-none' : ''}" ${asking ? 'disabled' : ''}>
+            ${asking
+              ? '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0110 10"/></svg>'
+              : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>'}
+          </button>
+        </div>
+      `;
 
-      if (sheetError && !sheetData) {
-        content = `
-          <div class="py-6 text-center">
-            <p class="text-sm text-red-500 mb-2">${sheetError.replace(/</g, '&lt;')}</p>
-            <button onclick="syncGSheetNow()" class="text-xs text-[var(--accent)] hover:underline font-medium">Retry</button>
+      // Response area
+      let responseHtml = '';
+      if (asking) {
+        responseHtml = `<div class="mt-3 py-4 text-center text-[var(--text-muted)] text-sm">Thinking...</div>`;
+      } else if (response) {
+        const isError = response.startsWith('Error:');
+        responseHtml = `
+          <div class="mt-3 max-h-[250px] overflow-y-auto">
+            <div class="text-[13px] leading-relaxed ${isError ? 'text-red-500' : 'text-[var(--text-primary)]'} whitespace-pre-wrap">${response.replace(/</g, '&lt;')}</div>
           </div>
         `;
-        break;
+      } else {
+        responseHtml = `<div class="mt-3 py-3 text-center text-[var(--text-muted)] text-xs">Ask a question about your sheet data</div>`;
       }
 
-      if (!sheetData || !sheetData.rows || sheetData.rows.length === 0) {
-        content = `
-          <div class="py-6 text-center">
-            <p class="text-sm text-[var(--text-muted)] mb-2">No data yet</p>
-            <button onclick="syncGSheetNow()" class="text-xs text-[var(--accent)] hover:underline font-medium">Sync Now</button>
-          </div>
-        `;
-        break;
-      }
-
-      const filteredRows = sheetData.rows.filter(r => r.value);
-      const lastSyncStr = sheetData.lastSync
+      // Footer with sync info
+      const sheetData = state.gsheetData;
+      const lastSyncStr = sheetData?.lastSync
         ? new Date(sheetData.lastSync).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
         : '';
 
       content = `
-        <div class="max-h-[300px] overflow-y-auto space-y-0.5">
-          ${filteredRows.length === 0
-            ? '<div class="py-4 text-center text-[var(--text-muted)] text-sm">All values empty</div>'
-            : filteredRows.map(r => `
-              <div class="flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-[var(--bg-secondary)] transition">
-                <span class="text-[13px] text-[var(--text-secondary)] truncate mr-2">${r.label.replace(/</g, '&lt;')}</span>
-                <span class="text-[13px] font-medium text-[var(--text-primary)] flex-shrink-0">${r.value.replace(/</g, '&lt;')}</span>
-              </div>
-            `).join('')}
-        </div>
+        ${promptHtml}
+        ${responseHtml}
         <div class="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border-light)]">
           <span class="text-[10px] text-[var(--text-muted)]">${lastSyncStr ? `Synced ${lastSyncStr}` : ''}</span>
           <button onclick="syncGSheetNow()" class="inline-flex items-center gap-1 text-[10px] text-[var(--accent)] hover:underline font-medium ${syncing ? 'opacity-50 pointer-events-none' : ''}" ${syncing ? 'disabled' : ''}>

@@ -7,6 +7,7 @@
 import { state } from '../state.js';
 import {
   GCAL_ACCESS_TOKEN_KEY,
+  ANTHROPIC_KEY,
   GSHEET_SPREADSHEET_ID,
   GSHEET_TAB_GID,
   GSHEET_CACHE_KEY,
@@ -154,4 +155,64 @@ export function initGSheetSync() {
   sheetSyncIntervalId = setInterval(() => {
     if (isGCalConnected()) syncGSheetNow();
   }, SYNC_INTERVAL_MS);
+}
+
+/**
+ * Format cached sheet data as a text table for AI context.
+ */
+function formatSheetForAI(sheetData) {
+  if (!sheetData?.rows?.length) return '';
+  const lines = sheetData.rows.map(r => `${r.label}: ${r.value || '(empty)'}`);
+  return lines.join('\n');
+}
+
+/**
+ * Send sheet data + user prompt to Claude API, return AI response text.
+ */
+export async function askGSheet(prompt) {
+  const apiKey = localStorage.getItem(ANTHROPIC_KEY) || '';
+  if (!apiKey) throw new Error('No API key configured');
+
+  // Ensure we have sheet data (use cache or fetch)
+  let sheetData = state.gsheetData;
+  if (!sheetData || !sheetData.rows) {
+    const success = await syncGSheetNow();
+    if (!success) throw new Error(state.gsheetError || 'Failed to fetch sheet data');
+    sheetData = state.gsheetData;
+  }
+  if (!sheetData?.rows?.length) throw new Error('No sheet data available');
+
+  const sheetText = formatSheetForAI(sheetData);
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1024,
+      system: `You are a concise personal assistant. The user has a spreadsheet tracking their daily activities. Here is the data:\n\n${sheetText}\n\nAnswer the user's question about this data. Be brief and direct. Use plain text, no markdown.`,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+    signal: controller.signal,
+  });
+
+  clearTimeout(timeoutId);
+
+  if (!response.ok) {
+    const errBody = await response.text().catch(() => '');
+    throw new Error(`API error ${response.status}: ${errBody}`);
+  }
+
+  const data = await response.json();
+  const text = data?.content?.[0]?.text || '';
+  if (!text) throw new Error('Empty response from AI');
+  return text;
 }
