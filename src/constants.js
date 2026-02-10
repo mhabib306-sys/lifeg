@@ -321,10 +321,10 @@ export const STREAK_MIN_THRESHOLD = 0.20;
 // Score color tiers
 export const SCORE_TIERS = [
   { min: 0, max: 0.39, color: '#EF4444', label: 'Needs Work', bg: 'bg-red-500' },
-  { min: 0.40, max: 0.59, color: '#F59E0B', label: 'Getting There', bg: 'bg-amber-500' },
-  { min: 0.60, max: 0.79, color: '#3B82F6', label: 'Solid', bg: 'bg-blue-500' },
-  { min: 0.80, max: 0.89, color: '#10B981', label: 'Great', bg: 'bg-emerald-500' },
-  { min: 0.90, max: 1.0, color: '#F59E0B', label: 'Outstanding', bg: 'bg-amber-400' }
+  { min: 0.40, max: 0.59, color: '#F97316', label: 'Getting There', bg: 'bg-orange-500' },
+  { min: 0.60, max: 0.79, color: '#EAB308', label: 'Solid', bg: 'bg-yellow-500' },
+  { min: 0.80, max: 0.89, color: '#22C55E', label: 'Great', bg: 'bg-green-500' },
+  { min: 0.90, max: 1.0, color: '#10B981', label: 'Outstanding', bg: 'bg-emerald-500' }
 ];
 
 // Achievement definitions
