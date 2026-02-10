@@ -8,7 +8,7 @@ import { state } from '../state.js';
 import { fmt, getLocalDateString } from '../utils.js';
 import { getLast30DaysData, getLast30DaysStats, getPersonalBests, calculateScores, getLevelInfo, getScoreTier } from '../features/scoring.js';
 import { getAccentColor } from '../data/github-sync.js';
-import { ACHIEVEMENTS, SCORE_TIERS, defaultDayData } from '../constants.js';
+import { ACHIEVEMENTS, SCORE_TIERS, LEVEL_TIERS, STREAK_MULTIPLIERS, STREAK_MIN_THRESHOLD, DEFAULT_CATEGORY_WEIGHTS, defaultDayData } from '../constants.js';
 import Chart from 'chart.js/auto';
 
 /**
@@ -85,6 +85,99 @@ function renderAchievementsGallery() {
       </div>
     `;
   }).join('');
+}
+
+/**
+ * Render the "How It Works" collapsible guide
+ */
+function renderGuide() {
+  const tierRows = SCORE_TIERS.map(t =>
+    `<tr>
+      <td class="py-1.5 pr-3"><span class="inline-block w-3 h-3 rounded-sm mr-1.5" style="background:${t.color}"></span>${Math.round(t.min * 100)}–${Math.round(t.max * 100)}%</td>
+      <td class="py-1.5 text-[var(--text-secondary)]">${t.label}</td>
+    </tr>`
+  ).join('');
+
+  const levelRows = LEVEL_TIERS.map(t =>
+    `<tr>
+      <td class="py-1 pr-3">${t.icon} ${t.name}</td>
+      <td class="py-1 text-[var(--text-secondary)]">Level ${t.min}${t.max < 999 ? '–' + t.max : '+'}</td>
+    </tr>`
+  ).join('');
+
+  const streakRows = STREAK_MULTIPLIERS.map(s =>
+    `<tr>
+      <td class="py-1 pr-3">${s.min === s.max ? s.min : s.min + (s.max === Infinity ? '+' : '–' + s.max)} days</td>
+      <td class="py-1 text-[var(--text-secondary)]">${s.multiplier}x XP</td>
+    </tr>`
+  ).join('');
+
+  return `
+    <details class="sb-card rounded-xl bg-[var(--bg-card)] border border-[var(--border-light)] group">
+      <summary class="px-6 py-4 cursor-pointer select-none list-none flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span class="font-semibold text-[var(--text-primary)]">How Life Score Works</span>
+        </div>
+        <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="px-6 pb-6 space-y-6 text-sm text-[var(--text-secondary)] border-t border-[var(--border-light)] pt-5">
+
+        <div>
+          <h4 class="font-semibold text-[var(--text-primary)] mb-2">Scoring</h4>
+          <p class="mb-2">Every day you track 5 life categories: <strong>Prayer</strong>, <strong>Glucose</strong>, <strong>Whoop</strong> (sleep & recovery), <strong>Family</strong>, and <strong>Habits</strong>. Each category is scored as a percentage (0–100%) of its maximum possible points.</p>
+          <p class="mb-2">Your <strong>Overall Score</strong> is a weighted average of all 5 categories. By default each category is weighted equally at 20%.</p>
+          <table class="text-xs mt-3 mb-1">
+            <thead><tr><th class="text-left pr-3 pb-1 text-[var(--text-muted)] font-medium">Range</th><th class="text-left pb-1 text-[var(--text-muted)] font-medium">Tier</th></tr></thead>
+            <tbody>${tierRows}</tbody>
+          </table>
+          <p class="text-xs text-[var(--text-muted)]">The ring chart on Home and the heatmap colors on this page use these tiers.</p>
+        </div>
+
+        <div>
+          <h4 class="font-semibold text-[var(--text-primary)] mb-2">XP & Levels</h4>
+          <p class="mb-2">Your daily percentage converts to <strong>XP</strong> that accumulates forever. A 70% day earns 70 base XP. Streaks add bonus XP on top (see below).</p>
+          <p class="mb-2">XP drives your <strong>Level</strong>. Early levels come quickly; higher levels take longer (logarithmic curve). There are 50 levels grouped into tiers:</p>
+          <table class="text-xs mt-2">
+            <thead><tr><th class="text-left pr-3 pb-1 text-[var(--text-muted)] font-medium">Tier</th><th class="text-left pb-1 text-[var(--text-muted)] font-medium">Levels</th></tr></thead>
+            <tbody>${levelRows}</tbody>
+          </table>
+        </div>
+
+        <div>
+          <h4 class="font-semibold text-[var(--text-primary)] mb-2">Streaks</h4>
+          <p class="mb-2">A <strong>streak</strong> counts consecutive days where your overall score is at least ${Math.round(STREAK_MIN_THRESHOLD * 100)}%. Longer streaks give a higher XP multiplier:</p>
+          <table class="text-xs mt-2 mb-2">
+            <thead><tr><th class="text-left pr-3 pb-1 text-[var(--text-muted)] font-medium">Streak</th><th class="text-left pb-1 text-[var(--text-muted)] font-medium">Bonus</th></tr></thead>
+            <tbody>${streakRows}</tbody>
+          </table>
+          <p><strong>Streak Shield:</strong> You get one free "miss" per week. If you skip a day but have a shield, your streak survives. The shield regenerates every Monday.</p>
+        </div>
+
+        <div>
+          <h4 class="font-semibold text-[var(--text-primary)] mb-2">Achievements</h4>
+          <p class="mb-2">There are <strong>${ACHIEVEMENTS.length} badges</strong> to unlock across three categories:</p>
+          <ul class="list-disc list-inside space-y-1 text-xs">
+            <li><strong>Streaks</strong> — Reach 3, 7, 14, 30, 90, or 365 day streaks</li>
+            <li><strong>Category Mastery</strong> — Perfect prayer days, 90%+ overall, balanced days, family milestones</li>
+            <li><strong>Milestones</strong> — First day logged, 100 days, Quran pages, reaching level 10/20/30</li>
+          </ul>
+          <p class="mt-2 text-xs text-[var(--text-muted)]">Achievements are checked automatically every time you log data. Unlocked badges glow in the gallery above.</p>
+        </div>
+
+        <div>
+          <h4 class="font-semibold text-[var(--text-primary)] mb-2">Daily Focus</h4>
+          <p>The focus card on the Home tab looks at your last 7 days and highlights your weakest category with an actionable tip. It only appears once you have 3+ days of data.</p>
+        </div>
+
+        <div>
+          <h4 class="font-semibold text-[var(--text-primary)] mb-2">Heatmap & Trends</h4>
+          <p>The <strong>30-day heatmap</strong> on this page shows each day colored by your overall score tier. The <strong>Category Trends</strong> chart plots each category's percentage over 30 days so you can spot patterns and improvements.</p>
+        </div>
+
+      </div>
+    </details>
+  `;
 }
 
 /**
@@ -251,6 +344,9 @@ export function renderDashboardTab() {
         <p class="text-[var(--text-muted)] text-sm">Log your first day to start tracking personal bests.</p>
       </div>
       `}
+
+      <!-- How It Works Guide -->
+      ${renderGuide()}
     </div>
   `;
 }
