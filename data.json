@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T20:54:41.857Z",
+  "lastUpdated": "2026-02-10T20:55:02.594Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3171,7 +3171,16 @@
       "color": "#478054"
     }
   ],
-  "categories": [],
+  "categories": [
+    {
+      "id": "subcat_1770756899235",
+      "name": "Operations",
+      "areaId": "work",
+      "color": "#ea39b2",
+      "createdAt": "2026-02-10T20:54:59.235Z",
+      "updatedAt": "2026-02-10T20:54:59.235Z"
+    }
+  ],
   "taskLabels": [
     {
       "id": "urgent",
