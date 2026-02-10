@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T21:12:44.439Z",
+  "lastUpdated": "2026-02-10T21:13:15.728Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3173,6 +3173,33 @@
       "createdAt": "2026-02-10T21:11:52.678Z",
       "updatedAt": "2026-02-10T21:11:54.711Z",
       "gcalEventId": "ducvgs9jpbi8khrumd99anvk9s"
+    },
+    {
+      "id": "task_1770757992681_jdxcz8o65",
+      "title": "Check on Ahmed's fever",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "areaId": "family",
+      "categoryId": null,
+      "labels": [],
+      "people": [
+        "person_1770450952169"
+      ],
+      "deferDate": "2026-02-11",
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": null,
+      "order": 46000,
+      "createdAt": "2026-02-10T21:13:12.681Z",
+      "updatedAt": "2026-02-10T21:13:13.081Z",
+      "gcalEventId": "dnfqv5d0de78ir3i9a7f23fus0"
     }
   ],
   "deletedTaskTombstones": {
