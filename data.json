@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T01:48:30.875Z",
+  "lastUpdated": "2026-02-10T01:48:36.809Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1947,17 +1947,17 @@
       "id": "task_1769988521177_vhh01bgsj",
       "title": "Send a thank you note to Samy",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
-      "categoryId": null,
+      "categoryId": "personal",
       "labels": [],
       "people": [],
       "deferDate": null,
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-01T23:28:41.177Z",
-      "updatedAt": "2026-02-08T23:03:17.162Z",
+      "updatedAt": "2026-02-10T01:48:34.446Z",
       "order": 7000,
       "today": false,
       "flagged": false
@@ -2037,7 +2037,7 @@
       "dueDate": null,
       "repeat": null,
       "createdAt": "2026-02-02T08:15:04.608Z",
-      "updatedAt": "2026-02-08T22:31:38.052Z",
+      "updatedAt": "2026-02-10T01:48:36.515Z",
       "order": 5000,
       "today": false,
       "flagged": false
