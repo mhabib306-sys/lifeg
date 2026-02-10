@@ -21,6 +21,11 @@
 - Quick schedule pills set Defer/Due to Today, Tomorrow, or Next Week.
 - Cmd/Ctrl+Enter from notes saves the task.
 
+## Braindump
+- Voice input mode is available in Braindump (microphone button).
+- Dictation uses browser speech recognition, then optional Anthropic cleanup when key is configured.
+- Voice transcript appends to the same Braindump text field for normal Process flow.
+
 ## Today Flag
 - Today is a separate flag (not a status).
 - Tasks can be Today and still appear in Anytime.

@@ -229,7 +229,7 @@ function renderAIClassificationCard() {
   return `
     <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
       <h3 class="font-semibold text-charcoal mb-4">AI Classification <span class="text-coral">→</span></h3>
-      <p class="text-sm text-charcoal/50 mb-4">Use Claude AI to intelligently split, classify, and extract metadata from your Braindump text. Without an API key, the heuristic classifier is used.</p>
+      <p class="text-sm text-charcoal/50 mb-4">Use Claude AI to split/classify Braindump text and power voice-mode processing with the same key. Without an API key, the heuristic classifier is used and voice mode may be limited by browser support.</p>
 
       <div class="mb-4">
         <label class="text-sm text-charcoal/70 block mb-2">Anthropic API Key</label>

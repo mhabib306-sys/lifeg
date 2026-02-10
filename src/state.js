@@ -319,6 +319,9 @@ export const state = {
   braindumpProcessing: false,    // true while AI is classifying
   braindumpAIError: null,        // string error message if AI failed
   braindumpFullPage: false,      // true = full-width review, false = 640px container
+  braindumpVoiceRecording: false,
+  braindumpVoiceTranscribing: false,
+  braindumpVoiceError: null,
 
   // ---- Google Calendar ----
   gcalEvents: [],            // Cached Google Calendar events

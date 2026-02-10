@@ -33,6 +33,44 @@ export function setAnthropicKey(key) {
   }
 }
 
+export async function refineVoiceTranscriptWithAI(rawTranscript) {
+  const text = (rawTranscript || '').trim();
+  if (!text) return '';
+  const apiKey = getAnthropicKey();
+  if (!apiKey) return text;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        system: 'You clean up speech-to-text output for a productivity app. Fix punctuation/casing and preserve the original meaning. Return only cleaned plain text.',
+        messages: [{ role: 'user', content: text }],
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+    if (!response.ok) return text;
+    const data = await response.json();
+    const cleaned = (data?.content?.[0]?.text || '').trim();
+    return cleaned || text;
+  } catch {
+    clearTimeout(timeoutId);
+    return text;
+  }
+}
+
 // ============================================================================
 // AI Classification via Claude API
 // ============================================================================

@@ -172,6 +172,7 @@ import {
 // -- Braindump UI --
 import {
   openBraindump, closeBraindump, processBraindump, backToInput,
+  startBraindumpVoiceCapture, stopBraindumpVoiceCapture, toggleBraindumpVoiceCapture,
   toggleBraindumpItemType, toggleBraindumpItemInclude, removeBraindumpItem,
   editBraindumpItem, saveBraindumpItemEdit, cancelBraindumpItemEdit,
   setBraindumpItemArea, addBraindumpItemLabel, removeBraindumpItemLabel,
@@ -293,6 +294,7 @@ Object.assign(window, {
   parseBraindump, parseBraindumpHeuristic, submitBraindumpItems,
   getAnthropicKey, setAnthropicKey,
   openBraindump, closeBraindump, processBraindump, backToInput,
+  startBraindumpVoiceCapture, stopBraindumpVoiceCapture, toggleBraindumpVoiceCapture,
   toggleBraindumpItemType, toggleBraindumpItemInclude, removeBraindumpItem,
   editBraindumpItem, saveBraindumpItemEdit, cancelBraindumpItemEdit,
   setBraindumpItemArea, addBraindumpItemLabel, removeBraindumpItemLabel,
@@ -365,7 +367,7 @@ const stateProxies = [
   'draggedNoteId', 'dragOverNoteId', 'noteDragPosition',
   'inlineAutocompleteMeta',
   'undoAction', 'undoTimerRemaining', 'undoTimerId',
-  'showBraindump', 'braindumpRawText', 'braindumpParsedItems', 'braindumpStep', 'braindumpEditingIndex', 'braindumpSuccessMessage', 'braindumpProcessing', 'braindumpAIError', 'braindumpFullPage',
+  'showBraindump', 'braindumpRawText', 'braindumpParsedItems', 'braindumpStep', 'braindumpEditingIndex', 'braindumpSuccessMessage', 'braindumpProcessing', 'braindumpAIError', 'braindumpFullPage', 'braindumpVoiceRecording', 'braindumpVoiceTranscribing', 'braindumpVoiceError',
   'gcalEvents', 'gcalCalendarList', 'gcalSyncing', 'gcalTokenExpired', 'gcalOfflineQueue',
   'conflictNotifications', 'renderPerf', 'showCacheRefreshPrompt', 'cacheRefreshPromptMessage',
 ];

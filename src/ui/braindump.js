@@ -7,18 +7,43 @@
 
 import { state } from '../state.js';
 import { escapeHtml } from '../utils.js';
-import { parseBraindump, getAnthropicKey, submitBraindumpItems } from '../features/braindump.js';
+import { parseBraindump, getAnthropicKey, refineVoiceTranscriptWithAI, submitBraindumpItems } from '../features/braindump.js';
+
+let speechRecognition = null;
+let speechFinalText = '';
+
+function getSpeechRecognitionCtor() {
+  return window.SpeechRecognition || window.webkitSpeechRecognition || null;
+}
+
+function mergeTranscript(text) {
+  const transcript = (text || '').trim();
+  if (!transcript) return;
+  const existing = (state.braindumpRawText || '').trim();
+  state.braindumpRawText = existing ? `${existing}\n${transcript}` : transcript;
+}
+
+function stopSpeechRecognitionInternal() {
+  if (speechRecognition) {
+    try { speechRecognition.stop(); } catch {}
+  }
+}
 
 // ============================================================================
 // Open / Close
 // ============================================================================
 
 export function openBraindump() {
+  speechFinalText = '';
+  speechRecognition = null;
   state.showBraindump = true;
   state.braindumpStep = 'input';
   state.braindumpRawText = '';
   state.braindumpParsedItems = [];
   state.braindumpEditingIndex = null;
+  state.braindumpVoiceRecording = false;
+  state.braindumpVoiceTranscribing = false;
+  state.braindumpVoiceError = null;
   window.render();
   // Focus textarea after render
   setTimeout(() => {
@@ -28,11 +53,17 @@ export function openBraindump() {
 }
 
 export function closeBraindump() {
+  stopSpeechRecognitionInternal();
+  speechRecognition = null;
+  speechFinalText = '';
   state.showBraindump = false;
   state.braindumpRawText = '';
   state.braindumpParsedItems = [];
   state.braindumpStep = 'input';
   state.braindumpEditingIndex = null;
+  state.braindumpVoiceRecording = false;
+  state.braindumpVoiceTranscribing = false;
+  state.braindumpVoiceError = null;
   window.render();
 }
 
@@ -62,6 +93,102 @@ export async function processBraindump() {
   state.braindumpStep = 'review';
   state.braindumpEditingIndex = null;
   window.render();
+}
+
+export function startBraindumpVoiceCapture() {
+  if (state.braindumpVoiceRecording || state.braindumpVoiceTranscribing) return;
+  state.braindumpVoiceError = null;
+
+  const SpeechCtor = getSpeechRecognitionCtor();
+  if (!SpeechCtor) {
+    state.braindumpVoiceError = 'Voice input is not supported on this device/browser.';
+    window.render();
+    return;
+  }
+
+  speechFinalText = '';
+  const recognition = new SpeechCtor();
+  speechRecognition = recognition;
+  recognition.lang = navigator.language || 'en-US';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    state.braindumpVoiceRecording = true;
+    state.braindumpVoiceTranscribing = false;
+    state.braindumpVoiceError = null;
+    window.render();
+  };
+
+  recognition.onresult = (event) => {
+    let finalChunk = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const result = event.results[i];
+      const transcript = (result?.[0]?.transcript || '').trim();
+      if (result.isFinal && transcript) {
+        finalChunk += `${transcript}\n`;
+      }
+    }
+    if (finalChunk) {
+      speechFinalText += finalChunk;
+      const ta = document.getElementById('braindump-textarea');
+      if (ta) {
+        const merged = ((state.braindumpRawText || '').trim()
+          ? `${state.braindumpRawText.trim()}\n${speechFinalText.trim()}`
+          : speechFinalText.trim());
+        ta.value = merged;
+      }
+    }
+  };
+
+  recognition.onerror = (event) => {
+    state.braindumpVoiceRecording = false;
+    state.braindumpVoiceTranscribing = false;
+    if (event?.error !== 'no-speech' && event?.error !== 'aborted') {
+      state.braindumpVoiceError = `Voice input error: ${event.error || 'unknown'}`;
+    }
+    window.render();
+  };
+
+  recognition.onend = async () => {
+    const rawTranscript = speechFinalText.trim();
+    speechFinalText = '';
+    speechRecognition = null;
+    state.braindumpVoiceRecording = false;
+    state.braindumpVoiceTranscribing = !!rawTranscript;
+    window.render();
+    if (rawTranscript) {
+      const cleaned = await refineVoiceTranscriptWithAI(rawTranscript);
+      mergeTranscript(cleaned);
+    }
+    state.braindumpVoiceTranscribing = false;
+    window.render();
+    setTimeout(() => {
+      const ta = document.getElementById('braindump-textarea');
+      if (!ta) return;
+      ta.focus();
+      ta.setSelectionRange(ta.value.length, ta.value.length);
+    }, 50);
+  };
+
+  state.braindumpVoiceTranscribing = true;
+  window.render();
+  recognition.start();
+}
+
+export function stopBraindumpVoiceCapture() {
+  if (!speechRecognition) return;
+  state.braindumpVoiceTranscribing = false;
+  stopSpeechRecognitionInternal();
+}
+
+export function toggleBraindumpVoiceCapture() {
+  if (state.braindumpVoiceRecording || state.braindumpVoiceTranscribing) {
+    stopBraindumpVoiceCapture();
+  } else {
+    startBraindumpVoiceCapture();
+  }
 }
 
 export function backToInput() {
@@ -238,6 +365,8 @@ export function renderBraindumpOverlay() {
 // ---- Step 1: Input ----
 function renderInputStep() {
   const lineCount = state.braindumpRawText ? state.braindumpRawText.split('\n').filter(l => l.trim()).length : 0;
+  const voiceActive = state.braindumpVoiceRecording || state.braindumpVoiceTranscribing;
+  const voiceLabel = state.braindumpVoiceTranscribing ? 'Processing Voice...' : voiceActive ? 'Stop Voice' : 'Voice Input';
 
   return `
     <div class="braindump-overlay" onclick="if(event.target===this)closeBraindump()">
@@ -265,7 +394,7 @@ function renderInputStep() {
         <div class="braindump-body">
           <textarea id="braindump-textarea" class="braindump-textarea"
             placeholder="Type freely... tasks, notes, ideas. One per line, or just let it flow."
-            oninput="state.braindumpRawText = this.value; document.getElementById('braindump-process-btn').disabled = !this.value.trim(); var c = this.value.split('\\n').filter(l=>l.trim()).length; document.getElementById('braindump-count').textContent = c > 0 ? c + ' item' + (c!==1?'s':'') : '';"
+            oninput="state.braindumpRawText = this.value; document.getElementById('braindump-process-btn').disabled = !this.value.trim() || state.braindumpVoiceRecording || state.braindumpVoiceTranscribing; var c = this.value.split('\\n').filter(l=>l.trim()).length; document.getElementById('braindump-count').textContent = c > 0 ? c + ' item' + (c!==1?'s':'') : '';"
           >${escapeHtml(state.braindumpRawText)}</textarea>
 
           <div class="braindump-tips">
@@ -273,12 +402,27 @@ function renderInputStep() {
             <span class="braindump-tip">@ tags</span>
             <span class="braindump-tip">& people</span>
             <span class="braindump-tip">! dates</span>
+            <span class="braindump-tip">voice dictation</span>
           </div>
+
+          ${state.braindumpVoiceError ? `
+            <div class="braindump-voice-error">${escapeHtml(state.braindumpVoiceError)}</div>
+          ` : ''}
         </div>
 
         <div class="braindump-footer">
-          <span id="braindump-count" class="text-xs text-[var(--text-muted)]">${lineCount > 0 ? `${lineCount} item${lineCount !== 1 ? 's' : ''}` : ''}</span>
-          <button id="braindump-process-btn" onclick="processBraindump()" class="braindump-process-btn" ${!state.braindumpRawText.trim() ? 'disabled' : ''}>
+          <div class="braindump-footer-left">
+            <span id="braindump-count" class="text-xs text-[var(--text-muted)]">${lineCount > 0 ? `${lineCount} item${lineCount !== 1 ? 's' : ''}` : ''}</span>
+            <button onclick="toggleBraindumpVoiceCapture()" class="braindump-voice-btn ${voiceActive ? 'is-recording' : ''}" ${state.braindumpVoiceTranscribing ? 'disabled' : ''}>
+              ${voiceActive ? `
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+              ` : `
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V7a3 3 0 1 0-6 0v4a3 3 0 0 0 3 3zm5-3a1 1 0 1 1 2 0 7 7 0 0 1-6 6.92V21h2a1 1 0 1 1 0 2H9a1 1 0 1 1 0-2h2v-3.08A7 7 0 0 1 5 11a1 1 0 1 1 2 0 5 5 0 0 0 10 0z"/></svg>
+              `}
+              <span>${voiceLabel}</span>
+            </button>
+          </div>
+          <button id="braindump-process-btn" onclick="processBraindump()" class="braindump-process-btn" ${(!state.braindumpRawText.trim() || voiceActive) ? 'disabled' : ''}>
             Process
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
           </button>
