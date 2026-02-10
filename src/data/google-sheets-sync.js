@@ -55,6 +55,7 @@ async function fetchSheetData() {
 
   // Build range list for batch get — all tabs
   const tabNames = sheets.map(s => s.properties.title);
+  console.log(`[GSheet] Discovered ${tabNames.length} tabs:`, tabNames);
 
   // Step 2: Batch fetch all tabs in one API call using URL API for proper encoding
   const batchUrl = new URL(`${SHEETS_API}/${GSHEET_SPREADSHEET_ID}/values:batchGet`);
@@ -62,15 +63,22 @@ async function fetchSheetData() {
     // Single-quote wrapping is required for A1 notation (handles spaces/special chars)
     batchUrl.searchParams.append('ranges', `'${name}'`);
   }
+  console.log(`[GSheet] Batch URL:`, batchUrl.href);
+
   const batchRes = await fetch(batchUrl.href, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
   if (batchRes.status === 401) return { authExpired: true };
-  if (!batchRes.ok) return { error: `Sheets batch fetch failed (${batchRes.status})` };
+  if (!batchRes.ok) {
+    const errText = await batchRes.text().catch(() => '');
+    console.error(`[GSheet] Batch fetch failed (${batchRes.status}):`, errText);
+    return { error: `Sheets batch fetch failed (${batchRes.status})` };
+  }
 
   const batchData = await batchRes.json();
   const valueRanges = batchData?.valueRanges || [];
+  console.log(`[GSheet] Got ${valueRanges.length} value ranges back`);
 
   // Step 3: Structure data per tab (include all tabs, even empty ones)
   const tabs = [];
@@ -84,6 +92,8 @@ async function fetchSheetData() {
       rows: rows.slice(1),
     });
   }
+
+  console.log(`[GSheet] Structured ${tabs.length} tabs:`, tabs.map(t => `${t.name} (${t.rows.length} rows)`));
 
   // Also extract legacy "Yesterday" column from the primary tab for backward compat
   const primaryTab = tabs.find((_, idx) => sheets[idx]?.properties?.sheetId === GSHEET_TAB_GID) || tabs[0];
@@ -160,7 +170,7 @@ export async function syncGSheetNow() {
 }
 
 export function initGSheetSync() {
-  // Hydrate from cache
+  // Hydrate from cache for instant display
   try {
     const cached = localStorage.getItem(GSHEET_CACHE_KEY);
     if (cached) state.gsheetData = JSON.parse(cached);
@@ -168,13 +178,9 @@ export function initGSheetSync() {
 
   if (!isGCalConnected()) return;
 
-  // Check if cache is stale (>1 hour) or missing multi-tab data (old format)
-  const lastSync = parseInt(localStorage.getItem(GSHEET_LAST_SYNC_KEY) || '0', 10);
-  const needsUpgrade = state.gsheetData && !state.gsheetData.tabs;
-  const stale = !lastSync || (Date.now() - lastSync > SYNC_INTERVAL_MS) || needsUpgrade;
-  if (stale) {
-    syncGSheetNow();
-  }
+  // Always fetch fresh data on app load — cache is only for instant display
+  // This ensures we never get stuck with stale/partial tab data
+  syncGSheetNow();
 
   // Set up periodic sync
   if (sheetSyncIntervalId) clearInterval(sheetSyncIntervalId);
