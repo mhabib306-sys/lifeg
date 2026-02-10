@@ -8,7 +8,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithCredential, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
 import { state } from '../state.js';
-import { GCAL_ACCESS_TOKEN_KEY, GCAL_TOKEN_TIMESTAMP_KEY } from '../constants.js';
+import { GCAL_ACCESS_TOKEN_KEY, GCAL_TOKEN_TIMESTAMP_KEY, GCAL_CONNECTED_KEY } from '../constants.js';
 
 const GOOGLE_CLIENT_ID = '951877343924-01638ei3dfu0p2q7c8c8q3cdsv67mthh.apps.googleusercontent.com';
 const DEFAULT_REDIRECT_URI = 'https://mhabib306-sys.github.io/lifeg/';
@@ -157,7 +157,8 @@ async function requestCalendarTokenWithGIS(mode = 'interactive') {
     };
 
     // Some mismatch/popup failures never invoke callback; avoid hanging forever.
-    const timeoutId = setTimeout(() => finalize(null), 7000);
+    // 60s allows enough time for multi-scope consent screens (Calendar + Contacts).
+    const timeoutId = setTimeout(() => finalize(null), 60000);
 
     try {
       const tokenClient = window.google.accounts.oauth2.initTokenClient({
@@ -214,6 +215,7 @@ function handleOAuthCallback() {
   if (wasCalendarAuth && accessToken) {
     localStorage.setItem(GCAL_ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(GCAL_TOKEN_TIMESTAMP_KEY, String(Date.now()));
+    localStorage.setItem(GCAL_CONNECTED_KEY, 'true');
   }
 
   return { idToken, accessToken };
