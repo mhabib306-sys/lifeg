@@ -127,6 +127,10 @@ export function renderHomeWidget(widget, isEditing) {
 
       content = `
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+          <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('inbox')">
+            <div class="text-xl sm:text-2xl font-bold ${inboxCount > 0 ? 'text-blue-500' : 'text-charcoal'}">${inboxCount}</div>
+            <div class="text-xs text-charcoal/50 mt-1">In Inbox</div>
+          </button>
           <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('today')">
             <div class="text-xl sm:text-2xl font-bold text-charcoal">${todayTasksCount}</div>
             <div class="text-xs text-charcoal/50 mt-1">Due Today</div>
@@ -138,10 +142,6 @@ export function renderHomeWidget(widget, isEditing) {
           <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('logbook')">
             <div class="text-xl sm:text-2xl font-bold text-green-600">${completedToday}</div>
             <div class="text-xs text-charcoal/50 mt-1">Done Today</div>
-          </button>
-          <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('inbox')">
-            <div class="text-xl sm:text-2xl font-bold ${inboxCount > 0 ? 'text-blue-500' : 'text-charcoal'}">${inboxCount}</div>
-            <div class="text-xs text-charcoal/50 mt-1">In Inbox</div>
           </button>
         </div>
       `;
