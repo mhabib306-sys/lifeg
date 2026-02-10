@@ -414,13 +414,73 @@ export function renderHomeWidget(widget, isEditing) {
         else if (val > 140) { glucoseColor = 'text-amber-600'; glucoseBg = 'bg-amber-50'; }
       }
 
+      // Collect 7-day glucose history for sparkline + stats
+      const histDays = 7;
+      const histData = [];
+      let sum90 = 0, count90 = 0;
+      for (let i = 89; i >= 0; i--) {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        const ds = getLocalDateString(d);
+        const dd = state.allData[ds];
+        const avg = dd?.glucose?.avg ? Number(dd.glucose.avg) : null;
+        if (avg) { sum90 += avg; count90++; }
+        if (i < histDays) {
+          histData.push({ date: ds, avg, tir: dd?.glucose?.tir ? Number(dd.glucose.tir) : null, day: d.toLocaleDateString('en-US', { weekday: 'narrow' }) });
+        }
+      }
+
+      // eA1C estimate: (avg_glucose + 46.7) / 28.7
+      const eA1C = count90 >= 7 ? ((sum90 / count90 + 46.7) / 28.7).toFixed(1) : null;
+
+      // Build SVG sparkline from 7-day avg data
+      const sparkVals = histData.map(d => d.avg);
+      const hasSparkData = sparkVals.some(v => v !== null);
+      let sparklineSvg = '';
+      if (hasSparkData) {
+        const W = 200, H = 40, pad = 2;
+        const vals = sparkVals.map(v => v || 0);
+        const min = Math.min(...vals.filter(v => v > 0), 70);
+        const max = Math.max(...vals, 180);
+        const range = max - min || 1;
+        const points = vals.map((v, i) => {
+          const x = pad + (i / (vals.length - 1)) * (W - pad * 2);
+          const y = v > 0 ? pad + (1 - (v - min) / range) * (H - pad * 2) : H - pad;
+          return `${x},${y}`;
+        });
+        // Zone bands: green 70-140, yellow 140-180
+        const y140 = pad + (1 - (140 - min) / range) * (H - pad * 2);
+        const y70 = pad + (1 - (70 - min) / range) * (H - pad * 2);
+        const y180 = Math.max(pad, pad + (1 - (180 - min) / range) * (H - pad * 2));
+
+        sparklineSvg = `
+          <svg viewBox="0 0 ${W} ${H}" class="w-full" style="height: 40px;" preserveAspectRatio="none">
+            <rect x="0" y="${y180}" width="${W}" height="${y140 - y180}" fill="#fef3c7" opacity="0.5" rx="1"/>
+            <rect x="0" y="${y140}" width="${W}" height="${y70 - y140}" fill="#d1fae5" opacity="0.5" rx="1"/>
+            <polyline points="${points.join(' ')}" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            ${vals.map((v, i) => {
+              if (v <= 0) return '';
+              const x = pad + (i / (vals.length - 1)) * (W - pad * 2);
+              const y = pad + (1 - (v - min) / range) * (H - pad * 2);
+              const dotColor = v > 180 || v < 70 ? '#EF4444' : v > 140 ? '#F59E0B' : '#10B981';
+              return `<circle cx="${x}" cy="${y}" r="2.5" fill="${dotColor}"/>`;
+            }).join('')}
+          </svg>
+        `;
+      }
+
+      // Day labels under sparkline
+      const dayLabels = histData.map((d, i) => {
+        const isToday = i === histData.length - 1;
+        return `<span class="text-[9px] ${isToday ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}">${d.day}</span>`;
+      }).join('');
+
       content = `
         ${hasLiveGlucose ? `
           <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-2">
-              <span class="text-2xl font-bold ${glucoseColor}">${libreData.currentGlucose}</span>
-              <span class="text-lg ${glucoseColor}">${libreData.trend || '→'}</span>
-              <span class="text-xs text-[var(--text-muted)]">mg/dL</span>
+            <div class="flex items-baseline gap-1.5">
+              <span class="text-3xl font-bold ${glucoseColor}" style="line-height:1">${libreData.currentGlucose}</span>
+              <span class="text-xl ${glucoseColor}">${libreData.trend || '→'}</span>
+              <span class="text-[10px] text-[var(--text-muted)] ml-0.5">mg/dL</span>
             </div>
             <button onclick="window.syncLibreNow()" class="inline-flex items-center gap-1 text-[10px] text-green-600 ${glucoseBg} px-1.5 py-0.5 rounded-full hover:bg-green-100 transition" title="Sync now">
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
@@ -435,28 +495,42 @@ export function renderHomeWidget(widget, isEditing) {
             </button>
           </div>
         ` : ''}
-        <div class="grid grid-cols-3 gap-3">
+        ${hasSparkData ? `
+          <div class="mb-3">
+            <div class="text-[10px] text-[var(--text-muted)] font-medium mb-1">7-Day Avg Glucose</div>
+            ${sparklineSvg}
+            <div class="flex justify-between px-0.5 mt-0.5">${dayLabels}</div>
+          </div>
+        ` : ''}
+        <div class="grid ${eA1C ? 'grid-cols-4' : 'grid-cols-3'} gap-2">
           <div class="text-center">
             <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Avg</label>
-            <input type="number" value="${glucoseData.avg || ''}" placeholder="--"
-              autocomplete="off"
-              ${libreConnected && glucoseData.avg ? 'readonly class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] cursor-default"' : `onchange="updateDailyField('glucose', 'avg', this.value)"
-              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]"`}>
+            ${libreConnected && glucoseData.avg
+              ? `<div class="text-sm font-semibold text-[var(--text-primary)]">${glucoseData.avg}</div>`
+              : `<input type="number" value="${glucoseData.avg || ''}" placeholder="--" autocomplete="off"
+                  onchange="updateDailyField('glucose', 'avg', this.value)"
+                  class="w-full px-2 py-1.5 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">`}
           </div>
           <div class="text-center">
-            <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">TIR %</label>
-            <input type="number" value="${glucoseData.tir || ''}" placeholder="--"
-              autocomplete="off"
-              ${libreConnected && glucoseData.tir ? 'readonly class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] cursor-default"' : `onchange="updateDailyField('glucose', 'tir', this.value)"
-              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]"`}>
+            <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">TIR</label>
+            ${libreConnected && glucoseData.tir
+              ? `<div class="text-sm font-semibold ${Number(glucoseData.tir) >= 70 ? 'text-green-600' : Number(glucoseData.tir) >= 50 ? 'text-amber-600' : 'text-red-600'}">${glucoseData.tir}%</div>`
+              : `<input type="number" value="${glucoseData.tir || ''}" placeholder="--" autocomplete="off"
+                  onchange="updateDailyField('glucose', 'tir', this.value)"
+                  class="w-full px-2 py-1.5 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">`}
           </div>
           <div class="text-center">
             <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Insulin</label>
-            <input type="number" value="${glucoseData.insulin || ''}" placeholder="--"
-              autocomplete="off"
+            <input type="number" value="${glucoseData.insulin || ''}" placeholder="--" autocomplete="off"
               onchange="updateDailyField('glucose', 'insulin', this.value)"
-              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+              class="w-full px-2 py-1.5 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
           </div>
+          ${eA1C ? `
+            <div class="text-center">
+              <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">eA1C</label>
+              <div class="text-sm font-semibold ${Number(eA1C) <= 5.7 ? 'text-green-600' : Number(eA1C) <= 6.4 ? 'text-amber-600' : 'text-red-600'}">${eA1C}%</div>
+            </div>
+          ` : ''}
         </div>
       `;
       break;
