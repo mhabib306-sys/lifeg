@@ -1,0 +1,20 @@
+{
+  "name": "homebase-iphone-shell",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Isolated iPhone shell for Homebase using Capacitor",
+  "type": "module",
+  "scripts": {
+    "sync:web": "bash ./scripts/sync-web-assets.sh",
+    "cap:add:ios": "npx cap add ios",
+    "cap:sync": "npx cap sync ios",
+    "cap:open:ios": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3",
+    "typescript": "^5.9.2"
+  }
+}
