@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T01:29:05.157Z",
+  "lastUpdated": "2026-02-10T01:30:35.075Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2998,6 +2998,7 @@
     "task_1769986708273_8h0ih9rn2": "2026-02-09T19:37:29.588Z",
     "task_1770509778354_dbyy19ncj": "2026-02-09T19:37:30.799Z"
   },
+  "deletedEntityTombstones": {},
   "taskCategories": [
     {
       "id": "personal",
