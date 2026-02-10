@@ -685,15 +685,25 @@ export function renderTasksTab() {
       </div>
 
       <!-- Tags -->
+      ${(() => {
+        const labelsWithTasks = state.taskLabels
+          .filter(l => (labelCounts[l.id] || 0) > 0)
+          .sort((a, b) => (labelCounts[b.id] || 0) - (labelCounts[a.id] || 0));
+        const MAX_SIDEBAR_LABELS = 10;
+        const showAllLabels = state.showAllSidebarLabels;
+        const displayLabels = showAllLabels ? labelsWithTasks : labelsWithTasks.slice(0, MAX_SIDEBAR_LABELS);
+        const hiddenLabelCount = labelsWithTasks.length - MAX_SIDEBAR_LABELS;
+        const totalLabels = state.taskLabels.length;
+        return `
       <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
-          <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">Tags</h3>
+          <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">Tags${labelsWithTasks.length > 0 ? ` (${labelsWithTasks.length})` : ''}</h3>
           <button onclick="window.editingLabelId=null; window.showLabelModal=true; window.render()" aria-label="Add new tag" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition p-1.5 -mr-1 rounded-lg hover:bg-[var(--bg-secondary)]">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
           </button>
         </div>
         <div class="py-2 px-2">
-          ${state.taskLabels.map(label => `
+          ${displayLabels.length === 0 ? `<div class="px-3 py-2 text-[12px] text-[var(--text-muted)]">No tags with active tasks</div>` : displayLabels.map(label => `
             <div onclick="window.showLabelTasks('${label.id}')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.showLabelTasks('${label.id}');}"
               tabindex="0"
@@ -712,8 +722,21 @@ export function renderTasksTab() {
                 class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
             </div>
           `).join('')}
+          ${!showAllLabels && hiddenLabelCount > 0 ? `
+          <button onclick="window.showAllSidebarLabels=true; window.render()"
+            class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
+            Show ${hiddenLabelCount} more...
+          </button>` : ''}
+          ${showAllLabels && hiddenLabelCount > 0 ? `
+          <button onclick="window.showAllSidebarLabels=false; window.render()"
+            class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
+            Show less
+          </button>` : ''}
+          ${totalLabels > labelsWithTasks.length ? `
+          <div class="px-3 pt-1 pb-1 text-[11px] text-[var(--text-muted)]">${totalLabels - labelsWithTasks.length} tags without tasks hidden</div>` : ''}
         </div>
-      </div>
+      </div>`;
+      })()}
 
       <!-- People -->
       ${(() => {

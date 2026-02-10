@@ -260,6 +260,7 @@ export const state = {
   inlineEditingTaskId: null,
   quickAddIsNote: false,
   showAllSidebarPeople: false,
+  showAllSidebarLabels: false,
   newTaskContext: { categoryId: null, labelId: null, personId: null, status: 'inbox' },
   inlineAutocompleteMeta: new Map(),      // Maps inputId -> { categoryId, labels[], people[] }
 
