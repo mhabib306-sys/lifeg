@@ -454,15 +454,16 @@ export function saveLabelFromModal() {
  */
 export function savePersonFromModal() {
   const name = document.getElementById('person-name').value.trim();
+  const email = document.getElementById('person-email').value.trim();
   if (!name) {
     alert('Please enter a name');
     return;
   }
 
   if (state.editingPersonId) {
-    updatePerson(state.editingPersonId, { name });
+    updatePerson(state.editingPersonId, { name, email });
   } else {
-    createPerson(name);
+    createPerson(name, email);
   }
   state.showPersonModal = false;
   state.editingPersonId = null;
@@ -927,7 +928,7 @@ export function renderPeopleInput() {
     () => `<div class="autocomplete-option-icon bg-[var(--bg-secondary)]"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`,
     true,
     (name) => {
-      const newPerson = { id: 'person_' + Date.now(), name };
+      const newPerson = { id: 'person_' + Date.now(), name, email: '' };
       state.taskPeople.push(newPerson);
       localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
       debouncedSaveToGithub();
@@ -1565,7 +1566,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
     };
     if (triggerChar === '&') return (name) => {
       const colors = ['#4A90A4','#6B8E5A','#E5533D','#C4943D','#7C6B8E'];
-      const p = { id: 'person_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
+      const p = { id: 'person_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)], email: '' };
       state.taskPeople.push(p);
       localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
       debouncedSaveToGithub();
@@ -2256,6 +2257,13 @@ export function renderPersonModalHtml() {
             <label class="text-sm text-charcoal/70 block mb-1">Name</label>
             <input type="text" id="person-name" value="${editingPerson?.name ? escapeHtml(editingPerson.name) : ''}"
               placeholder="e.g., John Doe" autofocus maxlength="100"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();savePersonFromModal();}"
+              class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+          </div>
+          <div>
+            <label class="text-sm text-charcoal/70 block mb-1">Email</label>
+            <input type="email" id="person-email" value="${editingPerson?.email ? escapeHtml(editingPerson.email) : ''}"
+              placeholder="e.g., mostafa@company.com" maxlength="160"
               onkeydown="if(event.key==='Enter'){event.preventDefault();savePersonFromModal();}"
               class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
           </div>

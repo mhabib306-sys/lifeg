@@ -78,7 +78,10 @@ export function importData(event) {
         localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
       }
       if (imported.taskPeople) {
-        state.taskPeople = imported.taskPeople;
+        state.taskPeople = imported.taskPeople.map(person => ({
+          ...person,
+          email: typeof person?.email === 'string' ? person.email : '',
+        }));
         localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
       }
       if (imported.customPerspectives) {

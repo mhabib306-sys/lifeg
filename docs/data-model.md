@@ -46,6 +46,16 @@
 }
 ```
 
+## Person Object
+```
+{
+  id: string,
+  name: string,
+  email: string,             // optional; empty string when not set
+  color?: string
+}
+```
+
 ## Daily Tracking Data
 `state.allData` stores entries keyed by date `YYYY-MM-DD`:
 ```

@@ -110,10 +110,11 @@ export function getLabelById(labelId) {
 
 // ============ PEOPLE CRUD ============
 
-export function createPerson(name) {
+export function createPerson(name, email = '') {
   const person = {
     id: 'person_' + Date.now(),
-    name: name
+    name: name,
+    email: String(email || '').trim()
   };
   clearEntityDeleted('taskPeople', person.id);
   state.taskPeople.push(person);

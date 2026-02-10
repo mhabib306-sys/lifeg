@@ -173,7 +173,11 @@ const initialTaskCategories = (safeJsonParse(TASK_CATEGORIES_KEY, null) || DEFAU
 const initialTaskLabels = (safeJsonParse(TASK_LABELS_KEY, null) || DEFAULT_TASK_LABELS)
   .filter(item => !isEntityDeleted('taskLabels', item?.id));
 const initialTaskPeople = (safeJsonParse(TASK_PEOPLE_KEY, null) || DEFAULT_TASK_PEOPLE)
-  .filter(item => !isEntityDeleted('taskPeople', item?.id));
+  .filter(item => !isEntityDeleted('taskPeople', item?.id))
+  .map(item => ({
+    ...item,
+    email: typeof item?.email === 'string' ? item.email : '',
+  }));
 const initialCustomPerspectives = (safeJsonParse(PERSPECTIVES_KEY, []) || [])
   .filter(item => !isEntityDeleted('customPerspectives', item?.id));
 const initialHomeWidgets = (safeJsonParse(HOME_WIDGETS_KEY, null) || DEFAULT_HOME_WIDGETS)

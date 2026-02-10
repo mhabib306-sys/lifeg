@@ -99,7 +99,7 @@ function noteAcGetCreateFn() {
   };
   if (noteAcTriggerChar === '&') return (name) => {
     const colors = ['#4A90A4','#6B8E5A','#E5533D','#C4943D','#7C6B8E'];
-    const p = { id: 'person_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
+    const p = { id: 'person_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)], email: '' };
     state.taskPeople.push(p);
     localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
     debouncedSaveToGithubSafe();

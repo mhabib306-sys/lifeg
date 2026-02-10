@@ -400,7 +400,10 @@ function mergeTaskCollectionsFromCloud(cloudData = {}) {
   localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
 
   const mergedPeople = mergeEntityCollection(state.taskPeople, cloudData.taskPeople, [], 'taskPeople');
-  state.taskPeople = mergedPeople;
+  state.taskPeople = mergedPeople.map(person => ({
+    ...person,
+    email: typeof person?.email === 'string' ? person.email : '',
+  }));
   localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
 
   const mergedPerspectives = mergeEntityCollection(state.customPerspectives, cloudData.customPerspectives, [], 'customPerspectives');

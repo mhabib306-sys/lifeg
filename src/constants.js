@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.14.3 - Homebase';
+export const APP_VERSION = '4.14.4 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -143,7 +143,7 @@ export const DEFAULT_TASK_LABELS = [
 
 // Default people
 export const DEFAULT_TASK_PEOPLE = [
-  { id: 'self', name: 'Self', color: '#4A90A4' }
+  { id: 'self', name: 'Self', color: '#4A90A4', email: '' }
 ];
 
 // Things 3 exact SVG icons (filled style matching the app)
