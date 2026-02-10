@@ -157,9 +157,10 @@ export function initGSheetSync() {
 
   if (!isGCalConnected()) return;
 
-  // Check if cache is stale (>1 hour)
+  // Check if cache is stale (>1 hour) or missing multi-tab data (old format)
   const lastSync = parseInt(localStorage.getItem(GSHEET_LAST_SYNC_KEY) || '0', 10);
-  const stale = !lastSync || (Date.now() - lastSync > SYNC_INTERVAL_MS);
+  const needsUpgrade = state.gsheetData && !state.gsheetData.tabs;
+  const stale = !lastSync || (Date.now() - lastSync > SYNC_INTERVAL_MS) || needsUpgrade;
   if (stale) {
     syncGSheetNow();
   }
