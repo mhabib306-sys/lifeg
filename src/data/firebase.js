@@ -9,36 +9,6 @@ import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, Google
 import { state } from '../state.js';
 import { GCAL_ACCESS_TOKEN_KEY, GCAL_TOKEN_TIMESTAMP_KEY } from '../constants.js';
 
-const isTauri = !!window.__TAURI_INTERNALS__;
-const isSmallTouchDevice = typeof window !== 'undefined'
-  && typeof window.matchMedia === 'function'
-  && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent || '');
-
-function shouldUseRedirectAuth() {
-  return isTauri || isIOS || isSmallTouchDevice;
-}
-
-function shouldUsePopupFirst() {
-  // Desktop Tauri webviews can ignore redirect navigation in-place.
-  // Prefer popup first, then fallback to redirect if needed.
-  return isTauri;
-}
-
-function withTimeout(promise, ms, timeoutCode = 'auth/popup-timeout') {
-  let timeoutId = null;
-  const timeoutPromise = new Promise((_, reject) => {
-    timeoutId = setTimeout(() => {
-      const err = new Error('Timed out while waiting for auth popup.');
-      err.code = timeoutCode;
-      reject(err);
-    }, ms);
-  });
-  return Promise.race([promise, timeoutPromise]).finally(() => {
-    if (timeoutId) clearTimeout(timeoutId);
-  });
-}
-
 // Firebase web app config (client-side — not secret)
 const firebaseConfig = {
   apiKey: "AIzaSyD33w50neGgMOYgu3NbS8Dp6B4sfyEpJes",
@@ -52,63 +22,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-export function signInWithGoogle() {
+export async function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
-  state.authError = 'Opening Google sign-in...';
-  window.render();
-
-  if (shouldUsePopupFirst()) {
-    withTimeout(signInWithPopup(auth, provider), 5000).catch(err => {
-      const code = err?.code || '';
-      const popupBlocked = code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request';
-      const unsupported = code === 'auth/operation-not-supported-in-this-environment';
-      const popupTimedOut = code === 'auth/popup-timeout';
-      if (popupBlocked || unsupported || popupTimedOut) {
-        signInWithRedirect(auth, provider).catch(redirectErr => {
-          console.error('Google redirect sign-in failed:', redirectErr);
-          state.authError = `Google sign-in failed in desktop app: ${redirectErr.message}`;
-          window.render();
-        });
-        setTimeout(() => {
-          if (!state.currentUser) {
-            state.authError = 'Google sign-in could not open. If this persists, add tauri://localhost and http://tauri.localhost to Firebase Authorized Domains.';
-            window.render();
-          }
-        }, 2500);
-        return;
-      }
-      console.error('Google sign-in failed:', err);
-      state.authError = `Google sign-in failed: ${err.message}`;
-      window.render();
-    });
-    return;
-  }
-
-  if (shouldUseRedirectAuth()) {
-    signInWithRedirect(auth, provider).catch(err => {
-      console.error('Google sign-in failed:', err);
-      state.authError = err.message;
-      window.render();
-    });
-    return;
-  }
-
-  signInWithPopup(auth, provider).catch(err => {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (err) {
     const code = err?.code || '';
-    const popupBlocked = code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request';
-    const unsupported = code === 'auth/operation-not-supported-in-this-environment';
-    if (popupBlocked || unsupported) {
-      signInWithRedirect(auth, provider).catch(redirectErr => {
-        console.error('Google redirect sign-in failed:', redirectErr);
-        state.authError = redirectErr.message;
-        window.render();
-      });
+    if (code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request' || code === 'auth/operation-not-supported-in-this-environment') {
+      signInWithRedirect(auth, provider);
       return;
     }
     console.error('Google sign-in failed:', err);
     state.authError = err.message;
     window.render();
-  });
+  }
 }
 
 export function signOutUser() {
@@ -134,22 +61,6 @@ export async function signInWithGoogleCalendar(options = {}) {
   }
   provider.setCustomParameters(customParams);
   try {
-    if (shouldUsePopupFirst()) {
-      const result = await withTimeout(signInWithPopup(auth, provider), 5000);
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const accessToken = credential?.accessToken || result?._tokenResponse?.oauthAccessToken || null;
-      if (accessToken) {
-        localStorage.setItem(GCAL_ACCESS_TOKEN_KEY, accessToken);
-        localStorage.setItem(GCAL_TOKEN_TIMESTAMP_KEY, String(Date.now()));
-        return accessToken;
-      }
-      return null;
-    }
-    if (shouldUseRedirectAuth()) {
-      await signInWithRedirect(auth, provider);
-      // After redirect returns, getRedirectResult is handled in initAuth
-      return null;
-    }
     const result = await signInWithPopup(auth, provider);
     const credential = GoogleAuthProvider.credentialFromResult(result);
     const accessToken = credential?.accessToken || result?._tokenResponse?.oauthAccessToken || null;
@@ -170,10 +81,9 @@ export async function signInWithGoogleCalendar(options = {}) {
 }
 
 export function initAuth(onReady) {
-  // Handle redirect result for both Tauri and mobile web fallback flows
+  // Handle redirect result (fallback from popup-blocked scenarios)
   getRedirectResult(auth).then(result => {
     if (result) {
-      // Extract GCal access token if calendar scope was requested
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const accessToken = credential?.accessToken || result?._tokenResponse?.oauthAccessToken || null;
       if (accessToken) {
