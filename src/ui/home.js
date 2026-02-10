@@ -767,7 +767,8 @@ export function renderHomeWidget(widget, isEditing) {
           </div>
         `;
       } else {
-        responseHtml = `<div class="mt-3 py-3 text-center text-[var(--text-muted)] text-xs">Ask a question about your sheet data</div>`;
+        const tabInfo = state.gsheetData?.tabs ? `${state.gsheetData.tabs.length} tabs loaded` : 'Ask a question about your sheet data';
+        responseHtml = `<div class="mt-3 py-3 text-center text-[var(--text-muted)] text-xs">${tabInfo}</div>`;
       }
 
       // Footer with sync info

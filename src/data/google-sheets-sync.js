@@ -1,8 +1,9 @@
 // ============================================================================
 // Google Sheets Sync Module
 // ============================================================================
-// Fetches a "Yesterday" column from a private Google Sheet using the same
-// OAuth token as Google Calendar. Caches results in localStorage.
+// Fetches ALL tabs from a private Google Sheet using the same OAuth token
+// as Google Calendar. Caches results in localStorage. Provides AI Q&A
+// powered by Claude Haiku with full spreadsheet context.
 
 import { state } from '../state.js';
 import {
@@ -25,14 +26,13 @@ function getAccessToken() {
 }
 
 /**
- * Discover the tab (sheet) name from GID, then fetch all rows,
- * find the "Yesterday" column, and return structured data.
+ * Fetch ALL tabs from the spreadsheet. Returns structured data for each tab.
  */
 async function fetchSheetData() {
   const token = getAccessToken();
   if (!token) return { error: 'No access token' };
 
-  // Step 1: Get spreadsheet metadata to find tab name from GID
+  // Step 1: Get spreadsheet metadata to discover all tab names
   const metaRes = await fetch(
     `${SHEETS_API}/${GSHEET_SPREADSHEET_ID}?fields=sheets.properties`,
     { headers: { Authorization: `Bearer ${token}` } }
@@ -51,45 +51,59 @@ async function fetchSheetData() {
 
   const meta = await metaRes.json();
   const sheets = meta?.sheets || [];
-  const targetSheet = sheets.find(s => s.properties?.sheetId === GSHEET_TAB_GID);
-  if (!targetSheet) {
-    return { error: `Tab with GID ${GSHEET_TAB_GID} not found in spreadsheet` };
-  }
-  const tabName = targetSheet.properties.title;
+  if (sheets.length === 0) return { error: 'No tabs found in spreadsheet' };
 
-  // Step 2: Fetch all values from the tab
-  const valuesRes = await fetch(
-    `${SHEETS_API}/${GSHEET_SPREADSHEET_ID}/values/${encodeURIComponent(tabName)}`,
+  // Build range list for batch get — all tabs
+  const tabNames = sheets.map(s => s.properties.title);
+  const ranges = tabNames.map(name => encodeURIComponent(name));
+
+  // Step 2: Batch fetch all tabs in one API call
+  const rangeParams = ranges.map(r => `ranges=${r}`).join('&');
+  const batchRes = await fetch(
+    `${SHEETS_API}/${GSHEET_SPREADSHEET_ID}/values:batchGet?${rangeParams}`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
 
-  if (valuesRes.status === 401) return { authExpired: true };
-  if (!valuesRes.ok) return { error: `Sheets values fetch failed (${valuesRes.status})` };
+  if (batchRes.status === 401) return { authExpired: true };
+  if (!batchRes.ok) return { error: `Sheets batch fetch failed (${batchRes.status})` };
 
-  const valuesData = await valuesRes.json();
-  const rows = valuesData?.values || [];
-  if (rows.length < 2) return { error: 'Sheet has no data rows' };
+  const batchData = await batchRes.json();
+  const valueRanges = batchData?.valueRanges || [];
 
-  // Step 3: Find "Yesterday" column in header row
-  const headerRow = rows[0].map(h => String(h || '').trim().toLowerCase());
-  const yesterdayIdx = headerRow.findIndex(h => h === 'yesterday');
-  if (yesterdayIdx === -1) {
-    return { error: 'No "Yesterday" column found in header row' };
+  // Step 3: Structure data per tab
+  const tabs = [];
+  for (let i = 0; i < valueRanges.length; i++) {
+    const tabName = tabNames[i] || `Sheet${i + 1}`;
+    const rows = valueRanges[i]?.values || [];
+    if (rows.length === 0) continue;
+
+    tabs.push({
+      name: tabName,
+      headers: rows[0] || [],
+      rows: rows.slice(1),
+    });
   }
 
-  // Step 4: Extract label (col A) + value (Yesterday column) pairs
-  const result = [];
-  for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
-    const label = String(row[0] || '').trim();
-    const value = yesterdayIdx < row.length ? String(row[yesterdayIdx] || '').trim() : '';
-    if (!label && !value) continue; // skip fully empty rows
-    result.push({ label, value });
+  // Also extract legacy "Yesterday" column from the primary tab for backward compat
+  const primaryTab = tabs.find((_, idx) => sheets[idx]?.properties?.sheetId === GSHEET_TAB_GID) || tabs[0];
+  let legacyRows = [];
+  if (primaryTab && primaryTab.headers.length > 0) {
+    const headerRow = primaryTab.headers.map(h => String(h || '').trim().toLowerCase());
+    const yesterdayIdx = headerRow.findIndex(h => h === 'yesterday');
+    if (yesterdayIdx !== -1) {
+      for (const row of primaryTab.rows) {
+        const label = String(row[0] || '').trim();
+        const value = yesterdayIdx < row.length ? String(row[yesterdayIdx] || '').trim() : '';
+        if (!label && !value) continue;
+        legacyRows.push({ label, value });
+      }
+    }
   }
 
   return {
-    rows: result,
-    tabName,
+    tabs,
+    rows: legacyRows, // backward compat
+    tabName: primaryTab?.name || '',
     lastSync: new Date().toISOString(),
   };
 }
@@ -158,12 +172,37 @@ export function initGSheetSync() {
 }
 
 /**
- * Format cached sheet data as a text table for AI context.
+ * Format ALL tabs of sheet data as text for AI context.
+ * Each tab is separated by a header line showing tab name.
  */
 function formatSheetForAI(sheetData) {
-  if (!sheetData?.rows?.length) return '';
-  const lines = sheetData.rows.map(r => `${r.label}: ${r.value || '(empty)'}`);
-  return lines.join('\n');
+  if (!sheetData) return '';
+
+  // New multi-tab format
+  if (sheetData.tabs && sheetData.tabs.length > 0) {
+    const sections = [];
+    for (const tab of sheetData.tabs) {
+      const lines = [];
+      lines.push(`=== ${tab.name} ===`);
+      if (tab.headers && tab.headers.length > 0) {
+        lines.push(tab.headers.join('\t'));
+      }
+      for (const row of (tab.rows || [])) {
+        const cells = row.map(c => String(c ?? ''));
+        if (cells.every(c => !c.trim())) continue; // skip empty rows
+        lines.push(cells.join('\t'));
+      }
+      sections.push(lines.join('\n'));
+    }
+    return sections.join('\n\n');
+  }
+
+  // Legacy fallback: single-tab label:value format
+  if (sheetData.rows && sheetData.rows.length > 0) {
+    return sheetData.rows.map(r => `${r.label}: ${r.value || '(empty)'}`).join('\n');
+  }
+
+  return '';
 }
 
 /**
@@ -175,14 +214,18 @@ export async function askGSheet(prompt) {
 
   // Ensure we have sheet data (use cache or fetch)
   let sheetData = state.gsheetData;
-  if (!sheetData || !sheetData.rows) {
+  if (!sheetData || (!sheetData.tabs && !sheetData.rows)) {
     const success = await syncGSheetNow();
     if (!success) throw new Error(state.gsheetError || 'Failed to fetch sheet data');
     sheetData = state.gsheetData;
   }
-  if (!sheetData?.rows?.length) throw new Error('No sheet data available');
+  if (!sheetData) throw new Error('No sheet data available');
 
   const sheetText = formatSheetForAI(sheetData);
+  if (!sheetText) throw new Error('No sheet data to analyze');
+
+  const tabCount = sheetData.tabs ? sheetData.tabs.length : 1;
+  const tabList = sheetData.tabs ? sheetData.tabs.map(t => t.name).join(', ') : (sheetData.tabName || 'Sheet');
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -198,7 +241,7 @@ export async function askGSheet(prompt) {
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,
-      system: `You are a concise personal assistant. The user has a spreadsheet tracking their daily activities. Here is the data:\n\n${sheetText}\n\nAnswer the user's question about this data. Be brief and direct. Use plain text, no markdown.`,
+      system: `You are a concise personal assistant. The user has a spreadsheet with ${tabCount} tab(s): ${tabList}. Here is ALL the data:\n\n${sheetText}\n\nAnswer the user's question about this data. Be brief and direct. Use plain text, no markdown.`,
       messages: [{ role: 'user', content: prompt }],
     }),
     signal: controller.signal,
