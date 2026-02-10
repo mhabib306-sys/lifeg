@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T14:22:53.292Z",
+  "lastUpdated": "2026-02-10T14:22:59.285Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2498,8 +2498,8 @@
       "indent": 0,
       "order": 6000,
       "createdAt": "2026-02-08T11:28:09.075Z",
-      "updatedAt": "2026-02-10T14:22:47.480Z",
-      "today": true,
+      "updatedAt": "2026-02-10T14:22:56.595Z",
+      "today": false,
       "flagged": false,
       "gcalEventId": "csfc86bued8st610hm990scqvg"
     },
