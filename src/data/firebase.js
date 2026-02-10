@@ -19,6 +19,12 @@ function shouldUseRedirectAuth() {
   return isTauri || isIOS || isSmallTouchDevice;
 }
 
+function shouldUsePopupFirst() {
+  // Desktop Tauri webviews can ignore redirect navigation in-place.
+  // Prefer popup first, then fallback to redirect if needed.
+  return isTauri;
+}
+
 // Firebase web app config (client-side — not secret)
 const firebaseConfig = {
   apiKey: "AIzaSyD33w50neGgMOYgu3NbS8Dp6B4sfyEpJes",
@@ -36,6 +42,26 @@ export function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
   state.authError = null;
   window.render();
+
+  if (shouldUsePopupFirst()) {
+    signInWithPopup(auth, provider).catch(err => {
+      const code = err?.code || '';
+      const popupBlocked = code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request';
+      const unsupported = code === 'auth/operation-not-supported-in-this-environment';
+      if (popupBlocked || unsupported) {
+        signInWithRedirect(auth, provider).catch(redirectErr => {
+          console.error('Google redirect sign-in failed:', redirectErr);
+          state.authError = redirectErr.message;
+          window.render();
+        });
+        return;
+      }
+      console.error('Google sign-in failed:', err);
+      state.authError = err.message;
+      window.render();
+    });
+    return;
+  }
 
   if (shouldUseRedirectAuth()) {
     signInWithRedirect(auth, provider).catch(err => {
@@ -87,6 +113,17 @@ export async function signInWithGoogleCalendar(options = {}) {
   }
   provider.setCustomParameters(customParams);
   try {
+    if (shouldUsePopupFirst()) {
+      const result = await signInWithPopup(auth, provider);
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const accessToken = credential?.accessToken || result?._tokenResponse?.oauthAccessToken || null;
+      if (accessToken) {
+        localStorage.setItem(GCAL_ACCESS_TOKEN_KEY, accessToken);
+        localStorage.setItem(GCAL_TOKEN_TIMESTAMP_KEY, String(Date.now()));
+        return accessToken;
+      }
+      return null;
+    }
     if (shouldUseRedirectAuth()) {
       await signInWithRedirect(auth, provider);
       // After redirect returns, getRedirectResult is handled in initAuth
