@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T15:39:58.475Z",
+  "lastUpdated": "2026-02-10T15:40:31.246Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -9092,25 +9092,25 @@
       "visible": true
     },
     {
+      "id": "gsheet-yesterday",
+      "type": "gsheet-yesterday",
+      "title": "Yesterday",
+      "size": "half",
+      "order": 9,
+      "visible": true
+    },
+    {
       "id": "whoop",
       "type": "whoop",
       "title": "Whoop",
       "size": "half",
-      "order": 9,
+      "order": 10,
       "visible": true
     },
     {
       "id": "habits",
       "type": "habits",
       "title": "Habits",
-      "size": "half",
-      "order": 10,
-      "visible": true
-    },
-    {
-      "id": "gsheet-yesterday",
-      "type": "gsheet-yesterday",
-      "title": "Yesterday",
       "size": "half",
       "order": 11,
       "visible": true
