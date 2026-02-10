@@ -54,8 +54,9 @@ async function fetchSheetData() {
   if (sheets.length === 0) return { error: 'No tabs found in spreadsheet' };
 
   // Build range list for batch get — all tabs
+  // Sheet names must be wrapped in single quotes for A1 notation (handles spaces/special chars)
   const tabNames = sheets.map(s => s.properties.title);
-  const ranges = tabNames.map(name => encodeURIComponent(name));
+  const ranges = tabNames.map(name => encodeURIComponent(`'${name}'`));
 
   // Step 2: Batch fetch all tabs in one API call
   const rangeParams = ranges.map(r => `ranges=${r}`).join('&');
