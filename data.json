@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T02:14:57.947Z",
+  "lastUpdated": "2026-02-10T02:15:11.690Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2998,7 +2998,11 @@
     "task_1769986708273_8h0ih9rn2": "2026-02-09T19:37:29.588Z",
     "task_1770509778354_dbyy19ncj": "2026-02-09T19:37:30.799Z"
   },
-  "deletedEntityTombstones": {},
+  "deletedEntityTombstones": {
+    "taskPeople": {
+      "self": "2026-02-10T02:15:08.973Z"
+    }
+  },
   "taskCategories": [
     {
       "id": "personal",
@@ -3074,11 +3078,6 @@
     }
   ],
   "taskPeople": [
-    {
-      "id": "self",
-      "name": "Self",
-      "color": "#4A90A4"
-    },
     {
       "id": "person_1769977441169",
       "name": "Seif Ghallab",
