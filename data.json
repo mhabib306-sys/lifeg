@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T16:21:16.154Z",
+  "lastUpdated": "2026-02-10T16:22:15.864Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1694,10 +1694,10 @@
         "nop": ""
       },
       "libre": {
-        "currentGlucose": 313,
-        "trend": "↘",
+        "currentGlucose": 303,
+        "trend": "↓",
         "readingsCount": 48,
-        "lastReading": "2/10/2026 6:19:39 PM"
+        "lastReading": "2/10/2026 6:21:40 PM"
       }
     }
   },
