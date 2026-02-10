@@ -16,10 +16,12 @@ import {
 
 const GCAL_API = 'https://www.googleapis.com/calendar/v3';
 const TOKEN_MAX_AGE_MS = 55 * 60 * 1000; // 55 minutes (tokens last ~60 min)
+const TOKEN_REFRESH_MS = 45 * 60 * 1000; // Proactively refresh at 45 min (before expiry)
 const SYNC_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
 const GCAL_FETCH_TIMEOUT_MS = 15000; // Prevent indefinite loading on hung requests
 
 let syncIntervalId = null;
+let tokenRefreshIntervalId = null;
 let tokenRefreshPromise = null;
 
 function persistOfflineQueue() {
@@ -594,6 +596,7 @@ export function disconnectGCal() {
   state.gcontactsLastSync = null;
   state.gcontactsError = null;
   if (syncIntervalId) { clearInterval(syncIntervalId); syncIntervalId = null; }
+  if (tokenRefreshIntervalId) { clearInterval(tokenRefreshIntervalId); tokenRefreshIntervalId = null; }
   window.render();
 }
 
@@ -658,8 +661,37 @@ export function initGCalSync() {
   };
   startSync();
 
-  // Periodic sync every 30 minutes
-  syncIntervalId = setInterval(() => {
-    if (isGCalConnected() && isTokenValid()) syncGCalNow();
+  // Periodic sync every 30 minutes — refresh token if needed before syncing
+  if (syncIntervalId) clearInterval(syncIntervalId);
+  syncIntervalId = setInterval(async () => {
+    if (!isGCalConnected()) return;
+    if (await ensureValidToken()) syncGCalNow();
   }, SYNC_INTERVAL_MS);
+
+  // Proactive token refresh — refresh before expiry so session never lapses
+  if (tokenRefreshIntervalId) clearInterval(tokenRefreshIntervalId);
+  tokenRefreshIntervalId = setInterval(async () => {
+    if (!isGCalConnected()) return;
+    const ts = parseInt(localStorage.getItem(GCAL_TOKEN_TIMESTAMP_KEY) || '0', 10);
+    const tokenAge = Date.now() - ts;
+    if (tokenAge >= TOKEN_REFRESH_MS) {
+      const refreshed = await refreshAccessTokenSilent();
+      if (refreshed) {
+        console.log('[GCal] Token proactively refreshed');
+      }
+    }
+  }, 5 * 60 * 1000); // Check every 5 minutes
+
+  // When user returns to the tab, check token immediately
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState !== 'visible') return;
+    if (!isGCalConnected()) return;
+    if (!isTokenValid()) {
+      const refreshed = await refreshAccessTokenSilent();
+      if (refreshed) {
+        console.log('[GCal] Token refreshed on tab focus');
+        window.render();
+      }
+    }
+  });
 }
