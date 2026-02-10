@@ -170,24 +170,33 @@ import {
   showCategoryTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, scrollToContent
 } from './ui/mobile.js';
 
-// -- Task Modal (includes inline autocomplete) --
+// -- Task Modal --
 import {
   startInlineEdit, saveInlineEdit, cancelInlineEdit, handleInlineEditKeydown,
   openNewTaskModal, quickAddTask, handleQuickAddKeydown,
   toggleInlineTagInput, addInlineTag, toggleInlinePersonInput, addInlinePerson,
-  saveCategoryFromModal, saveLabelFromModal, savePersonFromModal,
   initModalState, setModalType, setModalStatus, toggleModalFlagged,
   updateDateDisplay, clearDateField, setQuickDate, openDatePicker,
   selectArea, renderAreaInput,
   addTag, removeTag, renderTagsInput,
   addPerson as addPersonModal, removePerson as removePersonModal, renderPeopleInput,
   toggleRepeat, initModalAutocomplete,
-  closeTaskModal, saveTaskFromModal, savePerspectiveFromModal, selectPerspectiveEmoji,
-  renderTaskModalHtml,
-  renderPerspectiveModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml,
+  closeTaskModal, saveTaskFromModal,
+  renderTaskModalHtml
+} from './ui/task-modal.js';
+
+// -- Entity Modals (category, label, person, perspective) --
+import {
+  saveCategoryFromModal, saveLabelFromModal, savePersonFromModal,
+  savePerspectiveFromModal, selectPerspectiveEmoji,
+  renderPerspectiveModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml
+} from './ui/entity-modals.js';
+
+// -- Inline Autocomplete (Todoist-style #, @, &, !) --
+import {
   parseDateQuery, setupInlineAutocomplete, renderInlineChips,
   removeInlineMeta, cleanupInlineAutocomplete
-} from './ui/task-modal.js';
+} from './features/inline-autocomplete.js';
 
 // -- Braindump UI --
 import {

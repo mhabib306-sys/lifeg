@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents (Claude Code, Codex, etc.) when 
 
 ## Project Overview
 
-**Homebase** (v4.18.6 - Homebase) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
+**Homebase** (v4.19.0 - Homebase) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
 
 ## Git Workflow
 
@@ -79,17 +79,21 @@ lifeg/
 │   │   ├── drag-drop.js        (task + sidebar + widget drag handlers)
 │   │   ├── perspectives.js     (custom perspective CRUD)
 │   │   ├── home-widgets.js     (widget visibility/ordering)
+│   │   ├── inline-autocomplete.js (Todoist-style # @ & ! inline autocomplete engine)
 │   │   └── calendar.js         (month nav, date selection, getTasksForDate)
 │   ├── ui/
 │   │   ├── render.js           (main render(), switchTab, tab routing)
-│   │   ├── home.js             (renderHomeTab, widget rendering, homeQuickAddTask)
+│   │   ├── home.js             (renderHomeTab, widget dispatcher, gsheet handlers)
+│   │   ├── home-widgets.js     (individual widget content renderers)
 │   │   ├── tasks-tab.js        (renderTasksTab, renderTaskItem, sidebar, area view)
 │   │   ├── tracking.js         (renderTrackingTab, daily entry form)
 │   │   ├── bulk-entry.js       (renderBulkEntryTab)
 │   │   ├── dashboard.js        (renderDashboardTab, Chart.js charts)
-│   │   ├── calendar-view.js    (renderCalendarView)
+│   │   ├── calendar-view.js    (renderCalendarView, grid rendering, sidebar)
+│   │   ├── calendar-meeting.js (meeting notes, discussion pool, event actions modal)
 │   │   ├── settings.js         (renderSettingsTab)
-│   │   ├── task-modal.js       (task modal + entity modals, save/close, inline + modal autocomplete)
+│   │   ├── task-modal.js       (task modal core, save/close, modal autocomplete)
+│   │   ├── entity-modals.js    (category/label/person/perspective modals)
 │   │   ├── mobile.js           (drawer, bottom nav, navigation helpers)
 │   │   └── input-builders.js   (createPrayerInput, createToggle, etc.)
 │   └── styles/
