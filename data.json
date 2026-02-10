@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T01:48:19.942Z",
+  "lastUpdated": "2026-02-10T01:48:30.875Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2861,12 +2861,12 @@
       "id": "task_1770662913181_jr4o7478e",
       "title": "Call Jana",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "today": false,
       "flagged": false,
       "completed": false,
       "completedAt": null,
-      "categoryId": null,
+      "categoryId": "cat_1769987564631",
       "labels": [],
       "people": [],
       "deferDate": "2026-02-09",
@@ -2877,7 +2877,7 @@
       "indent": 0,
       "order": 9000,
       "createdAt": "2026-02-09T18:48:33.181Z",
-      "updatedAt": "2026-02-09T18:48:33.718Z",
+      "updatedAt": "2026-02-10T01:48:28.507Z",
       "gcalEventId": "m94vs65i4sjpeqq7l051k45jbc"
     },
     {
