@@ -285,6 +285,12 @@ function dateToStr(dateObj) {
 }
 
 export function openCalendarEventActions(calendarId, eventId) {
+  const event = findCalendarEvent(calendarId, eventId);
+  if (!event) return;
+  if (hasMeetingWorkspace(event)) {
+    openCalendarMeetingNotes(calendarId, eventId);
+    return;
+  }
   state.calendarEventModalOpen = true;
   state.calendarEventModalCalendarId = calendarId;
   state.calendarEventModalEventId = eventId;
@@ -668,12 +674,9 @@ function renderMeetingNotesPage() {
 function renderEventActionsModal(event) {
   if (!event) return '';
   const hasNotes = hasMeetingWorkspace(event);
+  if (hasNotes) return '';
   const meetingActionLabel = event.meetingProvider ? `Join ${escapeHtml(event.meetingProvider)}` : 'Open Meeting Link';
-  const meetingSubLabel = event.meetingLink
-    ? (event.meetingProvider ? `Launch ${escapeHtml(event.meetingProvider)} directly` : 'Open the detected call URL')
-    : 'No Meet/Zoom/Teams link found in this event';
-  const notesActionLabel = hasNotes ? 'Open Meeting Workspace' : 'Create Meeting Workspace';
-  const notesSubLabel = hasNotes ? 'Review linked bullets/tasks and event metadata' : 'Start linked bullets/tasks for this event';
+  const meetingSubLabel = event.meetingLink ? 'Open call link' : 'No call link found';
 
   return `
     <div class="modal-overlay calendar-event-modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[320]" onclick="if(event.target===this) closeCalendarEventActions()">
@@ -696,50 +699,30 @@ function renderEventActionsModal(event) {
           </div>
         </div>
 
-        <div class="modal-body-enhanced space-y-2.5">
-          <button onclick="window.open('${q(event.htmlLink)}', '_blank'); closeCalendarEventActions()" class="calendar-event-action ${event.htmlLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.htmlLink ? '' : 'disabled'}>
-            <span class="calendar-event-action-icon">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 15H5V10h14v9zM7 12h5v5H7z"/></svg>
-            </span>
-            <span class="calendar-event-action-text">
-              <span class="calendar-event-action-title">Open In Google Calendar</span>
-              <span class="calendar-event-action-sub">View full details, guests, and edits</span>
-            </span>
-          </button>
-          <button onclick="window.open('${q(event.meetingLink)}', '_blank'); closeCalendarEventActions()" class="calendar-event-action ${event.meetingLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.meetingLink ? '' : 'disabled'}>
-            <span class="calendar-event-action-icon">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-3.5l4 4v-11l-4 4z"/></svg>
-            </span>
-            <span class="calendar-event-action-text">
-              <span class="calendar-event-action-title">${meetingActionLabel}</span>
-              <span class="calendar-event-action-sub">${meetingSubLabel}</span>
-            </span>
-          </button>
+        <div class="modal-body-enhanced space-y-3">
+          <div class="calendar-event-quick-actions">
+            <button onclick="window.open('${q(event.htmlLink)}', '_blank'); closeCalendarEventActions()" class="calendar-icon-action ${event.htmlLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.htmlLink ? '' : 'disabled'}>
+              <span class="calendar-icon-action-glyph">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 15H5V10h14v9zM7 12h5v5H7z"/></svg>
+              </span>
+              <span class="calendar-icon-action-label">Google Calendar</span>
+            </button>
+            <button onclick="window.open('${q(event.meetingLink)}', '_blank'); closeCalendarEventActions()" class="calendar-icon-action ${event.meetingLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.meetingLink ? '' : 'disabled'}>
+              <span class="calendar-icon-action-glyph">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-3.5l4 4v-11l-4 4z"/></svg>
+              </span>
+              <span class="calendar-icon-action-label">${meetingActionLabel}</span>
+              <span class="calendar-icon-action-sub">${meetingSubLabel}</span>
+            </button>
+          </div>
+
           <button onclick="openCalendarMeetingNotes('${q(event.calendarId)}','${q(event.id)}')" class="calendar-event-action">
             <span class="calendar-event-action-icon">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
             </span>
             <span class="calendar-event-action-text">
-              <span class="calendar-event-action-title">${notesActionLabel}</span>
-              <span class="calendar-event-action-sub">${notesSubLabel}</span>
-            </span>
-          </button>
-          <button onclick="convertCalendarEventToTask('${q(event.calendarId)}','${q(event.id)}', 0)" class="calendar-event-action">
-            <span class="calendar-event-action-icon">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M9 11h6v2H9zm0-4h6v2H9zm0 8h4v2H9z"/><path d="M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-            </span>
-            <span class="calendar-event-action-text">
-              <span class="calendar-event-action-title">Convert To Task</span>
-              <span class="calendar-event-action-sub">Create a task from this event</span>
-            </span>
-          </button>
-          <button onclick="convertCalendarEventToTask('${q(event.calendarId)}','${q(event.id)}', 1)" class="calendar-event-action">
-            <span class="calendar-event-action-icon">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v5h5v2h-7z"/><path d="M12 2a10 10 0 100 20 10 10 0 000-20z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-            </span>
-            <span class="calendar-event-action-text">
-              <span class="calendar-event-action-title">Create Follow-up Task</span>
-              <span class="calendar-event-action-sub">Auto-create a follow-up due tomorrow</span>
+              <span class="calendar-event-action-title">Create Meeting Workspace</span>
+              <span class="calendar-event-action-sub">Start linked notes/tasks for this event</span>
             </span>
           </button>
         </div>
