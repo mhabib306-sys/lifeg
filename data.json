@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T20:53:42.422Z",
+  "lastUpdated": "2026-02-10T20:54:37.954Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3171,6 +3171,7 @@
       "color": "#478054"
     }
   ],
+  "categories": [],
   "taskLabels": [
     {
       "id": "urgent",
