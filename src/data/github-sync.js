@@ -26,7 +26,8 @@ import {
   XP_KEY,
   STREAK_KEY,
   ACHIEVEMENTS_KEY,
-  CATEGORY_WEIGHTS_KEY
+  CATEGORY_WEIGHTS_KEY,
+  LAST_UPDATED_KEY
 } from '../constants.js';
 
 // ---------------------------------------------------------------------------
@@ -555,7 +556,7 @@ export async function loadCloudData() {
   const token = getGithubToken();
 
   function shouldUseCloud(cloudUpdated) {
-    const localUpdatedRaw = localStorage.getItem('lastUpdated');
+    const localUpdatedRaw = localStorage.getItem(LAST_UPDATED_KEY);
     if (!cloudUpdated) return false;
     const localUpdated = localUpdatedRaw ? new Date(parseInt(localUpdatedRaw, 10)) : null;
     const cloudDate = new Date(cloudUpdated);
@@ -569,7 +570,7 @@ export async function loadCloudData() {
       // Cloud is strictly newer — wholesale replace
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData.data));
       state.allData = cloudData.data;
-      localStorage.setItem('lastUpdated', new Date(cloudData.lastUpdated).getTime().toString());
+      localStorage.setItem(LAST_UPDATED_KEY, new Date(cloudData.lastUpdated).getTime().toString());
       return;
     }
     // Local is newer or equal — still merge cloud data into local

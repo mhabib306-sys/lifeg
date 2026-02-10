@@ -1,17 +1,6 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
-import { DELETED_ENTITY_TOMBSTONES_KEY } from '../constants.js';
-
-function ensureEntityTombstones() {
-  if (!state.deletedEntityTombstones || typeof state.deletedEntityTombstones !== 'object') {
-    state.deletedEntityTombstones = {};
-  }
-  return state.deletedEntityTombstones;
-}
-
-function persistEntityTombstones() {
-  localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(state.deletedEntityTombstones || {}));
-}
+import { ensureEntityTombstones, persistEntityTombstones } from './categories.js';
 
 function markPerspectiveDeleted(id) {
   if (!id) return;

@@ -12,6 +12,7 @@ import {
   GCONTACTS_LAST_SYNC_KEY,
 } from '../constants.js';
 import { isGCalConnected } from './google-calendar-sync.js';
+import { normalizeEmail } from '../utils.js';
 
 const PEOPLE_API = 'https://people.googleapis.com/v1';
 const CONTACTS_SYNC_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
@@ -34,10 +35,6 @@ function setContactsSyncToken(token) {
 function setContactsLastSync(ts) {
   state.gcontactsLastSync = ts;
   localStorage.setItem(GCONTACTS_LAST_SYNC_KEY, String(ts));
-}
-
-function normalizeEmail(email) {
-  return String(email || '').trim().toLowerCase();
 }
 
 function normalizeName(name) {

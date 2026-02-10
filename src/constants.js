@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.18.5 - Homebase';
+export const APP_VERSION = '4.18.6 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -118,6 +118,15 @@ export const GSHEET_SAVED_PROMPT_KEY = 'nucleusGSheetSavedPrompt';
 export const GSHEET_RESPONSE_CACHE_KEY = 'nucleusGSheetResponseCache';
 export const CONFLICT_NOTIFICATIONS_KEY = 'nucleusConflictNotifications';
 export const APP_VERSION_SEEN_KEY = 'nucleusAppVersionSeen';
+
+// Shared keys
+export const LAST_UPDATED_KEY = 'lastUpdated';
+export const COLLAPSED_NOTES_KEY = 'collapsedNotes';
+
+// localStorage key prefix convention:
+// - lifeGamification* — app data (tasks, scores, settings, XP, streaks, etc.)
+// - nucleus*          — integration/sync keys (GCal, GSheet, weather, contacts, WHOOP, etc.)
+// - collapsedNotes, lastUpdated — legacy unprefixed keys (kept for backward compat)
 
 // Default home widgets configuration
 export const DEFAULT_HOME_WIDGETS = [

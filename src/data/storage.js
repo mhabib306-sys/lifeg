@@ -14,6 +14,8 @@ import {
   PERSPECTIVES_KEY,
   HOME_WIDGETS_KEY,
   VIEW_STATE_KEY,
+  LAST_UPDATED_KEY,
+  COLLAPSED_NOTES_KEY,
   defaultDayData
 } from '../constants.js';
 import { getLocalDateString } from '../utils.js';
@@ -43,7 +45,7 @@ function safeLocalStorageSet(key, value) {
  */
 export function saveData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.allData));
-  localStorage.setItem('lastUpdated', Date.now().toString());
+  localStorage.setItem(LAST_UPDATED_KEY, Date.now().toString());
 }
 
 /**
@@ -88,7 +90,7 @@ export function saveTasksData() {
   safeLocalStorageSet(TASK_LABELS_KEY, state.taskLabels);
   safeLocalStorageSet(TASK_PEOPLE_KEY, state.taskPeople);
   safeLocalStorageSet(PERSPECTIVES_KEY, state.customPerspectives);
-  localStorage.setItem('lastUpdated', Date.now().toString());
+  localStorage.setItem(LAST_UPDATED_KEY, Date.now().toString());
   window.debouncedSaveToGithub();
 }
 
@@ -169,7 +171,7 @@ export function saveHomeWidgets() {
  * Save collapsed notes set to localStorage
  */
 export function saveCollapsedNotes() {
-  localStorage.setItem('collapsedNotes', JSON.stringify([...state.collapsedNotes]));
+  localStorage.setItem(COLLAPSED_NOTES_KEY, JSON.stringify([...state.collapsedNotes]));
 }
 
 // ---------------------------------------------------------------------------

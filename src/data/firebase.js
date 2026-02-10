@@ -166,8 +166,13 @@ async function requestCalendarTokenWithGIS(mode = 'interactive') {
         scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly https://www.googleapis.com/auth/spreadsheets.readonly',
         callback: (resp) => {
           clearTimeout(timeoutId);
-          if (resp?.access_token) finalize(resp.access_token);
-          else finalize(null);
+          if (resp?.access_token) {
+            // Store actual expires_in from Google (typically 3600 seconds)
+            if (resp.expires_in) {
+              localStorage.setItem('nucleusGCalExpiresIn', String(resp.expires_in));
+            }
+            finalize(resp.access_token);
+          } else finalize(null);
         },
         error_callback: () => {
           clearTimeout(timeoutId);

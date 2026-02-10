@@ -106,6 +106,50 @@ export function safeLocalStorageGet(key, defaultValue = null) {
 }
 
 /**
+ * Normalize an email address for comparison (trim + lowercase)
+ * @param {string} email - Raw email address
+ * @returns {string} Normalized email
+ */
+export function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
+/**
+ * Format a Google Calendar event's time range for display
+ * @param {Object} event - GCal event object with start/end dateTime
+ * @returns {string} Formatted time string (e.g. "9:00 AM - 10:00 AM")
+ */
+export function formatEventTime(event) {
+  if (!event) return '';
+  if (event.allDay) return 'All day';
+  if (!event.start?.dateTime) return '';
+  const start = new Date(event.start.dateTime);
+  const startText = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  if (!event.end?.dateTime) return startText;
+  const end = new Date(event.end.dateTime);
+  const endText = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  return `${startText} - ${endText}`;
+}
+
+/**
+ * Format a Google Calendar event's date for display
+ * @param {Object} event - GCal event object
+ * @returns {string} Formatted date string (e.g. "Mon, Jan 15")
+ */
+export function formatEventDateLabel(event) {
+  if (!event) return '';
+  if (event.allDay && event.start?.date) {
+    const d = new Date(event.start.date + 'T12:00:00');
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+  if (event.start?.dateTime) {
+    const d = new Date(event.start.dateTime);
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+  return '';
+}
+
+/**
  * Smart date formatting like Things 3
  * Shows relative labels (Today, Tomorrow, Yesterday) for near dates,
  * weekday names for dates within a week, and abbreviated dates otherwise

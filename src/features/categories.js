@@ -3,14 +3,14 @@ import { saveTasksData } from '../data/storage.js';
 import { getLocalDateString } from '../utils.js';
 import { DELETED_ENTITY_TOMBSTONES_KEY } from '../constants.js';
 
-function ensureEntityTombstones() {
+export function ensureEntityTombstones() {
   if (!state.deletedEntityTombstones || typeof state.deletedEntityTombstones !== 'object') {
     state.deletedEntityTombstones = {};
   }
   return state.deletedEntityTombstones;
 }
 
-function persistEntityTombstones() {
+export function persistEntityTombstones() {
   localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(state.deletedEntityTombstones || {}));
 }
 

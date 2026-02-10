@@ -1,7 +1,7 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
 import { generateTaskId, escapeHtml, formatSmartDate } from '../utils.js';
-import { TASK_CATEGORIES_KEY, TASK_LABELS_KEY, TASK_PEOPLE_KEY } from '../constants.js';
+import { TASK_CATEGORIES_KEY, TASK_LABELS_KEY, TASK_PEOPLE_KEY, COLLAPSED_NOTES_KEY } from '../constants.js';
 import { startUndoCountdown } from './undo.js';
 import { recordTaskDeletionTombstone, clearTaskDeletionTombstone } from './tasks.js';
 
@@ -512,7 +512,7 @@ function persistAndRender(focusId = null) {
 // ============================================================================
 
 export function saveCollapsedNotes() {
-  localStorage.setItem('collapsedNotes', JSON.stringify([...state.collapsedNotes]));
+  localStorage.setItem(COLLAPSED_NOTES_KEY, JSON.stringify([...state.collapsedNotes]));
 }
 
 export function toggleNoteCollapse(noteId) {

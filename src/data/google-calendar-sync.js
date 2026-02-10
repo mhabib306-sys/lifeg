@@ -15,8 +15,21 @@ import {
 } from '../constants.js';
 
 const GCAL_API = 'https://www.googleapis.com/calendar/v3';
-const TOKEN_MAX_AGE_MS = 55 * 60 * 1000; // 55 minutes (tokens last ~60 min)
-const TOKEN_REFRESH_MS = 45 * 60 * 1000; // Proactively refresh at 45 min (before expiry)
+const TOKEN_MAX_AGE_MS_DEFAULT = 55 * 60 * 1000; // 55 minutes fallback (tokens last ~60 min)
+const TOKEN_REFRESH_BUFFER_MS = 10 * 60 * 1000; // Refresh 10 minutes before expiry
+
+function getTokenMaxAgeMs() {
+  const expiresIn = parseInt(localStorage.getItem('nucleusGCalExpiresIn') || '0', 10);
+  // Use actual expires_in from Google (in seconds) if available, minus a 5min safety buffer
+  if (expiresIn > 0) return (expiresIn * 1000) - (5 * 60 * 1000);
+  return TOKEN_MAX_AGE_MS_DEFAULT;
+}
+
+function getTokenRefreshMs() {
+  const expiresIn = parseInt(localStorage.getItem('nucleusGCalExpiresIn') || '0', 10);
+  if (expiresIn > 0) return (expiresIn * 1000) - TOKEN_REFRESH_BUFFER_MS;
+  return 45 * 60 * 1000; // 45 min fallback
+}
 const SYNC_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
 const GCAL_FETCH_TIMEOUT_MS = 15000; // Prevent indefinite loading on hung requests
 
@@ -86,6 +99,23 @@ function isCancelledEvent(event) {
   return false;
 }
 
+/**
+ * Check if the current user has declined an event.
+ * Google returns declined events by default; filter them out.
+ */
+function isDeclinedEvent(event) {
+  if (!event) return false;
+  const attendees = Array.isArray(event.attendees) ? event.attendees : [];
+  // Find the attendee entry marked as "self" (the current user)
+  const self = attendees.find(a => a.self === true || a.self === 'true');
+  if (self && self.responseStatus === 'declined') return true;
+  return false;
+}
+
+function shouldHideEvent(event) {
+  return isCancelledEvent(event) || isDeclinedEvent(event);
+}
+
 function extractGCalServiceDisabledMessage(errBody) {
   const details = errBody?.error?.details;
   if (!Array.isArray(details)) return '';
@@ -153,7 +183,7 @@ export function isTokenValid() {
   const token = getAccessToken();
   if (!token) return false;
   const ts = parseInt(localStorage.getItem(GCAL_TOKEN_TIMESTAMP_KEY) || '0', 10);
-  return Date.now() - ts < TOKEN_MAX_AGE_MS;
+  return Date.now() - ts < getTokenMaxAgeMs();
 }
 
 function handleTokenExpired() {
@@ -336,7 +366,7 @@ export async function fetchEventsForRange(timeMin, timeMax) {
         if (!data) break;
         const items = Array.isArray(data.items) ? data.items : [];
         items.forEach(e => {
-          if (isCancelledEvent(e)) return;
+          if (shouldHideEvent(e)) return;
           const { meetingLink, meetingProvider } = extractMeetingLink(e);
           allEvents.push({
             id: e.id,
@@ -349,6 +379,7 @@ export async function fetchEventsForRange(timeMin, timeMax) {
                 email: a.email || '',
                 displayName: a.displayName || '',
                 responseStatus: a.responseStatus || '',
+                self: !!a.self,
               }))
               : [],
             recurringEventId: e.recurringEventId || '',
@@ -380,7 +411,7 @@ export async function fetchEventsForRange(timeMin, timeMax) {
 export function getGCalEventsForDate(dateStr) {
   const selected = getSelectedCalendars();
   return state.gcalEvents.filter(e => {
-    if (isCancelledEvent(e)) return false;
+    if (shouldHideEvent(e)) return false;
     if (selected.length > 0 && !selected.includes(e.calendarId)) return false;
     if (e.allDay) {
       // Google uses exclusive end date for all-day events
@@ -647,7 +678,7 @@ export function initGCalSync() {
     const cached = localStorage.getItem(GCAL_EVENTS_CACHE_KEY);
     if (cached) {
       const parsed = JSON.parse(cached);
-      state.gcalEvents = Array.isArray(parsed) ? parsed.filter(e => !isCancelledEvent(e)) : [];
+      state.gcalEvents = Array.isArray(parsed) ? parsed.filter(e => !shouldHideEvent(e)) : [];
       localStorage.setItem(GCAL_EVENTS_CACHE_KEY, JSON.stringify(state.gcalEvents));
     }
   } catch { /* ignore */ }
@@ -674,13 +705,13 @@ export function initGCalSync() {
     if (!isGCalConnected()) return;
     const ts = parseInt(localStorage.getItem(GCAL_TOKEN_TIMESTAMP_KEY) || '0', 10);
     const tokenAge = Date.now() - ts;
-    if (tokenAge >= TOKEN_REFRESH_MS) {
+    if (tokenAge >= getTokenRefreshMs()) {
       const refreshed = await refreshAccessTokenSilent();
       if (refreshed) {
         console.log('[GCal] Token proactively refreshed');
       }
     }
-  }, 5 * 60 * 1000); // Check every 5 minutes
+  }, 2 * 60 * 1000); // Check every 2 minutes (tighter than before)
 
   // When user returns to the tab, check token immediately
   document.addEventListener('visibilitychange', async () => {

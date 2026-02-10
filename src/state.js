@@ -42,6 +42,7 @@ import {
   GCAL_OFFLINE_QUEUE_KEY,
   CONFLICT_NOTIFICATIONS_KEY,
   GSHEET_CACHE_KEY,
+  COLLAPSED_NOTES_KEY,
 } from './constants.js';
 
 // ---------------------------------------------------------------------------
@@ -143,11 +144,11 @@ if (initialActivePerspective === 'calendar') initialActivePerspective = 'inbox';
 // ---------------------------------------------------------------------------
 let initialCollapsedNotes;
 try {
-  const storedCollapsed = localStorage.getItem('collapsedNotes');
+  const storedCollapsed = localStorage.getItem(COLLAPSED_NOTES_KEY);
   initialCollapsedNotes = new Set(storedCollapsed ? JSON.parse(storedCollapsed) : []);
 } catch (e) {
   console.error('Error loading collapsed notes:', e);
-  localStorage.removeItem('collapsedNotes');
+  localStorage.removeItem(COLLAPSED_NOTES_KEY);
   initialCollapsedNotes = new Set();
 }
 

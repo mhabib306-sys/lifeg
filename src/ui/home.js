@@ -5,8 +5,8 @@
 // daily-entry mini form, and the overall score summary.
 
 import { state } from '../state.js';
-import { getLocalDateString } from '../utils.js';
-import { THINGS3_ICONS, WEATHER_ICONS, WEATHER_DESCRIPTIONS, defaultDayData, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, ACHIEVEMENTS, SCORE_TIERS } from '../constants.js';
+import { getLocalDateString, formatEventTime } from '../utils.js';
+import { THINGS3_ICONS, WEATHER_ICONS, WEATHER_DESCRIPTIONS, defaultDayData, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, ACHIEVEMENTS, SCORE_TIERS, GSHEET_SAVED_PROMPT_KEY, GSHEET_RESPONSE_CACHE_KEY } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // External function references — these will be replaced with proper module
@@ -41,24 +41,13 @@ function getFilteredTasks(perspectiveId) {
   return [];
 }
 
+// Delegates to getScoreTier from scoring.js (available via window bridge)
 function getTierForScore(score) {
-  for (let i = SCORE_TIERS.length - 1; i >= 0; i--) {
-    if (score >= SCORE_TIERS[i].min) return SCORE_TIERS[i];
-  }
-  return SCORE_TIERS[0];
+  return window.getScoreTier(score);
 }
 
-function formatHomeEventTime(event) {
-  if (!event) return '';
-  if (event.allDay) return 'All day';
-  if (!event.start?.dateTime) return '';
-  const start = new Date(event.start.dateTime);
-  const startText = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-  if (!event.end?.dateTime) return startText;
-  const end = new Date(event.end.dateTime);
-  const endText = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-  return `${startText} - ${endText}`;
-}
+// formatHomeEventTime merged into formatEventTime in utils.js
+const formatHomeEventTime = formatEventTime;
 
 // ============================================================================
 // renderHomeWidget — renders a single home dashboard widget
@@ -72,7 +61,7 @@ export async function handleGSheetSavePrompt() {
   const prompt = (input?.value || '').trim();
   if (!prompt) return;
 
-  localStorage.setItem('nucleusGSheetSavedPrompt', prompt);
+  localStorage.setItem(GSHEET_SAVED_PROMPT_KEY, prompt);
   state.gsheetEditingPrompt = false;
   state.gsheetAsking = true;
   state.gsheetResponse = null;
@@ -81,7 +70,7 @@ export async function handleGSheetSavePrompt() {
   try {
     const response = await window.askGSheet(prompt);
     state.gsheetResponse = response;
-    localStorage.setItem('nucleusGSheetResponseCache', response);
+    localStorage.setItem(GSHEET_RESPONSE_CACHE_KEY, response);
   } catch (err) {
     state.gsheetResponse = `Error: ${err.message || 'Something went wrong'}`;
   } finally {
@@ -114,7 +103,7 @@ export function handleGSheetCancelEdit() {
  * Re-run the saved prompt (refresh output).
  */
 export async function handleGSheetRefresh() {
-  const prompt = localStorage.getItem('nucleusGSheetSavedPrompt') || '';
+  const prompt = localStorage.getItem(GSHEET_SAVED_PROMPT_KEY) || '';
   if (!prompt) return;
 
   state.gsheetAsking = true;
@@ -124,7 +113,7 @@ export async function handleGSheetRefresh() {
   try {
     const response = await window.askGSheet(prompt);
     state.gsheetResponse = response;
-    localStorage.setItem('nucleusGSheetResponseCache', response);
+    localStorage.setItem(GSHEET_RESPONSE_CACHE_KEY, response);
   } catch (err) {
     state.gsheetResponse = `Error: ${err.message || 'Something went wrong'}`;
   } finally {
@@ -834,9 +823,9 @@ export function renderHomeWidget(widget, isEditing) {
       const hasApiKey = !!(typeof window.getAnthropicKey === 'function' && window.getAnthropicKey());
       const syncing = state.gsheetSyncing;
       const asking = state.gsheetAsking;
-      const savedPrompt = localStorage.getItem('nucleusGSheetSavedPrompt') || '';
+      const savedPrompt = localStorage.getItem(GSHEET_SAVED_PROMPT_KEY) || '';
       const editing = state.gsheetEditingPrompt;
-      const response = state.gsheetResponse || localStorage.getItem('nucleusGSheetResponseCache') || '';
+      const response = state.gsheetResponse || localStorage.getItem(GSHEET_RESPONSE_CACHE_KEY) || '';
 
       if (!hasApiKey) {
         content = `

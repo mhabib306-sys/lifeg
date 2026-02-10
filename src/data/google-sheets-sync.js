@@ -13,6 +13,8 @@ import {
   GSHEET_TAB_GID,
   GSHEET_CACHE_KEY,
   GSHEET_LAST_SYNC_KEY,
+  GSHEET_SAVED_PROMPT_KEY,
+  GSHEET_RESPONSE_CACHE_KEY,
 } from '../constants.js';
 import { isGCalConnected } from './google-calendar-sync.js';
 
@@ -152,7 +154,7 @@ export async function syncGSheetNow() {
     state.gsheetError = null;
 
     // Auto-run saved prompt if one exists
-    const savedPrompt = localStorage.getItem('nucleusGSheetSavedPrompt');
+    const savedPrompt = localStorage.getItem(GSHEET_SAVED_PROMPT_KEY);
     const apiKey = localStorage.getItem(ANTHROPIC_KEY);
     if (savedPrompt && apiKey) {
       // Run in background — don't block sync completion
@@ -289,7 +291,7 @@ async function autoRunSavedPrompt(prompt) {
   try {
     const response = await askGSheet(prompt);
     state.gsheetResponse = response;
-    localStorage.setItem('nucleusGSheetResponseCache', response);
+    localStorage.setItem(GSHEET_RESPONSE_CACHE_KEY, response);
   } catch (err) {
     state.gsheetResponse = `Error: ${err.message || 'Auto-run failed'}`;
   } finally {

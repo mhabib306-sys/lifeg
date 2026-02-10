@@ -5,18 +5,8 @@
 // reset, and edit mode toggling.
 
 import { state } from '../state.js';
-import { HOME_WIDGETS_KEY, DEFAULT_HOME_WIDGETS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, DELETED_ENTITY_TOMBSTONES_KEY } from '../constants.js';
-
-function ensureEntityTombstones() {
-  if (!state.deletedEntityTombstones || typeof state.deletedEntityTombstones !== 'object') {
-    state.deletedEntityTombstones = {};
-  }
-  return state.deletedEntityTombstones;
-}
-
-function persistEntityTombstones() {
-  localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(state.deletedEntityTombstones || {}));
-}
+import { HOME_WIDGETS_KEY, DEFAULT_HOME_WIDGETS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
+import { ensureEntityTombstones, persistEntityTombstones } from './categories.js';
 
 function markWidgetDeleted(id) {
   if (!id) return;

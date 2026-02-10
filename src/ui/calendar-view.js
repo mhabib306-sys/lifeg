@@ -5,7 +5,7 @@
 import { state } from '../state.js';
 import { getTasksForDate } from '../features/calendar.js';
 import { THINGS3_ICONS, MEETING_NOTES_KEY } from '../constants.js';
-import { escapeHtml, getLocalDateString } from '../utils.js';
+import { escapeHtml, getLocalDateString, normalizeEmail, formatEventTime, formatEventDateLabel } from '../utils.js';
 
 function getEventKeyForScope(event, scope = 'instance') {
   if (!event) return '';
@@ -95,10 +95,6 @@ function getMeetingLinkedItems(eventKey) {
   }
   const scopeKeys = getMeetingScopeKeys(eventKey);
   return state.tasksData.filter(t => scopeKeys.includes(t.meetingEventKey));
-}
-
-function normalizeEmail(email) {
-  return String(email || '').trim().toLowerCase();
 }
 
 function getDiscussionPoolForEvent(event) {
@@ -226,32 +222,8 @@ function getSelectedModalEvent() {
   return findCalendarEvent(state.calendarEventModalCalendarId, state.calendarEventModalEventId);
 }
 
-function formatEventDateLabel(event) {
-  if (!event) return '';
-  if (event.allDay && event.start?.date) {
-    const d = new Date(event.start.date + 'T12:00:00');
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  }
-  if (event.start?.dateTime) {
-    const d = new Date(event.start.dateTime);
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  }
-  return '';
-}
-
-function formatEventTimeLabel(event) {
-  if (!event) return '';
-  if (event.allDay) return 'All day';
-  if (!event.start?.dateTime) return '';
-
-  const start = new Date(event.start.dateTime);
-  const startTime = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-  if (!event.end?.dateTime) return startTime;
-
-  const end = new Date(event.end.dateTime);
-  const endTime = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-  return `${startTime} - ${endTime}`;
-}
+// formatEventTimeLabel is now imported as formatEventTime from utils.js
+const formatEventTimeLabel = formatEventTime;
 
 function q(str) {
   return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
