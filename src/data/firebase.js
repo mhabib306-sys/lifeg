@@ -25,6 +25,20 @@ function shouldUsePopupFirst() {
   return isTauri;
 }
 
+function withTimeout(promise, ms, timeoutCode = 'auth/popup-timeout') {
+  let timeoutId = null;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      const err = new Error('Timed out while waiting for auth popup.');
+      err.code = timeoutCode;
+      reject(err);
+    }, ms);
+  });
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    if (timeoutId) clearTimeout(timeoutId);
+  });
+}
+
 // Firebase web app config (client-side — not secret)
 const firebaseConfig = {
   apiKey: "AIzaSyD33w50neGgMOYgu3NbS8Dp6B4sfyEpJes",
@@ -40,24 +54,31 @@ const auth = getAuth(app);
 
 export function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
-  state.authError = null;
+  state.authError = 'Opening Google sign-in...';
   window.render();
 
   if (shouldUsePopupFirst()) {
-    signInWithPopup(auth, provider).catch(err => {
+    withTimeout(signInWithPopup(auth, provider), 5000).catch(err => {
       const code = err?.code || '';
       const popupBlocked = code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request';
       const unsupported = code === 'auth/operation-not-supported-in-this-environment';
-      if (popupBlocked || unsupported) {
+      const popupTimedOut = code === 'auth/popup-timeout';
+      if (popupBlocked || unsupported || popupTimedOut) {
         signInWithRedirect(auth, provider).catch(redirectErr => {
           console.error('Google redirect sign-in failed:', redirectErr);
-          state.authError = redirectErr.message;
+          state.authError = `Google sign-in failed in desktop app: ${redirectErr.message}`;
           window.render();
         });
+        setTimeout(() => {
+          if (!state.currentUser) {
+            state.authError = 'Google sign-in could not open. If this persists, add tauri://localhost and http://tauri.localhost to Firebase Authorized Domains.';
+            window.render();
+          }
+        }, 2500);
         return;
       }
       console.error('Google sign-in failed:', err);
-      state.authError = err.message;
+      state.authError = `Google sign-in failed: ${err.message}`;
       window.render();
     });
     return;
@@ -114,7 +135,7 @@ export async function signInWithGoogleCalendar(options = {}) {
   provider.setCustomParameters(customParams);
   try {
     if (shouldUsePopupFirst()) {
-      const result = await signInWithPopup(auth, provider);
+      const result = await withTimeout(signInWithPopup(auth, provider), 5000);
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const accessToken = credential?.accessToken || result?._tokenResponse?.oauthAccessToken || null;
       if (accessToken) {
