@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T03:06:49.300Z",
+  "lastUpdated": "2026-02-10T03:14:21.771Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3041,8 +3041,15 @@
       "updatedAt": "2026-02-10T02:15:55.718Z"
     }
   ],
-  "deletedTaskTombstones": {},
-  "deletedEntityTombstones": {},
+  "deletedTaskTombstones": {
+    "task_1769986708273_8h0ih9rn2": "2026-02-09T19:37:29.588Z",
+    "task_1770509778354_dbyy19ncj": "2026-02-09T19:37:30.799Z"
+  },
+  "deletedEntityTombstones": {
+    "taskPeople": {
+      "self": "2026-02-10T02:15:08.973Z"
+    }
+  },
   "taskCategories": [
     {
       "id": "personal",
