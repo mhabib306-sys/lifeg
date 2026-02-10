@@ -39,6 +39,7 @@ Home widgets are single-column on phones for readability.
 - Visual styling matches Things 3: lighter gridlines, soft header caps, and compact day labels.
 - When Today is selected, the calendar day list shows a Today section with a Next section underneath.
 - Meeting workspace includes a Discussion Pool: attendee-email matched tasks/notes with quick "Add to meeting" actions.
+- Meeting workspace renders Original Event Note HTML safely (sanitized allowlist).
 
 ## Perspectives
 - Custom perspectives support OmniFocus-style availability and rule matching (All/Any/None).

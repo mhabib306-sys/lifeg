@@ -154,6 +154,73 @@ function renderMultilineText(text) {
   return escapeHtml(text || '').replace(/\n/g, '<br>');
 }
 
+function renderSafeEventHtml(rawHtml) {
+  const input = String(rawHtml || '');
+  if (!input.trim()) return '';
+
+  // If no tags detected, treat as plain text with line breaks.
+  if (!/[<>]/.test(input)) {
+    return renderMultilineText(input);
+  }
+
+  // Fallback for non-browser contexts.
+  if (typeof document === 'undefined') {
+    return renderMultilineText(input);
+  }
+
+  const allowedTags = new Set([
+    'a', 'p', 'br', 'ul', 'ol', 'li', 'b', 'strong', 'i', 'em', 'u',
+    'code', 'pre', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'div', 'span'
+  ]);
+  const allowedAttrs = new Set(['href', 'title', 'target', 'rel']);
+
+  const template = document.createElement('template');
+  template.innerHTML = input;
+
+  const sanitizeNode = (node) => {
+    if (node.nodeType === Node.TEXT_NODE) return;
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      node.remove();
+      return;
+    }
+
+    const tag = node.tagName.toLowerCase();
+    if (!allowedTags.has(tag)) {
+      const text = document.createTextNode(node.textContent || '');
+      node.replaceWith(text);
+      return;
+    }
+
+    // Strip unsafe attributes and inline handlers.
+    Array.from(node.attributes).forEach(attr => {
+      const name = attr.name.toLowerCase();
+      const value = attr.value || '';
+      const isEventAttr = name.startsWith('on');
+      if (isEventAttr || !allowedAttrs.has(name)) {
+        node.removeAttribute(attr.name);
+        return;
+      }
+      if (name === 'href') {
+        const trimmed = value.trim().toLowerCase();
+        if (!(trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('mailto:'))) {
+          node.removeAttribute(attr.name);
+        }
+      }
+    });
+
+    if (tag === 'a' && node.getAttribute('href')) {
+      node.setAttribute('target', '_blank');
+      node.setAttribute('rel', 'noopener noreferrer');
+    }
+
+    Array.from(node.childNodes).forEach(sanitizeNode);
+  };
+
+  Array.from(template.content.childNodes).forEach(sanitizeNode);
+  return template.innerHTML;
+}
+
 function getSelectedModalEvent() {
   if (!state.calendarEventModalOpen) return null;
   return findCalendarEvent(state.calendarEventModalCalendarId, state.calendarEventModalEventId);
@@ -582,7 +649,7 @@ function renderMeetingNotesPage() {
           ${event.description ? `
             <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
               <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-2">Original Event Note</h3>
-              <div class="text-sm text-[var(--text-secondary)] leading-relaxed max-h-[260px] overflow-auto">${renderMultilineText(event.description)}</div>
+              <div class="text-sm text-[var(--text-secondary)] leading-relaxed max-h-[260px] overflow-auto">${renderSafeEventHtml(event.description)}</div>
             </div>
           ` : ''}
 
