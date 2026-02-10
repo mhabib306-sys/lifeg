@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T02:00:54.080Z",
+  "lastUpdated": "2026-02-10T02:05:43.989Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2199,7 +2199,7 @@
       "status": "anytime",
       "completed": false,
       "completedAt": null,
-      "categoryId": null,
+      "categoryId": "personal",
       "labels": [],
       "people": [],
       "deferDate": null,
@@ -2209,7 +2209,7 @@
       "parentId": null,
       "indent": 0,
       "createdAt": "2026-02-07T09:20:58.835Z",
-      "updatedAt": "2026-02-09T18:35:12.707Z",
+      "updatedAt": "2026-02-10T02:05:40.700Z",
       "order": 1000,
       "today": false,
       "flagged": false
