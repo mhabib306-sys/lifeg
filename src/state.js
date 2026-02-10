@@ -41,6 +41,7 @@ import {
   MEETING_NOTES_KEY,
   GCAL_OFFLINE_QUEUE_KEY,
   CONFLICT_NOTIFICATIONS_KEY,
+  GSHEET_CACHE_KEY,
 } from './constants.js';
 
 // ---------------------------------------------------------------------------
@@ -383,4 +384,9 @@ export const state = {
   }),
   achievements: safeJsonParse(ACHIEVEMENTS_KEY, { unlocked: {} }),
   dailyFocusDismissed: null,
+
+  // ---- Google Sheets ----
+  gsheetData: safeJsonParse(GSHEET_CACHE_KEY, null),
+  gsheetSyncing: false,
+  gsheetError: null,
 };

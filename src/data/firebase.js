@@ -109,7 +109,7 @@ export async function signInWithGoogleCalendar(options = {}) {
     client_id: GOOGLE_CLIENT_ID,
     redirect_uri: redirectUri,
     response_type: 'id_token token',
-    scope: 'openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly',
+    scope: 'openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly https://www.googleapis.com/auth/spreadsheets.readonly',
     nonce: nonce,
     include_granted_scopes: 'true',
     prompt: 'consent'
@@ -163,7 +163,7 @@ async function requestCalendarTokenWithGIS(mode = 'interactive') {
     try {
       const tokenClient = window.google.accounts.oauth2.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
-        scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly',
+        scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly https://www.googleapis.com/auth/spreadsheets.readonly',
         callback: (resp) => {
           clearTimeout(timeoutId);
           if (resp?.access_token) finalize(resp.access_token);

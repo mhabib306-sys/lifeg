@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.18.2 - Homebase';
+export const APP_VERSION = '4.18.3 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -108,6 +108,12 @@ export const GCAL_OFFLINE_QUEUE_KEY = 'nucleusGCalOfflineQueue';
 export const GCONTACTS_SYNC_TOKEN_KEY = 'nucleusGoogleContactsSyncToken';
 export const GCONTACTS_LAST_SYNC_KEY = 'nucleusGoogleContactsLastSync';
 export const MEETING_NOTES_KEY = 'nucleusMeetingNotes';
+
+// Google Sheets integration
+export const GSHEET_SPREADSHEET_ID = '14TjFIFtzMPcHgxr1NAtdfrYNmgFRz53XpmYwPQpeA_U';
+export const GSHEET_TAB_GID = 1119187551;
+export const GSHEET_CACHE_KEY = 'nucleusGSheetYesterdayCache';
+export const GSHEET_LAST_SYNC_KEY = 'nucleusGSheetLastSync';
 export const CONFLICT_NOTIFICATIONS_KEY = 'nucleusConflictNotifications';
 export const APP_VERSION_SEEN_KEY = 'nucleusAppVersionSeen';
 
@@ -123,7 +129,8 @@ export const DEFAULT_HOME_WIDGETS = [
   { id: 'prayers', type: 'prayers', title: 'Prayers', size: 'half', order: 7, visible: true },
   { id: 'glucose', type: 'glucose', title: 'Glucose', size: 'half', order: 8, visible: true },
   { id: 'whoop', type: 'whoop', title: 'Whoop', size: 'half', order: 9, visible: true },
-  { id: 'habits', type: 'habits', title: 'Habits', size: 'half', order: 10, visible: true }
+  { id: 'habits', type: 'habits', title: 'Habits', size: 'half', order: 10, visible: true },
+  { id: 'gsheet-yesterday', type: 'gsheet-yesterday', title: 'Yesterday', size: 'half', order: 11, visible: true }
 ];
 
 // Default categories (Areas)

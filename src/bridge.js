@@ -57,6 +57,9 @@ import {
 import {
   syncGoogleContactsNow, initGoogleContactsSync
 } from './data/google-contacts-sync.js';
+import {
+  syncGSheetNow, initGSheetSync
+} from './data/google-sheets-sync.js';
 
 // -- Features --
 import { fetchWeather, detectUserLocation, initWeather, loadWeatherLocation, saveWeatherLocation } from './features/weather.js';
@@ -253,6 +256,7 @@ Object.assign(window, {
   syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
   initGCalSync, toggleCalendarSelection,
   syncGoogleContactsNow, initGoogleContactsSync,
+  syncGSheetNow, initGSheetSync,
   openCalendarEventActions, closeCalendarEventActions,
   openCalendarMeetingNotes, openCalendarMeetingNotesByEventKey, openCalendarMeetingWorkspaceByEventKey, closeCalendarMeetingNotes, setCalendarMeetingNotesScope,
   addDiscussionItemToMeeting,
@@ -402,6 +406,7 @@ const stateProxies = [
   'gcalEvents', 'gcalCalendarList', 'gcalSyncing', 'gcalTokenExpired', 'gcalOfflineQueue',
   'conflictNotifications', 'renderPerf', 'showCacheRefreshPrompt', 'cacheRefreshPromptMessage',
   'CATEGORY_WEIGHTS', 'xp', 'streak', 'achievements', 'dailyFocusDismissed',
+  'gsheetData', 'gsheetSyncing', 'gsheetError',
 ];
 
 stateProxies.forEach(prop => {

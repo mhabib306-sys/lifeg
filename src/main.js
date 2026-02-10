@@ -23,6 +23,7 @@ import { initWhoopSync } from './data/whoop-sync.js';
 import { initLibreSync } from './data/libre-sync.js';
 import { initGCalSync } from './data/google-calendar-sync.js';
 import { initGoogleContactsSync } from './data/google-contacts-sync.js';
+import { initGSheetSync } from './data/google-sheets-sync.js';
 import { applyStoredTheme, loadCloudData, debouncedSaveToGithub } from './data/github-sync.js';
 import { initAuth } from './data/firebase.js';
 import { render } from './ui/render.js';
@@ -122,6 +123,7 @@ function initApp() {
       initLibreSync();
       initGCalSync();
       initGoogleContactsSync();
+      initGSheetSync();
     })
     .catch(err => {
       console.warn('Cloud data load failed (will use local):', err.message);
@@ -129,6 +131,7 @@ function initApp() {
       initLibreSync();
       initGCalSync();
       initGoogleContactsSync();
+      initGSheetSync();
     });
 
   // Initialize weather

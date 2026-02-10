@@ -666,6 +666,74 @@ export function renderHomeWidget(widget, isEditing) {
       break;
     }
 
+    case 'gsheet-yesterday': {
+      const connected = typeof window.isGCalConnected === 'function' ? window.isGCalConnected() : false;
+      const sheetData = state.gsheetData;
+      const syncing = state.gsheetSyncing;
+      const sheetError = state.gsheetError;
+
+      if (!connected) {
+        content = `
+          <div class="py-6 text-center">
+            <p class="text-sm text-[var(--text-muted)] mb-2">Google Calendar not connected</p>
+            <button onclick="switchTab('settings')" class="text-xs text-[var(--accent)] hover:underline font-medium">Connect in Settings &rarr;</button>
+          </div>
+        `;
+        break;
+      }
+
+      if (syncing && !sheetData) {
+        content = `<div class="py-6 text-center text-[var(--text-muted)] text-sm">Loading sheet data...</div>`;
+        break;
+      }
+
+      if (sheetError && !sheetData) {
+        content = `
+          <div class="py-6 text-center">
+            <p class="text-sm text-red-500 mb-2">${sheetError.replace(/</g, '&lt;')}</p>
+            <button onclick="syncGSheetNow()" class="text-xs text-[var(--accent)] hover:underline font-medium">Retry</button>
+          </div>
+        `;
+        break;
+      }
+
+      if (!sheetData || !sheetData.rows || sheetData.rows.length === 0) {
+        content = `
+          <div class="py-6 text-center">
+            <p class="text-sm text-[var(--text-muted)] mb-2">No data yet</p>
+            <button onclick="syncGSheetNow()" class="text-xs text-[var(--accent)] hover:underline font-medium">Sync Now</button>
+          </div>
+        `;
+        break;
+      }
+
+      const filteredRows = sheetData.rows.filter(r => r.value);
+      const lastSyncStr = sheetData.lastSync
+        ? new Date(sheetData.lastSync).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+        : '';
+
+      content = `
+        <div class="max-h-[300px] overflow-y-auto space-y-0.5">
+          ${filteredRows.length === 0
+            ? '<div class="py-4 text-center text-[var(--text-muted)] text-sm">All values empty</div>'
+            : filteredRows.map(r => `
+              <div class="flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-[var(--bg-secondary)] transition">
+                <span class="text-[13px] text-[var(--text-secondary)] truncate mr-2">${r.label.replace(/</g, '&lt;')}</span>
+                <span class="text-[13px] font-medium text-[var(--text-primary)] flex-shrink-0">${r.value.replace(/</g, '&lt;')}</span>
+              </div>
+            `).join('')}
+        </div>
+        <div class="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border-light)]">
+          <span class="text-[10px] text-[var(--text-muted)]">${lastSyncStr ? `Synced ${lastSyncStr}` : ''}</span>
+          <button onclick="syncGSheetNow()" class="inline-flex items-center gap-1 text-[10px] text-[var(--accent)] hover:underline font-medium ${syncing ? 'opacity-50 pointer-events-none' : ''}" ${syncing ? 'disabled' : ''}>
+            <svg class="w-3 h-3 ${syncing ? 'animate-spin' : ''}" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+            ${syncing ? 'Syncing...' : 'Refresh'}
+          </button>
+        </div>
+      `;
+      break;
+    }
+
     default:
       content = '<div class="py-4 text-center text-charcoal/30">Unknown widget type</div>';
   }
@@ -682,7 +750,8 @@ export function renderHomeWidget(widget, isEditing) {
     'whoop': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>',
     'habits': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>',
     'weather': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>',
-    'score': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3v-8zm4-4h2v12H7V9zm4-4h2v16h-2V5zm4 8h2v8h-2v-8zm4-4h2v12h-2V9z"/></svg>'
+    'score': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3v-8zm4-4h2v12H7V9zm4-4h2v16h-2V5zm4 8h2v8h-2v-8zm4-4h2v12h-2V9z"/></svg>',
+    'gsheet-yesterday': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h5v-5h-5v5zm-6-5h5V7H6v5zm6-5v3h5V7h-5zM6 14h5v3H6v-3z"/></svg>'
   };
 
   const widgetColors = {
@@ -696,7 +765,8 @@ export function renderHomeWidget(widget, isEditing) {
     'whoop': '#3B82F6',
     'habits': '#8B5CF6',
     'weather': '#F59E0B',
-    'score': '#22C55E'
+    'score': '#22C55E',
+    'gsheet-yesterday': '#34A853'
   };
 
   // For perspective widgets, resolve icon and color from the perspective definition
@@ -729,7 +799,7 @@ export function renderHomeWidget(widget, isEditing) {
         <h3 class="widget-title text-sm font-medium text-[var(--text-primary)]">${widget.title}</h3>
         ${editControls}
       </div>
-      <div class="widget-body ${widget.type === 'today-tasks' || widget.type === 'today-events' || widget.type === 'next-tasks' || widget.type === 'perspective' ? 'px-2 py-1' : 'p-4'}">
+      <div class="widget-body ${widget.type === 'today-tasks' || widget.type === 'today-events' || widget.type === 'next-tasks' || widget.type === 'perspective' || widget.type === 'gsheet-yesterday' ? 'px-2 py-1' : 'p-4'}">
         ${content}
       </div>
     </div>
