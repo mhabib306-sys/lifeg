@@ -517,7 +517,7 @@ function renderMeetingNotesPage() {
     <div class="calendar-meeting-notes-page bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
       <div class="calendar-meeting-notes-header px-5 py-4 border-b border-[var(--border-light)] flex flex-wrap items-center justify-between gap-3">
         <div class="min-w-0">
-          <div class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Meeting Workspace</div>
+          <div class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Meeting Notes</div>
           <h2 class="text-lg font-semibold text-[var(--text-primary)] truncate">${escapeHtml(event.summary || 'Untitled Event')}</h2>
           <p class="text-sm text-[var(--text-muted)]">${escapeHtml(eventDate)}${eventTime ? ` • ${escapeHtml(eventTime)}` : ''} • ${openItems.length} open</p>
           ${event.recurringEventId ? `
@@ -721,7 +721,7 @@ function renderEventActionsModal(event) {
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
             </span>
             <span class="calendar-event-action-text">
-              <span class="calendar-event-action-title">Create Meeting Workspace</span>
+              <span class="calendar-event-action-title">Create Meeting Notes</span>
               <span class="calendar-event-action-sub">Start linked notes/tasks for this event</span>
             </span>
           </button>

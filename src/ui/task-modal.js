@@ -1339,7 +1339,7 @@ export function renderTaskModalHtml() {
               onclick="closeTaskModal(); openCalendarMeetingWorkspaceByEventKey('${String(editingTask.meetingEventKey).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}')"
               class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition">
               <svg class="w-4 h-4 text-coral" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 15H5V10h14v9zM7 12h5v5H7z"/></svg>
-              Back To Meeting Workspace
+              Back To Meeting Notes
             </button>
           </div>
         ` : ''}
