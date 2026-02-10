@@ -325,22 +325,46 @@ export function renderHomeWidget(widget, isEditing) {
     case 'glucose': {
       const todayDataG = state.allData[today] || JSON.parse(JSON.stringify(defaultDayData));
       const glucoseData = todayDataG.glucose || {};
+      const libreData = todayDataG.libre || {};
+      const libreConnected = typeof window.isLibreConnected === 'function' && window.isLibreConnected();
+      const hasLiveGlucose = libreConnected && libreData.currentGlucose;
+
+      // Color coding for current glucose: green (70-140), yellow (141-180), red (>180 or <70)
+      let glucoseColor = 'text-green-600';
+      let glucoseBg = 'bg-green-50';
+      if (hasLiveGlucose) {
+        const val = Number(libreData.currentGlucose);
+        if (val > 180 || val < 70) { glucoseColor = 'text-red-600'; glucoseBg = 'bg-red-50'; }
+        else if (val > 140) { glucoseColor = 'text-amber-600'; glucoseBg = 'bg-amber-50'; }
+      }
 
       content = `
+        ${hasLiveGlucose ? `
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-2xl font-bold ${glucoseColor}">${libreData.currentGlucose}</span>
+              <span class="text-lg ${glucoseColor}">${libreData.trend || '→'}</span>
+              <span class="text-xs text-[var(--text-muted)]">mg/dL</span>
+            </div>
+            <span class="inline-flex items-center gap-1 text-[10px] text-green-600 ${glucoseBg} px-1.5 py-0.5 rounded-full">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Live
+            </span>
+          </div>
+        ` : ''}
         <div class="grid grid-cols-3 gap-3">
           <div class="text-center">
             <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Avg</label>
             <input type="number" value="${glucoseData.avg || ''}" placeholder="--"
               autocomplete="off"
-              onchange="updateDailyField('glucose', 'avg', this.value)"
-              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+              ${libreConnected && glucoseData.avg ? 'readonly class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] cursor-default"' : `onchange="updateDailyField('glucose', 'avg', this.value)"
+              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]"`}>
           </div>
           <div class="text-center">
             <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">TIR %</label>
             <input type="number" value="${glucoseData.tir || ''}" placeholder="--"
               autocomplete="off"
-              onchange="updateDailyField('glucose', 'tir', this.value)"
-              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+              ${libreConnected && glucoseData.tir ? 'readonly class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] cursor-default"' : `onchange="updateDailyField('glucose', 'tir', this.value)"
+              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]"`}>
           </div>
           <div class="text-center">
             <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Insulin</label>

@@ -20,6 +20,7 @@ import { initializeTaskOrders } from './features/task-filter.js';
 import { initializeNoteOrders } from './features/notes.js';
 import { initWeather } from './features/weather.js';
 import { initWhoopSync } from './data/whoop-sync.js';
+import { initLibreSync } from './data/libre-sync.js';
 import { initGCalSync } from './data/google-calendar-sync.js';
 import { initGoogleContactsSync } from './data/google-contacts-sync.js';
 import { applyStoredTheme, loadCloudData, debouncedSaveToGithub } from './data/github-sync.js';
@@ -59,12 +60,14 @@ function initApp() {
       ensureHomeWidgets();
       render();
       initWhoopSync();
+      initLibreSync();
       initGCalSync();
       initGoogleContactsSync();
     })
     .catch(err => {
       console.warn('Cloud data load failed (will use local):', err.message);
       initWhoopSync();
+      initLibreSync();
       initGCalSync();
       initGoogleContactsSync();
     });

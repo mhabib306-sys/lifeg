@@ -11,6 +11,9 @@ import { updateWeight, resetWeights, updateMaxScore, resetMaxScores } from '../f
 import {
   isWhoopConnected, getWhoopWorkerUrl, getWhoopApiKey, getWhoopLastSync
 } from '../data/whoop-sync.js';
+import {
+  isLibreConnected, getLibreWorkerUrl, getLibreApiKey, getLibreLastSync
+} from '../data/libre-sync.js';
 import { getAnthropicKey } from '../features/braindump.js';
 import {
   isGCalConnected, getSelectedCalendars, getTargetCalendar
@@ -90,6 +93,68 @@ function renderWhoopSettingsCard() {
             Connect WHOOP
           </button>
           <button onclick="window.checkWhoopStatus()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
+            Check Status
+          </button>
+          <span class="flex items-center text-xs text-charcoal/50">
+            <span class="w-2 h-2 rounded-full bg-charcoal/30 mr-2"></span> Not connected
+          </span>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================================
+// renderLibreSettingsCard — Freestyle Libre CGM integration
+// ============================================================================
+function renderLibreSettingsCard() {
+  const connected = isLibreConnected();
+  const workerUrl = getLibreWorkerUrl();
+  const apiKey = getLibreApiKey();
+  const lastSync = getLibreLastSync();
+  const hasConfig = workerUrl && apiKey;
+
+  const lastSyncText = lastSync
+    ? new Date(lastSync).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+    : 'Never';
+
+  return `
+    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
+      <h3 class="font-semibold text-charcoal mb-4">Freestyle Libre CGM <span class="text-coral">→</span></h3>
+      <p class="text-sm text-charcoal/50 mb-4">Auto-sync glucose readings from your Freestyle Libre sensor via LibreLinkUp. Auto-fills daily glucose average and TIR.</p>
+
+      <div class="space-y-3 mb-4">
+        <div>
+          <label class="text-sm text-charcoal/70 block mb-1">Worker URL</label>
+          <input type="url" value="${workerUrl}" placeholder="https://libre-proxy.xxx.workers.dev"
+            class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none"
+            onchange="window.setLibreWorkerUrl(this.value)">
+        </div>
+        <div>
+          <label class="text-sm text-charcoal/70 block mb-1">API Key</label>
+          <input type="password" value="${apiKey}" placeholder="Shared secret from worker setup"
+            class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none"
+            onchange="window.setLibreApiKey(this.value)">
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
+        ${connected ? `
+          <button onclick="window.syncLibreNow()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
+            Sync Now
+          </button>
+          <button onclick="window.disconnectLibre(); window.render()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition">
+            Disconnect
+          </button>
+          <span class="flex items-center text-xs text-charcoal/50">
+            <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+            Connected · Last sync: ${lastSyncText}
+          </span>
+        ` : `
+          <button onclick="window.connectLibre()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
+            Connect Libre
+          </button>
+          <button onclick="window.checkLibreStatus()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
             Check Status
           </button>
           <span class="flex items-center text-xs text-charcoal/50">
@@ -577,6 +642,8 @@ export function renderSettingsTab() {
       </div>
 
       ${renderWhoopSettingsCard()}
+
+      ${renderLibreSettingsCard()}
 
       ${renderGCalSettingsCard()}
 

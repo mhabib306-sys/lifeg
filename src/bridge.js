@@ -41,6 +41,12 @@ import {
 } from './data/whoop-sync.js';
 
 import {
+  getLibreWorkerUrl, setLibreWorkerUrl, getLibreApiKey, setLibreApiKey,
+  getLibreLastSync, isLibreConnected, fetchLibreData, syncLibreNow,
+  checkAndSyncLibre, connectLibre, disconnectLibre, checkLibreStatus, initLibreSync
+} from './data/libre-sync.js';
+
+import {
   isGCalConnected, getSelectedCalendars, setSelectedCalendars,
   getTargetCalendar, setTargetCalendar, fetchCalendarList,
   getGCalEventsForDate, pushTaskToGCalIfConnected, deleteGCalEventIfConnected,
@@ -226,6 +232,11 @@ Object.assign(window, {
   getWhoopWorkerUrl, setWhoopWorkerUrl, getWhoopApiKey, setWhoopApiKey,
   getWhoopLastSync, isWhoopConnected, fetchWhoopData, syncWhoopNow,
   checkAndSyncWhoop, connectWhoop, disconnectWhoop, checkWhoopStatus, initWhoopSync,
+
+  // Libre CGM Sync
+  getLibreWorkerUrl, setLibreWorkerUrl, getLibreApiKey, setLibreApiKey,
+  getLibreLastSync, isLibreConnected, fetchLibreData, syncLibreNow,
+  checkAndSyncLibre, connectLibre, disconnectLibre, checkLibreStatus, initLibreSync,
 
   // Google Calendar Sync
   isGCalConnected, getSelectedCalendars, setSelectedCalendars,

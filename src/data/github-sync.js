@@ -141,7 +141,7 @@ export function updateSyncStatus(status, message = '') {
  * devices without overwriting local changes.
  */
 function mergeCloudAllData(cloudAllData) {
-  const categories = ['prayers', 'glucose', 'whoop', 'family', 'habits'];
+  const categories = ['prayers', 'glucose', 'whoop', 'libre', 'family', 'habits'];
 
   function isEmptyVal(v) {
     return v === '' || v === null || v === undefined;

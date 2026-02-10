@@ -11,6 +11,7 @@ import { calculateScores } from '../features/scoring.js';
 import { getTodayData } from '../data/storage.js';
 import { getAccentColor } from '../data/github-sync.js';
 import { isWhoopConnected, getWhoopLastSync } from '../data/whoop-sync.js';
+import { isLibreConnected, getLibreLastSync } from '../data/libre-sync.js';
 import {
   createPrayerInput,
   createToggle,
@@ -65,10 +66,46 @@ export function renderTrackingTab() {
   `;
 
   const insulinThreshold = (state.WEIGHTS.glucose && state.WEIGHTS.glucose.insulinThreshold) || 40;
+  const libreSynced = isLibreConnected() && getLibreLastSync();
+  const libreData = data.libre || {};
+  const hasLiveGlucose = libreSynced && libreData.currentGlucose;
+
+  // Color coding for live glucose
+  let liveGlucoseColor = 'text-green-600';
+  if (hasLiveGlucose) {
+    const val = Number(libreData.currentGlucose);
+    if (val > 180 || val < 70) liveGlucoseColor = 'text-red-600';
+    else if (val > 140) liveGlucoseColor = 'text-amber-600';
+  }
+
   const glucoseContent = `
+    ${hasLiveGlucose ? `
+      <div class="flex items-center justify-between mb-3 pb-3 border-b border-softborder">
+        <div class="flex items-center gap-2">
+          <span class="text-xl font-bold ${liveGlucoseColor}">${libreData.currentGlucose}</span>
+          <span class="text-base ${liveGlucoseColor}">${libreData.trend || '→'}</span>
+          <span class="text-xs text-charcoal/50">mg/dL now</span>
+        </div>
+        <span class="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Libre
+        </span>
+      </div>
+    ` : ''}
     <div class="flex gap-3">
-      ${createNumberInput('Avg Glucose', data.glucose.avg, 'glucose', 'avg', '105', 'mg/dL', '105=10pts')}
-      ${createNumberInput('TIR', data.glucose.tir, 'glucose', 'tir', '70+', '%', '0.1pts/%')}
+      ${libreSynced && data.glucose.avg
+        ? `<div class="flex-1 text-center">
+            <label class="block text-xs font-medium text-charcoal/60 mb-1">Avg Glucose</label>
+            <div class="px-3 py-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-sm font-medium text-[var(--text-secondary)]">${data.glucose.avg} <span class="text-xs text-charcoal/40">mg/dL</span></div>
+            <div class="text-[10px] text-green-600 mt-1">Auto-synced</div>
+          </div>`
+        : createNumberInput('Avg Glucose', data.glucose.avg, 'glucose', 'avg', '105', 'mg/dL', '105=10pts')}
+      ${libreSynced && data.glucose.tir
+        ? `<div class="flex-1 text-center">
+            <label class="block text-xs font-medium text-charcoal/60 mb-1">TIR</label>
+            <div class="px-3 py-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-sm font-medium text-[var(--text-secondary)]">${data.glucose.tir} <span class="text-xs text-charcoal/40">%</span></div>
+            <div class="text-[10px] text-green-600 mt-1">Auto-synced</div>
+          </div>`
+        : createNumberInput('TIR', data.glucose.tir, 'glucose', 'tir', '70+', '%', '0.1pts/%')}
       ${createNumberInput('Insulin', data.glucose.insulin, 'glucose', 'insulin', '≤' + insulinThreshold, 'units', '≤' + insulinThreshold + '=+5')}
     </div>
   `;
@@ -166,7 +203,10 @@ export function renderTrackingTab() {
     </div>
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
       ${createCard('Prayers', '🕌', '#4A90A4', prayersContent, prayerHelp)}
-      ${createCard('Glucose (Libre)', '💉', '#6B8E5A', glucoseContent)}
+      ${createCard('Glucose (Libre)', '💉', '#6B8E5A', glucoseContent, libreSynced
+        ? `<span class="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Auto-synced</span>`
+        : '')}
       ${createCard('Whoop Age Metrics', '⏱️', '#7C6B8E', whoopContent, whoopHelp)}
       ${createCard('Family Check-ins', '👨‍👩‍👧‍👦', '#C4943D', familyContent)}
       ${createCard('Habits', '✨', '#6B7280', habitsContent)}
