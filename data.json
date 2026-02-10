@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T13:26:00.802Z",
+  "lastUpdated": "2026-02-10T13:26:34.191Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3212,12 +3212,16 @@
       "id": "person_1769977441169",
       "name": "Seif Ghallab",
       "color": "#6b7280",
-      "email": ""
+      "email": "seifag@outlook.com",
+      "googleContactId": "people/c2352969596018857057",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
     },
     {
       "id": "person_1769988307264",
       "name": "Mostafa Amin",
-      "email": ""
+      "email": "m@breadfast.com",
+      "googleContactId": "people/c3811983489892675898",
+      "updatedAt": "2026-02-10T13:26:31.341Z"
     },
     {
       "id": "person_1769988593103",
@@ -3242,12 +3246,16 @@
     {
       "id": "person-1770490296950",
       "name": "Nancy",
-      "email": ""
+      "email": "nancyfawzy_91@hotmail.com",
+      "googleContactId": "people/c2369068443619026976",
+      "updatedAt": "2026-02-10T13:26:31.351Z"
     },
     {
       "id": "person-1770510421604",
       "name": "Ali Refaai",
-      "email": "ali.refaai@breadfast.com"
+      "email": "ali.refaai@breadfast.com",
+      "googleContactId": "people/c8003857861184180042",
+      "updatedAt": "2026-02-10T13:26:31.351Z"
     },
     {
       "id": "person_1770576686684",
@@ -3265,6 +3273,5136 @@
       "id": "person_1770695842533",
       "name": "Ahmad Joehnny",
       "email": "ahmad.joehnny@breadfast.com"
+    },
+    {
+      "id": "person_1770729991328_wxej8",
+      "name": "Jailan Badran",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c7434137989292803492",
+      "createdAt": "2026-02-10T13:26:31.328Z",
+      "updatedAt": "2026-02-10T13:26:31.328Z"
+    },
+    {
+      "id": "person_1770729991328_pfjje",
+      "name": "Moshira Madkour",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c1066641306988840407",
+      "createdAt": "2026-02-10T13:26:31.328Z",
+      "updatedAt": "2026-02-10T13:26:31.328Z"
+    },
+    {
+      "id": "person_1770729991328_xv0pi",
+      "name": "Michael MAADI",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c4017197514722508607",
+      "createdAt": "2026-02-10T13:26:31.328Z",
+      "updatedAt": "2026-02-10T13:26:31.328Z"
+    },
+    {
+      "id": "person_1770729991328_4gwv3",
+      "name": "فاطمة عبد المعز",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c4330478633464179831",
+      "createdAt": "2026-02-10T13:26:31.328Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991328_7mwh0",
+      "name": "Melanie Le Roy MAADI",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c8095499033003560019",
+      "createdAt": "2026-02-10T13:26:31.328Z",
+      "updatedAt": "2026-02-10T13:26:31.328Z"
+    },
+    {
+      "id": "person_1770729991328_w9gpq",
+      "name": "Yara Hassan",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c4429239679778054234",
+      "createdAt": "2026-02-10T13:26:31.328Z",
+      "updatedAt": "2026-02-10T13:26:31.328Z"
+    },
+    {
+      "id": "person_1770729991328_irais",
+      "name": "ليلى عبد المنعم",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c7290865767982557262",
+      "createdAt": "2026-02-10T13:26:31.328Z",
+      "updatedAt": "2026-02-10T13:26:31.328Z"
+    },
+    {
+      "id": "person_1770729991328_4lrfe",
+      "name": "المستشار محمود عبد الرحيم",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c1237350198155664964",
+      "createdAt": "2026-02-10T13:26:31.328Z",
+      "updatedAt": "2026-02-10T13:26:31.328Z"
+    },
+    {
+      "id": "person_1770729991328_wv7c8",
+      "name": "Rania Mhany",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c3834280142523506912",
+      "createdAt": "2026-02-10T13:26:31.328Z",
+      "updatedAt": "2026-02-10T13:26:31.328Z"
+    },
+    {
+      "id": "person_1770729991328_brzv6",
+      "name": "Yasmine Khamis",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c4804811817212783861",
+      "createdAt": "2026-02-10T13:26:31.328Z",
+      "updatedAt": "2026-02-10T13:26:31.328Z"
+    },
+    {
+      "id": "person_1770729991329_h6sq1",
+      "name": "Nadeem HELIOPOLIS",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c1416379890379518211",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_16zd7",
+      "name": "Hoda El Guindy",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c2118971860040241551",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_letkc",
+      "name": "Rady Ibrahim",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c817576634556516662",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_ko1fd",
+      "name": "Hedaya Allam",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c7689348188669147966",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_w3sck",
+      "name": "Hanan Mostafa",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c123392666813068063",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_cdpbv",
+      "name": "Tamer Ramadan",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c3582285628092416514",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_j28xg",
+      "name": "Nour Mahmoud",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c5820050697740454939",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_lz686",
+      "name": "Eman Rashed",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c7366327544518730207",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_hvmky",
+      "name": "Rania Taher",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c5462178219340048878",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_msxhw",
+      "name": "Saad Sallam",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c6644293149174842803",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_8k5zo",
+      "name": "Amr Hanafi",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c8943837221633373474",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_jhicp",
+      "name": "Taha Ashour",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c1229015172001908012",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_e83kz",
+      "name": "Samia Amer Nasr City",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6587316622032389531",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_vmzm8",
+      "name": "Fadi Mahmoud Gad",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c5668717033239232401",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_2pc76",
+      "name": "Amr Selim BF",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c104543470600305160",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_3l5tg",
+      "name": "Hussein El Baz",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6150416597124752674",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_ib5cd",
+      "name": "Nermine Saad",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c3493786151936793157",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_vaklw",
+      "name": "Enas Shiha",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c8835962082769981242",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_zf3u8",
+      "name": "Maya Sabry HELIOPOLIS",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c7910107798231199544",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_bwamq",
+      "name": "Nermeen Serry",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c7421263599295264177",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_fdhpc",
+      "name": "نانسي محارب",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c2516577828183846585",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_t47xn",
+      "name": "Walaa Ibrahim",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c7331133515093282441",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_yi5eo",
+      "name": "Nagwa Said MAADI",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c4858162084212025534",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_mwlh7",
+      "name": "Mohamed Gendia",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c8997713428825482062",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_t0ij6",
+      "name": "Mohamed Abd El Latif",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c7407948968791334992",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_3194v",
+      "name": "Hatem Ghazi",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c3379411668880082798",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_fc37h",
+      "name": "Ahmed Hennawy",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c8716890451751762652",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_8kibk",
+      "name": "Dalia Elghannam",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c498858377227925227",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_vbv76",
+      "name": "Howayda Fayyad",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c5157465699927006180",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_mgehe",
+      "name": "Dina Al Sonbaty MAADI",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c3735206508513963710",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_z73bx",
+      "name": "شريف البشبيشي",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c5257995841213604098",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_0he9v",
+      "name": "Amgad Niazy",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c7458462789963289667",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_vvjh6",
+      "name": "Dr. Hesham",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c6386954713937914181",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_79vkc",
+      "name": "Hayat El Kholy",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c7704028715472097390",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_4smfr",
+      "name": "Hadi Gohar",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c4648092450671981414",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_p36hu",
+      "name": "الاء ابراهيم",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c887443346435749219",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_q65ud",
+      "name": "Mona Farouq Nasr City",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c8538641900196128036",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_sg4jl",
+      "name": "Dr. Safi",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c6512640371316559794",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_bd9xt",
+      "name": "Ahmed Al Zeeny",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c3561002611343804623",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_zgszm",
+      "name": "Aya Diaa",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c5546993805416513361",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_bcara",
+      "name": "Nermeen Soryal HELIOPOLIS",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c4377299927302729430",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_vmix4",
+      "name": "Waleed Youssef NASR CITY",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c5815760944534823354",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_3jsqb",
+      "name": "Malak Kamel",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c1173564839975875455",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_ekig2",
+      "name": "Miada Essam",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c2241953083853044095",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_arrgn",
+      "name": "Rasha Shokry",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c3829523440590955294",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_85tqw",
+      "name": "رشا حسن",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c4793972382739980705",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_mlswq",
+      "name": "Amira Amer",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c3401676059947272575",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_mldxs",
+      "name": "Tracy Connor",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c137058707343126172",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_t7g2e",
+      "name": "Nibal El Tantawy",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6866291792457368893",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_7czsy",
+      "name": "Nabil Seyam",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c561336559953592923",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_bn4da",
+      "name": "Mahmoud Hashem",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c3760442052676237005",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_majck",
+      "name": "Dina El Nahas",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c7102986145209747927",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_3rnvg",
+      "name": "Ihab Abdelrazik (Rawya)",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c714593907920910912",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_ttb75",
+      "name": "Yasmine Tawfik",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c3207413909592606807",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_9rmr0",
+      "name": "Abbas Morsi",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c8773872416373094044",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_ltqld",
+      "name": "Rola Khedr",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c388166568800553842",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_3ck0l",
+      "name": "Mazen Helmy MAADI",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c5176304122377841539",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_cq085",
+      "name": "Reem Alfutaih MAADI",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c2097361620408224533",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.329Z"
+    },
+    {
+      "id": "person_1770729991329_4tfly",
+      "name": "Ahmed Alkhateeb NASR CITY",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c6625138153345385845",
+      "createdAt": "2026-02-10T13:26:31.329Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_5egm0",
+      "name": "Dr. Hanafi Hassan",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c7950393983839962177",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_wgkir",
+      "name": "Hazem El Ammawy",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c7000548653960213997",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_wmnm1",
+      "name": "Marwa El Assy",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c3205876077214287044",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_9h5to",
+      "name": "Soha Soliman",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c6194186722680342096",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_w40ji",
+      "name": "Nagwa Said",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c3379379838975964587",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_7jr08",
+      "name": "Nour ElDorry",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c314661815520461170",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_5jm5b",
+      "name": "Mohamed El Samman",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c4006282205479305706",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_k97z2",
+      "name": "Noura Alkholy",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c8665635686493886017",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_oq88b",
+      "name": "Ahmed Tohamy",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c2420608553468997486",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_avjuz",
+      "name": "Yasmine Raouf",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c4097612228202239612",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_vcc4q",
+      "name": "Osama Rafiq",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c4540398299607762684",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_fc0nl",
+      "name": "Rana Naser Al Ali",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c125625648267295192",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_vnfll",
+      "name": "Hanan Khattab",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c5061499816198723516",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_m7nwa",
+      "name": "Anon. Heliopolis",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c3618772507024519885",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_agf16",
+      "name": "عمرو العتر",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c4640663531581159320",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_v32z9",
+      "name": "Ahmed Kamal",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c2774639842917613918",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_kv058",
+      "name": "Inas Sobhi Wahba",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c8502828805013909120",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_nrdu8",
+      "name": "Ehab El Sherif",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c2450402316502481431",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_evere",
+      "name": "Dr. Kamel Madinaty",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c683761838864309758",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_a9edb",
+      "name": "Rania Ghobashi",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c8204272150670372157",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_wgltg",
+      "name": "Nour el rouby",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c571596583917624411",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_96qt5",
+      "name": "Hmd Omar NASR CITY",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c4505776282676287211",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_e245r",
+      "name": "Nihal Ahmed",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c3960138732453708221",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_dda2a",
+      "name": "Abdellatif",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c5495599543808457749",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_47zo5",
+      "name": "Mohamed Bassiouni",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6892600870099919248",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_ds9nu",
+      "name": "Mr. Hatem Soliman",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c758378204816691930",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_qxtd7",
+      "name": "Salwa Salem NASR CITY",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c509660563514094383",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_axvyk",
+      "name": "Mezzanine",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c8600658305232982117",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_zggtj",
+      "name": "New Concept Printing",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c6070224356477420058",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_zrvc7",
+      "name": "Walid Hamdy",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c8221793970111901807",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_untu0",
+      "name": "Taha Mostafa",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c778698792392361097",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_nvyur",
+      "name": "Amr Ghouzlan",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c6355907411209560037",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_a754q",
+      "name": "Lamia Hassanin",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c7879077774132926877",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_yod0s",
+      "name": "Samir Yusuf",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c7462026253479980336",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_q6jso",
+      "name": "Ahmed Fahim",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c4242674503838827832",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_28qlw",
+      "name": "Hesham El Beih",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c1578218688337036454",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_5yqus",
+      "name": "Karam Ali",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c6800577882311280647",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_0odxv",
+      "name": "طارق صبري",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c512691199774692731",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_t0ame",
+      "name": "Mohamed Shohaib",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c4861988869998374080",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_ovkfg",
+      "name": "Nabil Osama (Cafe Etoile, Fuggs)",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c8249966007050321374",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_xjntu",
+      "name": "Rawya Al Shawarby",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c1715486463864374973",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_1197z",
+      "name": "Hassan Bakr",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c3820390909804765949",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_r71sd",
+      "name": "Asmaa Nabil",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c7550581276397155632",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_i9yds",
+      "name": "Sahar Jadayel",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c4086455861663981485",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_m3o6g",
+      "name": "Dalia Mansour",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c8592892510427668429",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_l81xd",
+      "name": "Ismail Abdelaty",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c5920403652226025098",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_oz77j",
+      "name": "Enas Khalil",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c1662054317587257052",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_d5783",
+      "name": "Ahmed Fayed NC",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c8054127863524409474",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_6c61l",
+      "name": "Yasmine HELIOPOLIS",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c2204668532823506528",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_jbbpc",
+      "name": "Samia ROXY",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c4176824363804923674",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_y9vqz",
+      "name": "العقيد إيهاب جلال",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c6894518175799408952",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_a33fl",
+      "name": "Faten Mohamed",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6072755994875861000",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_3ifq7",
+      "name": "Ayman Gamal",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c7452002297980910597",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991330_u2he5",
+      "name": "Islam Shaban HELIOPOLIS",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c3802089860894634437",
+      "createdAt": "2026-02-10T13:26:31.330Z",
+      "updatedAt": "2026-02-10T13:26:31.330Z"
+    },
+    {
+      "id": "person_1770729991331_144hx",
+      "name": "Rehab Fayed",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c5986426246019143867",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_cw81l",
+      "name": "Amgad Rady",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c902272345860232911",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_tcfgl",
+      "name": "Hossam Mansour",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c3293802274123429972",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_aegas",
+      "name": "Yasmine Abbas MAADI",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c8882379209615838789",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_4c31z",
+      "name": "Adriana Diaz",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c1256376280442021635",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_3tubf",
+      "name": "Amera Shehata",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c5370923057674214552",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_806bx",
+      "name": "Ezz El Din Abu Ghanima",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c6710359010365903910",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_sdp0w",
+      "name": "Mohamed Kamal",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c7445114699434011614",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_yvc30",
+      "name": "Dina Saad",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c8699320762737296773",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_gmp44",
+      "name": "Mona Radwan",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c5178151381243400494",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_snpjt",
+      "name": "Dr. Heba",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c7470127019181833987",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_qyvm3",
+      "name": "Khaled Abdellatif",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c5116774136131933085",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_sm651",
+      "name": "Tawfik Adel",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c3321546837200200025",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_11cpp",
+      "name": "Mrs. Emad Iskandar",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c7157602480472763108",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_dnydc",
+      "name": "Nermine El Saadany",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c8881544639398331386",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_7jhqr",
+      "name": "فردوس كامل",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c5554572807740989123",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_b70yi",
+      "name": "Mohamed Hosny",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c2217074694075662462",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_hsvhv",
+      "name": "Sahar Hassan",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c7579152719516559012",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_3jquf",
+      "name": "Khaled Hegazy",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c1709985321523235786",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_19bju",
+      "name": "Sally AbouAuf",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c1415335251275055900",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_kueo3",
+      "name": "Mohamed Salah",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c2099649362623565356",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_gps8n",
+      "name": "Anne Hafez",
+      "email": "",
+      "color": "#4A90A4",
+      "googleContactId": "people/c6012487508485463577",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_v8xzw",
+      "name": "Melissa B. MAADI",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c5756130024420267059",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_so8oz",
+      "name": "Fatma Morsy",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c4049865905806195980",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_rv9p3",
+      "name": "Naglaa Ouf",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c77782839308871075",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_e9r6k",
+      "name": "Manal Hassan MAADI",
+      "email": "",
+      "color": "#6366F1",
+      "googleContactId": "people/c7962500566683373638",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_vh4u1",
+      "name": "Sara Magdy",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c3153652141863920749",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_ksfrx",
+      "name": "Ghada Shariha",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c3223568318942559550",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_ldxl5",
+      "name": "Yasmin Noaman",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c1198177622422594558",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_ysrcj",
+      "name": "Amr Medany",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c9174189275791372706",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_yezs0",
+      "name": "omar.eissa@breadfast.com",
+      "email": "omar.eissa@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c9059795798156273866",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_ph5uw",
+      "name": "basma.elgammal@breadfast.com",
+      "email": "basma.elgammal@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c8943184377963813518",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_ia1if",
+      "name": "o.elnaggar@breadfast.com",
+      "email": "o.elnaggar@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c8892993521125214049",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_6lnj6",
+      "name": "nic@ycombinator.com",
+      "email": "nic@ycombinator.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c8665686626970567098",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_s3s2i",
+      "name": "omar.omran@breadfast.com",
+      "email": "omar.omran@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c8403661849845993933",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_e7u8t",
+      "name": "t.tomoum@breadfast.com",
+      "email": "t.tomoum@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c8127467146666663146",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991331_12rw9",
+      "name": "camilo@laika.com.co",
+      "email": "camilo@laika.com.co",
+      "color": "#6366F1",
+      "googleContactId": "people/c8033493964453849117",
+      "createdAt": "2026-02-10T13:26:31.331Z",
+      "updatedAt": "2026-02-10T13:26:31.331Z"
+    },
+    {
+      "id": "person_1770729991332_f2b9k",
+      "name": "Yasmine Mansour",
+      "email": "yasmine.mansour@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c640669130544044218",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991332_0nfi6",
+      "name": "aya.khaled@breadfast.com",
+      "email": "aya.khaled@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c7771940785530313731",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_s16jh",
+      "name": "shady.najib@breadfast.com",
+      "email": "shady.najib@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c7625196078953496441",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_r1gvc",
+      "name": "mahmoud.albaradie@breadfast.com",
+      "email": "mahmoud.albaradie@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c7487311904854271492",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_o15ry",
+      "name": "s.medhat@breadfast.com",
+      "email": "s.medhat@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c7010249172663336168",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_itk1t",
+      "name": "data.science@breadfast.com",
+      "email": "data.science@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c6455052507153532761",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_wo675",
+      "name": "ahmed.youssef@breadfast.com",
+      "email": "ahmed.youssef@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c6230594191966746626",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_4y68z",
+      "name": "hassan.kahar@breadfast.com",
+      "email": "hassan.kahar@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c5753968676594395754",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_j2wb7",
+      "name": "m.alsharif@breadfast.com",
+      "email": "m.alsharif@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c5658182373966712858",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_5b3wt",
+      "name": "anu@ycombinator.com",
+      "email": "anu@ycombinator.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c5638592383909910093",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_hsobi",
+      "name": "Mostafa Elkordy",
+      "email": "",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c5203335388252173560",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_kyzv8",
+      "name": "Ahmed Abuzaid Commercial",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c4929729036322558015",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_l4612",
+      "name": "fady.abouelghit@breadfast.com",
+      "email": "fady.abouelghit@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c4692091089882389915",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_tbf51",
+      "name": "b.atif@breadfast.com",
+      "email": "b.atif@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c4480661873657222360",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_l2sz8",
+      "name": "m.kordy@breadfast.com",
+      "email": "m.kordy@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c3802835091423653117",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_w26at",
+      "name": "omar.hassan@breadfast.com",
+      "email": "omar.hassan@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c3541096236713103093",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_4yauo",
+      "name": "abdelrahman.assar@breadfast.com",
+      "email": "abdelrahman.assar@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c3200065473954598333",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_q10p0",
+      "name": "y.eletreby@breadfast.com",
+      "email": "y.eletreby@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c3182225588667591371",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_2lryj",
+      "name": "camilo@laika.pet",
+      "email": "camilo@laika.pet",
+      "color": "#C4943D",
+      "googleContactId": "people/c2926798267779734356",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_4z3p4",
+      "name": "Ahmed El Dakhakhny",
+      "email": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c2714170345681433642",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_1m5x8",
+      "name": "m.abdulmonem@breadfast.com",
+      "email": "m.abdulmonem@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c2409963215020526386",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_tlwn2",
+      "name": "product.management@breadfast.com",
+      "email": "product.management@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c237603960442704218",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_uprqf",
+      "name": "ali.eldaour@breadfast.com",
+      "email": "ali.eldaour@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c2077125379455641051",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_mbejf",
+      "name": "mostafa.emamm@adib.eg",
+      "email": "mostafa.emamm@adib.eg",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c1993052144041796064",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_h14t9",
+      "name": "maurizio@calii.com",
+      "email": "maurizio@calii.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c1923354726926256554",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_pha0u",
+      "name": "Ali El Daour",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c188622824212083165",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_iaie0",
+      "name": "mohamed.atta@breadfast.com",
+      "email": "mohamed.atta@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c1281570904358549491",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_pn381",
+      "name": "mohamed.elagroudy@maxab.io",
+      "email": "mohamed.elagroudy@maxab.io",
+      "color": "#6366F1",
+      "googleContactId": "people/c9122824638559927836",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_80sud",
+      "name": "c_e61pm26jmutfe0d0pp8od02tqc@group.calendar.google.com",
+      "email": "c_e61pm26jmutfe0d0pp8od02tqc@group.calendar.google.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c8975956887583531504",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_npp2g",
+      "name": "houssam.eljouzou@alfuttaim.com",
+      "email": "houssam.eljouzou@alfuttaim.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c8821289697185815925",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_5vhpg",
+      "name": "wessam.yehia@mdp-eg.com",
+      "email": "wessam.yehia@mdp-eg.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c8761905709862210453",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_gwnqb",
+      "name": "nehal.tawfik@adib.eg",
+      "email": "nehal.tawfik@adib.eg",
+      "color": "#E5533D",
+      "googleContactId": "people/c872272944172882361",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_cwswi",
+      "name": "halabi.o@hotmail.com",
+      "email": "halabi.o@hotmail.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c8655538370755423464",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_yxd8k",
+      "name": "mnaim@lifesnacks.me",
+      "email": "mnaim@lifesnacks.me",
+      "color": "#6366F1",
+      "googleContactId": "people/c861519254451014245",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_zed21",
+      "name": "m.hussein@breadfast.com",
+      "email": "m.hussein@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c8606039579262694172",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_63d8n",
+      "name": "districtmanagers@breadfast.com",
+      "email": "districtmanagers@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c8536259853390825118",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_oz4y6",
+      "name": "vijay@inai.io",
+      "email": "vijay@inai.io",
+      "color": "#4A90A4",
+      "googleContactId": "people/c8535975855028075217",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_wquev",
+      "name": "usama.zidan@doctormpharmacy.com",
+      "email": "usama.zidan@doctormpharmacy.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c844665049134031003",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_iomn7",
+      "name": "aya.ghaleb@etisalat.com",
+      "email": "aya.ghaleb@etisalat.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c8345302639586643934",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_2fq1y",
+      "name": "mahmoud.assem@breadfast.com",
+      "email": "mahmoud.assem@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c818396350464642681",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_guuic",
+      "name": "mohamed.refai@xceedcc.com",
+      "email": "mohamed.refai@xceedcc.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c8009714742831424946",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_i7ipz",
+      "name": "john.raouf@mdlz.com",
+      "email": "john.raouf@mdlz.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c800890239829634378",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_a573y",
+      "name": "master.data@breadfast.com",
+      "email": "master.data@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c7993476351915946848",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_ba6an",
+      "name": "y.elashkar@breadfast.com",
+      "email": "y.elashkar@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c7918290389600676009",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_vh1mu",
+      "name": "Tamer ElMenoufy",
+      "email": "tamer.elmenoufy@etisalat.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c7877203293600537203",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_dvrpk",
+      "name": "ayman.maged@etisalat.com",
+      "email": "ayman.maged@etisalat.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c7734770360423847763",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_3klcl",
+      "name": "musaab@mbm.com.sa",
+      "email": "musaab@mbm.com.sa",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c7727935721105447106",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991332_q3wl9",
+      "name": "sherif.mouneer@adib.eg",
+      "email": "sherif.mouneer@adib.eg",
+      "color": "#6366F1",
+      "googleContactId": "people/c7706157004928626530",
+      "createdAt": "2026-02-10T13:26:31.332Z",
+      "updatedAt": "2026-02-10T13:26:31.332Z"
+    },
+    {
+      "id": "person_1770729991333_11d70",
+      "name": "faridaomar94@hotmail.com",
+      "email": "faridaomar94@hotmail.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c7555876500794830531",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_uacqg",
+      "name": "amr.yousry@pharmacymarts.com",
+      "email": "amr.yousry@pharmacymarts.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c7528478425565692251",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_ugf54",
+      "name": "k.fayez@breadfast.com",
+      "email": "k.fayez@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c7442099510022025569",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_nuv4c",
+      "name": "mohamed.shalaby@redbull.com",
+      "email": "mohamed.shalaby@redbull.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c7426847847011799683",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_o2onp",
+      "name": "tawfik.khaled@bcg.com",
+      "email": "tawfik.khaled@bcg.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c7356873290736324460",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_0xvmt",
+      "name": "o.zomor@breadfast.com",
+      "email": "o.zomor@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c7261903688911209667",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_ghnpj",
+      "name": "karim.elsoda@breadfast.com",
+      "email": "karim.elsoda@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c7243784969976236219",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_xqaiy",
+      "name": "abdoallah.mohsen@breadfast.com",
+      "email": "abdoallah.mohsen@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c7157467270548275193",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_85a7z",
+      "name": "ahmed.moustafa@etisalat.com",
+      "email": "ahmed.moustafa@etisalat.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c7082061113958573881",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_1hslb",
+      "name": "ahmed_hamoda@live.com",
+      "email": "ahmed_hamoda@live.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c7034127790675112555",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_s5oy9",
+      "name": "i.abouomar@breadfast.com",
+      "email": "i.abouomar@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c7004374610825392979",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_n8wgu",
+      "name": "mostafa.elatrash@fam-calf.com",
+      "email": "mostafa.elatrash@fam-calf.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c6910002104068951056",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_y6rjq",
+      "name": "commercial.manager@doctormpharmacy.com",
+      "email": "commercial.manager@doctormpharmacy.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6875278691543447447",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_uxm68",
+      "name": "nouran.zienhome@breadfast.com",
+      "email": "nouran.zienhome@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c6873877192199650248",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_jv2he",
+      "name": "sana.alsaleh@live.com",
+      "email": "sana.alsaleh@live.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c682748611030051279",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_g8bdu",
+      "name": "mohamed.saed@abu-auf.com",
+      "email": "mohamed.saed@abu-auf.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c6757942950999524518",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_txspv",
+      "name": "adham.elsayed@mdlz.com",
+      "email": "adham.elsayed@mdlz.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c6757236512638130070",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_dxuv1",
+      "name": "toka.mohamed@mdp-eg.com",
+      "email": "toka.mohamed@mdp-eg.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c6734702352461051157",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_c5zll",
+      "name": "melshafie@bluworks.io",
+      "email": "melshafie@bluworks.io",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c6708219156782891540",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_q8s9e",
+      "name": "doha.abdelsadek@mdlz.com",
+      "email": "doha.abdelsadek@mdlz.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c6679722321495218047",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_ud78t",
+      "name": "k.mamdoh@breadfast.com",
+      "email": "k.mamdoh@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c6632115662818890144",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_sx5fk",
+      "name": "mohamed.heddaya@breadfast.com",
+      "email": "mohamed.heddaya@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c6628516667011497539",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_cvjma",
+      "name": "yousrahussein11@gmail.com",
+      "email": "yousrahussein11@gmail.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c6535068821615622189",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_6bekl",
+      "name": "omar.elzomor@breadfast.com",
+      "email": "omar.elzomor@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c650699917177913163",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_vng6v",
+      "name": "aly.taha@breadfast.com",
+      "email": "aly.taha@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c6266394623306037182",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_aacdl",
+      "name": "n.elsabaa@breadfast.com",
+      "email": "n.elsabaa@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c6032972374252207889",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_e2q1e",
+      "name": "m.seifrefaat@breadfast.com",
+      "email": "m.seifrefaat@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c5944011036624229785",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_hnnj0",
+      "name": "karan@ycombinator.com",
+      "email": "karan@ycombinator.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c5897917454094164757",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_rwb74",
+      "name": "mohamed.anwar@mdp-eg.com",
+      "email": "mohamed.anwar@mdp-eg.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c5853791610751535351",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_tk9wn",
+      "name": "eslamfathyfarghal@breadfast.com",
+      "email": "eslamfathyfarghal@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c5813972133615858506",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_xld3x",
+      "name": "m.hamrosh@breadfast.com",
+      "email": "m.hamrosh@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c5782612702611633051",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_7n5hv",
+      "name": "aymanauf@abu-auf.com",
+      "email": "aymanauf@abu-auf.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c5781771992783639218",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_53wg6",
+      "name": "Revenue Org",
+      "email": "",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c5721276289745064716",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_b3pst",
+      "name": "n.elgohary@breadfast.com",
+      "email": "n.elgohary@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c5709881782200794378",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_zh4zw",
+      "name": "s.elbassiouny@breadfast.com",
+      "email": "s.elbassiouny@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c5660337833427379558",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_lq2m0",
+      "name": "amr.eabdelfattah@etisalat.com",
+      "email": "amr.eabdelfattah@etisalat.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c5541078267388370046",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_kqoz0",
+      "name": "ahmed.haggagy@totalenergies.eg",
+      "email": "ahmed.haggagy@totalenergies.eg",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c5511708591752124579",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_vboi2",
+      "name": "piyala.nasser@etisalat.com",
+      "email": "piyala.nasser@etisalat.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c5440513979090096924",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_4afqy",
+      "name": "mohamed.abouamna@etisalat.com",
+      "email": "mohamed.abouamna@etisalat.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c5416615707307318405",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_cd1as",
+      "name": "yomna.hamzawy@breadfast.com",
+      "email": "yomna.hamzawy@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c53152230509439371",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_lux9b",
+      "name": "hana.magdy@breadfast.com",
+      "email": "hana.magdy@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c5307174391502721637",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_cpkzv",
+      "name": "moatasem.mohammad@breadfast.com",
+      "email": "moatasem.mohammad@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c517746453665486185",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_v6jh0",
+      "name": "seth@onfleet.com",
+      "email": "seth@onfleet.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c5042538325743066489",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991333_e0vwo",
+      "name": "mohamed@global.vc",
+      "email": "mohamed@global.vc",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c5028233883489291162",
+      "createdAt": "2026-02-10T13:26:31.333Z",
+      "updatedAt": "2026-02-10T13:26:31.333Z"
+    },
+    {
+      "id": "person_1770729991334_x6r1z",
+      "name": "m.mortgy@breadfast.com",
+      "email": "m.mortgy@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c4970114998147022956",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_awppk",
+      "name": "hisham.wagdy@juhayna.com",
+      "email": "hisham.wagdy@juhayna.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c4863270928472127910",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_d3cbk",
+      "name": "assem.bekhet@breadfast.com",
+      "email": "assem.bekhet@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c4820400057429816112",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_j1byg",
+      "name": "noha.sameh@etisalat.com",
+      "email": "noha.sameh@etisalat.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c4755551963296106791",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_ntrx8",
+      "name": "Executives",
+      "email": "execs@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c4717550676725773448",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_39lar",
+      "name": "aam2229@columbia.edu",
+      "email": "aam2229@columbia.edu",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c468480614583697014",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_ira2u",
+      "name": "y.mohamed@breadfast.com",
+      "email": "y.mohamed@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c4651103499702655843",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_jvgel",
+      "name": "m.elassal@breadfast.com",
+      "email": "m.elassal@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c4605318059574386116",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_218n4",
+      "name": "angelo.herrera@g.softwareone.com",
+      "email": "angelo.herrera@g.softwareone.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c4564552557921174771",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_akz7s",
+      "name": "ahmed.lasheen@etisalat.com",
+      "email": "ahmed.lasheen@etisalat.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c4460918793765106775",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_fv7cu",
+      "name": "team.finance@breadfast.com",
+      "email": "team.finance@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c4400108215868035391",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_9f6ec",
+      "name": "ahmed.nasr@juhayna.com",
+      "email": "ahmed.nasr@juhayna.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c4269461207755918938",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_mtm51",
+      "name": "yasmeen.nassar@unilever.com",
+      "email": "yasmeen.nassar@unilever.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c4244777227498026570",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_7xt6d",
+      "name": "david@thiswayupdesign.com",
+      "email": "david@thiswayupdesign.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c4187833015609598509",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_qgkb0",
+      "name": "josephine.boerman@prosus.com",
+      "email": "josephine.boerman@prosus.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c4121707699201806637",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_l27mr",
+      "name": "noha.morsy@breadfast.com",
+      "email": "noha.morsy@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c4067388098877071284",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_jy3tk",
+      "name": "farida.eid@etisalat.com",
+      "email": "farida.eid@etisalat.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c4064455965424170355",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_rjwd4",
+      "name": "bassma.khaled@breadfast.com",
+      "email": "bassma.khaled@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c403253687206016976",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_sapyb",
+      "name": "walid.rabiee@pharmacymarts.com",
+      "email": "walid.rabiee@pharmacymarts.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c4014423996620279240",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_p6v07",
+      "name": "mohammad.shaker@breadfast.com",
+      "email": "mohammad.shaker@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c3981006855472607099",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_g4i9o",
+      "name": "marwan.wael@mdp-eg.com",
+      "email": "marwan.wael@mdp-eg.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c395038840719418366",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_nak62",
+      "name": "serafettin@gowit.com",
+      "email": "serafettin@gowit.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c3946956114170548598",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_y2lhm",
+      "name": "commerce-global@endeavor.org",
+      "email": "commerce-global@endeavor.org",
+      "color": "#6366F1",
+      "googleContactId": "people/c3697245259591488635",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_zqdgs",
+      "name": "selection@endeavor.org",
+      "email": "selection@endeavor.org",
+      "color": "#6366F1",
+      "googleContactId": "people/c3586643484531946154",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_8mctj",
+      "name": "roxy@thiswayupdesign.com",
+      "email": "roxy@thiswayupdesign.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c3246086207471507360",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_xorya",
+      "name": "muhammed.saeed@breadfast.com",
+      "email": "muhammed.saeed@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c3236093111435459628",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_v5jrz",
+      "name": "sherif.eldamaty@redbull.com",
+      "email": "sherif.eldamaty@redbull.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c3191818151099812545",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_ofnt7",
+      "name": "dany.karam@alfuttaim.com",
+      "email": "dany.karam@alfuttaim.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c3186043236896554731",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_nds37",
+      "name": "kareem_nagy@mckinsey.com",
+      "email": "kareem_nagy@mckinsey.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c3164541709302057688",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_kmivy",
+      "name": "sondos.moussa@breadfast.com",
+      "email": "sondos.moussa@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c3127465947461652616",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_umd9d",
+      "name": "nour.jamil@chalhoub.com",
+      "email": "nour.jamil@chalhoub.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c3072029509587877531",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_5erc5",
+      "name": "Direct Reports",
+      "email": "",
+      "color": "#E5533D",
+      "googleContactId": "people/c2869995457155275394",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_qdqmd",
+      "name": "omar.abdelmoaty@breadfast.com",
+      "email": "omar.abdelmoaty@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c2846578676870494361",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_tehxu",
+      "name": "wael.walid@breadfast.com",
+      "email": "wael.walid@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c2764792801469068383",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_h63me",
+      "name": "nourhan.abdelhamid@adib.eg",
+      "email": "nourhan.abdelhamid@adib.eg",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c2709569389786838427",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_zyhf3",
+      "name": "mohamed.asharaf.ma29@gmail.com",
+      "email": "mohamed.asharaf.ma29@gmail.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c2651846324309356036",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_i0vof",
+      "name": "amira.ghali@breadfast.com",
+      "email": "amira.ghali@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c263083933346549800",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_knw8j",
+      "name": "sally.elzeiny@unilever.com",
+      "email": "sally.elzeiny@unilever.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c2590902696846365011",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_naio1",
+      "name": "wael.farag@fam-beef.com",
+      "email": "wael.farag@fam-beef.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c2531057548094515102",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_rljxf",
+      "name": "mohamed.elbakr@breadfast.com",
+      "email": "mohamed.elbakr@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c2276004881663107003",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991334_eivsf",
+      "name": "muhammad.charaf@breadfast.com",
+      "email": "muhammad.charaf@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c2201323313758023924",
+      "createdAt": "2026-02-10T13:26:31.334Z",
+      "updatedAt": "2026-02-10T13:26:31.334Z"
+    },
+    {
+      "id": "person_1770729991335_r8neh",
+      "name": "zizo@abwaab.me",
+      "email": "zizo@abwaab.me",
+      "color": "#6366F1",
+      "googleContactId": "people/c2171236973399247612",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_rtwd2",
+      "name": "nour.ibrahim@unilever.com",
+      "email": "nour.ibrahim@unilever.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c2137356377344440298",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_19rbc",
+      "name": "emad.victor@chalhoub.com",
+      "email": "emad.victor@chalhoub.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c2025806803766222404",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_detx7",
+      "name": "mohamed.khalaaf@breadfast.com",
+      "email": "mohamed.khalaaf@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c2012623068774703868",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_i7bu0",
+      "name": "hend.hassan@adib.eg",
+      "email": "hend.hassan@adib.eg",
+      "color": "#4A90A4",
+      "googleContactId": "people/c1975680025684073212",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_q34dc",
+      "name": "mohamed.omohamed@etisalat.com",
+      "email": "mohamed.omohamed@etisalat.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c1946572905723459632",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_rfnor",
+      "name": "Mariam Bazid",
+      "email": "m.bazid@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c1933068682368219324",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_6wlpe",
+      "name": "moemen.elmahmoudy@adib.eg",
+      "email": "moemen.elmahmoudy@adib.eg",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c18814151641012798",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_otvgj",
+      "name": "yehia.kamel@etisalat.com",
+      "email": "yehia.kamel@etisalat.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c1858026588535956036",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_d6zji",
+      "name": "adel.mohamed@xceedcc.com",
+      "email": "adel.mohamed@xceedcc.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c1743786082735795333",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_6no8q",
+      "name": "nader.alexan@breadfast.com",
+      "email": "nader.alexan@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c1718229253595205168",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_rcvng",
+      "name": "hussein.ebada@g.softwareone.com",
+      "email": "hussein.ebada@g.softwareone.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c1718041861938160258",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_ohpjn",
+      "name": "s.mattar@breadfast.com",
+      "email": "s.mattar@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c1682385363445467890",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_rqo6f",
+      "name": "himanshu.shrivastava@alfuttaim.com",
+      "email": "himanshu.shrivastava@alfuttaim.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c1540197181207874398",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_jnvto",
+      "name": "abdulaziz@setup.sa",
+      "email": "abdulaziz@setup.sa",
+      "color": "#C4943D",
+      "googleContactId": "people/c1519359681292799588",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_x3oex",
+      "name": "omar@sokna.com",
+      "email": "omar@sokna.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c1441190436900733579",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_0etz8",
+      "name": "mahmoud.omran@breadfast.com",
+      "email": "mahmoud.omran@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c1426236977752680634",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_07kx3",
+      "name": "mohamed.magdy@projomania.com",
+      "email": "mohamed.magdy@projomania.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c1411109024953669517",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_pr6lc",
+      "name": "tarek.omar@juhayna.com",
+      "email": "tarek.omar@juhayna.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c1407953233304078484",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_1yz2a",
+      "name": "amal@global.vc",
+      "email": "amal@global.vc",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c1332378726728141464",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_gckfc",
+      "name": "h.elattaar@breadfast.com",
+      "email": "h.elattaar@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c1269436292392891866",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_b8m2a",
+      "name": "passant.fouad@juhayna.com",
+      "email": "passant.fouad@juhayna.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c1172350208103247465",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_2r5qb",
+      "name": "tuqqa.ismaeil@breadfast.com",
+      "email": "tuqqa.ismaeil@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c125697507344281240",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_6ft5o",
+      "name": "ahmed.ayyash@breadfast.com",
+      "email": "ahmed.ayyash@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c1347952879474828209",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_jf5in",
+      "name": "mazhar@pharmacymarts.com",
+      "email": "mazhar@pharmacymarts.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c8790411313292515164",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_xfdtz",
+      "name": "calum@lazy.so",
+      "email": "calum@lazy.so",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c2499172483917205065",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_jmnoz",
+      "name": "m.tawfik@arabyads.com",
+      "email": "m.tawfik@arabyads.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c8977231470645437337",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_tfelp",
+      "name": "Mohamed Faqeer",
+      "email": "mohamed.faqeer@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c129701293035091824",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_oysnv",
+      "name": "Sara Elneklawi",
+      "email": "s.elneklawi@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c1863039702393810973",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_en8ou",
+      "name": "Rokaya Helmy",
+      "email": "rokaya.helmy@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c1898205958255408754",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_4hit9",
+      "name": "m.ashrafyoussef@breadfast.com",
+      "email": "m.ashrafyoussef@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c2045092592065917094",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991335_b633r",
+      "name": "yehia@breadfast.com",
+      "email": "yehia@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c4368019821532862463",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991335_nz8kw",
+      "name": "hossam.saleh@breadfast.com",
+      "email": "hossam.saleh@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c2424546954815822375",
+      "createdAt": "2026-02-10T13:26:31.335Z",
+      "updatedAt": "2026-02-10T13:26:31.335Z"
+    },
+    {
+      "id": "person_1770729991336_vszqh",
+      "name": "Sherif Zaatar",
+      "email": "zaatar@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c2686304769595825689",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_ywd4u",
+      "name": "y.eldarawy@breadfast.com",
+      "email": "y.eldarawy@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c2906619199365517004",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_b3c5b",
+      "name": "n.elkordy@breadfast.com",
+      "email": "n.elkordy@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c3107763328255528494",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_w5fu0",
+      "name": "Ahmed Abuzaid",
+      "email": "ahmed.abuzaid@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c3322073988731225152",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_glg6r",
+      "name": "mohamed.salem@breadfast.com",
+      "email": "mohamed.salem@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c3578911527542063251",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_ewg5y",
+      "name": "miriam.hany@breadfast.com",
+      "email": "miriam.hany@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c358766218381597376",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_qhwbt",
+      "name": "s.zaatar@breadfast.com",
+      "email": "s.zaatar@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c3717631953331105827",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_2uogc",
+      "name": "c.elchami@breadfast.com",
+      "email": "c.elchami@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c4056654513872197001",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_7dpfr",
+      "name": "yomna.zahran@breadfast.com",
+      "email": "yomna.zahran@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c4257648469216780955",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_sk9yz",
+      "name": "nour.ayman@breadfast.com",
+      "email": "nour.ayman@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c4288850188989960273",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_hmbf0",
+      "name": "bassem.sameh@breadfast.com",
+      "email": "bassem.sameh@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c4467801075111977927",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_gfd7g",
+      "name": "amr.ahmed@breadfast.com",
+      "email": "amr.ahmed@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c4553846572386092036",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_ij8m9",
+      "name": "mohammed.afify@breadfast.com",
+      "email": "mohammed.afify@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c4749762126162257212",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_5hqpi",
+      "name": "safaa.aly@breadfast.com",
+      "email": "safaa.aly@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c5294103392927625998",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_6xmn0",
+      "name": "mohamed.ashour@breadfast.com",
+      "email": "mohamed.ashour@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c5368032819568316696",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_aqqy5",
+      "name": "m.tarraf@breadfast.com",
+      "email": "m.tarraf@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c8387492754003993434",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_sqbwe",
+      "name": "m.george@breadfast.com",
+      "email": "m.george@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c5954829097218043689",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_xzlr3",
+      "name": "maha.albaghdady@breadfast.com",
+      "email": "maha.albaghdady@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c6606245077518987580",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_z63gg",
+      "name": "mohamed.miski@breadfast.com",
+      "email": "mohamed.miski@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c795299382188063817",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_grhts",
+      "name": "amira.wageeh@breadfast.com",
+      "email": "amira.wageeh@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c8472954071229502484",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_cfiyq",
+      "name": "noura.mohamed@breadfast.com",
+      "email": "noura.mohamed@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c87850820300936243",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_ucblt",
+      "name": "h.kamal@breadfast.com",
+      "email": "h.kamal@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c968531484973618838",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_q9wnu",
+      "name": "Dina Mahmoud Salah",
+      "email": "",
+      "color": "#C4943D",
+      "googleContactId": "people/c1532289914504872693",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_f9lru",
+      "name": "Nada Khalifa",
+      "email": "n.khalifa@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c8465371497595635263",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_t5jm8",
+      "name": "Noha Kamal",
+      "email": "n.fawzy@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c8489265272543750585",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_0qywi",
+      "name": "mostafa.thabet@unilever.com",
+      "email": "mostafa.thabet@unilever.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c7768579872706984802",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_c88du",
+      "name": "yehia.yehia@etisalat.com",
+      "email": "yehia.yehia@etisalat.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c5467467958994627574",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_44rrp",
+      "name": "nadineessamelwasly@gmail.com",
+      "email": "nadineessamelwasly@gmail.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c37743794798141283",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991336_7nnu7",
+      "name": "emrah@gowit.com",
+      "email": "emrah@gowit.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c2984165808873920237",
+      "createdAt": "2026-02-10T13:26:31.336Z",
+      "updatedAt": "2026-02-10T13:26:31.336Z"
+    },
+    {
+      "id": "person_1770729991337_pqmvr",
+      "name": "olio@oliofood.com",
+      "email": "olio@oliofood.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c3616079702177416314",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_987gc",
+      "name": "khaled.radwan@unilever.com",
+      "email": "khaled.radwan@unilever.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c4719070511091533964",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_m4l5t",
+      "name": "raaid@4dxventures.com",
+      "email": "raaid@4dxventures.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c162322855962457720",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_eg5r2",
+      "name": "haya.shash@endeavor.org",
+      "email": "haya.shash@endeavor.org",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c7253286333123924736",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_49wky",
+      "name": "Nour Eldaly",
+      "email": "nour.eldaly@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c7142358597987972121",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_7rbsw",
+      "name": "rizk@setup.sa",
+      "email": "rizk@setup.sa",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c4394412200193958182",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_9oju1",
+      "name": "anthony@4dxventures.com",
+      "email": "anthony@4dxventures.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c1089985049099126898",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_84qx7",
+      "name": "amina.sidky@unilever.com",
+      "email": "amina.sidky@unilever.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c616260784200877904",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_yjt21",
+      "name": "shousha@pharmacymarts.com",
+      "email": "shousha@pharmacymarts.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c1449559118324113783",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_3xygm",
+      "name": "nazir@setup.sa",
+      "email": "nazir@setup.sa",
+      "color": "#4A90A4",
+      "googleContactId": "people/c1552347220554394658",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_hdmcs",
+      "name": "nick@onfleet.com",
+      "email": "nick@onfleet.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6328538453683983609",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_tbue1",
+      "name": "mostafa@nowpay.com",
+      "email": "mostafa@nowpay.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c8340131303482693127",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_x1sbi",
+      "name": "mzanaty@zanatyfarm.com",
+      "email": "mzanaty@zanatyfarm.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c4573766869032115846",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_b7yun",
+      "name": "ahmed.gamal@unilever.com",
+      "email": "ahmed.gamal@unilever.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c764762811081502223",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_tu4fi",
+      "name": "Aya Abdelwahab",
+      "email": "a.abdelwahab@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c4675435436625630569",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_2d90j",
+      "name": "Technical Office",
+      "email": "technical.office@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c2872683365739305300",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_g1arh",
+      "name": "enis.caga@mathrics.com",
+      "email": "enis.caga@mathrics.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c1562128985020430808",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_m870j",
+      "name": "ispcalendar@endeavor.org",
+      "email": "ispcalendar@endeavor.org",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c184261205310713383",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_e9p5f",
+      "name": "yazeed.aljaafari@endeavor.org",
+      "email": "yazeed.aljaafari@endeavor.org",
+      "color": "#E5533D",
+      "googleContactId": "people/c9128646155413916370",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_5sw8p",
+      "name": "Ahmed Elzoghby",
+      "email": "ahmed.elzoghby@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c3470080730691767393",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_90av9",
+      "name": "enes@gowit.com",
+      "email": "enes@gowit.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c630396747813770728",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_ginvt",
+      "name": "Omar Elmalt",
+      "email": "omar.elmalt@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c8228721324959345057",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_ipr2q",
+      "name": "ashwin@inai.io",
+      "email": "ashwin@inai.io",
+      "color": "#E5533D",
+      "googleContactId": "people/c7941337957183030602",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_j5ngc",
+      "name": "nouran.salaheldin@gmail.com",
+      "email": "nouran.salaheldin@gmail.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c7682083157034375560",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_636oy",
+      "name": "seleemb@gmail.com",
+      "email": "seleemb@gmail.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c1650735377869903619",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_uoe08",
+      "name": "mohamed.benhalim@maxab.io",
+      "email": "mohamed.benhalim@maxab.io",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c6223913791226719765",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_llmj0",
+      "name": "ahmad@gowit.com",
+      "email": "ahmad@gowit.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c5938003796825703345",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_6xsyt",
+      "name": "mennah.kadous@pharmacymarts.com",
+      "email": "mennah.kadous@pharmacymarts.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c5486426840157722915",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_pui3l",
+      "name": "abahgat@bigbuzzcomeg.com",
+      "email": "abahgat@bigbuzzcomeg.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c7785422387338697672",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_4wbjh",
+      "name": "Sally Martinez",
+      "email": "sally.martinez@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c6770318566365303347",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_4a4kn",
+      "name": "hkamel@milkys.net",
+      "email": "hkamel@milkys.net",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c3606097233936896030",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991337_puj6o",
+      "name": "Gamal Mohie",
+      "email": "g.mohie@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c5566469826296981684",
+      "createdAt": "2026-02-10T13:26:31.337Z",
+      "updatedAt": "2026-02-10T13:26:31.337Z"
+    },
+    {
+      "id": "person_1770729991338_jhju1",
+      "name": "salma.hasan@breadfast.com",
+      "email": "salma.hasan@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c7741354328519736136",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_xamdm",
+      "name": "Sameh Mostafa",
+      "email": "s.mostafa@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c119264904741007411",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_aojws",
+      "name": "wesam.masoud@thefoodlab.com",
+      "email": "wesam.masoud@thefoodlab.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c2858375519622934783",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_29sfn",
+      "name": "Farah Sakhnini",
+      "email": "farah.sakhnini@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c8738666661875480836",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_o70u0",
+      "name": "eugene@breadfast.com",
+      "email": "eugene@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c5618780243106521042",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_tg3dk",
+      "name": "mahmoudkandil@aucegypt.edu",
+      "email": "mahmoudkandil@aucegypt.edu",
+      "color": "#4A90A4",
+      "googleContactId": "people/c3867010091232559624",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_ycik7",
+      "name": "ibrahim@valify.me",
+      "email": "ibrahim@valify.me",
+      "color": "#4A90A4",
+      "googleContactId": "people/c1682004082071187197",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_l35mz",
+      "name": "Nouran El Shaboury",
+      "email": "nouran.elshaboury@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c4535698862316067430",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_deki9",
+      "name": "Farida Abozeid",
+      "email": "farida.abozeid@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c1936086794626774031",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_yx079",
+      "name": "elghotni@pharmacymarts.com",
+      "email": "elghotni@pharmacymarts.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c8110567030266367593",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_0f1b5",
+      "name": "Mohammad Hussein",
+      "email": "mohamed.soliman@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c5682161728353542792",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_vi1a8",
+      "name": "ahmed.osman@thefoodlab.com",
+      "email": "ahmed.osman@thefoodlab.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c5192012155542066927",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_1bh9j",
+      "name": "Ahmed Farrag",
+      "email": "ahmed.farrag@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c3528666902009929856",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_px0uq",
+      "name": "care@amie.so",
+      "email": "care@amie.so",
+      "color": "#4A90A4",
+      "googleContactId": "people/c1571422250547515798",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_wydvv",
+      "name": "abbi.larkin@endeavor.org",
+      "email": "abbi.larkin@endeavor.org",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c311927385908316528",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_q5nfc",
+      "name": "Mohamed Ashraf Mohamed Ahmed",
+      "email": "mohamed.ashraf@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c4192034453553574439",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_gqmti",
+      "name": "Salma Tarek",
+      "email": "s.tarek@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c8556598574296789741",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_b6xc2",
+      "name": "ahmed@calo.app",
+      "email": "ahmed@calo.app",
+      "color": "#E5533D",
+      "googleContactId": "people/c7360077606848665984",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_qe861",
+      "name": "amr.elabd@endeavor.org",
+      "email": "amr.elabd@endeavor.org",
+      "color": "#E5533D",
+      "googleContactId": "people/c1958513385107209246",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_yu5gp",
+      "name": "Mohamed Gamal Mohamed",
+      "email": "m.gamal@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c257525090417146555",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_958js",
+      "name": "jon@ro.am",
+      "email": "jon@ro.am",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c2300920800733403436",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_w019a",
+      "name": "mourad.salah@bosta.co",
+      "email": "mourad.salah@bosta.co",
+      "color": "#C4943D",
+      "googleContactId": "people/c4914727499369622630",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991338_das34",
+      "name": "Islam Ashraf",
+      "email": "i.ashraf@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c606817635053076966",
+      "createdAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-10T13:26:31.338Z"
+    },
+    {
+      "id": "person_1770729991339_kinxl",
+      "name": "Nour Ramy",
+      "email": "nour.ramy@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c1548698098269326864",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_2xg19",
+      "name": "hussein@bluworks.io",
+      "email": "hussein@bluworks.io",
+      "color": "#C4943D",
+      "googleContactId": "people/c8060808247063443717",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_ox8ug",
+      "name": "karim.eldeeb@bosta.co",
+      "email": "karim.eldeeb@bosta.co",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c1761984986665599155",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_aofsc",
+      "name": "tony@arabyads.com",
+      "email": "tony@arabyads.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c8433876773025225359",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_jpb24",
+      "name": "omar@setup.sa",
+      "email": "omar@setup.sa",
+      "color": "#6366F1",
+      "googleContactId": "people/c1836525086852024144",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_7x6s7",
+      "name": "relocate@setup.sa",
+      "email": "relocate@setup.sa",
+      "color": "#6366F1",
+      "googleContactId": "people/c3272334943109032301",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_f14a1",
+      "name": "bjorn@vnv.global",
+      "email": "bjorn@vnv.global",
+      "color": "#E5533D",
+      "googleContactId": "people/c239460408590736735",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_u68m9",
+      "name": "Mostafa Eissa",
+      "email": "mostafa.eissa@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c278239547943335471",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_wocut",
+      "name": "sherif@sokna.com",
+      "email": "sherif@sokna.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c4143898955513071671",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_3twa1",
+      "name": "Amira Osama",
+      "email": "a.osama@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c592825323277728967",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_7ainc",
+      "name": "Islam Nasr",
+      "email": "islam.nasr@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c8613665542742430419",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_rqlr9",
+      "name": "Sara Nassar",
+      "email": "s.nassar@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c655833732353647585",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_30d7k",
+      "name": "husam@arabyads.com",
+      "email": "husam@arabyads.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c4406911076836723891",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_tnqqm",
+      "name": "Mustafa Elhelbawy",
+      "email": "m.elhelbawy@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c5842345531431092810",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_xella",
+      "name": "sondos.faramawy@gmail.com",
+      "email": "sondos.faramawy@gmail.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c5794582802272955625",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_y2shr",
+      "name": "David Moussa",
+      "email": "d.moussa@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c801886483344678554",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_vtfkc",
+      "name": "Omar Eldarawy",
+      "email": "o.eldarawy@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c9022579064864570635",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_lqthz",
+      "name": "emre.ozturk@mathrics.com",
+      "email": "emre.ozturk@mathrics.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6928627053703838376",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_gwx31",
+      "name": "Mohab El Qenawy",
+      "email": "m.elqenawy@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c790249376887470484",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_idtup",
+      "name": "Walaa Abdallah",
+      "email": "walaa.abdalla@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c2715569744766984627",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_115rj",
+      "name": "khaled.w.zaki@gmail.com",
+      "email": "khaled.w.zaki@gmail.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c6421665192264861708",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_vfvzl",
+      "name": "amgadaly@gmail.com",
+      "email": "amgadaly@gmail.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c2860603521084360834",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_o6ipo",
+      "name": "Salma Mounir",
+      "email": "salma.mounir@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c5823774593286529087",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991339_qpa1p",
+      "name": "melhorishy@taager.com",
+      "email": "melhorishy@taager.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c6036001966930296956",
+      "createdAt": "2026-02-10T13:26:31.339Z",
+      "updatedAt": "2026-02-10T13:26:31.339Z"
+    },
+    {
+      "id": "person_1770729991340_t1jy3",
+      "name": "shady@comcal.org",
+      "email": "shady@comcal.org",
+      "color": "#C4943D",
+      "googleContactId": "people/c8265571899568151723",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_ojrje",
+      "name": "Zeyad Gamaan",
+      "email": "zeyad.gamaan@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c5451029306723033204",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_u7cnn",
+      "name": "ezzat@bosta.co",
+      "email": "ezzat@bosta.co",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c481240698298807808",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_xzfqr",
+      "name": "annabel@4dxventures.com",
+      "email": "annabel@4dxventures.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c6890789156319618434",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_jhldh",
+      "name": "deena.saeed82@gmail.com",
+      "email": "deena.saeed82@gmail.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c1205220593550189934",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_j3m0q",
+      "name": "abdallah@alsharif.org",
+      "email": "abdallah@alsharif.org",
+      "color": "#6366F1",
+      "googleContactId": "people/c8645745289235806316",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_cfh8k",
+      "name": "mohamed.youssef@breadfast.com",
+      "email": "mohamed.youssef@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c4494897879969581308",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_j0qzg",
+      "name": "kaan.ebrem@mathrics.com",
+      "email": "kaan.ebrem@mathrics.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c8650339886232406260",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_cj0mr",
+      "name": "gaballah@sokna.com",
+      "email": "gaballah@sokna.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c4541362360815513211",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_j76fl",
+      "name": "Mariam Ayman Abdelhamid Abdelmagid",
+      "email": "mariam.ayman@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c6083416481696597383",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_3l34n",
+      "name": "Ahmed Sakr",
+      "email": "a.sakr@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c387391518367119151",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_vli82",
+      "name": "dennis@amie.so",
+      "email": "dennis@amie.so",
+      "color": "#6366F1",
+      "googleContactId": "people/c5938266036781953627",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_b1w75",
+      "name": "kassim.shroff@kravemart.com",
+      "email": "kassim.shroff@kravemart.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c2235922558912788329",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_nj9hn",
+      "name": "maf@cartona.com",
+      "email": "maf@cartona.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c3831643586730124545",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_uqtpr",
+      "name": "oe@freshsourceglobal.com",
+      "email": "oe@freshsourceglobal.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6571614631687667467",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_f4xww",
+      "name": "ali.tarek@aucegypt.edu",
+      "email": "ali.tarek@aucegypt.edu",
+      "color": "#4A90A4",
+      "googleContactId": "people/c7403225898386634643",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_i7pfv",
+      "name": "jose@chiper.co",
+      "email": "jose@chiper.co",
+      "color": "#E5533D",
+      "googleContactId": "people/c8041271016403422782",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_8t4qx",
+      "name": "Hanan Ali",
+      "email": "h.ali@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c4910640376328022701",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_wdtcz",
+      "name": "Sara Ossama",
+      "email": "sara.ossama@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c6359302928550868173",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_uy8y8",
+      "name": "Khloud Abdelwahab",
+      "email": "k.abdelwahab@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c4063993743239767449",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991340_eblz9",
+      "name": "Ramy Aboul Naga",
+      "email": "ramy.naga@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c126432230311432104",
+      "createdAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-10T13:26:31.340Z"
+    },
+    {
+      "id": "person_1770729991341_tddgm",
+      "name": "Nesma El Sakka",
+      "email": "nesma.elsakka@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c8147439717444679660",
+      "createdAt": "2026-02-10T13:26:31.341Z",
+      "updatedAt": "2026-02-10T13:26:31.341Z"
+    },
+    {
+      "id": "person_1770729991341_wrurv",
+      "name": "Nesma Farouk",
+      "email": "nesma.farouk@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c2267867054638167265",
+      "createdAt": "2026-02-10T13:26:31.341Z",
+      "updatedAt": "2026-02-10T13:26:31.341Z"
+    },
+    {
+      "id": "person_1770729991341_3m08a",
+      "name": "najm@setup.sa",
+      "email": "najm@setup.sa",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c2463350302788646689",
+      "createdAt": "2026-02-10T13:26:31.341Z",
+      "updatedAt": "2026-02-10T13:26:31.341Z"
+    },
+    {
+      "id": "person_1770729991341_b9phw",
+      "name": "Omar Sabaa",
+      "email": "o.sabaa@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c2930293757034821128",
+      "createdAt": "2026-02-10T13:26:31.341Z",
+      "updatedAt": "2026-02-10T13:26:31.341Z"
+    },
+    {
+      "id": "person_1770729991341_p235k",
+      "name": "Mostafa Nassar",
+      "email": "m.nassar@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c2881280655354653464",
+      "createdAt": "2026-02-10T13:26:31.341Z",
+      "updatedAt": "2026-02-10T13:26:31.341Z"
+    },
+    {
+      "id": "person_1770729991341_m8ffg",
+      "name": "Marwa Abouzaid",
+      "email": "marwa.abouzaid@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c4708780134634785786",
+      "createdAt": "2026-02-10T13:26:31.341Z",
+      "updatedAt": "2026-02-10T13:26:31.341Z"
+    },
+    {
+      "id": "person_1770729991341_xe8z9",
+      "name": "mahmoud.talaat@cartona.com",
+      "email": "mahmoud.talaat@cartona.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c6985282364546133478",
+      "createdAt": "2026-02-10T13:26:31.341Z",
+      "updatedAt": "2026-02-10T13:26:31.341Z"
+    },
+    {
+      "id": "person_1770729991341_fi777",
+      "name": "Nourhan Youssef",
+      "email": "n.youssef@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c4385686009904030547",
+      "createdAt": "2026-02-10T13:26:31.341Z",
+      "updatedAt": "2026-02-10T13:26:31.341Z"
+    },
+    {
+      "id": "person_1770729991341_75lmk",
+      "name": "Noha Mubarak",
+      "email": "noha.mubarak@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c7995293101702198096",
+      "createdAt": "2026-02-10T13:26:31.341Z",
+      "updatedAt": "2026-02-10T13:26:31.341Z"
+    },
+    {
+      "id": "person_1770729991341_2hkcw",
+      "name": "maryam@calo.app",
+      "email": "maryam@calo.app",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c693479511545797318",
+      "createdAt": "2026-02-10T13:26:31.341Z",
+      "updatedAt": "2026-02-10T13:26:31.341Z"
+    },
+    {
+      "id": "person_1770729991341_ut3x9",
+      "name": "emam.lamia@elsewedy.com",
+      "email": "emam.lamia@elsewedy.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c6920722121314446769",
+      "createdAt": "2026-02-10T13:26:31.341Z",
+      "updatedAt": "2026-02-10T13:26:31.341Z"
+    },
+    {
+      "id": "person_1770729991342_6y58z",
+      "name": "s.jimmy@breadfast.com",
+      "email": "s.jimmy@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c7378028669648420298",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_5m7e1",
+      "name": "salma.hisham94@gmail.com",
+      "email": "salma.hisham94@gmail.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c7555882279705172857",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_kkjzt",
+      "name": "w.aboulezz@breadfast.com",
+      "email": "w.aboulezz@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c8148618063153887754",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_sn43u",
+      "name": "sharifms@aucegypt.edu",
+      "email": "sharifms@aucegypt.edu",
+      "color": "#6366F1",
+      "googleContactId": "people/c8070061681170456851",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_4fciz",
+      "name": "Omar Badr",
+      "email": "o.badr@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c4585868770624321794",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_ckq75",
+      "name": "am@eksab.com",
+      "email": "am@eksab.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c398960656942839055",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_0cjhv",
+      "name": "Sally Elzein",
+      "email": "sally.elzein@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c192868936202022291",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_pxs5f",
+      "name": "haila.alobaidan@endeavor.org",
+      "email": "haila.alobaidan@endeavor.org",
+      "color": "#C4943D",
+      "googleContactId": "people/c746406503061140628",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_55new",
+      "name": "peter@4dxventures.com",
+      "email": "peter@4dxventures.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c3286662524456916139",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_p5wjv",
+      "name": "ked@thefoodlab.com",
+      "email": "ked@thefoodlab.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c5998939302516087048",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_jwfex",
+      "name": "Mohamed Mahmoud Ali Abdallah",
+      "email": "m.abdallah@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c3502594111938488343",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_pxd1n",
+      "name": "owahdan@gmail.com",
+      "email": "owahdan@gmail.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c2736606674966897628",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_si44m",
+      "name": "rimesabry@gmail.com",
+      "email": "rimesabry@gmail.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c8857349881841746063",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_97uw9",
+      "name": "seif@thndr.app",
+      "email": "seif@thndr.app",
+      "color": "#E5533D",
+      "googleContactId": "people/c2175396256310236759",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_d1glz",
+      "name": "Ahmed Shawky",
+      "email": "ahmed.shawky@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c7742567373222220773",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_0htox",
+      "name": "Abdelrahman Attia",
+      "email": "abdelrahman.attia@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c4877993767165171503",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991342_p1d26",
+      "name": "melshinnawy@minlyapp.com",
+      "email": "melshinnawy@minlyapp.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c56657471458788313",
+      "createdAt": "2026-02-10T13:26:31.342Z",
+      "updatedAt": "2026-02-10T13:26:31.342Z"
+    },
+    {
+      "id": "person_1770729991343_6pk0e",
+      "name": "Mohamed Yehia",
+      "email": "m.yehia@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c7587232551611391362",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_mcmxk",
+      "name": "alateeqmalak@gmail.com",
+      "email": "alateeqmalak@gmail.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c2628018008891765169",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_z7g1l",
+      "name": "lobna@bigbuzzcomeg.com",
+      "email": "lobna@bigbuzzcomeg.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c5813277935827178189",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_3i152",
+      "name": "Khaled Eldieb",
+      "email": "khaled.eldieb@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c5059449091711729560",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_v68wy",
+      "name": "marwan.amcapital@gmail.com",
+      "email": "marwan.amcapital@gmail.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c9156443847309032771",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_kr0er",
+      "name": "Anas Rabah",
+      "email": "anas.rabah@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c7125885972548053248",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_tybt8",
+      "name": "anasrabah0@gmail.com",
+      "email": "anasrabah0@gmail.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c7862537876559112271",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_jgr1p",
+      "name": "a@elcoach.me",
+      "email": "a@elcoach.me",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c8984942511032601662",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_ueo9z",
+      "name": "marcomanouchak@meta.com",
+      "email": "marcomanouchak@meta.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6589901062736075238",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_gixzi",
+      "name": "awadi@moneyfellows.com",
+      "email": "awadi@moneyfellows.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c3022837363687860177",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_fsl9n",
+      "name": "yasser.elsayed@gmail.com",
+      "email": "yasser.elsayed@gmail.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c437092918502262336",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_x00j2",
+      "name": "h.zakaria@breadfast.com",
+      "email": "h.zakaria@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c3925544701511832778",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_e6hf4",
+      "name": "Omar Metwaly",
+      "email": "o.metwaly@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c2557472483824182206",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_66tt4",
+      "name": "Farah Ayad",
+      "email": "farah.ayad@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c1724542649453544230",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_xtdp6",
+      "name": "Salma Soliman",
+      "email": "s.soliman@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c9004320179486489303",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_b3npz",
+      "name": "sherif.mohamed.medhat@gmail.com",
+      "email": "sherif.mohamed.medhat@gmail.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c6673508238291513976",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_z7a9e",
+      "name": "awahab@bigbuzzcomeg.com",
+      "email": "awahab@bigbuzzcomeg.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c4783780470498398628",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_ai19c",
+      "name": "ahmed.gad@maxab.io",
+      "email": "ahmed.gad@maxab.io",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c4375179937908668000",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_xwrcx",
+      "name": "belal@bigbuzzcomeg.com",
+      "email": "belal@bigbuzzcomeg.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c5494302891021670484",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991343_1ag1a",
+      "name": "ismail.ahmed526@gmail.com",
+      "email": "ismail.ahmed526@gmail.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c1185455454762837364",
+      "createdAt": "2026-02-10T13:26:31.343Z",
+      "updatedAt": "2026-02-10T13:26:31.343Z"
+    },
+    {
+      "id": "person_1770729991344_8pveh",
+      "name": "Mostafa ElSheikh",
+      "email": "mostafa.elsheikh@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c4984587161054956424",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_hp5w8",
+      "name": "abdelwahab@breadfast.com",
+      "email": "abdelwahab@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c9038327425518135758",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_ced7y",
+      "name": "omar@valify.me",
+      "email": "omar@valify.me",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c1153143651225573225",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_uv6ff",
+      "name": "jihan@sokna.com",
+      "email": "jihan@sokna.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c4775857166388797747",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_0yczr",
+      "name": "mattycourtney@google.com",
+      "email": "mattycourtney@google.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c3885512266920046505",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_wkyza",
+      "name": "salah.gs@gmail.com",
+      "email": "salah.gs@gmail.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c3366496244916449616",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_6477y",
+      "name": "swelim.amr@gmail.com",
+      "email": "swelim.amr@gmail.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c8929872942983026052",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_uql51",
+      "name": "Mohamed Roshdy",
+      "email": "m.roshdy@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c3587453313384537977",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_63zpk",
+      "name": "mohamed.ashraf.ma29@gmail.com",
+      "email": "mohamed.ashraf.ma29@gmail.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c909670916687467669",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_zzjo4",
+      "name": "ahamdy@zadsolutions.com",
+      "email": "ahamdy@zadsolutions.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c3212329778911059739",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_zc38d",
+      "name": "n.nabil@breadfast.com",
+      "email": "n.nabil@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c2893642382992536374",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_ld3k2",
+      "name": "janeit.khreis@g.softwareone.com",
+      "email": "janeit.khreis@g.softwareone.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c4831044493942221548",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_ftp5k",
+      "name": "Maha Omar",
+      "email": "m.omar@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c662149473196876589",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_27rmv",
+      "name": "f.badrawy@breadfast.com",
+      "email": "f.badrawy@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c6580992340562218819",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_tqyky",
+      "name": "aly.elazhary@endeavor.org",
+      "email": "aly.elazhary@endeavor.org",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c7372610164670981847",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_sspu0",
+      "name": "omar@trella.app",
+      "email": "omar@trella.app",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c2853175484691440808",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_qary1",
+      "name": "Mostafa Sayed",
+      "email": "m.sayed@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c3220954592862053127",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991344_4tjs0",
+      "name": "Muhammad Habib",
+      "email": "h@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c7873954256138002397",
+      "createdAt": "2026-02-10T13:26:31.344Z",
+      "updatedAt": "2026-02-10T13:26:31.344Z"
+    },
+    {
+      "id": "person_1770729991345_zgz7f",
+      "name": "Amira Wageeh",
+      "email": "a.wageeh@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c1798950434401616921",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_2gmk7",
+      "name": "Samaa Waseem",
+      "email": "samaa.waseem@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c1122760842195918628",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_k5rup",
+      "name": "samaa.waseem89@gmail.com",
+      "email": "samaa.waseem89@gmail.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6901610927730574361",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_ayy9p",
+      "name": "shreyas@inai.io",
+      "email": "shreyas@inai.io",
+      "color": "#C4943D",
+      "googleContactId": "people/c3913824777348691403",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_5t71e",
+      "name": "Abdallah Zidan",
+      "email": "abdallah.zidan@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c7280656695105912328",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_2wwga",
+      "name": "Serag Zahran",
+      "email": "s.zahran@breadfast.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c45658079560585612",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_r2lxg",
+      "name": "Hassan El Toukhy",
+      "email": "hassan.eltoukhy@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c4835755654361170581",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_ny3or",
+      "name": "Mostafa Abdelakher",
+      "email": "m.abdelakher@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c1161969748976357834",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_ss4m9",
+      "name": "Omar Baraka",
+      "email": "o.baraka@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6251140531559053347",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_okd6r",
+      "name": "Ahmed Gabal",
+      "email": "ahmed.gabal@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c6299483792264004203",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_lq3lx",
+      "name": "k.anter@breadfast.com",
+      "email": "k.anter@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c1888164840052499358",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_l9n00",
+      "name": "Ahmed Maghraby",
+      "email": "ahmed.maghraby@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c8200865917374258329",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_ct899",
+      "name": "Mai Sadek",
+      "email": "mai.sadek@breadfast.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c7971930760154554964",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991345_8te3h",
+      "name": "Mohamed Mekawy",
+      "email": "m.mekawy@breadfast.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c6767552457069687168",
+      "createdAt": "2026-02-10T13:26:31.345Z",
+      "updatedAt": "2026-02-10T13:26:31.345Z"
+    },
+    {
+      "id": "person_1770729991349_p51t4",
+      "name": "jlevy@ycombinator.com",
+      "email": "jlevy@ycombinator.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c8414792708503244572",
+      "createdAt": "2026-02-10T13:26:31.349Z",
+      "updatedAt": "2026-02-10T13:26:31.349Z"
+    },
+    {
+      "id": "person_1770729991349_yjkyq",
+      "name": "Karim Kamal",
+      "email": "karim.kamal@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c255856602916056991",
+      "createdAt": "2026-02-10T13:26:31.349Z",
+      "updatedAt": "2026-02-10T13:26:31.349Z"
+    },
+    {
+      "id": "person_1770729991349_zub5y",
+      "name": "Jolie El-Kholy",
+      "email": "j.elkholy@breadfast.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c8516616060247323675",
+      "createdAt": "2026-02-10T13:26:31.349Z",
+      "updatedAt": "2026-02-10T13:26:31.349Z"
+    },
+    {
+      "id": "person_1770729991349_zgrq7",
+      "name": "noura.rahif@breadfast.com",
+      "email": "noura.rahif@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c888143338039008359",
+      "createdAt": "2026-02-10T13:26:31.349Z",
+      "updatedAt": "2026-02-10T13:26:31.349Z"
+    },
+    {
+      "id": "person_1770729991349_dyqio",
+      "name": "mmokhtar@fruitrepublicholding.com",
+      "email": "mmokhtar@fruitrepublicholding.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c6633636654610833128",
+      "createdAt": "2026-02-10T13:26:31.349Z",
+      "updatedAt": "2026-02-10T13:26:31.349Z"
+    },
+    {
+      "id": "person_1770729991349_nyqrh",
+      "name": "hempeljimenez@google.com",
+      "email": "hempeljimenez@google.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c8161424141695486392",
+      "createdAt": "2026-02-10T13:26:31.349Z",
+      "updatedAt": "2026-02-10T13:26:31.349Z"
+    },
+    {
+      "id": "person_1770729991349_qx5ub",
+      "name": "joshmahoney@gmail.com",
+      "email": "joshmahoney@gmail.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c7364859741516786428",
+      "createdAt": "2026-02-10T13:26:31.349Z",
+      "updatedAt": "2026-02-10T13:26:31.349Z"
+    },
+    {
+      "id": "person_1770729991350_0hi5d",
+      "name": "waseem.naguib@cartona.com",
+      "email": "waseem.naguib@cartona.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c5077817752016227986",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_ilcgl",
+      "name": "david@calii.com",
+      "email": "david@calii.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c2158562471232065662",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_eyd8p",
+      "name": "harriet@4dxventures.com",
+      "email": "harriet@4dxventures.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c5951142082519953364",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_lhdv1",
+      "name": "nelly@thndr.app",
+      "email": "nelly@thndr.app",
+      "color": "#4A90A4",
+      "googleContactId": "people/c1853944849295532054",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_yn5pv",
+      "name": "justin@onfleet.com",
+      "email": "justin@onfleet.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c1050872373144455748",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_6aswl",
+      "name": "rami.essam@cartona.com",
+      "email": "rami.essam@cartona.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c503522615042305833",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_ro621",
+      "name": "Osama Karaash",
+      "email": "o.karaash@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c3103438798678497608",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_ba0wr",
+      "name": "muhammad.abuamna@gmail.com",
+      "email": "muhammad.abuamna@gmail.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c4888976786599354417",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_ia99z",
+      "name": "Ahmed Elroby",
+      "email": "ahmed.elroby@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c4857658838601577485",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_y56i5",
+      "name": "farah@4dxventures.com",
+      "email": "farah@4dxventures.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c2701734901294124188",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_1vx36",
+      "name": "hmomtaz@koinz.app",
+      "email": "hmomtaz@koinz.app",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c3319348185488490310",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_ywskg",
+      "name": "linda.rottenberg@endeavor.org",
+      "email": "linda.rottenberg@endeavor.org",
+      "color": "#C4943D",
+      "googleContactId": "people/c190231508379472936",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_j4ada",
+      "name": "belal.megharbel@maxab.io",
+      "email": "belal.megharbel@maxab.io",
+      "color": "#C4943D",
+      "googleContactId": "people/c8597889021984916301",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_dyh30",
+      "name": "nour@bluworks.io",
+      "email": "nour@bluworks.io",
+      "color": "#6366F1",
+      "googleContactId": "people/c2732509548837450466",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_mc6tt",
+      "name": "mahy@twoemms.com",
+      "email": "mahy@twoemms.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c8503681858468872821",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_mhsad",
+      "name": "moayed@calo.app",
+      "email": "moayed@calo.app",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c454113736412302068",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_ntdrs",
+      "name": "mbeltagy@nawy.com",
+      "email": "mbeltagy@nawy.com",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c3827954851873696123",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_fwpty",
+      "name": "kholoud.alharbi@endeavor.org",
+      "email": "kholoud.alharbi@endeavor.org",
+      "color": "#0EA5E9",
+      "googleContactId": "people/c7929020076872027979",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_j02vc",
+      "name": "fe@freshsourceglobal.com",
+      "email": "fe@freshsourceglobal.com",
+      "color": "#4A90A4",
+      "googleContactId": "people/c2129191726102857522",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991350_u569s",
+      "name": "nour.elsanhoury@alephholding.com",
+      "email": "nour.elsanhoury@alephholding.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c4434395532549598375",
+      "createdAt": "2026-02-10T13:26:31.350Z",
+      "updatedAt": "2026-02-10T13:26:31.350Z"
+    },
+    {
+      "id": "person_1770729991351_g6nth",
+      "name": "Mohamed Shebl",
+      "email": "m.shebl@breadfast.com",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c263241797087099774",
+      "createdAt": "2026-02-10T13:26:31.351Z",
+      "updatedAt": "2026-02-10T13:26:31.351Z"
+    },
+    {
+      "id": "person_1770729991351_trys6",
+      "name": "kadous@pharmacymarts.com",
+      "email": "kadous@pharmacymarts.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c16901332125991686",
+      "createdAt": "2026-02-10T13:26:31.351Z",
+      "updatedAt": "2026-02-10T13:26:31.351Z"
+    },
+    {
+      "id": "person_1770729991351_xtgof",
+      "name": "Kareem Hesham",
+      "email": "k.hesham@breadfast.com",
+      "color": "#6366F1",
+      "googleContactId": "people/c8581744209893666691",
+      "createdAt": "2026-02-10T13:26:31.351Z",
+      "updatedAt": "2026-02-10T13:26:31.351Z"
+    },
+    {
+      "id": "person_1770729991351_pbmwd",
+      "name": "dtahoon@gmail.com",
+      "email": "dtahoon@gmail.com",
+      "color": "#7C6B8E",
+      "googleContactId": "people/c6901182347976192724",
+      "createdAt": "2026-02-10T13:26:31.351Z",
+      "updatedAt": "2026-02-10T13:26:31.351Z"
+    },
+    {
+      "id": "person_1770729991351_sp6o7",
+      "name": "ezgi@gowit.com",
+      "email": "ezgi@gowit.com",
+      "color": "#E5533D",
+      "googleContactId": "people/c4993601137664620788",
+      "createdAt": "2026-02-10T13:26:31.351Z",
+      "updatedAt": "2026-02-10T13:26:31.351Z"
+    },
+    {
+      "id": "person_1770729991351_1e5ad",
+      "name": "ismail.omar@taager.com",
+      "email": "ismail.omar@taager.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c3511765198526530831",
+      "createdAt": "2026-02-10T13:26:31.351Z",
+      "updatedAt": "2026-02-10T13:26:31.351Z"
+    },
+    {
+      "id": "person_1770729991351_k0iqe",
+      "name": "omar.elghazaly@maxab.io",
+      "email": "omar.elghazaly@maxab.io",
+      "color": "#C4943D",
+      "googleContactId": "people/c1545932674059770837",
+      "createdAt": "2026-02-10T13:26:31.351Z",
+      "updatedAt": "2026-02-10T13:26:31.351Z"
+    },
+    {
+      "id": "person_1770729991351_qckxm",
+      "name": "Abdallah Nofal",
+      "email": "a@breadfast.com",
+      "color": "#C4943D",
+      "googleContactId": "people/c1367175669214307574",
+      "createdAt": "2026-02-10T13:26:31.351Z",
+      "updatedAt": "2026-02-10T13:26:31.351Z"
     }
   ],
   "customPerspectives": [
