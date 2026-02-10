@@ -392,4 +392,5 @@ export const state = {
   gsheetPrompt: '',
   gsheetResponse: null,
   gsheetAsking: false,
+  gsheetEditingPrompt: false,
 };

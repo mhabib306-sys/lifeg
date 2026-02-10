@@ -1464,6 +1464,37 @@ img.twemoji {
     overflow-wrap: anywhere;
   }
 
+  .gsheet-response table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin: 6px 0;
+  }
+  .gsheet-response th,
+  .gsheet-response td {
+    padding: 4px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .gsheet-response th {
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+  }
+  .gsheet-response ul,
+  .gsheet-response ol {
+    padding-left: 18px;
+    margin: 4px 0;
+  }
+  .gsheet-response li {
+    margin-bottom: 2px;
+  }
+  .gsheet-response strong {
+    font-weight: 600;
+  }
+
   .widget-title {
     font-size: 14px !important;
     font-weight: 600;

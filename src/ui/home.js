@@ -65,14 +65,15 @@ function formatHomeEventTime(event) {
 // ============================================================================
 
 /**
- * Handle gsheet AI prompt submission.
+ * Save the gsheet prompt and auto-run it.
  */
-export async function handleGSheetAsk() {
+export async function handleGSheetSavePrompt() {
   const input = document.getElementById('gsheet-prompt-input');
-  const prompt = (input?.value || state.gsheetPrompt || '').trim();
+  const prompt = (input?.value || '').trim();
   if (!prompt) return;
 
-  state.gsheetPrompt = prompt;
+  localStorage.setItem('nucleusGSheetSavedPrompt', prompt);
+  state.gsheetEditingPrompt = false;
   state.gsheetAsking = true;
   state.gsheetResponse = null;
   window.render();
@@ -80,6 +81,50 @@ export async function handleGSheetAsk() {
   try {
     const response = await window.askGSheet(prompt);
     state.gsheetResponse = response;
+    localStorage.setItem('nucleusGSheetResponseCache', response);
+  } catch (err) {
+    state.gsheetResponse = `Error: ${err.message || 'Something went wrong'}`;
+  } finally {
+    state.gsheetAsking = false;
+    window.render();
+  }
+}
+
+/**
+ * Enter prompt editing mode.
+ */
+export function handleGSheetEditPrompt() {
+  state.gsheetEditingPrompt = true;
+  window.render();
+  setTimeout(() => {
+    const input = document.getElementById('gsheet-prompt-input');
+    if (input) { input.focus(); input.select(); }
+  }, 50);
+}
+
+/**
+ * Cancel prompt editing.
+ */
+export function handleGSheetCancelEdit() {
+  state.gsheetEditingPrompt = false;
+  window.render();
+}
+
+/**
+ * Re-run the saved prompt (refresh output).
+ */
+export async function handleGSheetRefresh() {
+  const prompt = localStorage.getItem('nucleusGSheetSavedPrompt') || '';
+  if (!prompt) return;
+
+  state.gsheetAsking = true;
+  state.gsheetResponse = null;
+  window.render();
+
+  try {
+    const response = await window.askGSheet(prompt);
+    state.gsheetResponse = response;
+    localStorage.setItem('nucleusGSheetResponseCache', response);
   } catch (err) {
     state.gsheetResponse = `Error: ${err.message || 'Something went wrong'}`;
   } finally {
@@ -715,8 +760,9 @@ export function renderHomeWidget(widget, isEditing) {
       const hasApiKey = !!(typeof window.getAnthropicKey === 'function' && window.getAnthropicKey());
       const syncing = state.gsheetSyncing;
       const asking = state.gsheetAsking;
-      const response = state.gsheetResponse;
-      const promptVal = state.gsheetPrompt || '';
+      const savedPrompt = localStorage.getItem('nucleusGSheetSavedPrompt') || '';
+      const editing = state.gsheetEditingPrompt;
+      const response = state.gsheetResponse || localStorage.getItem('nucleusGSheetResponseCache') || '';
 
       if (!hasApiKey) {
         content = `
@@ -738,54 +784,59 @@ export function renderHomeWidget(widget, isEditing) {
         break;
       }
 
-      // Prompt input row
-      const promptHtml = `
-        <div class="flex items-center gap-2">
-          <input id="gsheet-prompt-input" type="text" placeholder="Ask about your data..."
-            value="${(promptVal).replace(/"/g, '&quot;')}"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();handleGSheetAsk()}"
-            class="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-light)] bg-[var(--bg-primary)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition"
-            ${asking ? 'disabled' : ''}
-          />
-          <button onclick="handleGSheetAsk()" class="px-3 py-2 rounded-lg text-[13px] font-medium text-white bg-[var(--accent)] hover:opacity-90 transition flex-shrink-0 ${asking ? 'opacity-50 pointer-events-none' : ''}" ${asking ? 'disabled' : ''}>
-            ${asking
-              ? '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0110 10"/></svg>'
-              : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>'}
-          </button>
-        </div>
-      `;
+      // No saved prompt yet, or editing mode — show input
+      if (!savedPrompt || editing) {
+        content = `
+          <div class="flex items-center gap-2">
+            <input id="gsheet-prompt-input" type="text" placeholder="e.g. Summarize my last 14 days..."
+              value="${(savedPrompt).replace(/"/g, '&quot;')}"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();handleGSheetSavePrompt()}${editing ? ";if(event.key==='Escape'){event.preventDefault();handleGSheetCancelEdit()}" : ''}"
+              class="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-light)] bg-[var(--bg-primary)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition"
+            />
+            <button onclick="handleGSheetSavePrompt()" class="px-3 py-2 rounded-lg text-[13px] font-medium text-white bg-[var(--accent)] hover:opacity-90 transition flex-shrink-0" title="Save prompt">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </button>
+            ${editing ? `<button onclick="handleGSheetCancelEdit()" class="px-2 py-2 rounded-lg text-[13px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition flex-shrink-0" title="Cancel">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>` : ''}
+          </div>
+          ${!savedPrompt ? `<div class="mt-3 py-3 text-center text-[var(--text-muted)] text-xs">Set a prompt to auto-generate insights from your sheet data</div>` : ''}
+        `;
+        break;
+      }
 
-      // Response area
+      // Has saved prompt — show response
       let responseHtml = '';
       if (asking) {
-        responseHtml = `<div class="mt-3 py-4 text-center text-[var(--text-muted)] text-sm">Thinking...</div>`;
+        responseHtml = `<div class="py-4 text-center text-[var(--text-muted)] text-sm">Thinking...</div>`;
       } else if (response) {
         const isError = response.startsWith('Error:');
         responseHtml = `
-          <div class="mt-3 max-h-[250px] overflow-y-auto">
-            <div class="text-[13px] leading-relaxed ${isError ? 'text-red-500' : 'text-[var(--text-primary)]'} whitespace-pre-wrap">${response.replace(/</g, '&lt;')}</div>
+          <div class="max-h-[250px] overflow-y-auto">
+            <div class="gsheet-response text-[13px] leading-relaxed ${isError ? 'text-red-500' : 'text-[var(--text-primary)]'}">${isError ? response.replace(/</g, '&lt;') : response}</div>
           </div>
         `;
       } else {
-        const tabInfo = state.gsheetData?.tabs ? `${state.gsheetData.tabs.length} tabs loaded` : 'Ask a question about your sheet data';
-        responseHtml = `<div class="mt-3 py-3 text-center text-[var(--text-muted)] text-xs">${tabInfo}</div>`;
+        responseHtml = `<div class="py-3 text-center text-[var(--text-muted)] text-xs">No response yet</div>`;
       }
 
-      // Footer with sync info
+      // Footer: saved prompt display + edit/refresh actions
       const sheetData = state.gsheetData;
-      const lastSyncStr = sheetData?.lastSync
-        ? new Date(sheetData.lastSync).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-        : '';
+      const tabCount = sheetData?.tabs?.length || 0;
 
       content = `
-        ${promptHtml}
         ${responseHtml}
         <div class="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border-light)]">
-          <span class="text-[10px] text-[var(--text-muted)]">${lastSyncStr ? `Synced ${lastSyncStr}` : ''}</span>
-          <button onclick="syncGSheetNow()" class="inline-flex items-center gap-1 text-[10px] text-[var(--accent)] hover:underline font-medium ${syncing ? 'opacity-50 pointer-events-none' : ''}" ${syncing ? 'disabled' : ''}>
-            <svg class="w-3 h-3 ${syncing ? 'animate-spin' : ''}" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-            ${syncing ? 'Syncing...' : 'Refresh'}
+          <button onclick="handleGSheetEditPrompt()" class="flex-1 min-w-0 text-left group" title="Click to edit prompt">
+            <span class="text-[10px] text-[var(--text-muted)] truncate block group-hover:text-[var(--accent)] transition">${savedPrompt.replace(/</g, '&lt;')}</span>
           </button>
+          <div class="flex items-center gap-2 ml-2 flex-shrink-0">
+            ${tabCount ? `<span class="text-[10px] text-[var(--text-muted)]">${tabCount} tabs</span>` : ''}
+            <button onclick="handleGSheetRefresh()" class="inline-flex items-center gap-1 text-[10px] text-[var(--accent)] hover:underline font-medium ${asking || syncing ? 'opacity-50 pointer-events-none' : ''}" ${asking || syncing ? 'disabled' : ''} title="Re-run prompt">
+              <svg class="w-3 h-3 ${asking ? 'animate-spin' : ''}" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+              ${asking ? '' : 'Refresh'}
+            </button>
+          </div>
         </div>
       `;
       break;

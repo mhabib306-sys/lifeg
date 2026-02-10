@@ -142,7 +142,7 @@ import {
 
 // -- UI --
 import { render, switchTab, switchSubTab, setToday, forceHardRefresh, dismissCacheRefreshPrompt } from './ui/render.js';
-import { renderHomeTab, renderHomeWidget, homeQuickAddTask, handleGSheetAsk } from './ui/home.js';
+import { renderHomeTab, renderHomeWidget, homeQuickAddTask, handleGSheetSavePrompt, handleGSheetEditPrompt, handleGSheetCancelEdit, handleGSheetRefresh } from './ui/home.js';
 import { renderTrackingTab } from './ui/tracking.js';
 import { setBulkMonth, setBulkCategory, updateBulkData, updateBulkSummary, getDaysInMonth, renderBulkEntryTab } from './ui/bulk-entry.js';
 import { renderTaskItem, buildAreaTaskListHtml, renderTasksTab } from './ui/tasks-tab.js';
@@ -339,7 +339,7 @@ Object.assign(window, {
 
   // Main UI
   render, switchTab, switchSubTab, setToday, forceHardRefresh, dismissCacheRefreshPrompt,
-  renderHomeTab, renderHomeWidget, homeQuickAddTask, handleGSheetAsk,
+  renderHomeTab, renderHomeWidget, homeQuickAddTask, handleGSheetSavePrompt, handleGSheetEditPrompt, handleGSheetCancelEdit, handleGSheetRefresh,
   renderTrackingTab,
   setBulkMonth, setBulkCategory, updateBulkData, updateBulkSummary, getDaysInMonth, renderBulkEntryTab,
   renderTaskItem, buildAreaTaskListHtml, renderTasksTab,
@@ -406,7 +406,7 @@ const stateProxies = [
   'gcalEvents', 'gcalCalendarList', 'gcalSyncing', 'gcalTokenExpired', 'gcalOfflineQueue',
   'conflictNotifications', 'renderPerf', 'showCacheRefreshPrompt', 'cacheRefreshPromptMessage',
   'CATEGORY_WEIGHTS', 'xp', 'streak', 'achievements', 'dailyFocusDismissed',
-  'gsheetData', 'gsheetSyncing', 'gsheetError', 'gsheetPrompt', 'gsheetResponse', 'gsheetAsking',
+  'gsheetData', 'gsheetSyncing', 'gsheetError', 'gsheetPrompt', 'gsheetResponse', 'gsheetAsking', 'gsheetEditingPrompt',
 ];
 
 stateProxies.forEach(prop => {

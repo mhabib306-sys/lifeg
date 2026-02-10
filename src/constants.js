@@ -114,6 +114,8 @@ export const GSHEET_SPREADSHEET_ID = '14TjFIFtzMPcHgxr1NAtdfrYNmgFRz53XpmYwPQpeA
 export const GSHEET_TAB_GID = 1119187551;
 export const GSHEET_CACHE_KEY = 'nucleusGSheetYesterdayCache';
 export const GSHEET_LAST_SYNC_KEY = 'nucleusGSheetLastSync';
+export const GSHEET_SAVED_PROMPT_KEY = 'nucleusGSheetSavedPrompt';
+export const GSHEET_RESPONSE_CACHE_KEY = 'nucleusGSheetResponseCache';
 export const CONFLICT_NOTIFICATIONS_KEY = 'nucleusConflictNotifications';
 export const APP_VERSION_SEEN_KEY = 'nucleusAppVersionSeen';
 

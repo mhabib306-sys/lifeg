@@ -139,6 +139,15 @@ export async function syncGSheetNow() {
     localStorage.setItem(GSHEET_CACHE_KEY, JSON.stringify(data));
     localStorage.setItem(GSHEET_LAST_SYNC_KEY, String(Date.now()));
     state.gsheetError = null;
+
+    // Auto-run saved prompt if one exists
+    const savedPrompt = localStorage.getItem('nucleusGSheetSavedPrompt');
+    const apiKey = localStorage.getItem(ANTHROPIC_KEY);
+    if (savedPrompt && apiKey) {
+      // Run in background — don't block sync completion
+      autoRunSavedPrompt(savedPrompt);
+    }
+
     return true;
   } catch (err) {
     state.gsheetError = err?.message || 'Google Sheets sync failed.';
@@ -243,7 +252,7 @@ export async function askGSheet(prompt) {
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,
-      system: `You are a concise personal assistant. The user has a spreadsheet with ${tabCount} tab(s): ${tabList}. Here is ALL the data:\n\n${sheetText}\n\nAnswer the user's question about this data. Be brief and direct. Use plain text, no markdown.`,
+      system: `You are a concise personal assistant. The user has a spreadsheet with ${tabCount} tab(s): ${tabList}. Here is ALL the data:\n\n${sheetText}\n\nAnswer the user's question about this data. Be brief and direct. Return your response as clean HTML for display in a widget. Use simple inline styles for visual clarity. Allowed tags: <div>, <span>, <strong>, <em>, <br>, <ul>, <ol>, <li>, <table>, <tr>, <td>, <th>. Use compact styling. Do NOT wrap in <html>, <body>, or <head> tags. Do NOT use markdown.`,
       messages: [{ role: 'user', content: prompt }],
     }),
     signal: controller.signal,
@@ -260,4 +269,24 @@ export async function askGSheet(prompt) {
   const text = data?.content?.[0]?.text || '';
   if (!text) throw new Error('Empty response from AI');
   return text;
+}
+
+/**
+ * Auto-run a saved prompt after sheet data sync. Updates state + cache.
+ */
+async function autoRunSavedPrompt(prompt) {
+  state.gsheetAsking = true;
+  state.gsheetResponse = null;
+  if (typeof window.render === 'function') window.render();
+
+  try {
+    const response = await askGSheet(prompt);
+    state.gsheetResponse = response;
+    localStorage.setItem('nucleusGSheetResponseCache', response);
+  } catch (err) {
+    state.gsheetResponse = `Error: ${err.message || 'Auto-run failed'}`;
+  } finally {
+    state.gsheetAsking = false;
+    if (typeof window.render === 'function') window.render();
+  }
 }
