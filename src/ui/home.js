@@ -791,51 +791,54 @@ export function renderHomeWidget(widget, isEditing) {
             <input id="gsheet-prompt-input" type="text" placeholder="e.g. Summarize my last 14 days..."
               value="${(savedPrompt).replace(/"/g, '&quot;')}"
               onkeydown="if(event.key==='Enter'){event.preventDefault();handleGSheetSavePrompt()}${editing ? ";if(event.key==='Escape'){event.preventDefault();handleGSheetCancelEdit()}" : ''}"
-              class="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-light)] bg-[var(--bg-primary)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition"
+              class="flex-1 text-sm px-3 py-2 bg-[var(--bg-input)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] transition"
             />
-            <button onclick="handleGSheetSavePrompt()" class="px-3 py-2 rounded-lg text-[13px] font-medium text-white bg-[var(--accent)] hover:opacity-90 transition flex-shrink-0" title="Save prompt">
+            <button onclick="handleGSheetSavePrompt()" class="p-2 rounded-lg text-white bg-[var(--accent)] hover:opacity-90 transition flex-shrink-0" title="Save prompt">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
             </button>
-            ${editing ? `<button onclick="handleGSheetCancelEdit()" class="px-2 py-2 rounded-lg text-[13px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition flex-shrink-0" title="Cancel">
+            ${editing ? `<button onclick="handleGSheetCancelEdit()" class="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition flex-shrink-0" title="Cancel">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
             </button>` : ''}
           </div>
-          ${!savedPrompt ? `<div class="mt-3 py-3 text-center text-[var(--text-muted)] text-xs">Set a prompt to auto-generate insights from your sheet data</div>` : ''}
+          ${!savedPrompt ? `<div class="mt-4 py-4 text-center text-[var(--text-muted)] text-xs">Set a prompt to auto-generate insights from your sheet data</div>` : ''}
         `;
         break;
       }
 
       // Has saved prompt — show response
-      let responseHtml = '';
-      if (asking) {
-        responseHtml = `<div class="py-4 text-center text-[var(--text-muted)] text-sm">Thinking...</div>`;
-      } else if (response) {
-        const isError = response.startsWith('Error:');
-        responseHtml = `
-          <div class="max-h-[250px] overflow-y-auto">
-            <div class="gsheet-response text-[13px] leading-relaxed ${isError ? 'text-red-500' : 'text-[var(--text-primary)]'}">${isError ? response.replace(/</g, '&lt;') : response}</div>
-          </div>
-        `;
-      } else {
-        responseHtml = `<div class="py-3 text-center text-[var(--text-muted)] text-xs">No response yet</div>`;
-      }
-
-      // Footer: saved prompt display + edit/refresh actions
       const sheetData = state.gsheetData;
       const tabCount = sheetData?.tabs?.length || 0;
       const tabNames = sheetData?.tabs?.map(t => t.name).join(', ') || '';
 
+      let responseHtml = '';
+      if (asking) {
+        responseHtml = `
+          <div class="py-6 text-center">
+            <svg class="w-5 h-5 animate-spin mx-auto mb-2 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0110 10"/></svg>
+            <span class="text-sm text-[var(--text-muted)]">Generating...</span>
+          </div>`;
+      } else if (response) {
+        const isError = response.startsWith('Error:');
+        responseHtml = `
+          <div class="max-h-[300px] overflow-y-auto">
+            <div class="gsheet-response text-sm leading-relaxed ${isError ? 'text-red-500' : 'text-[var(--text-primary)]'}">${isError ? response.replace(/</g, '&lt;') : response}</div>
+          </div>
+        `;
+      } else {
+        responseHtml = `<div class="py-6 text-center text-[var(--text-muted)] text-xs">No response yet</div>`;
+      }
+
       content = `
         ${responseHtml}
-        <div class="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border-light)]">
+        <div class="flex items-center justify-between mt-3 pt-3 border-t border-[var(--border-light)]">
           <button onclick="handleGSheetEditPrompt()" class="flex-1 min-w-0 text-left group" title="Click to edit prompt">
             <span class="text-[10px] text-[var(--text-muted)] truncate block group-hover:text-[var(--accent)] transition">${savedPrompt.replace(/</g, '&lt;')}</span>
           </button>
-          <div class="flex items-center gap-2 ml-2 flex-shrink-0">
+          <div class="flex items-center gap-3 ml-3 flex-shrink-0">
             ${tabCount ? `<span class="text-[10px] text-[var(--text-muted)]" title="${tabNames}">${tabCount} tabs</span>` : ''}
-            <button onclick="handleGSheetRefresh()" class="inline-flex items-center gap-1 text-[10px] text-[var(--accent)] hover:underline font-medium ${asking || syncing ? 'opacity-50 pointer-events-none' : ''}" ${asking || syncing ? 'disabled' : ''} title="Re-run prompt">
+            <button onclick="handleGSheetRefresh()" class="inline-flex items-center gap-1 text-[10px] text-[var(--accent)] font-medium hover:opacity-80 transition ${asking || syncing ? 'opacity-50 pointer-events-none' : ''}" ${asking || syncing ? 'disabled' : ''} title="Re-run prompt">
               <svg class="w-3 h-3 ${asking ? 'animate-spin' : ''}" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-              ${asking ? '' : 'Refresh'}
+              Refresh
             </button>
           </div>
         </div>
@@ -908,7 +911,7 @@ export function renderHomeWidget(widget, isEditing) {
         <h3 class="widget-title text-sm font-medium text-[var(--text-primary)]">${widget.title}</h3>
         ${editControls}
       </div>
-      <div class="widget-body ${widget.type === 'today-tasks' || widget.type === 'today-events' || widget.type === 'next-tasks' || widget.type === 'perspective' || widget.type === 'gsheet-yesterday' ? 'px-2 py-1' : 'p-4'}">
+      <div class="widget-body ${widget.type === 'today-tasks' || widget.type === 'today-events' || widget.type === 'next-tasks' || widget.type === 'perspective' ? 'px-2 py-1' : 'p-4'}">
         ${content}
       </div>
     </div>
