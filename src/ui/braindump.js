@@ -98,6 +98,11 @@ export async function processBraindump() {
 export function startBraindumpVoiceCapture() {
   if (state.braindumpVoiceRecording || state.braindumpVoiceTranscribing) return;
   state.braindumpVoiceError = null;
+  if (!getAnthropicKey()) {
+    state.braindumpVoiceError = 'Add your Anthropic API key in Settings to use Braindump voice mode.';
+    window.render();
+    return;
+  }
 
   const SpeechCtor = getSpeechRecognitionCtor();
   if (!SpeechCtor) {
@@ -367,6 +372,7 @@ function renderInputStep() {
   const lineCount = state.braindumpRawText ? state.braindumpRawText.split('\n').filter(l => l.trim()).length : 0;
   const voiceActive = state.braindumpVoiceRecording || state.braindumpVoiceTranscribing;
   const voiceLabel = state.braindumpVoiceTranscribing ? 'Processing Voice...' : voiceActive ? 'Stop Voice' : 'Voice Input';
+  const hasAnthropicKey = !!getAnthropicKey();
 
   return `
     <div class="braindump-overlay" onclick="if(event.target===this)closeBraindump()">
@@ -413,7 +419,7 @@ function renderInputStep() {
         <div class="braindump-footer">
           <div class="braindump-footer-left">
             <span id="braindump-count" class="text-xs text-[var(--text-muted)]">${lineCount > 0 ? `${lineCount} item${lineCount !== 1 ? 's' : ''}` : ''}</span>
-            <button onclick="toggleBraindumpVoiceCapture()" class="braindump-voice-btn ${voiceActive ? 'is-recording' : ''}" ${state.braindumpVoiceTranscribing ? 'disabled' : ''}>
+            <button onclick="toggleBraindumpVoiceCapture()" class="braindump-voice-btn ${voiceActive ? 'is-recording' : ''}" ${(state.braindumpVoiceTranscribing || (!hasAnthropicKey && !voiceActive)) ? 'disabled' : ''} title="${hasAnthropicKey ? 'Use Anthropic-backed voice mode' : 'Add Anthropic API key in Settings first'}">
               ${voiceActive ? `
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
               ` : `
