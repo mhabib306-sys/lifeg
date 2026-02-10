@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T08:16:57.322Z",
+  "lastUpdated": "2026-02-10T08:18:28.823Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3131,18 +3131,13 @@
   "taskCategories": [
     {
       "id": "personal",
-      "name": "Self",
-      "color": "#4a90a4"
+      "name": "Personal",
+      "color": "#4A90A4"
     },
     {
       "id": "work",
-      "name": "Breadfast",
-      "color": "#ea39b2"
-    },
-    {
-      "id": "family",
-      "name": "Family",
-      "color": "#C4943D"
+      "name": "Work",
+      "color": "#6B8E5A"
     },
     {
       "id": "health",
@@ -3150,14 +3145,19 @@
       "color": "#E5533D"
     },
     {
-      "id": "cat_1769983795940",
-      "name": "Nancy",
-      "color": "#6b7280"
+      "id": "family",
+      "name": "Family",
+      "color": "#C4943D"
     },
     {
       "id": "learning",
       "name": "Learning",
       "color": "#7C6B8E"
+    },
+    {
+      "id": "cat_1769983795940",
+      "name": "Nancy",
+      "color": "#6b7280"
     },
     {
       "id": "cat_1769987564631",
@@ -3166,6 +3166,11 @@
     }
   ],
   "taskLabels": [
+    {
+      "id": "next",
+      "name": "Next",
+      "color": "#8B5CF6"
+    },
     {
       "id": "urgent",
       "name": "Urgent",
@@ -3200,11 +3205,6 @@
       "id": "label-1770510417167",
       "name": "portfolio",
       "color": "#3b82f6"
-    },
-    {
-      "id": "next",
-      "name": "Next",
-      "color": "#8B5CF6"
     }
   ],
   "taskPeople": [
@@ -3247,7 +3247,7 @@
     {
       "id": "person-1770510421604",
       "name": "Ali Refaai",
-      "email": "ali.refaai@breadfast.com"
+      "email": ""
     },
     {
       "id": "person_1770576686684",
@@ -3295,18 +3295,18 @@
   ],
   "homeWidgets": [
     {
-      "id": "quick-add",
-      "type": "quick-add",
-      "title": "Quick Add Task",
+      "id": "quick-stats",
+      "type": "stats",
+      "title": "Quick Stats",
       "size": "full",
       "order": 0,
       "visible": true
     },
     {
-      "id": "today-tasks",
-      "type": "today-tasks",
-      "title": "Today",
-      "size": "half",
+      "id": "quick-add",
+      "type": "quick-add",
+      "title": "Quick Add Task",
+      "size": "full",
       "order": 1,
       "visible": true
     },
@@ -3319,17 +3319,17 @@
       "visible": true
     },
     {
-      "id": "quick-stats",
-      "type": "stats",
-      "title": "Quick Stats",
+      "id": "todays-score",
+      "type": "score",
+      "title": "Today's Score",
       "size": "half",
       "order": 3,
       "visible": true
     },
     {
-      "id": "glucose",
-      "type": "glucose",
-      "title": "Glucose",
+      "id": "today-tasks",
+      "type": "today-tasks",
+      "title": "Today",
       "size": "half",
       "order": 4,
       "visible": true
@@ -3343,25 +3343,25 @@
       "visible": true
     },
     {
-      "id": "todays-score",
-      "type": "score",
-      "title": "Today's Score",
-      "size": "half",
-      "order": 6,
-      "visible": true
-    },
-    {
       "id": "next-tasks",
       "type": "next-tasks",
       "title": "Next",
       "size": "half",
-      "order": 7,
+      "order": 6,
       "visible": true
     },
     {
       "id": "prayers",
       "type": "prayers",
       "title": "Prayers",
+      "size": "half",
+      "order": 7,
+      "visible": true
+    },
+    {
+      "id": "glucose",
+      "type": "glucose",
+      "title": "Glucose",
       "size": "half",
       "order": 8,
       "visible": true
