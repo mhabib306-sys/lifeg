@@ -5,7 +5,7 @@
 // auth state via onAuthStateChanged listener.
 
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
 import { state } from '../state.js';
 import { GCAL_ACCESS_TOKEN_KEY, GCAL_TOKEN_TIMESTAMP_KEY } from '../constants.js';
 
@@ -22,20 +22,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-export async function signInWithGoogle() {
+export function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (err) {
-    const code = err?.code || '';
-    if (code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request' || code === 'auth/operation-not-supported-in-this-environment') {
-      signInWithRedirect(auth, provider);
-      return;
-    }
+  // Always use redirect — popup opens an isolated webview in Tauri/WKWebView
+  // where the auth session can't communicate back to the main window.
+  // Redirect keeps everything in the same webview context.
+  signInWithRedirect(auth, provider).catch(err => {
     console.error('Google sign-in failed:', err);
     state.authError = err.message;
     window.render();
-  }
+  });
 }
 
 export function signOutUser() {
@@ -61,14 +57,8 @@ export async function signInWithGoogleCalendar(options = {}) {
   }
   provider.setCustomParameters(customParams);
   try {
-    const result = await signInWithPopup(auth, provider);
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const accessToken = credential?.accessToken || result?._tokenResponse?.oauthAccessToken || null;
-    if (accessToken) {
-      localStorage.setItem(GCAL_ACCESS_TOKEN_KEY, accessToken);
-      localStorage.setItem(GCAL_TOKEN_TIMESTAMP_KEY, String(Date.now()));
-      return accessToken;
-    }
+    // Use redirect for calendar auth too — result handled in initAuth's getRedirectResult
+    await signInWithRedirect(auth, provider);
     return null;
   } catch (err) {
     if (mode !== 'silent') {
