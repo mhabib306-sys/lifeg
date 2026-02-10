@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T03:24:51.580Z",
+  "lastUpdated": "2026-02-10T03:24:59.664Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3397,6 +3397,15 @@
       "content": "",
       "createdAt": "2026-02-10T03:24:07.359Z",
       "updatedAt": "2026-02-10T03:24:07.359Z"
+    },
+    "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260211T083000Z": {
+      "eventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260211T083000Z",
+      "calendarId": "h@breadfast.com",
+      "eventId": "8qa8p4v0rfbdrkuhh16ng1ugn0_20260211T083000Z",
+      "title": "⛅️ Morning Brief",
+      "content": "",
+      "createdAt": "2026-02-10T03:24:57.009Z",
+      "updatedAt": "2026-02-10T03:24:57.009Z"
     }
   }
 }
