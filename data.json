@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T14:21:59.919Z",
+  "lastUpdated": "2026-02-10T14:22:46.079Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2480,7 +2480,7 @@
     },
     {
       "id": "task_1770550089075_aufzybsl8",
-      "title": "Discuss with Nancy the Ramadan setup",
+      "title": "Discuss with Nancy the Ramadan setup and inviting family to lunch",
       "notes": "",
       "status": "anytime",
       "completed": false,
@@ -2490,15 +2490,15 @@
       "people": [
         "person-1770490296950"
       ],
-      "deferDate": "2026-02-08",
-      "dueDate": "2026-02-08",
+      "deferDate": "2026-02-12",
+      "dueDate": null,
       "repeat": null,
       "isNote": false,
       "parentId": null,
       "indent": 0,
       "order": 6000,
       "createdAt": "2026-02-08T11:28:09.075Z",
-      "updatedAt": "2026-02-08T17:27:51.589Z",
+      "updatedAt": "2026-02-10T14:22:43.161Z",
       "today": true,
       "flagged": false
     },
