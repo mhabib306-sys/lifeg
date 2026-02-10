@@ -313,7 +313,9 @@ export async function fetchEventsForRange(timeMin, timeMax) {
   if (selected.length === 0) return;
 
   state.gcalSyncing = true;
+  const _sy1 = window.scrollY;
   window.render();
+  window.scrollTo(0, _sy1);
 
   try {
     const allEvents = [];
@@ -367,13 +369,17 @@ export async function fetchEventsForRange(timeMin, timeMax) {
     localStorage.setItem(GCAL_LAST_SYNC_KEY, String(Date.now()));
   } finally {
     state.gcalSyncing = false;
+    const _sy2 = window.scrollY;
     window.render();
+    window.scrollTo(0, _sy2);
   }
 }
 
 export function getGCalEventsForDate(dateStr) {
+  const selected = getSelectedCalendars();
   return state.gcalEvents.filter(e => {
     if (isCancelledEvent(e)) return false;
+    if (selected.length > 0 && !selected.includes(e.calendarId)) return false;
     if (e.allDay) {
       // Google uses exclusive end date for all-day events
       const start = e.start.date;
@@ -617,14 +623,19 @@ export async function syncGCalNow() {
 export function toggleCalendarSelection(calendarId) {
   const selected = getSelectedCalendars();
   const idx = selected.indexOf(calendarId);
-  if (idx >= 0) {
-    selected.splice(idx, 1);
-  } else {
+  const adding = idx < 0;
+  if (adding) {
     selected.push(calendarId);
+  } else {
+    selected.splice(idx, 1);
   }
   setSelectedCalendars(selected);
-  syncGCalNow();
+  // Preserve scroll — render() replaces entire DOM
+  const scrollY = window.scrollY;
   window.render();
+  window.scrollTo(0, scrollY);
+  // Only re-fetch when adding a calendar (its events may not be cached yet)
+  if (adding) syncGCalNow();
 }
 
 export function initGCalSync() {
