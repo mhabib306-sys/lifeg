@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T20:55:08.365Z",
+  "lastUpdated": "2026-02-10T20:55:28.497Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3123,6 +3123,30 @@
       "createdAt": "2026-02-10T03:56:39.359Z",
       "updatedAt": "2026-02-10T03:57:51.995Z",
       "gcalEventId": null
+    },
+    {
+      "id": "task_1770756925894_lk0ty4qhr",
+      "title": "Operations note",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "areaId": "work",
+      "categoryId": "subcat_1770756899235",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": null,
+      "order": 45000,
+      "createdAt": "2026-02-10T20:55:25.894Z",
+      "updatedAt": "2026-02-10T20:55:25.894Z"
     }
   ],
   "deletedTaskTombstones": {
