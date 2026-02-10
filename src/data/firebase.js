@@ -12,6 +12,7 @@ import { GCAL_ACCESS_TOKEN_KEY, GCAL_TOKEN_TIMESTAMP_KEY } from '../constants.js
 
 const GOOGLE_CLIENT_ID = '951877343924-01638ei3dfu0p2q7c8c8q3cdsv67mthh.apps.googleusercontent.com';
 const DEFAULT_REDIRECT_URI = 'https://mhabib306-sys.github.io/lifeg/';
+const GITHUB_PAGES_ORIGIN = 'https://mhabib306-sys.github.io';
 
 // Firebase web app config (client-side — not secret)
 const firebaseConfig = {
@@ -37,8 +38,18 @@ function getOAuthRedirectUri() {
   if (typeof window === 'undefined' || !window.location) return DEFAULT_REDIRECT_URI;
   try {
     const url = new URL(window.location.href);
+    // Google OAuth requires exact string match. Keep GitHub Pages on one canonical URI.
+    if (url.origin === GITHUB_PAGES_ORIGIN) return DEFAULT_REDIRECT_URI;
+    // WebView/custom schemes are not valid Google OAuth redirect URIs.
+    if (!/^https?:$/.test(url.protocol)) return DEFAULT_REDIRECT_URI;
+
     url.search = '';
     url.hash = '';
+
+    // Normalize to avoid /path vs /path/ mismatch.
+    if (!url.pathname.endsWith('/') && !url.pathname.split('/').pop()?.includes('.')) {
+      url.pathname = `${url.pathname}/`;
+    }
     return url.toString();
   } catch {
     return DEFAULT_REDIRECT_URI;
@@ -138,13 +149,28 @@ async function requestCalendarTokenWithGIS(mode = 'interactive') {
   if (!gisReady || !window.google?.accounts?.oauth2) return null;
 
   return new Promise((resolve) => {
+    let settled = false;
+    const finalize = (token = null) => {
+      if (settled) return;
+      settled = true;
+      resolve(token);
+    };
+
+    // Some mismatch/popup failures never invoke callback; avoid hanging forever.
+    const timeoutId = setTimeout(() => finalize(null), 7000);
+
     try {
       const tokenClient = window.google.accounts.oauth2.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
         scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly',
         callback: (resp) => {
-          if (resp?.access_token) resolve(resp.access_token);
-          else resolve(null);
+          clearTimeout(timeoutId);
+          if (resp?.access_token) finalize(resp.access_token);
+          else finalize(null);
+        },
+        error_callback: () => {
+          clearTimeout(timeoutId);
+          finalize(null);
         },
       });
 
@@ -159,8 +185,9 @@ async function requestCalendarTokenWithGIS(mode = 'interactive') {
 
       tokenClient.requestAccessToken(request);
     } catch (err) {
+      clearTimeout(timeoutId);
       console.warn('GIS calendar token request failed:', err);
-      resolve(null);
+      finalize(null);
     }
   });
 }
