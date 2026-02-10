@@ -251,7 +251,7 @@ export const state = {
   // ---- Task view / filter state ----
   activePerspective: initialActivePerspective,
   activeFilterType: (savedViewState.activeFilterType === 'category' ? 'area' : savedViewState.activeFilterType) || 'perspective',
-  activeAreaFilter: savedViewState.activeAreaFilter || savedViewState.activeCategoryFilter || null,
+  activeAreaFilter: savedViewState.activeAreaFilter || null,
   activeLabelFilter: savedViewState.activeLabelFilter || null,
   activePersonFilter: savedViewState.activePersonFilter || null,
 
@@ -288,7 +288,7 @@ export const state = {
   showPersonModal: false,
   showCategoryModal: false,
   editingCategoryId: null,
-  activeCategoryFilter: null,
+  activeCategoryFilter: savedViewState.activeCategoryFilter || null,
 
   // ---- Entity editing IDs ----
   editingAreaId: null,
@@ -297,6 +297,9 @@ export const state = {
   editingPerspectiveId: null,
   perspectiveEmojiPickerOpen: false,
   emojiSearchQuery: '',
+
+  // ---- Sidebar collapse/expand ----
+  collapsedSidebarAreas: new Set(),       // Set<areaId> — which areas have categories hidden
 
   // ---- Sidebar drag & drop ----
   draggedSidebarItem: null,

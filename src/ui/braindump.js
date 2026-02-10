@@ -118,7 +118,14 @@ export function startBraindumpVoiceCapture() {
     state.braindumpVoiceRecording = true;
     state.braindumpVoiceTranscribing = false;
     state.braindumpVoiceError = null;
-    window.render();
+    // Minimal DOM update instead of full render to avoid freezing on mobile
+    const btn = document.getElementById('braindump-voice-btn');
+    if (btn) {
+      btn.classList.add('voice-recording-active');
+      btn.innerHTML = '<svg class="w-5 h-5 text-red-500 animate-pulse" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/></svg>';
+    }
+    const errEl = document.getElementById('braindump-voice-error');
+    if (errEl) errEl.style.display = 'none';
   };
 
   recognition.onresult = (event) => {
@@ -183,7 +190,7 @@ export function startBraindumpVoiceCapture() {
   };
 
   state.braindumpVoiceTranscribing = false;
-  window.render();
+  // Don't call render() before recognition.start() — full DOM replacement on mobile causes freezes
   try {
     recognition.start();
   } catch (err) {
@@ -424,15 +431,13 @@ function renderInputStep() {
             <span class="braindump-tip">voice dictation</span>
           </div>
 
-          ${state.braindumpVoiceError ? `
-            <div class="braindump-voice-error">${escapeHtml(state.braindumpVoiceError)}</div>
-          ` : ''}
+          <div id="braindump-voice-error" class="braindump-voice-error" style="${state.braindumpVoiceError ? '' : 'display:none'}">${state.braindumpVoiceError ? escapeHtml(state.braindumpVoiceError) : ''}</div>
         </div>
 
         <div class="braindump-footer">
           <div class="braindump-footer-left">
             <span id="braindump-count" class="text-xs text-[var(--text-muted)]">${lineCount > 0 ? `${lineCount} item${lineCount !== 1 ? 's' : ''}` : ''}</span>
-            <button onclick="toggleBraindumpVoiceCapture()" class="braindump-voice-btn ${voiceActive ? 'is-recording' : ''}" ${state.braindumpVoiceTranscribing ? 'disabled' : ''} title="${hasAnthropicKey ? 'Voice capture + Anthropic cleanup' : 'Voice capture on-device (add Anthropic key for cleanup)'}">
+            <button id="braindump-voice-btn" onclick="toggleBraindumpVoiceCapture()" class="braindump-voice-btn ${voiceActive ? 'is-recording' : ''}" ${state.braindumpVoiceTranscribing ? 'disabled' : ''} title="${hasAnthropicKey ? 'Voice capture + Anthropic cleanup' : 'Voice capture on-device (add Anthropic key for cleanup)'}">
               ${voiceActive ? `
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
               ` : `

@@ -3,6 +3,7 @@ import { saveTasksData } from '../data/storage.js';
 import { generateTaskId, getLocalDateString } from '../utils.js';
 import { startUndoCountdown } from './undo.js';
 import { DELETED_TASK_TOMBSTONES_KEY } from '../constants.js';
+import { getCategoryById } from './areas.js';
 
 function taskIdEquals(a, b) {
   return String(a) === String(b);
@@ -95,7 +96,7 @@ export function createTask(title, options = {}) {
     flagged: options.flagged || false,
     completed: false,
     completedAt: null,
-    areaId: options.areaId || null,
+    areaId: options.areaId || (options.categoryId ? (getCategoryById(options.categoryId)?.areaId || null) : null),
     categoryId: options.categoryId || null,
     labels: options.labels || [],
     people: options.people || [],       // Array of person IDs

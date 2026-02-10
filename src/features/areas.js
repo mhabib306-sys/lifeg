@@ -33,13 +33,14 @@ function clearEntityDeleted(type, id) {
 
 // ============ AREA CRUD ============
 
-export function createArea(name) {
+export function createArea(name, emoji = '') {
   const colors = ['#4A90A4', '#6B8E5A', '#E5533D', '#C4943D', '#7C6B8E', '#6366F1', '#0EA5E9'];
   const nextColor = colors[state.taskAreas.length % colors.length];
   const area = {
     id: 'cat_' + Date.now(),
     name: name,
     color: nextColor,
+    emoji: emoji || '',
     icon: '\uD83D\uDCC1'
   };
   clearEntityDeleted('taskCategories', area.id);
@@ -72,13 +73,14 @@ export function getAreaById(areaId) {
 
 // ============ CATEGORY CRUD (sub-areas) ============
 
-export function createCategory(name, areaId) {
+export function createCategory(name, areaId, emoji = '') {
   const area = getAreaById(areaId);
   const category = {
     id: 'subcat_' + Date.now(),
     name: name,
     areaId: areaId,
     color: area ? area.color : '#6366F1',
+    emoji: emoji || '',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };

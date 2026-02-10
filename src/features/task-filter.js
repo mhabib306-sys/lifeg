@@ -300,12 +300,9 @@ export function groupTasksByCompletionDate(tasks) {
 
 // Get tasks by area
 export function getTasksByCategory(categoryId) {
-  const today = getLocalDateString();
   return state.tasksData.filter(task => {
     if (task.areaId !== categoryId) return false;
     if (task.completed) return false;
-    // Hide deferred tasks (deferDate in the future)
-    if (task.deferDate && task.deferDate > today) return false;
     return true;
   }).sort((a, b) => {
       if (a.dueDate && !b.dueDate) return -1;
@@ -334,11 +331,9 @@ export function getTasksByLabel(labelId) {
 
 // Get tasks by subcategory (category entity under an area)
 export function getTasksBySubcategory(categoryId) {
-  const today = getLocalDateString();
   return state.tasksData.filter(task => {
     if (task.categoryId !== categoryId) return false;
     if (task.completed) return false;
-    if (task.deferDate && task.deferDate > today) return false;
     return true;
   }).sort((a, b) => {
     if (a.dueDate && !b.dueDate) return -1;

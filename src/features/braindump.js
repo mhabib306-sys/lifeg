@@ -471,7 +471,7 @@ export function parseBraindumpHeuristic(rawText) {
       type: classification.type,
       score: classification.score,
       confidence: classification.confidence,
-      categoryId: metadata.categoryId,
+      areaId: metadata.areaId,
       labels: metadata.labels,
       people: metadata.people,
       deferDate: metadata.deferDate,

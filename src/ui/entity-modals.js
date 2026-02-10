@@ -24,15 +24,18 @@ import { escapeHtml } from '../utils.js';
  */
 export function saveAreaFromModal() {
   const name = document.getElementById('area-name').value.trim();
+  const emoji = document.getElementById('area-emoji')?.value?.trim() || '';
+  const color = document.getElementById('area-color')?.value || '#6366F1';
   if (!name) {
     alert('Please enter an area name');
     return;
   }
 
   if (state.editingAreaId) {
-    updateArea(state.editingAreaId, { name });
+    updateArea(state.editingAreaId, { name, emoji, color });
   } else {
-    createArea(name);
+    const a = createArea(name, emoji);
+    if (color !== a.color) updateArea(a.id, { color });
   }
   state.showAreaModal = false;
   state.editingAreaId = null;
@@ -46,13 +49,14 @@ export function saveCategoryFromModal() {
   const name = document.getElementById('category-name')?.value?.trim();
   const areaId = document.getElementById('category-area')?.value;
   const color = document.getElementById('category-color')?.value || '#6366F1';
+  const emoji = document.getElementById('category-emoji')?.value?.trim() || '';
   if (!name) { alert('Please enter a name'); return; }
   if (!areaId) { alert('Please select an area'); return; }
 
   if (state.editingCategoryId) {
-    updateCategory(state.editingCategoryId, { name, areaId, color });
+    updateCategory(state.editingCategoryId, { name, areaId, color, emoji });
   } else {
-    const cat = createCategory(name, areaId);
+    const cat = createCategory(name, areaId, emoji);
     if (color !== cat.color) updateCategory(cat.id, { color });
   }
   state.showCategoryModal = false;
@@ -442,31 +446,55 @@ export function renderAreaModalHtml() {
   const editingArea = state.editingAreaId
     ? (state.taskAreas || []).find(c => c.id === state.editingAreaId)
     : null;
+  const areaColor = editingArea?.color || '#6366F1';
+  const areaEmoji = editingArea?.emoji || '';
   return `
-    <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showAreaModal=false; editingAreaId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
-      <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
-        <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
-          <h3 id="area-modal-title" class="font-semibold text-charcoal">${editingArea ? 'Edit Area' : 'New Area'}</h3>
-          <button onclick="showAreaModal=false; editingAreaId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showAreaModal=false; editingAreaId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
+      <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
+        <div class="modal-header-enhanced">
+          <h3 id="area-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingArea ? 'Edit Area' : 'New Area'}</h3>
+          <button onclick="showAreaModal=false; editingAreaId=null; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
         </div>
-        <div class="p-6 space-y-4">
+        <div class="modal-body-enhanced space-y-4">
+          <!-- Preview folder icon -->
+          <div class="flex justify-center py-2">
+            <div id="area-folder-preview" class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl" style="background: ${areaColor}20; color: ${areaColor}">
+              ${areaEmoji || '<svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>'}
+            </div>
+          </div>
           <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Name</label>
+            <label class="modal-section-label">Name</label>
             <input type="text" id="area-name" value="${editingArea?.name ? escapeHtml(editingArea.name) : ''}"
               placeholder="e.g., Work, Personal, Health" autofocus maxlength="100"
               onkeydown="if(event.key==='Enter'){event.preventDefault();saveAreaFromModal();}"
-              class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              class="modal-input-enhanced w-full">
+          </div>
+          <div>
+            <label class="modal-section-label">Emoji</label>
+            <input type="text" id="area-emoji" value="${areaEmoji}" placeholder="Pick an emoji (e.g. \uD83D\uDCBC, \uD83C\uDFE0, \uD83D\uDCAA)"
+              maxlength="4" oninput="const preview=document.getElementById('area-folder-preview');if(preview){const v=this.value.trim();preview.innerHTML=v||'<svg class=\\'w-8 h-8\\' viewBox=\\'0 0 24 24\\' fill=\\'currentColor\\'><path d=\\'M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z\\'/></svg>';}"
+              class="modal-input-enhanced w-full">
+          </div>
+          <div>
+            <label class="modal-section-label">Color</label>
+            <div class="flex items-center gap-3">
+              <input type="color" id="area-color" value="${areaColor}" class="w-10 h-10 rounded cursor-pointer border-0"
+                oninput="const preview=document.getElementById('area-folder-preview');if(preview){preview.style.background=this.value+'20';preview.style.color=this.value;}">
+              <span class="text-sm text-[var(--text-muted)]">Folder color</span>
+            </div>
           </div>
         </div>
-        <div class="px-6 py-4 border-t border-softborder flex justify-between">
+        <div class="modal-footer-enhanced">
           ${editingArea ? `
             <button onclick="if(confirm('Delete this area?')){deleteArea('${editingArea.id}'); showAreaModal=false; editingAreaId=null; render();}"
-              class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
+              class="px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-lg transition">Delete</button>
           ` : '<div></div>'}
-          <div class="flex gap-3">
+          <div class="flex gap-2">
             <button onclick="showAreaModal=false; editingAreaId=null; render()"
-              class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
-            <button onclick="saveAreaFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+              class="px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">Cancel</button>
+            <button onclick="saveAreaFromModal()" class="sb-btn px-5 py-2.5 rounded-lg text-sm font-medium">
               ${editingArea ? 'Save' : 'Create'}
             </button>
           </div>
@@ -486,6 +514,7 @@ export function renderCategoryModalHtml() {
   const defaultAreaId = editing ? editing.areaId : (state.modalSelectedArea || (state.taskAreas[0]?.id || ''));
   const defaultArea = state.taskAreas.find(a => a.id === defaultAreaId);
   const defaultColor = editing ? editing.color : (defaultArea ? defaultArea.color : '#6366F1');
+  const catEmoji = editing?.emoji || '';
 
   return `
     <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showCategoryModal=false;editingCategoryId=null;render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
@@ -497,10 +526,22 @@ export function renderCategoryModalHtml() {
           </button>
         </div>
         <div class="modal-body-enhanced space-y-4">
+          <!-- Preview folder icon -->
+          <div class="flex justify-center py-2">
+            <div id="cat-folder-preview" class="w-14 h-14 rounded-xl flex items-center justify-center text-xl" style="background: ${defaultColor}20; color: ${defaultColor}">
+              ${catEmoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 6h-2v2h-2v-2h-2v-2h2v-2h2v2h2v2z"/></svg>'}
+            </div>
+          </div>
           <div>
             <label class="modal-section-label">Name</label>
             <input type="text" id="category-name" value="${editing ? escapeHtml(editing.name) : ''}" placeholder="Category name"
               class="modal-input-enhanced w-full" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();saveCategoryFromModal();}">
+          </div>
+          <div>
+            <label class="modal-section-label">Emoji</label>
+            <input type="text" id="category-emoji" value="${catEmoji}" placeholder="Pick an emoji" maxlength="4"
+              oninput="const p=document.getElementById('cat-folder-preview');if(p){const v=this.value.trim();p.innerHTML=v||'<svg class=\\'w-6 h-6\\' viewBox=\\'0 0 24 24\\' fill=\\'currentColor\\'><path d=\\'M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 6h-2v2h-2v-2h-2v-2h2v-2h2v2h2v2z\\'/></svg>';}"
+              class="modal-input-enhanced w-full">
           </div>
           <div>
             <label class="modal-section-label">Area</label>
@@ -510,7 +551,11 @@ export function renderCategoryModalHtml() {
           </div>
           <div>
             <label class="modal-section-label">Color</label>
-            <input type="color" id="category-color" value="${defaultColor}" class="w-10 h-10 rounded cursor-pointer border-0">
+            <div class="flex items-center gap-3">
+              <input type="color" id="category-color" value="${defaultColor}" class="w-10 h-10 rounded cursor-pointer border-0"
+                oninput="const p=document.getElementById('cat-folder-preview');if(p){p.style.background=this.value+'20';p.style.color=this.value;}">
+              <span class="text-sm text-[var(--text-muted)]">Folder color</span>
+            </div>
           </div>
         </div>
         <div class="modal-footer-enhanced">

@@ -108,7 +108,8 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
   const isTouch = typeof window !== 'undefined'
     && window.matchMedia
     && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-  const category = getAreaById(task.areaId);
+  const area = getAreaById(task.areaId);
+  const subcategory = task.categoryId ? getCategoryById(task.categoryId) : null;
   const labels = (task.labels || []).map(lid => getLabelById(lid)).filter(Boolean);
   const people = (task.people || []).map(pid => getPersonById(pid)).filter(Boolean);
   const today = getLocalDateString();
@@ -118,12 +119,19 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
     const diff = (new Date(task.dueDate + 'T00:00:00') - new Date(today + 'T00:00:00')) / 86400000;
     return diff > 0 && diff <= 2;
   })();
-  const hasMetadata = !compact && (category || labels.length > 0 || people.length > 0 || (showDueDate && task.dueDate) || task.deferDate || (task.repeat && task.repeat.type !== 'none') || task.notes);
+  const hasMetadata = !compact && (area || subcategory || labels.length > 0 || people.length > 0 || (showDueDate && task.dueDate) || task.deferDate || (task.repeat && task.repeat.type !== 'none') || task.notes);
   const isInlineEditing = state.inlineEditingTaskId === task.id;
   const indentLevel = task.indent || 0;
   const indentPx = indentLevel * 24;
   const metaParts = [];
-  if (category) metaParts.push(escapeHtml(category.name));
+  if (area && subcategory) {
+    metaParts.push(`${escapeHtml(area.name)} › ${escapeHtml(subcategory.name)}`);
+  } else if (area) {
+    metaParts.push(escapeHtml(area.name));
+  } else if (subcategory) {
+    const parentArea = getAreaById(subcategory.areaId);
+    metaParts.push(parentArea ? `${escapeHtml(parentArea.name)} › ${escapeHtml(subcategory.name)}` : escapeHtml(subcategory.name));
+  }
   if (labels.length > 0) metaParts.push(labels.map(l => escapeHtml(l.name)).join(', '));
   if (people.length > 0) metaParts.push(people.map(p => escapeHtml(p.name.split(' ')[0])).join(', '));
   if (task.deferDate) metaParts.push(`Start ${formatSmartDate(task.deferDate)}`);
@@ -153,7 +161,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
             ${escapeHtml(task.title)}
           </span>
           <div class="flex items-center gap-1.5 ml-2 flex-shrink-0 text-[10px]">
-            ${category ? `<span class="text-[var(--text-muted)] truncate max-w-[70px]">${escapeHtml(category.name)}</span>` : ''}
+            ${area ? `<span class="text-[var(--text-muted)] truncate max-w-[70px]">${escapeHtml(area.name)}${subcategory ? ' › ' + escapeHtml(subcategory.name) : ''}</span>` : ''}
             ${task.dueDate ? `<span class="${isOverdue ? 'text-red-500 font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : isDueSoon ? 'text-amber-500 font-medium' : 'text-[var(--text-muted)]'}">${formatSmartDate(task.dueDate)}</span>` : ''}
             ${task.repeat && task.repeat.type !== 'none' ? `<span class="text-[var(--text-muted)]" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8A5.87 5.87 0 0 1 6 12c0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></span>` : ''}
           </div>
@@ -279,11 +287,11 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
       <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0" style="background: ${categoryColor}">
-              <svg class="w-6 h-6 text-white/90" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>
+            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 text-2xl" style="background: ${categoryColor}20; color: ${categoryColor}">
+              ${currentCategory.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>'}
             </div>
             <div class="flex-1 min-w-0">
-              <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${currentCategory.name}</h1>
+              <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(currentCategory.name)}</h1>
               <p class="text-[var(--text-muted)] text-[13px] mt-1">${activeTasks} active · ${completedTasks} completed${noteItems.length > 0 ? ` · ${noteItems.length} note${noteItems.length !== 1 ? 's' : ''}` : ''}</p>
             </div>
           </div>
@@ -488,6 +496,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </button>
           </div>
           ${noteItems.length > 0 ? `
+            ${renderNotesBreadcrumb()}
             <div class="py-2">${renderNotesOutliner(currentCategory.id)}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
               <button onclick="window.createRootNote('${currentCategory.id}')"
@@ -544,7 +553,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
   const parentArea = getAreaById(category.areaId);
 
   const catTasks = filteredTasks;
-  const completedTasks = state.tasksData.filter(t => t.categoryId === state.activeCategoryFilter && t.completed && !t.isNote).length;
+  const completedTasks = state.tasksData.filter(t => t.categoryId === category.id && t.completed && !t.isNote).length;
   const activeTasks = catTasks.filter(t => !t.isNote).length;
   const noteItems = catTasks.filter(t => t.isNote);
   const taskItems = catTasks.filter(t => !t.isNote);
@@ -572,8 +581,8 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
       <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0" style="background: ${categoryColor}">
-              <svg class="w-6 h-6 text-white/90" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 6h-2v2h-2v-2h-2v-2h2v-2h2v2h2v2z"/></svg>
+            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 text-2xl" style="background: ${categoryColor}20; color: ${categoryColor}">
+              ${category.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>'}
             </div>
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(category.name)}</h1>
@@ -621,7 +630,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
           ` : ''}
           <div class="flex-1"></div>
           <div class="flex items-center gap-2">
-            <button onclick="window.createRootNote('${category.areaId}')"
+            <button onclick="window.createRootNote({areaId:'${category.areaId}',categoryId:'${category.id}'})"
               class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] transition">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
               Note
@@ -663,7 +672,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
             class="area-chip area-chip-action area-chip-someday">+ Someday</button>
           <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.today && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-today">+ Today</button>
-          <button onclick="window.createRootNote('${category.areaId}')"
+          <button onclick="window.createRootNote({areaId:'${category.areaId}',categoryId:'${category.id}'})"
             class="area-chip area-chip-action area-chip-note">+ Note</button>
         </div>
       </div>
@@ -747,16 +756,41 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
           </div>
         ` : ''}
 
-        ${noteItems.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-[#8B5CF6]" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg>
+        <!-- Notes Section (always show) -->
+        <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+          <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-[var(--accent)]" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>
               <span class="text-sm font-semibold text-[var(--text-primary)]">Notes</span>
               <span class="text-xs text-[var(--text-muted)] ml-1">${noteItems.length}</span>
             </div>
-            <div class="task-list">${noteItems.map(task => renderTaskItem(task)).join('')}</div>
+            <button onclick="window.createRootNote({areaId:'${category.areaId}',categoryId:'${category.id}'})"
+              class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add Note
+            </button>
           </div>
-        ` : ''}
+          ${noteItems.length > 0 ? `
+            ${renderNotesBreadcrumb()}
+            <div class="py-2">${renderNotesOutliner({categoryId: category.id})}</div>
+            <div class="px-4 py-2 border-t border-[var(--border-light)]">
+              <button onclick="window.createRootNote({areaId:'${category.areaId}',categoryId:'${category.id}'})"
+                class="flex items-center gap-2 px-3 py-2 w-full text-sm text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition text-left">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Add another note...
+              </button>
+            </div>
+          ` : `
+            <div class="px-4 py-8 text-center">
+              <p class="text-sm text-[var(--text-muted)] mb-3">No notes in this category yet</p>
+              <button onclick="window.createRootNote({areaId:'${category.areaId}',categoryId:'${category.id}'})"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent-light)] text-[var(--accent)] text-sm font-medium rounded-lg hover:bg-[var(--accent-light)] transition">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Create your first note
+              </button>
+            </div>
+          `}
+        </div>
 
         ${filteredTasks.length === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
@@ -907,36 +941,55 @@ export function renderTasksTab() {
         <div class="py-2 px-2">
           ${state.taskAreas.map(cat => {
             const subcats = getCategoriesByArea(cat.id);
+            const isCollapsed = state.collapsedSidebarAreas.has(cat.id);
+            const hasSubcats = subcats.length > 0;
+            const areaEmoji = cat.emoji || '';
             return `
-            <div onclick="window.showAreaTasks('${cat.id}')"
-              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.showAreaTasks('${cat.id}');}"
-              tabindex="0"
-              role="button"
-              aria-label="View ${escapeHtml(cat.name)} area"
-              class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isAreaActive(cat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}"
-              draggable="true"
-              data-id="${cat.id}"
-              data-type="area">
-              <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-[var(--text-muted)]">${THINGS3_ICONS.area}</span>
-              <span class="flex-1 text-[14px] ${isAreaActive(cat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(cat.name)}</span>
-              <span class="min-w-[20px] text-right text-[12px] group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${categoryCounts[cat.id] || ''}</span>
-              <span onclick="event.stopPropagation(); window.editingAreaId='${cat.id}'; window.showAreaModal=true; window.render()"
-                class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
-            </div>
-            ${subcats.map(subcat => `
-              <div onclick="window.showCategoryTasks('${subcat.id}')"
-                class="sidebar-item w-full pl-10 pr-3 py-1.5 flex items-center gap-2.5 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isSubcatActive(subcat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
-                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: ${subcat.color}"></span>
-                <span class="flex-1 text-[13px] ${isSubcatActive(subcat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(subcat.name)}</span>
-                <span onclick="event.stopPropagation(); window.editingCategoryId='${subcat.id}'; window.showCategoryModal=true; window.render()"
+            <div class="flex items-center gap-0">
+              ${hasSubcats ? `
+                <button onclick="event.stopPropagation(); window.toggleSidebarAreaCollapse('${cat.id}')"
+                  class="w-5 h-5 flex items-center justify-center flex-shrink-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded transition ml-1">
+                  <svg class="w-3 h-3 transition-transform ${isCollapsed ? '' : 'rotate-90'}" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                </button>
+              ` : '<div class="w-5 ml-1"></div>'}
+              <div onclick="window.showAreaTasks('${cat.id}')"
+                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.showAreaTasks('${cat.id}');}"
+                tabindex="0"
+                role="button"
+                aria-label="View ${escapeHtml(cat.name)} area"
+                class="sidebar-item draggable-item flex-1 px-2 py-2 flex items-center gap-3 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isAreaActive(cat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}"
+                draggable="true"
+                data-id="${cat.id}"
+                data-type="area">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style="background: ${cat.color}20; color: ${cat.color}">
+                  ${areaEmoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>'}
+                </span>
+                <span class="flex-1 text-[14px] ${isAreaActive(cat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(cat.name)}</span>
+                <span class="min-w-[20px] text-right text-[12px] group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${categoryCounts[cat.id] || ''}</span>
+                <span onclick="event.stopPropagation(); window.editingAreaId='${cat.id}'; window.showAreaModal=true; window.render()"
                   class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
               </div>
-            `).join('')}
-            <button onclick="event.stopPropagation(); window.editingCategoryId=null; window.showCategoryModal=true; window.modalSelectedArea='${cat.id}'; window.render()"
-              class="w-full pl-10 pr-3 py-1 flex items-center gap-2 text-[12px] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
-              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-              Add Category
-            </button>
+            </div>
+            ${!isCollapsed ? `
+              ${subcats.map(subcat => {
+                const subcatEmoji = subcat.emoji || '';
+                return `
+                <div onclick="window.showCategoryTasks('${subcat.id}')"
+                  class="sidebar-item w-full pl-12 pr-3 py-1.5 flex items-center gap-2.5 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isSubcatActive(subcat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
+                  <span class="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-xs" style="background: ${subcat.color}20; color: ${subcat.color}">
+                    ${subcatEmoji || '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>'}
+                  </span>
+                  <span class="flex-1 text-[13px] ${isSubcatActive(subcat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(subcat.name)}</span>
+                  <span onclick="event.stopPropagation(); window.editingCategoryId='${subcat.id}'; window.showCategoryModal=true; window.render()"
+                    class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
+                </div>
+              `}).join('')}
+              <button onclick="event.stopPropagation(); window.editingCategoryId=null; window.showCategoryModal=true; window.modalSelectedArea='${cat.id}'; window.render()"
+                class="w-full pl-12 pr-3 py-1 flex items-center gap-2 text-[12px] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Add Category
+              </button>
+            ` : ''}
           `;
           }).join('')}
         </div>

@@ -168,7 +168,8 @@ import {
 import { createPrayerInput, createToggle, createNumberInput, createCounter, createScoreCard, createCard } from './ui/input-builders.js';
 import {
   openMobileDrawer, closeMobileDrawer, renderMobileDrawer, renderBottomNav,
-  showAreaTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, showCategoryTasks, scrollToContent
+  showAreaTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, showCategoryTasks, scrollToContent,
+  toggleSidebarAreaCollapse
 } from './ui/mobile.js';
 
 // -- Task Modal --
@@ -363,6 +364,7 @@ Object.assign(window, {
   // Mobile
   openMobileDrawer, closeMobileDrawer, renderMobileDrawer, renderBottomNav,
   showAreaTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, showCategoryTasks, scrollToContent,
+  toggleSidebarAreaCollapse,
 
   // Task Modal
   startInlineEdit, saveInlineEdit, cancelInlineEdit, handleInlineEditKeydown,

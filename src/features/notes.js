@@ -400,12 +400,13 @@ function getOrderBetween(before, after) {
 function parseFilter(filter) {
   if (!filter) return {};
   if (typeof filter === 'string') return { areaId: filter };
-  return filter;
+  return { ...filter };
 }
 
 function getFilteredNotes(filter = null) {
-  const { areaId, labelId, personId } = parseFilter(filter);
+  const { areaId, labelId, personId, categoryId } = parseFilter(filter);
   const all = state.tasksData.filter(t => t.isNote && !t.completed);
+  if (categoryId) return all.filter(n => n.categoryId === categoryId);
   if (areaId) return all.filter(n => n.areaId === areaId);
   if (labelId) return all.filter(n => (n.labels || []).includes(labelId));
   if (personId) return all.filter(n => (n.people || []).includes(personId));
@@ -490,6 +491,9 @@ function getCurrentNoteFilter(currentNote) {
   }
   if (state.activeFilterType === 'person' && state.activePersonFilter) {
     return { personId: state.activePersonFilter };
+  }
+  if (state.activeFilterType === 'subcategory' && state.activeCategoryFilter) {
+    return { categoryId: state.activeCategoryFilter };
   }
   const areaFilter = state.activeAreaFilter || null;
   return areaFilter || currentNote?.areaId || null;
@@ -599,7 +603,7 @@ export function getNoteAncestors(noteId) {
 // ============================================================================
 
 export function createRootNote(filter = null) {
-  const { areaId = null, labelId = null, personId = null } = parseFilter(filter);
+  const { areaId = null, labelId = null, personId = null, categoryId = null } = parseFilter(filter);
   const siblings = state.tasksData
     .filter(t => t.isNote && !t.completed && !t.parentId && (areaId ? t.areaId === areaId : true))
     .sort(compareNotes);
@@ -617,6 +621,7 @@ export function createRootNote(filter = null) {
     completed: false,
     completedAt: null,
     areaId,
+    categoryId,
     labels: labelId ? [labelId] : [],
     people: personId ? [personId] : [],
     deferDate: null,
