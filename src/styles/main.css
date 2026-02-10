@@ -1464,15 +1464,19 @@ img.twemoji {
     overflow-wrap: anywhere;
   }
 
+  .gsheet-response {
+    padding: 10px 4px;
+    line-height: 1.7;
+  }
   .gsheet-response table {
     width: 100%;
     border-collapse: collapse;
     font-size: 12px;
-    margin: 6px 0;
+    margin: 10px 0;
   }
   .gsheet-response th,
   .gsheet-response td {
-    padding: 4px 8px;
+    padding: 8px 10px;
     text-align: left;
     border-bottom: 1px solid var(--border-light);
   }
@@ -1485,11 +1489,15 @@ img.twemoji {
   }
   .gsheet-response ul,
   .gsheet-response ol {
-    padding-left: 18px;
-    margin: 4px 0;
+    padding-left: 20px;
+    margin: 8px 0;
   }
   .gsheet-response li {
-    margin-bottom: 2px;
+    margin-bottom: 6px;
+  }
+  .gsheet-response p,
+  .gsheet-response div {
+    margin-bottom: 6px;
   }
   .gsheet-response strong {
     font-weight: 600;
