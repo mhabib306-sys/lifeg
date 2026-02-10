@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T15:40:52.052Z",
+  "lastUpdated": "2026-02-10T15:40:56.435Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -9068,17 +9068,17 @@
       "visible": true
     },
     {
-      "id": "today-events",
-      "type": "today-events",
-      "title": "Today's Events",
+      "id": "whoop",
+      "type": "whoop",
+      "title": "Whoop",
       "size": "half",
       "order": 6,
       "visible": true
     },
     {
-      "id": "whoop",
-      "type": "whoop",
-      "title": "Whoop",
+      "id": "today-events",
+      "type": "today-events",
+      "title": "Today's Events",
       "size": "half",
       "order": 7,
       "visible": true
