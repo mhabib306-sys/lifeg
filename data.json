@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T21:15:08.786Z",
+  "lastUpdated": "2026-02-10T21:15:59.998Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3243,7 +3243,8 @@
     {
       "id": "personal",
       "name": "Self",
-      "color": "#4a90a4"
+      "color": "#4a90a4",
+      "emoji": "🧍"
     },
     {
       "id": "work",
