@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T15:39:02.138Z",
+  "lastUpdated": "2026-02-10T15:39:40.132Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1681,7 +1681,7 @@
         "dad": false,
         "jana": false,
         "tia": false,
-        "ahmed": false,
+        "ahmed": true,
         "eman": false
       },
       "habits": {
@@ -9227,7 +9227,7 @@
     }
   },
   "xp": {
-    "total": 1807,
+    "total": 1836,
     "history": [
       {
         "base": 20,
@@ -9450,18 +9450,24 @@
         "streakBonus": 0,
         "total": 36,
         "date": "2026-02-09"
+      },
+      {
+        "base": 27,
+        "streakBonus": 2,
+        "total": 29,
+        "date": "2026-02-10"
       }
     ]
   },
   "streak": {
-    "current": 1,
+    "current": 2,
     "longest": 35,
-    "lastLoggedDate": "2026-02-09",
+    "lastLoggedDate": "2026-02-10",
     "shield": {
       "available": true,
       "lastUsed": "2026-02-02"
     },
-    "multiplier": 1
+    "multiplier": 1.1
   },
   "achievements": {
     "unlocked": {
