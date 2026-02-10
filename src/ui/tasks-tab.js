@@ -689,11 +689,15 @@ export function renderTasksTab() {
         const labelsWithTasks = state.taskLabels
           .filter(l => (labelCounts[l.id] || 0) > 0)
           .sort((a, b) => (labelCounts[b.id] || 0) - (labelCounts[a.id] || 0));
+        const labelsWithoutTasks = state.taskLabels
+          .filter(l => !(labelCounts[l.id] || 0))
+          .sort((a, b) => a.name.localeCompare(b.name));
         const MAX_SIDEBAR_LABELS = 10;
         const showAllLabels = state.showAllSidebarLabels;
-        const displayLabels = showAllLabels ? labelsWithTasks : labelsWithTasks.slice(0, MAX_SIDEBAR_LABELS);
-        const hiddenLabelCount = labelsWithTasks.length - MAX_SIDEBAR_LABELS;
-        const totalLabels = state.taskLabels.length;
+        const topLabels = labelsWithTasks.slice(0, MAX_SIDEBAR_LABELS);
+        const overflowLabels = labelsWithTasks.slice(MAX_SIDEBAR_LABELS);
+        const displayLabels = showAllLabels ? [...labelsWithTasks, ...labelsWithoutTasks] : topLabels;
+        const hiddenCount = labelsWithTasks.length + labelsWithoutTasks.length - topLabels.length;
         return `
       <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
@@ -703,7 +707,7 @@ export function renderTasksTab() {
           </button>
         </div>
         <div class="py-2 px-2">
-          ${displayLabels.length === 0 ? `<div class="px-3 py-2 text-[12px] text-[var(--text-muted)]">No tags with active tasks</div>` : displayLabels.map(label => `
+          ${displayLabels.length === 0 ? `<div class="px-3 py-2 text-[12px] text-[var(--text-muted)]">No tags yet</div>` : displayLabels.map(label => `
             <div onclick="window.showLabelTasks('${label.id}')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.showLabelTasks('${label.id}');}"
               tabindex="0"
@@ -722,18 +726,16 @@ export function renderTasksTab() {
                 class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
             </div>
           `).join('')}
-          ${!showAllLabels && hiddenLabelCount > 0 ? `
+          ${!showAllLabels && hiddenCount > 0 ? `
           <button onclick="window.showAllSidebarLabels=true; window.render()"
             class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
-            Show ${hiddenLabelCount} more...
+            View all ${state.taskLabels.length} tags
           </button>` : ''}
-          ${showAllLabels && hiddenLabelCount > 0 ? `
+          ${showAllLabels && hiddenCount > 0 ? `
           <button onclick="window.showAllSidebarLabels=false; window.render()"
             class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
             Show less
           </button>` : ''}
-          ${totalLabels > labelsWithTasks.length ? `
-          <div class="px-3 pt-1 pb-1 text-[11px] text-[var(--text-muted)]">${totalLabels - labelsWithTasks.length} tags without tasks hidden</div>` : ''}
         </div>
       </div>`;
       })()}
@@ -743,11 +745,14 @@ export function renderTasksTab() {
         const peopleWithTasks = state.taskPeople
           .filter(p => (peopleCounts[p.id] || 0) > 0)
           .sort((a, b) => (peopleCounts[b.id] || 0) - (peopleCounts[a.id] || 0));
+        const peopleWithoutTasks = state.taskPeople
+          .filter(p => !(peopleCounts[p.id] || 0))
+          .sort((a, b) => a.name.localeCompare(b.name));
         const MAX_SIDEBAR_PEOPLE = 10;
         const showAll = state.showAllSidebarPeople;
-        const displayPeople = showAll ? peopleWithTasks : peopleWithTasks.slice(0, MAX_SIDEBAR_PEOPLE);
-        const hiddenCount = peopleWithTasks.length - MAX_SIDEBAR_PEOPLE;
-        const totalPeople = state.taskPeople.length;
+        const topPeople = peopleWithTasks.slice(0, MAX_SIDEBAR_PEOPLE);
+        const displayPeople = showAll ? [...peopleWithTasks, ...peopleWithoutTasks] : topPeople;
+        const hiddenCount = peopleWithTasks.length + peopleWithoutTasks.length - topPeople.length;
         return `
       <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
@@ -757,7 +762,7 @@ export function renderTasksTab() {
           </button>
         </div>
         <div class="py-2 px-2">
-          ${displayPeople.length === 0 ? `<div class="px-3 py-2 text-[12px] text-[var(--text-muted)]">No people with active tasks</div>` : displayPeople.map(person => `
+          ${displayPeople.length === 0 ? `<div class="px-3 py-2 text-[12px] text-[var(--text-muted)]">No people yet</div>` : displayPeople.map(person => `
             <div onclick="window.showPersonTasks('${person.id}')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.showPersonTasks('${person.id}');}"
               tabindex="0"
@@ -782,15 +787,13 @@ export function renderTasksTab() {
           ${!showAll && hiddenCount > 0 ? `
           <button onclick="window.showAllSidebarPeople=true; window.render()"
             class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
-            Show ${hiddenCount} more...
+            View all ${state.taskPeople.length} people
           </button>` : ''}
           ${showAll && hiddenCount > 0 ? `
           <button onclick="window.showAllSidebarPeople=false; window.render()"
             class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
             Show less
           </button>` : ''}
-          ${totalPeople > peopleWithTasks.length ? `
-          <div class="px-3 pt-1 pb-1 text-[11px] text-[var(--text-muted)]">${totalPeople - peopleWithTasks.length} people without tasks hidden</div>` : ''}
         </div>
       </div>`;
       })()}
