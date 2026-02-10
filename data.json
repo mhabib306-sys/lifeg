@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T10:04:12.230Z",
+  "lastUpdated": "2026-02-10T10:33:47.191Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3247,7 +3247,7 @@
     {
       "id": "person-1770510421604",
       "name": "Ali Refaai",
-      "email": "ali.refaai@breadfast.com"
+      "email": ""
     },
     {
       "id": "person_1770576686684",
@@ -3327,9 +3327,9 @@
       "visible": true
     },
     {
-      "id": "glucose",
-      "type": "glucose",
-      "title": "Glucose",
+      "id": "todays-score",
+      "type": "score",
+      "title": "Today's Score",
       "size": "half",
       "order": 4,
       "visible": true
@@ -3343,25 +3343,25 @@
       "visible": true
     },
     {
-      "id": "todays-score",
-      "type": "score",
-      "title": "Today's Score",
-      "size": "half",
-      "order": 6,
-      "visible": true
-    },
-    {
       "id": "next-tasks",
       "type": "next-tasks",
       "title": "Next",
       "size": "half",
-      "order": 7,
+      "order": 6,
       "visible": true
     },
     {
       "id": "prayers",
       "type": "prayers",
       "title": "Prayers",
+      "size": "half",
+      "order": 7,
+      "visible": true
+    },
+    {
+      "id": "glucose",
+      "type": "glucose",
+      "title": "Glucose",
       "size": "half",
       "order": 8,
       "visible": true
