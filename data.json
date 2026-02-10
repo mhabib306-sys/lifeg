@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T08:16:24.266Z",
+  "lastUpdated": "2026-02-10T08:16:57.322Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3327,11 +3327,19 @@
       "visible": true
     },
     {
+      "id": "glucose",
+      "type": "glucose",
+      "title": "Glucose",
+      "size": "half",
+      "order": 4,
+      "visible": true
+    },
+    {
       "id": "today-events",
       "type": "today-events",
       "title": "Today's Events",
       "size": "half",
-      "order": 4,
+      "order": 5,
       "visible": true
     },
     {
@@ -3339,7 +3347,7 @@
       "type": "score",
       "title": "Today's Score",
       "size": "half",
-      "order": 5,
+      "order": 6,
       "visible": true
     },
     {
@@ -3347,21 +3355,13 @@
       "type": "next-tasks",
       "title": "Next",
       "size": "half",
-      "order": 6,
+      "order": 7,
       "visible": true
     },
     {
       "id": "prayers",
       "type": "prayers",
       "title": "Prayers",
-      "size": "half",
-      "order": 7,
-      "visible": true
-    },
-    {
-      "id": "glucose",
-      "type": "glucose",
-      "title": "Glucose",
       "size": "half",
       "order": 8,
       "visible": true
