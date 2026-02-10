@@ -70,6 +70,11 @@ export function updateData(category, field, value) {
   state.allData[state.currentDate] = todayData;
   invalidateScoresCache(); // Clear memoization cache when data changes
   saveData();
+  // Process gamification for today
+  if (typeof window.processGamification === 'function') {
+    const result = window.processGamification(state.currentDate);
+    showGamificationToasts(result);
+  }
   window.debouncedSaveToGithub(); // Auto-save to GitHub
   window.render();
 }
@@ -99,6 +104,10 @@ export function toggleDailyField(category, field) {
   state.allData[today][category][field] = !state.allData[today][category][field];
   invalidateScoresCache();
   saveData();
+  if (typeof window.processGamification === 'function') {
+    const result = window.processGamification(today);
+    showGamificationToasts(result);
+  }
   window.debouncedSaveToGithub();
   window.render();
 }
@@ -161,6 +170,44 @@ export function saveHomeWidgets() {
  */
 export function saveCollapsedNotes() {
   localStorage.setItem('collapsedNotes', JSON.stringify([...state.collapsedNotes]));
+}
+
+// ---------------------------------------------------------------------------
+// Gamification toast helper
+// ---------------------------------------------------------------------------
+
+function showGamificationToasts(result) {
+  if (!result) return;
+  // Level-up toast (reuse undo toast pattern for celebration)
+  if (result.xpResult?.levelUp) {
+    const levelInfo = typeof window.getLevelInfo === 'function' ? window.getLevelInfo(state.xp?.total || 0) : null;
+    if (levelInfo) {
+      state.undoAction = {
+        label: `Level Up! Level ${levelInfo.level} \u2014 ${levelInfo.tierIcon} ${levelInfo.tierName}`,
+        snapshot: null,
+        restoreFn: null
+      };
+      state.undoTimerRemaining = 5;
+      if (state.undoTimerId) clearInterval(state.undoTimerId);
+      state.undoTimerId = setInterval(() => {
+        state.undoTimerRemaining--;
+        if (state.undoTimerRemaining <= 0) {
+          clearInterval(state.undoTimerId);
+          state.undoAction = null;
+          state.undoTimerId = null;
+          if (typeof window.render === 'function') window.render();
+        }
+      }, 1000);
+    }
+  }
+  // Mark achievements as notified
+  if (result.newAchievements?.length > 0) {
+    result.newAchievements.forEach(achId => {
+      if (typeof window.markAchievementNotified === 'function') {
+        window.markAchievementNotified(achId);
+      }
+    });
+  }
 }
 
 // ---------------------------------------------------------------------------

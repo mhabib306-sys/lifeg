@@ -28,13 +28,64 @@ import { initAuth } from './data/firebase.js';
 import { render } from './ui/render.js';
 import { migrateTodayFlag } from './features/tasks.js';
 import { ensureHomeWidgets } from './features/home-widgets.js';
+import { rebuildGamification, processGamification } from './features/scoring.js';
 import { APP_VERSION, APP_VERSION_SEEN_KEY } from './constants.js';
+import twemoji from 'twemoji';
 
 // ============================================================================
 // App Initialization (called only after auth confirms a signed-in user)
 // ============================================================================
 
 let appInitialized = false;
+let twemojiObserver = null;
+let twemojiObserverStarted = false;
+let twemojiObserverBusy = false;
+
+function applyTwemoji(root = document.body) {
+  if (!root) return;
+  twemoji.parse(root, {
+    folder: 'svg',
+    ext: '.svg',
+    className: 'twemoji',
+    base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/',
+  });
+}
+
+function setupTwemojiObserver() {
+  if (twemojiObserverStarted || typeof MutationObserver === 'undefined') return;
+  twemojiObserverStarted = true;
+  twemojiObserver = new MutationObserver((mutations) => {
+    if (twemojiObserverBusy) return;
+    const roots = new Set();
+    for (const mutation of mutations) {
+      if (mutation.type === 'childList') {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            roots.add(node);
+          } else if (node.parentElement) {
+            roots.add(node.parentElement);
+          }
+        });
+      } else if (mutation.type === 'characterData' && mutation.target?.parentElement) {
+        roots.add(mutation.target.parentElement);
+      }
+    }
+    if (roots.size === 0) return;
+    twemojiObserverBusy = true;
+    twemojiObserver.disconnect();
+    try {
+      roots.forEach((root) => applyTwemoji(root));
+    } finally {
+      twemojiObserverBusy = false;
+      if (document.body) {
+        twemojiObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+      }
+    }
+  });
+  if (document.body) {
+    twemojiObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+}
 
 function initApp() {
   if (appInitialized) return;
@@ -47,6 +98,14 @@ function initApp() {
 
   // Ensure home widgets are complete
   ensureHomeWidgets();
+
+  // Initialize gamification: if XP history is empty but we have data, rebuild from scratch
+  if ((!state.xp?.history?.length) && Object.keys(state.allData).length > 0) {
+    rebuildGamification();
+  } else {
+    // Process today to keep streak and XP current
+    processGamification(state.currentDate);
+  }
 
   // Initial render
   render();
@@ -139,6 +198,7 @@ function initApp() {
 function bootstrap() {
   // Apply theme immediately so login screen is styled
   applyStoredTheme();
+  setupTwemojiObserver();
 
   const lastSeenVersion = localStorage.getItem(APP_VERSION_SEEN_KEY) || '';
   if (lastSeenVersion && lastSeenVersion !== APP_VERSION) {
@@ -170,10 +230,12 @@ function bootstrap() {
   initAuth((user) => {
     if (user) {
       initApp();
+      applyTwemoji(document.body);
     } else {
       // No user — render login screen
       appInitialized = false;
       render();
+      applyTwemoji(document.body);
     }
   });
 }

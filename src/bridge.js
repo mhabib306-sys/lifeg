@@ -65,7 +65,13 @@ import {
   parsePrayer, calcPrayerScore, invalidateScoresCache,
   calculateScores, getLast30DaysData, getLast30DaysStats, getPersonalBests,
   loadWeights as loadWeightsFromScoring, loadMaxScores as loadMaxScoresFromScoring,
-  updateWeight, resetWeights, updateMaxScore, resetMaxScores
+  updateWeight, resetWeights, updateMaxScore, resetMaxScores,
+  getScoreTier, getLevel, getLevelInfo, getStreakMultiplier,
+  calculateDailyXP, updateStreak, awardDailyXP,
+  checkAchievements, markAchievementNotified,
+  getDailyFocus, processGamification,
+  saveXP, saveStreak, saveAchievements, saveCategoryWeights,
+  updateCategoryWeight, resetCategoryWeights, rebuildGamification
 } from './features/scoring.js';
 
 import {
@@ -258,6 +264,13 @@ Object.assign(window, {
   parsePrayer, calcPrayerScore, invalidateScoresCache,
   calculateScores, getLast30DaysData, getLast30DaysStats, getPersonalBests,
   updateWeight, resetWeights, updateMaxScore, resetMaxScores,
+  // Gamification
+  getScoreTier, getLevel, getLevelInfo, getStreakMultiplier,
+  calculateDailyXP, updateStreak, awardDailyXP,
+  checkAchievements, markAchievementNotified,
+  getDailyFocus, processGamification,
+  saveXP, saveStreak, saveAchievements, saveCategoryWeights,
+  updateCategoryWeight, resetCategoryWeights, rebuildGamification,
 
   // Categories / Labels / People
   createCategory, updateCategory, deleteCategory, getCategoryById,
@@ -388,6 +401,7 @@ const stateProxies = [
   'showBraindump', 'braindumpRawText', 'braindumpParsedItems', 'braindumpStep', 'braindumpEditingIndex', 'braindumpSuccessMessage', 'braindumpProcessing', 'braindumpAIError', 'braindumpFullPage', 'braindumpVoiceRecording', 'braindumpVoiceTranscribing', 'braindumpVoiceError',
   'gcalEvents', 'gcalCalendarList', 'gcalSyncing', 'gcalTokenExpired', 'gcalOfflineQueue',
   'conflictNotifications', 'renderPerf', 'showCacheRefreshPrompt', 'cacheRefreshPromptMessage',
+  'CATEGORY_WEIGHTS', 'xp', 'streak', 'achievements', 'dailyFocusDismissed',
 ];
 
 stateProxies.forEach(prop => {

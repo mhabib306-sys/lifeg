@@ -31,8 +31,13 @@ import {
   JANUARY_DATA,
   DEFAULT_WEIGHTS,
   DEFAULT_MAX_SCORES,
+  DEFAULT_CATEGORY_WEIGHTS,
   MAX_SCORES_KEY,
   WEIGHTS_KEY,
+  XP_KEY,
+  STREAK_KEY,
+  ACHIEVEMENTS_KEY,
+  CATEGORY_WEIGHTS_KEY,
   MEETING_NOTES_KEY,
   GCAL_OFFLINE_QUEUE_KEY,
   CONFLICT_NOTIFICATIONS_KEY,
@@ -365,4 +370,17 @@ export const state = {
   modalIsNote: false,
   modalRepeatEnabled: false,
   modalStateInitialized: false,
+
+  // ---- Gamification ----
+  CATEGORY_WEIGHTS: safeJsonParse(CATEGORY_WEIGHTS_KEY, null) || JSON.parse(JSON.stringify(DEFAULT_CATEGORY_WEIGHTS)),
+  xp: safeJsonParse(XP_KEY, { total: 0, history: [] }),
+  streak: safeJsonParse(STREAK_KEY, {
+    current: 0,
+    longest: 0,
+    lastLoggedDate: null,
+    shield: { available: true, lastUsed: null },
+    multiplier: 1.0
+  }),
+  achievements: safeJsonParse(ACHIEVEMENTS_KEY, { unlocked: {} }),
+  dailyFocusDismissed: null,
 };

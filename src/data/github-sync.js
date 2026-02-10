@@ -22,7 +22,11 @@ import {
   MEETING_NOTES_KEY,
   CONFLICT_NOTIFICATIONS_KEY,
   DELETED_TASK_TOMBSTONES_KEY,
-  DELETED_ENTITY_TOMBSTONES_KEY
+  DELETED_ENTITY_TOMBSTONES_KEY,
+  XP_KEY,
+  STREAK_KEY,
+  ACHIEVEMENTS_KEY,
+  CATEGORY_WEIGHTS_KEY
 } from '../constants.js';
 
 // ---------------------------------------------------------------------------
@@ -473,6 +477,7 @@ export async function saveToGithub() {
       data: state.allData,
       weights: state.WEIGHTS,
       maxScores: state.MAX_SCORES,
+      categoryWeights: state.CATEGORY_WEIGHTS,
       tasks: state.tasksData,
       deletedTaskTombstones: normalizeDeletedTaskTombstones(state.deletedTaskTombstones),
       deletedEntityTombstones: normalizeDeletedEntityTombstones(state.deletedEntityTombstones),
@@ -481,7 +486,10 @@ export async function saveToGithub() {
       taskPeople: state.taskPeople,
       customPerspectives: state.customPerspectives,
       homeWidgets: state.homeWidgets,
-      meetingNotesByEvent: state.meetingNotesByEvent || {}
+      meetingNotesByEvent: state.meetingNotesByEvent || {},
+      xp: state.xp,
+      streak: state.streak,
+      achievements: state.achievements
     };
 
     // Modern UTF-8 safe base64 encoding (replaces deprecated unescape)
@@ -605,6 +613,23 @@ export async function loadCloudData() {
         mergeTaskCollectionsFromCloud(cloudData);
         if (cloudData.meetingNotesByEvent) {
           mergeMeetingNotesData(cloudData.meetingNotesByEvent);
+        }
+        // Restore gamification data
+        if (cloudData.categoryWeights) {
+          state.CATEGORY_WEIGHTS = cloudData.categoryWeights;
+          localStorage.setItem(CATEGORY_WEIGHTS_KEY, JSON.stringify(state.CATEGORY_WEIGHTS));
+        }
+        if (cloudData.xp) {
+          state.xp = cloudData.xp;
+          localStorage.setItem(XP_KEY, JSON.stringify(state.xp));
+        }
+        if (cloudData.streak) {
+          state.streak = cloudData.streak;
+          localStorage.setItem(STREAK_KEY, JSON.stringify(state.streak));
+        }
+        if (cloudData.achievements) {
+          state.achievements = cloudData.achievements;
+          localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(state.achievements));
         }
         console.log('Loaded from GitHub');
         updateSyncStatus('success', 'Loaded from GitHub');

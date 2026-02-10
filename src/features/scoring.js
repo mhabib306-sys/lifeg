@@ -18,6 +18,18 @@ import {
   MAX_SCORES_KEY,
   DEFAULT_WEIGHTS,
   DEFAULT_MAX_SCORES,
+  DEFAULT_CATEGORY_WEIGHTS,
+  CATEGORY_WEIGHTS_KEY,
+  XP_KEY,
+  STREAK_KEY,
+  ACHIEVEMENTS_KEY,
+  LEVEL_THRESHOLDS,
+  LEVEL_TIERS,
+  STREAK_MULTIPLIERS,
+  STREAK_MIN_THRESHOLD,
+  SCORE_TIERS,
+  ACHIEVEMENTS,
+  FOCUS_TIPS,
   defaultDayData
 } from '../constants.js';
 
@@ -223,15 +235,52 @@ export function calculateScores(data) {
     else if (parseInt(nop) === 0) habitScore += (WEIGHTS.habits.nopNo || -3);
   }
 
+  // Raw scores
+  const rawPrayer = prayerScore;
+  const rawDiabetes = Math.round(diabetesScore * 10) / 10;
+  const rawWhoop = Math.round(whoopScore * 10) / 10;
+  const rawFamily = familyScore;
+  const rawHabit = habitScore;
+  const rawTotal = Math.round((prayerScore + diabetesScore + whoopScore + familyScore + habitScore) * 10) / 10;
+
+  // Normalized scores (0-1 ratio per category)
+  const maxPrayer = Math.max(state.MAX_SCORES?.prayer || 35, 1);
+  const maxDiabetes = Math.max(state.MAX_SCORES?.diabetes || 25, 1);
+  const maxWhoop = Math.max(state.MAX_SCORES?.whoop || 14, 1);
+  const maxFamily = Math.max(state.MAX_SCORES?.family || 6, 1);
+  const maxHabits = Math.max(state.MAX_SCORES?.habits || 16, 1);
+
+  const normPrayer = Math.max(0, Math.min(1, rawPrayer / maxPrayer));
+  const normDiabetes = Math.max(0, Math.min(1, rawDiabetes / maxDiabetes));
+  const normWhoop = Math.max(0, Math.min(1, rawWhoop / maxWhoop));
+  const normFamily = Math.max(0, Math.min(1, rawFamily / maxFamily));
+  const normHabits = Math.max(0, Math.min(1, rawHabit / maxHabits));
+
+  // Weighted average overall percentage
+  const cw = state.CATEGORY_WEIGHTS || DEFAULT_CATEGORY_WEIGHTS;
+  const totalWeight = (cw.prayer || 0) + (cw.diabetes || 0) + (cw.whoop || 0) + (cw.family || 0) + (cw.habits || 0);
+  const normOverall = totalWeight > 0
+    ? (normPrayer * (cw.prayer || 0) + normDiabetes * (cw.diabetes || 0) + normWhoop * (cw.whoop || 0) + normFamily * (cw.family || 0) + normHabits * (cw.habits || 0)) / totalWeight
+    : 0;
+
   const result = {
-    prayer: prayerScore,
+    prayer: rawPrayer,
     prayerOnTime: totalOnTime,
     prayerLate: totalLate,
-    diabetes: Math.round(diabetesScore * 10) / 10,
-    whoop: Math.round(whoopScore * 10) / 10,
-    family: familyScore,
-    habit: habitScore,
-    total: Math.round((prayerScore + diabetesScore + whoopScore + familyScore + habitScore) * 10) / 10
+    diabetes: rawDiabetes,
+    whoop: rawWhoop,
+    family: rawFamily,
+    habit: rawHabit,
+    total: rawTotal,
+    // Normalized scores (0-1)
+    normalized: {
+      prayer: normPrayer,
+      diabetes: normDiabetes,
+      whoop: normWhoop,
+      family: normFamily,
+      habits: normHabits,
+      overall: Math.max(0, Math.min(1, normOverall))
+    }
   };
 
   // Cache the result (limit cache size to prevent memory issues)
@@ -475,4 +524,433 @@ export function resetMaxScores() {
   saveMaxScores();
   invalidateScoresCache();
   window.render();
+}
+
+// ============================================================================
+// SCORE COLOR TIER
+// ============================================================================
+
+/**
+ * Get the color tier for a normalized score (0-1)
+ * @param {number} score - Normalized score (0-1)
+ * @returns {{ color: string, label: string, bg: string }}
+ */
+export function getScoreTier(score) {
+  for (let i = SCORE_TIERS.length - 1; i >= 0; i--) {
+    if (score >= SCORE_TIERS[i].min) return SCORE_TIERS[i];
+  }
+  return SCORE_TIERS[0];
+}
+
+// ============================================================================
+// XP + LEVELS
+// ============================================================================
+
+/**
+ * Get the level for a given XP total
+ * @param {number} totalXP
+ * @returns {number} Level (1-based)
+ */
+export function getLevel(totalXP) {
+  for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (totalXP >= LEVEL_THRESHOLDS[i]) return i + 1;
+  }
+  return 1;
+}
+
+/**
+ * Get XP needed for next level and progress within current level
+ * @param {number} totalXP
+ * @returns {{ level: number, currentLevelXP: number, nextLevelXP: number, progress: number, tierName: string, tierIcon: string }}
+ */
+export function getLevelInfo(totalXP) {
+  const level = getLevel(totalXP);
+  const currentLevelXP = LEVEL_THRESHOLDS[level - 1] || 0;
+  const nextLevelXP = LEVEL_THRESHOLDS[level] || currentLevelXP + 1000;
+  const progress = (totalXP - currentLevelXP) / (nextLevelXP - currentLevelXP);
+  const tier = LEVEL_TIERS.find(t => level >= t.min && level <= t.max) || LEVEL_TIERS[0];
+  return {
+    level,
+    currentLevelXP,
+    nextLevelXP,
+    progress: Math.max(0, Math.min(1, progress)),
+    tierName: tier.name,
+    tierIcon: tier.icon
+  };
+}
+
+/**
+ * Get the streak multiplier for a given streak count
+ * @param {number} streakDays
+ * @returns {number} Multiplier (1.0 - 1.5)
+ */
+export function getStreakMultiplier(streakDays) {
+  for (let i = STREAK_MULTIPLIERS.length - 1; i >= 0; i--) {
+    if (streakDays >= STREAK_MULTIPLIERS[i].min) return STREAK_MULTIPLIERS[i].multiplier;
+  }
+  return 1.0;
+}
+
+/**
+ * Calculate XP earned for a given day's normalized overall score
+ * @param {number} overallPercent - 0-1 normalized overall score
+ * @param {number} streakMultiplier - streak multiplier (1.0-1.5)
+ * @returns {{ base: number, streakBonus: number, total: number }}
+ */
+export function calculateDailyXP(overallPercent, streakMultiplier) {
+  const base = Math.floor(overallPercent * 100);
+  const streakBonus = Math.floor(base * (streakMultiplier - 1));
+  return { base, streakBonus, total: base + streakBonus };
+}
+
+// ============================================================================
+// STREAK LOGIC
+// ============================================================================
+
+/**
+ * Update streak state based on today's score.
+ * Should be called after data changes.
+ * @param {string} dateStr - YYYY-MM-DD of the day being scored
+ * @param {number} overallPercent - 0-1 normalized overall score
+ */
+export function updateStreak(dateStr, overallPercent) {
+  const streak = state.streak;
+  const isLogged = overallPercent >= STREAK_MIN_THRESHOLD;
+
+  if (!isLogged) return; // Don't update streak for empty/minimal days
+
+  if (!streak.lastLoggedDate) {
+    // First ever logged day
+    streak.current = 1;
+    streak.lastLoggedDate = dateStr;
+    streak.multiplier = getStreakMultiplier(1);
+  } else if (dateStr === streak.lastLoggedDate) {
+    // Same day, just update multiplier
+    streak.multiplier = getStreakMultiplier(streak.current);
+  } else {
+    const last = new Date(streak.lastLoggedDate);
+    const curr = new Date(dateStr);
+    const diffMs = curr.getTime() - last.getTime();
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 1) {
+      // Consecutive day
+      streak.current++;
+      streak.lastLoggedDate = dateStr;
+    } else if (diffDays === 2 && streak.shield.available) {
+      // Missed one day — use shield
+      streak.shield.available = false;
+      streak.shield.lastUsed = streak.lastLoggedDate; // the missed day
+      streak.current++;
+      streak.lastLoggedDate = dateStr;
+    } else if (diffDays > 1) {
+      // Streak broken
+      streak.current = 1;
+      streak.lastLoggedDate = dateStr;
+    }
+    // diffDays <= 0: going back in time, don't update streak
+    if (diffDays <= 0) return;
+  }
+
+  // Update longest
+  if (streak.current > streak.longest) {
+    streak.longest = streak.current;
+  }
+
+  // Update multiplier
+  streak.multiplier = getStreakMultiplier(streak.current);
+
+  // Regenerate shield on Monday
+  const today = new Date(dateStr);
+  if (today.getDay() === 1 && streak.shield.lastUsed !== dateStr) {
+    streak.shield.available = true;
+  }
+
+  saveStreak();
+}
+
+// ============================================================================
+// XP ACCUMULATION
+// ============================================================================
+
+/**
+ * Award XP for a day if not already awarded.
+ * Should be called after updateStreak().
+ * @param {string} dateStr - YYYY-MM-DD
+ * @param {number} overallPercent - 0-1 normalized score
+ * @returns {{ awarded: boolean, xpData?: object, levelUp?: boolean }}
+ */
+export function awardDailyXP(dateStr, overallPercent) {
+  if (overallPercent < STREAK_MIN_THRESHOLD) return { awarded: false };
+
+  // Check if already awarded for this date
+  const existing = state.xp.history.find(h => h.date === dateStr);
+  if (existing) return { awarded: false };
+
+  const prevLevel = getLevel(state.xp.total);
+  const xpData = calculateDailyXP(overallPercent, state.streak.multiplier);
+  xpData.date = dateStr;
+
+  state.xp.total += xpData.total;
+  state.xp.history.push(xpData);
+
+  // Keep history manageable (last 365 entries)
+  if (state.xp.history.length > 365) {
+    state.xp.history = state.xp.history.slice(-365);
+  }
+
+  const newLevel = getLevel(state.xp.total);
+  saveXP();
+
+  return { awarded: true, xpData, levelUp: newLevel > prevLevel };
+}
+
+// ============================================================================
+// ACHIEVEMENTS
+// ============================================================================
+
+/**
+ * Build achievement context from current state and check for new unlocks.
+ * @param {string} dateStr - current date
+ * @param {object} scores - result from calculateScores()
+ * @returns {string[]} Array of newly unlocked achievement IDs
+ */
+export function checkAchievements(dateStr, scores) {
+  const newlyUnlocked = [];
+
+  // Build context
+  const levelInfo = getLevelInfo(state.xp.total);
+  const dates = Object.keys(state.allData).sort();
+
+  // Count total family days
+  let totalFamilyDays = 0;
+  let totalQuranPages = 0;
+  let perfectPrayerStreak = 0;
+  let maxPerfectPrayerStreak = 0;
+
+  dates.forEach(d => {
+    const dayData = state.allData[d];
+    if (!dayData) return;
+    // Family days
+    const fam = dayData.family || {};
+    if (Object.values(fam).some(v => v)) totalFamilyDays++;
+    // Quran pages
+    totalQuranPages += parseInt(dayData.prayers?.quran) || 0;
+    // Perfect prayer streak
+    let onTime = 0;
+    ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(p => {
+      const { onTime: ot } = parsePrayer(dayData.prayers?.[p]);
+      if (ot >= 1) onTime++;
+    });
+    if (onTime === 5) {
+      perfectPrayerStreak++;
+      if (perfectPrayerStreak > maxPerfectPrayerStreak) maxPerfectPrayerStreak = perfectPrayerStreak;
+    } else {
+      perfectPrayerStreak = 0;
+    }
+  });
+
+  const norm = scores?.normalized || {};
+  const allAbove60 = (norm.prayer >= 0.6) && (norm.diabetes >= 0.6) && (norm.whoop >= 0.6) && (norm.family >= 0.6) && (norm.habits >= 0.6);
+
+  const ctx = {
+    streak: state.streak.current,
+    prayerOnTime: scores?.prayerOnTime || 0,
+    perfectPrayerStreak: maxPerfectPrayerStreak,
+    overallPercent: norm.overall || 0,
+    allCategoriesAbove60: allAbove60,
+    totalFamilyDays,
+    totalDaysLogged: dates.length,
+    totalQuranPages,
+    level: levelInfo.level
+  };
+
+  // Check each achievement
+  ACHIEVEMENTS.forEach(ach => {
+    if (state.achievements.unlocked[ach.id]) return; // Already unlocked
+    if (ach.check(ctx)) {
+      state.achievements.unlocked[ach.id] = { date: dateStr, notified: false };
+      newlyUnlocked.push(ach.id);
+    }
+  });
+
+  if (newlyUnlocked.length > 0) {
+    saveAchievements();
+  }
+
+  return newlyUnlocked;
+}
+
+/**
+ * Mark an achievement as notified (toast shown)
+ * @param {string} achievementId
+ */
+export function markAchievementNotified(achievementId) {
+  if (state.achievements.unlocked[achievementId]) {
+    state.achievements.unlocked[achievementId].notified = true;
+    saveAchievements();
+  }
+}
+
+// ============================================================================
+// DAILY FOCUS
+// ============================================================================
+
+/**
+ * Get the daily focus suggestion based on 7-day category averages.
+ * @returns {{ category: string, avgPercent: number, tip: string } | null}
+ */
+export function getDailyFocus() {
+  const today = new Date();
+  const categoryTotals = { prayer: 0, diabetes: 0, whoop: 0, family: 0, habits: 0 };
+  const categoryCounts = { prayer: 0, diabetes: 0, whoop: 0, family: 0, habits: 0 };
+
+  for (let i = 1; i <= 7; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = getLocalDateString(d);
+    if (state.allData[dateStr]) {
+      const scores = calculateScores(state.allData[dateStr]);
+      if (scores.normalized) {
+        Object.keys(categoryTotals).forEach(cat => {
+          const val = scores.normalized[cat] || 0;
+          categoryTotals[cat] += val;
+          categoryCounts[cat]++;
+        });
+      }
+    }
+  }
+
+  // Need at least 3 days of data
+  const totalDays = Math.max(...Object.values(categoryCounts));
+  if (totalDays < 3) return null;
+
+  // Find weakest category
+  let weakest = null;
+  let weakestAvg = 1;
+  Object.keys(categoryTotals).forEach(cat => {
+    if (categoryCounts[cat] < 1) return;
+    const avg = categoryTotals[cat] / categoryCounts[cat];
+    if (avg < weakestAvg) {
+      weakestAvg = avg;
+      weakest = cat;
+    }
+  });
+
+  if (!weakest) return null;
+
+  const displayNames = { prayer: 'Prayer', diabetes: 'Glucose', whoop: 'Recovery', family: 'Family', habits: 'Habits' };
+  return {
+    category: weakest,
+    displayName: displayNames[weakest] || weakest,
+    avgPercent: Math.round(weakestAvg * 100),
+    tip: FOCUS_TIPS[weakest] || 'Focus on improving this area.'
+  };
+}
+
+/**
+ * Process gamification for a day: update streak, award XP, check achievements.
+ * Call this after any tracking data change.
+ * @param {string} dateStr - YYYY-MM-DD
+ * @returns {{ xpResult: object, newAchievements: string[] }}
+ */
+export function processGamification(dateStr) {
+  const dayData = state.allData[dateStr] || defaultDayData;
+  const scores = calculateScores(dayData);
+  const overallPercent = scores.normalized?.overall || 0;
+
+  // Update streak
+  updateStreak(dateStr, overallPercent);
+
+  // Award XP
+  const xpResult = awardDailyXP(dateStr, overallPercent);
+
+  // Check achievements
+  const newAchievements = checkAchievements(dateStr, scores);
+
+  return { xpResult, newAchievements };
+}
+
+// ============================================================================
+// GAMIFICATION PERSISTENCE
+// ============================================================================
+
+export function saveXP() {
+  localStorage.setItem(XP_KEY, JSON.stringify(state.xp));
+}
+
+export function saveStreak() {
+  localStorage.setItem(STREAK_KEY, JSON.stringify(state.streak));
+}
+
+export function saveAchievements() {
+  localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(state.achievements));
+}
+
+export function saveCategoryWeights() {
+  localStorage.setItem(CATEGORY_WEIGHTS_KEY, JSON.stringify(state.CATEGORY_WEIGHTS));
+}
+
+export function updateCategoryWeight(category, value) {
+  state.CATEGORY_WEIGHTS[category] = parseFloat(value) || 0;
+  saveCategoryWeights();
+  invalidateScoresCache();
+  window.debouncedSaveToGithub();
+  window.render();
+}
+
+export function resetCategoryWeights() {
+  state.CATEGORY_WEIGHTS = JSON.parse(JSON.stringify(DEFAULT_CATEGORY_WEIGHTS));
+  saveCategoryWeights();
+  invalidateScoresCache();
+  window.debouncedSaveToGithub();
+  window.render();
+}
+
+/**
+ * Recalculate all gamification data from scratch (for rebuilding after sync or import)
+ */
+export function rebuildGamification() {
+  // Reset XP and streak
+  state.xp = { total: 0, history: [] };
+  state.streak = {
+    current: 0, longest: 0, lastLoggedDate: null,
+    shield: { available: true, lastUsed: null }, multiplier: 1.0
+  };
+
+  // Process all dates in order
+  const dates = Object.keys(state.allData).sort();
+  dates.forEach(dateStr => {
+    const dayData = state.allData[dateStr];
+    if (!dayData) return;
+    const scores = calculateScores(dayData);
+    const overallPercent = scores.normalized?.overall || 0;
+    updateStreak(dateStr, overallPercent);
+    // Award XP without level-up notifications during rebuild
+    if (overallPercent >= STREAK_MIN_THRESHOLD) {
+      const existing = state.xp.history.find(h => h.date === dateStr);
+      if (!existing) {
+        const xpData = calculateDailyXP(overallPercent, state.streak.multiplier);
+        xpData.date = dateStr;
+        state.xp.total += xpData.total;
+        state.xp.history.push(xpData);
+      }
+    }
+  });
+
+  // Trim history
+  if (state.xp.history.length > 365) {
+    state.xp.history = state.xp.history.slice(-365);
+  }
+
+  // Check all achievements
+  if (dates.length > 0) {
+    const lastDate = dates[dates.length - 1];
+    const lastScores = calculateScores(state.allData[lastDate] || defaultDayData);
+    checkAchievements(lastDate, lastScores);
+  }
+
+  saveXP();
+  saveStreak();
+  saveAchievements();
 }

@@ -6,7 +6,7 @@
 
 import { state } from '../state.js';
 import { getLocalDateString } from '../utils.js';
-import { THINGS3_ICONS, WEATHER_ICONS, WEATHER_DESCRIPTIONS, defaultDayData, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
+import { THINGS3_ICONS, WEATHER_ICONS, WEATHER_DESCRIPTIONS, defaultDayData, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, ACHIEVEMENTS, SCORE_TIERS } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // External function references — these will be replaced with proper module
@@ -39,6 +39,13 @@ function render() {
 function getFilteredTasks(perspectiveId) {
   if (typeof window.getFilteredTasks === 'function') return window.getFilteredTasks(perspectiveId);
   return [];
+}
+
+function getTierForScore(score) {
+  for (let i = SCORE_TIERS.length - 1; i >= 0; i--) {
+    if (score >= SCORE_TIERS[i].min) return SCORE_TIERS[i];
+  }
+  return SCORE_TIERS[0];
 }
 
 function formatHomeEventTime(event) {
@@ -452,50 +459,88 @@ export function renderHomeWidget(widget, isEditing) {
     case 'score': {
       const todayData2 = state.allData[today] || JSON.parse(JSON.stringify(defaultDayData));
       const rawScores2 = calculateScores(todayData2);
-      const s = {
-        total: rawScores2?.total ?? 0,
-        prayer: rawScores2?.prayer ?? 0,
-        diabetes: rawScores2?.diabetes ?? 0,
-        whoop: rawScores2?.whoop ?? 0,
-        family: rawScores2?.family ?? 0,
-        habit: rawScores2?.habit ?? 0
+      const norm = rawScores2?.normalized || { prayer: 0, diabetes: 0, whoop: 0, family: 0, habits: 0, overall: 0 };
+      const overallPct = Math.round(norm.overall * 100);
+
+      // Level info
+      const levelInfo = typeof window.getLevelInfo === 'function' ? window.getLevelInfo(state.xp?.total || 0) : { level: 1, tierName: 'Spark', tierIcon: '✨', progress: 0, nextLevelXP: 100, currentLevelXP: 0 };
+      const streakCount = state.streak?.current || 0;
+      const streakMultiplier = state.streak?.multiplier || 1.0;
+
+      // Today's XP
+      const todayXpEntry = (state.xp?.history || []).find(h => h.date === today);
+      const todayXP = todayXpEntry?.total || 0;
+
+      // Get tier color for overall
+      const overallTier = getTierForScore(norm.overall);
+
+      // Helper for mini ring SVG
+      const miniRing = (pct, color) => {
+        const r = 16;
+        const circ = 2 * Math.PI * r;
+        const dash = circ * Math.max(0, Math.min(1, pct));
+        return `<svg class="score-mini-ring" width="40" height="40" viewBox="0 0 40 40">
+          <circle cx="20" cy="20" r="${r}" fill="none" stroke="var(--border-light, #e5e7eb)" stroke-width="3"/>
+          <circle cx="20" cy="20" r="${r}" fill="none" stroke="${color}" stroke-width="3"
+            stroke-dasharray="${dash} ${circ}" stroke-linecap="round"
+            transform="rotate(-90 20 20)" class="transition-all duration-500"/>
+          <text x="20" y="21" text-anchor="middle" dominant-baseline="middle"
+            class="text-[9px] font-bold" fill="${color}">${Math.round(pct * 100)}</text>
+        </svg>`;
       };
-      const totalMax = Math.max(Number(state.MAX_SCORES?.total) || 0, 1);
-      const pct = Math.max(0, Math.min(100, Math.round((s.total / totalMax) * 100)));
+
+      const categories = [
+        { key: 'prayer', label: 'Prayer', pct: norm.prayer },
+        { key: 'diabetes', label: 'Glucose', pct: norm.diabetes },
+        { key: 'whoop', label: 'Whoop', pct: norm.whoop },
+        { key: 'family', label: 'Family', pct: norm.family },
+        { key: 'habits', label: 'Habits', pct: norm.habits }
+      ];
 
       content = `
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-3xl font-bold text-[var(--accent)]">${s.total.toFixed(0)} <span class="text-base font-normal text-[var(--text-muted)]">/ ${state.MAX_SCORES.total}</span></p>
+        <div class="flex items-center gap-4">
+          <!-- Main ring -->
+          <div class="score-main-ring-container flex-shrink-0">
+            <svg class="score-main-ring" width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="var(--border-light, #e5e7eb)" stroke-width="5"/>
+              <circle cx="40" cy="40" r="34" fill="none" stroke="${overallTier.color}" stroke-width="5"
+                stroke-dasharray="${2 * Math.PI * 34 * norm.overall} ${2 * Math.PI * 34}" stroke-linecap="round"
+                transform="rotate(-90 40 40)" class="transition-all duration-700"/>
+              <text x="40" y="37" text-anchor="middle" dominant-baseline="middle"
+                class="text-lg font-bold" fill="${overallTier.color}">${overallPct}%</text>
+              <text x="40" y="50" text-anchor="middle" dominant-baseline="middle"
+                class="text-[8px]" fill="var(--text-muted, #9ca3af)">${overallTier.label}</text>
+            </svg>
           </div>
-          <div class="text-right">
-            <div class="text-2xl font-bold text-[var(--text-primary)]">${pct}%</div>
+          <!-- Level + streak + XP -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-bold text-[var(--text-primary)]">Level ${levelInfo.level}</span>
+              <span class="text-xs text-[var(--text-muted)]">${levelInfo.tierIcon} ${levelInfo.tierName}</span>
+            </div>
+            ${streakCount > 0 ? `
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="text-xs font-semibold text-amber-500">🔥 ${streakCount}-day streak</span>
+                ${streakMultiplier > 1 ? `<span class="text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full font-medium">${streakMultiplier}x</span>` : ''}
+              </div>
+            ` : `<div class="text-xs text-[var(--text-muted)] mb-1">No active streak</div>`}
+            <div class="text-xs text-[var(--text-muted)]">+${todayXP} XP today · ${(state.xp?.total || 0).toLocaleString()} total</div>
+            <!-- XP progress bar -->
+            <div class="h-1.5 bg-[var(--bg-secondary)] rounded-full mt-1.5 overflow-hidden">
+              <div class="h-full bg-[var(--accent)] rounded-full transition-all duration-500" style="width: ${Math.round(levelInfo.progress * 100)}%"></div>
+            </div>
+            <div class="text-[9px] text-[var(--text-muted)] mt-0.5">${(state.xp?.total || 0).toLocaleString()} / ${levelInfo.nextLevelXP.toLocaleString()} XP</div>
           </div>
         </div>
-        <div class="h-2 bg-[var(--bg-secondary)] rounded-full mt-3 overflow-hidden">
-          <div class="h-full bg-[var(--accent)] rounded-full transition-all duration-500" style="width: ${pct}%"></div>
-        </div>
-        <div class="score-grid grid grid-cols-5 gap-2 mt-3">
-          <div class="text-center">
-            <div class="text-[10px] text-[var(--text-muted)]">Prayers</div>
-            <div class="text-sm font-semibold text-[var(--text-primary)]">${s.prayer.toFixed(0)}</div>
-          </div>
-          <div class="text-center">
-            <div class="text-[10px] text-[var(--text-muted)]">Glucose</div>
-            <div class="text-sm font-semibold text-[var(--text-primary)]">${s.diabetes.toFixed(0)}</div>
-          </div>
-          <div class="text-center">
-            <div class="text-[10px] text-[var(--text-muted)]">Whoop</div>
-            <div class="text-sm font-semibold text-[var(--text-primary)]">${s.whoop.toFixed(0)}</div>
-          </div>
-          <div class="text-center">
-            <div class="text-[10px] text-[var(--text-muted)]">Family</div>
-            <div class="text-sm font-semibold text-[var(--text-primary)]">${s.family.toFixed(0)}</div>
-          </div>
-          <div class="text-center">
-            <div class="text-[10px] text-[var(--text-muted)]">Habits</div>
-            <div class="text-sm font-semibold text-[var(--text-primary)]">${s.habit.toFixed(0)}</div>
-          </div>
+        <!-- Category mini rings -->
+        <div class="score-categories-grid grid grid-cols-5 gap-1 mt-3 pt-3 border-t border-[var(--border-light)]">
+          ${categories.map(c => {
+            const tier = getTierForScore(c.pct);
+            return `<div class="text-center">
+              ${miniRing(c.pct, tier.color)}
+              <div class="text-[9px] text-[var(--text-muted)] mt-0.5">${c.label}</div>
+            </div>`;
+          }).join('')}
         </div>
       `;
       break;
@@ -833,6 +878,25 @@ export function renderHomeTab() {
           </div>
         </div>
       ` : ''}
+
+      <!-- Daily Focus Card -->
+      ${(() => {
+        if (state.dailyFocusDismissed === today) return '';
+        const focus = typeof window.getDailyFocus === 'function' ? window.getDailyFocus() : null;
+        if (!focus) return '';
+        return `
+          <div class="daily-focus-card bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-4 flex items-start gap-3">
+            <span class="text-xl flex-shrink-0 mt-0.5">\uD83D\uDCCC</span>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold text-[var(--text-primary)]">Focus Today: ${focus.displayName}</div>
+              <div class="text-xs text-[var(--text-muted)] mt-0.5">Your 7-day avg is ${focus.avgPercent}% \u2014 ${focus.tip}</div>
+            </div>
+            <button onclick="state.dailyFocusDismissed = '${today}'; render()" class="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded transition flex-shrink-0" title="Dismiss">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+          </div>
+        `;
+      })()}
 
       <!-- Widget Grid -->
       <div class="widget-grid grid ${isMobileView ? 'grid-cols-1' : 'grid-cols-2'} gap-4">

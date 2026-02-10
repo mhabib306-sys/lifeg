@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.17.7 - Homebase';
+export const APP_VERSION = '4.18.0 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -263,6 +263,95 @@ export const DEFAULT_MAX_SCORES = {
 };
 
 export const MAX_SCORES_KEY = 'lifeGamificationMaxScores';
+
+// Gamification keys
+export const XP_KEY = 'lifeGamificationXP';
+export const STREAK_KEY = 'lifeGamificationStreak';
+export const ACHIEVEMENTS_KEY = 'lifeGamificationAchievements';
+export const CATEGORY_WEIGHTS_KEY = 'lifeGamificationCategoryWeights';
+
+// Category weights for normalized scoring (sum to 100)
+export const DEFAULT_CATEGORY_WEIGHTS = {
+  prayer: 20,
+  diabetes: 20,
+  whoop: 20,
+  family: 20,
+  habits: 20
+};
+
+// XP Level thresholds (logarithmic curve)
+export const LEVEL_THRESHOLDS = [
+  0, 100, 250, 450, 700, 1000, 1400, 1900, 2500, 3200,     // 1-10
+  4000, 4900, 5900, 7000, 8200, 9500, 10900, 12400, 14000, 15700, // 11-20
+  17500, 19400, 21400, 23500, 25700, 28000, 30400, 32900, 35500, 38200, // 21-30
+  41000, 44000, 47200, 50600, 54200, 58000, 62000, 66200, 70600, 75200, // 31-40
+  80000, 85000, 90200, 95600, 101200, 107000, 113000, 119200, 125600, 132200 // 41-50
+];
+
+// Level tier names
+export const LEVEL_TIERS = [
+  { min: 1, max: 4, name: 'Spark', icon: '✨' },
+  { min: 5, max: 9, name: 'Ember', icon: '🔥' },
+  { min: 10, max: 14, name: 'Flame', icon: '🔥' },
+  { min: 15, max: 19, name: 'Blaze', icon: '🔥' },
+  { min: 20, max: 24, name: 'Inferno', icon: '🔥' },
+  { min: 25, max: 999, name: 'Phoenix', icon: '🔥' }
+];
+
+// Streak multiplier thresholds
+export const STREAK_MULTIPLIERS = [
+  { min: 1, max: 1, multiplier: 1.0 },
+  { min: 2, max: 3, multiplier: 1.1 },
+  { min: 4, max: 6, multiplier: 1.2 },
+  { min: 7, max: 13, multiplier: 1.3 },
+  { min: 14, max: 29, multiplier: 1.4 },
+  { min: 30, max: Infinity, multiplier: 1.5 }
+];
+
+// Minimum score percentage to count as a "logged day" for streaks
+export const STREAK_MIN_THRESHOLD = 0.20;
+
+// Score color tiers
+export const SCORE_TIERS = [
+  { min: 0, max: 0.39, color: '#EF4444', label: 'Needs Work', bg: 'bg-red-500' },
+  { min: 0.40, max: 0.59, color: '#F59E0B', label: 'Getting There', bg: 'bg-amber-500' },
+  { min: 0.60, max: 0.79, color: '#3B82F6', label: 'Solid', bg: 'bg-blue-500' },
+  { min: 0.80, max: 0.89, color: '#10B981', label: 'Great', bg: 'bg-emerald-500' },
+  { min: 0.90, max: 1.0, color: '#F59E0B', label: 'Outstanding', bg: 'bg-amber-400' }
+];
+
+// Achievement definitions
+export const ACHIEVEMENTS = [
+  // Streaks
+  { id: 'first-steps', name: 'First Steps', desc: '3-day streak', icon: '🌱', category: 'streak', check: (ctx) => ctx.streak >= 3 },
+  { id: 'weekly-warrior', name: 'Weekly Warrior', desc: '7-day streak', icon: '⚔️', category: 'streak', check: (ctx) => ctx.streak >= 7 },
+  { id: 'fortnight-focus', name: 'Fortnight Focus', desc: '14-day streak', icon: '🎯', category: 'streak', check: (ctx) => ctx.streak >= 14 },
+  { id: 'monthly-master', name: 'Monthly Master', desc: '30-day streak', icon: '👑', category: 'streak', check: (ctx) => ctx.streak >= 30 },
+  { id: 'quarterly-quest', name: 'Quarterly Quest', desc: '90-day streak', icon: '🏔️', category: 'streak', check: (ctx) => ctx.streak >= 90 },
+  { id: 'year-of-discipline', name: 'Year of Discipline', desc: '365-day streak', icon: '🏆', category: 'streak', check: (ctx) => ctx.streak >= 365 },
+  // Category mastery
+  { id: 'perfect-prayer', name: 'Perfect Prayer', desc: 'All 5 prayers on time', icon: '🕌', category: 'mastery', check: (ctx) => ctx.prayerOnTime >= 5 },
+  { id: 'prayer-streak-7', name: 'Prayer Streak', desc: '7 consecutive perfect prayer days', icon: '📿', category: 'mastery', check: (ctx) => ctx.perfectPrayerStreak >= 7 },
+  { id: 'green-day', name: 'Green Day', desc: 'Overall score >= 90%', icon: '💚', category: 'mastery', check: (ctx) => ctx.overallPercent >= 0.90 },
+  { id: 'balanced-day', name: 'Balanced Day', desc: 'All 5 categories >= 60%', icon: '⚖️', category: 'mastery', check: (ctx) => ctx.allCategoriesAbove60 },
+  { id: 'family-first', name: 'Family First', desc: '30 cumulative family check-in days', icon: '👨‍👩‍👧‍👦', category: 'mastery', check: (ctx) => ctx.totalFamilyDays >= 30 },
+  // Milestones
+  { id: 'day-one', name: 'Day One', desc: 'First day logged', icon: '🚀', category: 'milestone', check: (ctx) => ctx.totalDaysLogged >= 1 },
+  { id: 'century', name: 'Century', desc: '100 days logged', icon: '💯', category: 'milestone', check: (ctx) => ctx.totalDaysLogged >= 100 },
+  { id: 'quran-scholar', name: 'Quran Scholar', desc: '50 cumulative Quran pages', icon: '📖', category: 'milestone', check: (ctx) => ctx.totalQuranPages >= 50 },
+  { id: 'level-10', name: 'Level 10', desc: 'Reach Level 10', icon: '🔟', category: 'milestone', check: (ctx) => ctx.level >= 10 },
+  { id: 'level-20', name: 'Level 20', desc: 'Reach Level 20', icon: '2️⃣0️⃣', category: 'milestone', check: (ctx) => ctx.level >= 20 },
+  { id: 'level-30', name: 'Level 30', desc: 'Reach Level 30', icon: '3️⃣0️⃣', category: 'milestone', check: (ctx) => ctx.level >= 30 }
+];
+
+// Daily focus tips per category
+export const FOCUS_TIPS = {
+  prayer: 'Try to pray all 5 on time today.',
+  diabetes: 'Watch your glucose — stay in range.',
+  whoop: 'Prioritize sleep and recovery.',
+  family: 'Try calling a family member today.',
+  habits: 'Focus on exercise and reading.'
+};
 
 // Braindump: action verbs used to classify items as tasks
 export const BRAINDUMP_ACTION_VERBS = [

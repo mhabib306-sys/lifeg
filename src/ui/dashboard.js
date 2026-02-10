@@ -1,61 +1,138 @@
 // ============================================================================
 // Dashboard Tab UI Module
 // ============================================================================
-// Renders the analytics dashboard with Chart.js charts,
-// 30-day stats, personal bests, category records, and lifetime stats.
+// Renders the analytics dashboard with Chart.js charts, 30-day heatmap,
+// personal bests, achievements gallery, and lifetime stats.
 
 import { state } from '../state.js';
-import { fmt } from '../utils.js';
-import { getLast30DaysData, getLast30DaysStats, getPersonalBests } from '../features/scoring.js';
+import { fmt, getLocalDateString } from '../utils.js';
+import { getLast30DaysData, getLast30DaysStats, getPersonalBests, calculateScores, getLevelInfo, getScoreTier } from '../features/scoring.js';
 import { getAccentColor } from '../data/github-sync.js';
+import { ACHIEVEMENTS, SCORE_TIERS, defaultDayData } from '../constants.js';
 import Chart from 'chart.js/auto';
 
 /**
+ * Get tier color for a normalized score
+ */
+function getTierColor(score) {
+  for (let i = SCORE_TIERS.length - 1; i >= 0; i--) {
+    if (score >= SCORE_TIERS[i].min) return SCORE_TIERS[i].color;
+  }
+  return SCORE_TIERS[0].color;
+}
+
+/**
+ * Render a 30-day heatmap calendar (GitHub contribution-style)
+ */
+function renderHeatmap(last30Data) {
+  const cells = last30Data.map(d => {
+    const dayData = state.allData[d.date];
+    if (!dayData) {
+      return `<div class="heatmap-cell w-full aspect-square rounded-sm bg-[var(--bg-secondary)] border border-[var(--border-light)]" title="${d.label}: No data"></div>`;
+    }
+    const scores = calculateScores(dayData);
+    const pct = scores.normalized?.overall || 0;
+    const color = getTierColor(pct);
+    return `<div class="heatmap-cell w-full aspect-square rounded-sm border border-[var(--border-light)]" style="background-color: ${color}; opacity: ${0.3 + pct * 0.7}" title="${d.label}: ${Math.round(pct * 100)}%"></div>`;
+  });
+
+  return `
+    <div class="heatmap-grid grid gap-1" style="grid-template-columns: repeat(10, 1fr);">
+      ${cells.join('')}
+    </div>
+    <div class="flex items-center justify-end gap-2 mt-2">
+      <span class="text-[10px] text-[var(--text-muted)]">Less</span>
+      ${SCORE_TIERS.map(t => `<div class="w-3 h-3 rounded-sm" style="background-color: ${t.color};" title="${t.label}"></div>`).join('')}
+      <span class="text-[10px] text-[var(--text-muted)]">More</span>
+    </div>
+  `;
+}
+
+/**
+ * Render the achievements gallery
+ */
+function renderAchievementsGallery() {
+  const unlocked = state.achievements?.unlocked || {};
+  const categories = ['streak', 'mastery', 'milestone'];
+  const categoryLabels = { streak: 'Streaks', mastery: 'Category Mastery', milestone: 'Milestones' };
+
+  return categories.map(cat => {
+    const achs = ACHIEVEMENTS.filter(a => a.category === cat);
+    if (achs.length === 0) return '';
+    return `
+      <div class="mb-4">
+        <h4 class="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">${categoryLabels[cat]}</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+          ${achs.map(ach => {
+            const isUnlocked = !!unlocked[ach.id];
+            const unlockedDate = isUnlocked ? new Date(unlocked[ach.id].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+            return `
+              <div class="achievement-card rounded-lg p-3 border transition ${isUnlocked
+                ? 'bg-[var(--bg-card)] border-amber-300/50 shadow-sm'
+                : 'bg-[var(--bg-secondary)] border-[var(--border-light)] opacity-50'}">
+                <div class="flex items-start gap-2">
+                  <span class="text-xl ${isUnlocked ? '' : 'grayscale'}">${ach.icon}</span>
+                  <div class="min-w-0">
+                    <div class="text-xs font-semibold text-[var(--text-primary)] truncate">${ach.name}</div>
+                    <div class="text-[10px] text-[var(--text-muted)]">${ach.desc}</div>
+                    ${isUnlocked ? `<div class="text-[9px] text-amber-600 mt-0.5">${unlockedDate}</div>` : ''}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/**
  * Render the dashboard tab with 30-day overview, charts,
- * personal bests, category records, and lifetime stats.
- * Uses Chart.js for bar and line charts (initialized via setTimeout
- * after DOM insertion).
+ * personal bests, achievements, and lifetime stats.
  * @returns {string} HTML string for the dashboard tab
  */
 export function renderDashboardTab() {
   const stats = getLast30DaysStats();
   const last30Data = getLast30DaysData();
   const bests = getPersonalBests();
+  const levelInfo = getLevelInfo(state.xp?.total || 0);
+  const streakCount = state.streak?.current || 0;
+  const totalXP = state.xp?.total || 0;
+  const unlockedCount = Object.keys(state.achievements?.unlocked || {}).length;
+  const totalAchievements = ACHIEVEMENTS.length;
 
+  // Chart.js — update breakdown to show percentages
   setTimeout(() => {
-    const weekCtx = document.getElementById('weekChart');
-    if (weekCtx) {
-      if (state.weekChart) state.weekChart.destroy();
-      state.weekChart = new Chart(weekCtx, {
-        type: 'bar',
-        data: {
-          labels: last30Data.map(d => d.label),
-          datasets: [{ label: 'Total Score', data: last30Data.map(d => d.total), backgroundColor: getAccentColor(), borderRadius: 4 }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true },
-            x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: 10 } } }
-          }
-        }
-      });
-    }
-
     const breakdownCtx = document.getElementById('breakdownChart');
     if (breakdownCtx) {
       if (state.breakdownChart) state.breakdownChart.destroy();
+
+      // Build percentage datasets from normalized scores
+      const normData = last30Data.map(d => {
+        const dayData = state.allData[d.date];
+        if (!dayData) return { prayer: 0, diabetes: 0, whoop: 0, family: 0, habits: 0 };
+        const scores = calculateScores(dayData);
+        const n = scores.normalized || {};
+        return {
+          prayer: Math.round((n.prayer || 0) * 100),
+          diabetes: Math.round((n.diabetes || 0) * 100),
+          whoop: Math.round((n.whoop || 0) * 100),
+          family: Math.round((n.family || 0) * 100),
+          habits: Math.round((n.habits || 0) * 100)
+        };
+      });
+
       state.breakdownChart = new Chart(breakdownCtx, {
         type: 'line',
         data: {
           labels: last30Data.map(d => d.label),
           datasets: [
-            { label: 'Prayer', data: last30Data.map(d => d.prayer), borderColor: '#4A90A4', tension: 0.3, pointRadius: 2 },
-            { label: 'Whoop', data: last30Data.map(d => d.whoop), borderColor: '#7C6B8E', tension: 0.3, pointRadius: 2 },
-            { label: 'Family', data: last30Data.map(d => d.family), borderColor: '#C4943D', tension: 0.3, pointRadius: 2 },
-            { label: 'Habit', data: last30Data.map(d => d.habit), borderColor: '#6B7280', tension: 0.3, pointRadius: 2 }
+            { label: 'Prayer', data: normData.map(d => d.prayer), borderColor: '#4A90A4', tension: 0.3, pointRadius: 2 },
+            { label: 'Glucose', data: normData.map(d => d.diabetes), borderColor: '#EF4444', tension: 0.3, pointRadius: 2 },
+            { label: 'Whoop', data: normData.map(d => d.whoop), borderColor: '#7C6B8E', tension: 0.3, pointRadius: 2 },
+            { label: 'Family', data: normData.map(d => d.family), borderColor: '#C4943D', tension: 0.3, pointRadius: 2 },
+            { label: 'Habits', data: normData.map(d => d.habits), borderColor: '#6B7280', tension: 0.3, pointRadius: 2 }
           ]
         },
         options: {
@@ -63,7 +140,7 @@ export function renderDashboardTab() {
           maintainAspectRatio: false,
           plugins: { legend: { position: 'bottom' } },
           scales: {
-            y: { beginAtZero: true },
+            y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } },
             x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: 10 } } }
           }
         }
@@ -72,119 +149,106 @@ export function renderDashboardTab() {
   }, 100);
 
   return `
-    <div class="space-y-8">
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)] border border-[var(--border-light)]">
-          <div class="sb-section-title text-[var(--text-muted)]">30-Day Score</div>
-          <div class="text-3xl font-bold mt-1 text-[var(--accent)]">${fmt(stats.totalScore)}</div>
-        </div>
-        <div class="sb-card rounded-lg p-5">
-          <div class="sb-section-title text-charcoal/50">Days Logged</div>
-          <div class="text-3xl font-bold mt-1 text-charcoal">${stats.daysLogged}/30</div>
-        </div>
-        <div class="sb-card rounded-lg p-5">
-          <div class="sb-section-title text-charcoal/50">Avg RHR</div>
-          <div class="text-3xl font-bold mt-1 text-charcoal">${fmt(stats.avgRHR)} <span class="text-base font-normal text-charcoal/50">bpm</span></div>
-        </div>
-        <div class="sb-card rounded-lg p-5">
-          <div class="sb-section-title text-charcoal/50">Avg Sleep</div>
-          <div class="text-3xl font-bold mt-1 text-charcoal">${stats.avgSleep} <span class="text-base font-normal text-charcoal/50">hrs</span></div>
-        </div>
-        <div class="sb-card rounded-lg p-5">
-          <div class="sb-section-title text-charcoal/50">Family Check-ins</div>
-          <div class="text-3xl font-bold mt-1 text-charcoal">${fmt(stats.totalFamilyCheckins)}</div>
+    <div class="space-y-6">
+      <!-- Level + XP + Streak banner -->
+      <div class="sb-card rounded-xl p-5 bg-[var(--bg-card)] border border-[var(--border-light)]">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-lg font-bold shadow-md">
+              ${levelInfo.level}
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-lg font-bold text-[var(--text-primary)]">Level ${levelInfo.level}</span>
+                <span class="text-sm text-[var(--text-muted)]">${levelInfo.tierIcon} ${levelInfo.tierName}</span>
+              </div>
+              <div class="text-xs text-[var(--text-muted)] mt-0.5">${totalXP.toLocaleString()} / ${levelInfo.nextLevelXP.toLocaleString()} XP</div>
+              <div class="h-2 bg-[var(--bg-secondary)] rounded-full mt-1.5 overflow-hidden w-48">
+                <div class="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500" style="width: ${Math.round(levelInfo.progress * 100)}%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-6">
+            <div class="text-center">
+              <div class="text-2xl font-bold ${streakCount > 0 ? 'text-amber-500' : 'text-[var(--text-muted)]'}">${streakCount > 0 ? '\uD83D\uDD25' : ''} ${streakCount}</div>
+              <div class="text-[10px] text-[var(--text-muted)]">Day Streak</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-[var(--accent)]">${unlockedCount}</div>
+              <div class="text-[10px] text-[var(--text-muted)]">of ${totalAchievements}</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-        <h3 class="font-semibold text-charcoal mb-4">Last 30 Days <span class="text-coral">→</span></h3>
-        <div class="h-72"><canvas id="weekChart"></canvas></div>
+      <!-- 30-Day Heatmap -->
+      <div class="sb-card rounded-xl p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
+        <h3 class="font-semibold text-[var(--text-primary)] mb-4">Last 30 Days</h3>
+        ${renderHeatmap(last30Data)}
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 pt-4 border-t border-[var(--border-light)]">
+          <div>
+            <div class="text-xs text-[var(--text-muted)]">Days Logged</div>
+            <div class="text-xl font-bold text-[var(--text-primary)]">${stats.daysLogged}/30</div>
+          </div>
+          <div>
+            <div class="text-xs text-[var(--text-muted)]">Avg Daily</div>
+            <div class="text-xl font-bold text-[var(--accent)]">${fmt(stats.avgDaily)} pts</div>
+          </div>
+          <div>
+            <div class="text-xs text-[var(--text-muted)]">Family Check-ins</div>
+            <div class="text-xl font-bold text-[var(--text-primary)]">${fmt(stats.totalFamilyCheckins)}</div>
+          </div>
+          <div>
+            <div class="text-xs text-[var(--text-muted)]">On-Time Prayers</div>
+            <div class="text-xl font-bold text-[var(--text-primary)]">${fmt(stats.totalOnTimePrayers)}</div>
+          </div>
+        </div>
       </div>
 
-      <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-        <h3 class="font-semibold text-charcoal mb-4">Score Breakdown <span class="text-coral">→</span></h3>
+      <!-- Category Breakdown (Percentages) -->
+      <div class="sb-card rounded-xl p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
+        <h3 class="font-semibold text-[var(--text-primary)] mb-4">Category Trends (%)</h3>
         <div class="h-72"><canvas id="breakdownChart"></canvas></div>
+      </div>
+
+      <!-- Achievements Gallery -->
+      <div class="sb-card rounded-xl p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
+        <h3 class="font-semibold text-[var(--text-primary)] mb-4">Achievements <span class="text-sm font-normal text-[var(--text-muted)]">${unlockedCount}/${totalAchievements}</span></h3>
+        ${renderAchievementsGallery()}
       </div>
 
       <!-- Personal Bests Section -->
       ${bests ? `
-      <div class="sb-card rounded-lg p-6 bg-warmgray border-2 border-coral/20">
-        <h3 class="font-semibold text-charcoal mb-4">Personal Bests <span class="text-coral">→</span></h3>
+      <div class="sb-card rounded-xl p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
+        <h3 class="font-semibold text-[var(--text-primary)] mb-4">Personal Bests</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="bg-[var(--bg-card)] rounded-lg p-4 border border-[var(--border)]">
-            <div class="text-3xl font-bold text-coral">${fmt(bests.highestDayScore.value)}</div>
-            <div class="text-sm text-charcoal/70 mt-1">Best Day Score</div>
-            <div class="text-xs text-charcoal/40 mt-1">${bests.highestDayScore.date ? new Date(bests.highestDayScore.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '\u2014'}</div>
+          <div class="bg-[var(--bg-secondary)] rounded-lg p-4">
+            <div class="text-3xl font-bold text-[var(--accent)]">${fmt(bests.highestDayScore.value)}</div>
+            <div class="text-sm text-[var(--text-secondary)] mt-1">Best Day Score</div>
+            <div class="text-xs text-[var(--text-muted)] mt-1">${bests.highestDayScore.date ? new Date(bests.highestDayScore.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '\u2014'}</div>
           </div>
-          <div class="bg-[var(--bg-card)] rounded-lg p-4 border border-[var(--border)]">
-            <div class="text-3xl font-bold text-coral">${fmt(bests.highestWeekScore.value)}</div>
-            <div class="text-sm text-charcoal/70 mt-1">Best Week Score</div>
-            <div class="text-xs text-charcoal/40 mt-1">${bests.highestWeekScore.weekStart ? 'Week of ' + new Date(bests.highestWeekScore.weekStart).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '\u2014'}</div>
+          <div class="bg-[var(--bg-secondary)] rounded-lg p-4">
+            <div class="text-3xl font-bold text-[var(--accent)]">${fmt(bests.highestWeekScore.value)}</div>
+            <div class="text-sm text-[var(--text-secondary)] mt-1">Best Week Score</div>
+            <div class="text-xs text-[var(--text-muted)] mt-1">${bests.highestWeekScore.weekStart ? 'Week of ' + new Date(bests.highestWeekScore.weekStart).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '\u2014'}</div>
           </div>
-          <div class="bg-[var(--bg-card)] rounded-lg p-4 border border-[var(--border)]">
-            <div class="text-3xl font-bold text-coral">${fmt(bests.longestStreak.value)}</div>
-            <div class="text-sm text-charcoal/70 mt-1">Longest Streak</div>
-            <div class="text-xs text-charcoal/40 mt-1">${bests.longestStreak.value > 0 ? 'days in a row' : '\u2014'}</div>
+          <div class="bg-[var(--bg-secondary)] rounded-lg p-4">
+            <div class="text-3xl font-bold text-[var(--accent)]">${fmt(bests.longestStreak.value)}</div>
+            <div class="text-sm text-[var(--text-secondary)] mt-1">Longest Streak</div>
+            <div class="text-xs text-[var(--text-muted)] mt-1">${bests.longestStreak.value > 0 ? 'days in a row' : '\u2014'}</div>
           </div>
-          <div class="bg-[var(--bg-card)] rounded-lg p-4 border border-[var(--border)]">
-            <div class="text-3xl font-bold text-coral flex items-center gap-2">${fmt(bests.currentStreak)} ${bests.currentStreak > 0 ? '🔥' : ''}</div>
-            <div class="text-sm text-charcoal/70 mt-1">Current Streak</div>
-            <div class="text-xs text-charcoal/40 mt-1">${bests.currentStreak > 0 ? 'Keep it going!' : 'Log today to start!'}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-          <h3 class="font-semibold text-charcoal mb-4">Category Records <span class="text-coral">→</span></h3>
-          <div class="space-y-3">
-            <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
-              <div>
-                <div class="text-sm font-medium text-charcoal">🕌 Best Prayer Day</div>
-                <div class="text-xs text-charcoal/50">${bests.bestPrayerDay.date ? new Date(bests.bestPrayerDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '\u2014'}</div>
-              </div>
-              <div class="text-xl font-bold text-coral">${fmt(bests.bestPrayerDay.value)} pts</div>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
-              <div>
-                <div class="text-sm font-medium text-charcoal">⏱️ Best Whoop Day</div>
-                <div class="text-xs text-charcoal/50">${bests.bestWhoopDay.date ? new Date(bests.bestWhoopDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '\u2014'}</div>
-              </div>
-              <div class="text-xl font-bold text-coral">${fmt(bests.bestWhoopDay.value)} pts</div>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
-              <div>
-                <div class="text-sm font-medium text-charcoal">📖 Most Quran Pages</div>
-                <div class="text-xs text-charcoal/50">${bests.mostQuranPages.date ? new Date(bests.mostQuranPages.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '\u2014'}</div>
-              </div>
-              <div class="text-xl font-bold text-coral">${fmt(bests.mostQuranPages.value)} pages</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-          <h3 class="font-semibold text-charcoal mb-4">Lifetime Stats <span class="text-coral">→</span></h3>
-          <div class="space-y-3">
-            <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
-              <div class="text-sm font-medium text-charcoal">Total Days Logged</div>
-              <div class="text-xl font-bold text-charcoal">${fmt(bests.totalDaysLogged)}</div>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
-              <div class="text-sm font-medium text-charcoal">Perfect Prayer Days</div>
-              <div class="text-xl font-bold text-coral flex items-center gap-1">${fmt(bests.perfectPrayerDays)} <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.94 5.95 6.57.96-4.76 4.63 1.12 6.56L12 17.27l-5.87 3.09 1.12-6.56-4.76-4.63 6.57-.96z"/></svg></div>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-warmgray rounded border border-softborder">
-              <div class="text-sm font-medium text-charcoal">Perfect Prayer Rate</div>
-              <div class="text-xl font-bold text-coral">${bests.totalDaysLogged > 0 ? Math.round((bests.perfectPrayerDays / bests.totalDaysLogged) * 100) : 0}%</div>
-            </div>
+          <div class="bg-[var(--bg-secondary)] rounded-lg p-4">
+            <div class="text-3xl font-bold text-[var(--accent)]">${fmt(bests.perfectPrayerDays)}</div>
+            <div class="text-sm text-[var(--text-secondary)] mt-1">Perfect Prayer Days</div>
+            <div class="text-xs text-[var(--text-muted)] mt-1">${bests.totalDaysLogged > 0 ? Math.round((bests.perfectPrayerDays / bests.totalDaysLogged) * 100) + '% rate' : '\u2014'}</div>
           </div>
         </div>
       </div>
       ` : `
-      <div class="sb-card rounded-lg p-8 bg-[var(--bg-card)] text-center">
+      <div class="sb-card rounded-xl p-8 bg-[var(--bg-card)] border border-[var(--border-light)] text-center">
         <div class="mb-4 flex justify-center"><svg class="w-10 h-10 text-[var(--accent)] opacity-40" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3v-8zm4-4h2v12H7V9zm4-4h2v16h-2V5zm4 8h2v8h-2v-8zm4-4h2v12h-2V9z"/></svg></div>
-        <h3 class="font-semibold text-charcoal mb-2">Start Your Journey!</h3>
-        <p class="text-charcoal/50 text-sm">Log your first day to start tracking personal bests.</p>
+        <h3 class="font-semibold text-[var(--text-primary)] mb-2">Start Your Journey!</h3>
+        <p class="text-[var(--text-muted)] text-sm">Log your first day to start tracking personal bests.</p>
       </div>
       `}
     </div>
