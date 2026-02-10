@@ -11,7 +11,7 @@ import { state } from '../state.js';
 import { GCAL_ACCESS_TOKEN_KEY, GCAL_TOKEN_TIMESTAMP_KEY } from '../constants.js';
 
 const GOOGLE_CLIENT_ID = '951877343924-01638ei3dfu0p2q7c8c8q3cdsv67mthh.apps.googleusercontent.com';
-const REDIRECT_URI = 'https://mhabib306-sys.github.io/lifeg/';
+const DEFAULT_REDIRECT_URI = 'https://mhabib306-sys.github.io/lifeg/';
 
 // Firebase web app config (client-side — not secret)
 const firebaseConfig = {
@@ -33,13 +33,26 @@ function generateNonce() {
   return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
 }
 
+function getOAuthRedirectUri() {
+  if (typeof window === 'undefined' || !window.location) return DEFAULT_REDIRECT_URI;
+  try {
+    const url = new URL(window.location.href);
+    url.search = '';
+    url.hash = '';
+    return url.toString();
+  } catch {
+    return DEFAULT_REDIRECT_URI;
+  }
+}
+
 export function signInWithGoogle() {
   const nonce = generateNonce();
   sessionStorage.setItem('oauth_nonce', nonce);
+  const redirectUri = getOAuthRedirectUri();
 
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
+    redirect_uri: redirectUri,
     response_type: 'id_token token',
     scope: 'openid email profile',
     nonce: nonce,
@@ -72,12 +85,26 @@ export async function signInWithGoogleCalendar(options = {}) {
     return gisToken;
   }
 
-  // Do not fallback to redirect flow here, because any origin/redirect mismatch
-  // leads to a hard OAuth error page and breaks app UX.
-  if (mode === 'interactive') {
-    state.gcalError = 'Google Calendar/Contacts authorization failed. In Google Cloud Console, add Authorized JavaScript origin: https://mhabib306-sys.github.io';
-    window.render?.();
-  }
+  if (mode === 'silent') return null;
+
+  // Interactive fallback for environments where GIS token client is blocked.
+  // Uses current URL as redirect URI to avoid /lifeg vs /lifeg/ mismatches.
+  const nonce = generateNonce();
+  const redirectUri = getOAuthRedirectUri();
+  sessionStorage.setItem('oauth_nonce', nonce);
+  sessionStorage.setItem('oauth_calendar', '1');
+
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: redirectUri,
+    response_type: 'id_token token',
+    scope: 'openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly',
+    nonce: nonce,
+    include_granted_scopes: 'true',
+    prompt: 'consent'
+  });
+
+  window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
   return null;
 }
 

@@ -158,10 +158,16 @@ async function fetchConnectionsPage({ pageToken = '', syncToken = '', requestSyn
   if (res.status === 410) return { syncExpired: true };
   if (!res.ok) {
     let message = `Google Contacts request failed (${res.status})`;
+    let insufficientScope = false;
     try {
       const body = await res.json();
       if (body?.error?.message) message = body.error.message;
+      const reasons = Array.isArray(body?.error?.errors) ? body.error.errors.map(e => String(e?.reason || '').toLowerCase()) : [];
+      insufficientScope = reasons.includes('insufficientpermissions') || /insufficient authentication scopes/i.test(String(body?.error?.message || ''));
     } catch { /* ignore */ }
+    if (res.status === 403 && insufficientScope) {
+      return { insufficientScope: true, error: message };
+    }
     return { error: message };
   }
 
@@ -184,6 +190,7 @@ export async function syncGoogleContactsNow() {
     let allConnections = [];
     let fullResyncAttempted = false;
 
+    let scopeRecoveryAttempted = false;
     while (true) {
       const data = await fetchConnectionsPage({
         pageToken,
@@ -213,6 +220,16 @@ export async function syncGoogleContactsNow() {
         continue;
       }
       if (data.error) {
+        if (data.insufficientScope && !scopeRecoveryAttempted) {
+          scopeRecoveryAttempted = true;
+          const refreshed = await window.signInWithGoogleCalendar?.({ mode: 'silent' });
+          if (refreshed) {
+            pageToken = '';
+            continue;
+          }
+          state.gcontactsError = 'Google Contacts permission is missing. Please use Reconnect in Google Calendar settings to grant Contacts access.';
+          return false;
+        }
         state.gcontactsError = data.error;
         return false;
       }
