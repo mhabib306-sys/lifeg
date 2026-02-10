@@ -32,6 +32,7 @@
 
 ## Widgets
 Home widgets are single-column on phones for readability.
+Home includes a "Today's Events" widget that surfaces Google Calendar events for the current day.
 
 ## Calendar
 - Calendar grid uses fixed row heights so empty days match filled days.

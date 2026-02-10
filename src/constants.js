@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.15.1 - Homebase';
+export const APP_VERSION = '4.16.0 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -116,11 +116,12 @@ export const DEFAULT_HOME_WIDGETS = [
   { id: 'weather', type: 'weather', title: 'Weather', size: 'half', order: 2, visible: true },
   { id: 'todays-score', type: 'score', title: "Today's Score", size: 'half', order: 3, visible: true },
   { id: 'today-tasks', type: 'today-tasks', title: 'Today', size: 'half', order: 4, visible: true },
-  { id: 'next-tasks', type: 'next-tasks', title: 'Next', size: 'half', order: 5, visible: true },
-  { id: 'prayers', type: 'prayers', title: 'Prayers', size: 'half', order: 6, visible: true },
-  { id: 'glucose', type: 'glucose', title: 'Glucose', size: 'half', order: 7, visible: true },
-  { id: 'whoop', type: 'whoop', title: 'Whoop', size: 'half', order: 8, visible: true },
-  { id: 'habits', type: 'habits', title: 'Habits', size: 'half', order: 9, visible: true }
+  { id: 'today-events', type: 'today-events', title: "Today's Events", size: 'half', order: 5, visible: true },
+  { id: 'next-tasks', type: 'next-tasks', title: 'Next', size: 'half', order: 6, visible: true },
+  { id: 'prayers', type: 'prayers', title: 'Prayers', size: 'half', order: 7, visible: true },
+  { id: 'glucose', type: 'glucose', title: 'Glucose', size: 'half', order: 8, visible: true },
+  { id: 'whoop', type: 'whoop', title: 'Whoop', size: 'half', order: 9, visible: true },
+  { id: 'habits', type: 'habits', title: 'Habits', size: 'half', order: 10, visible: true }
 ];
 
 // Default categories (Areas)

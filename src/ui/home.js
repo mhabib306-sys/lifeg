@@ -41,6 +41,18 @@ function getFilteredTasks(perspectiveId) {
   return [];
 }
 
+function formatHomeEventTime(event) {
+  if (!event) return '';
+  if (event.allDay) return 'All day';
+  if (!event.start?.dateTime) return '';
+  const start = new Date(event.start.dateTime);
+  const startText = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  if (!event.end?.dateTime) return startText;
+  const end = new Date(event.end.dateTime);
+  const endText = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  return `${startText} - ${endText}`;
+}
+
 // ============================================================================
 // renderHomeWidget — renders a single home dashboard widget
 // ============================================================================
@@ -220,6 +232,58 @@ export function renderHomeWidget(widget, isEditing) {
         <div class="max-h-[300px] overflow-y-auto">
           ${nextTasks.slice(0, 8).map(task => renderTaskItem(task, false, true)).join('')}
           ${nextTasks.length > 8 ? '<div class="px-2 py-2 text-center"><button onclick="showLabelTasks(\'' + nextLabel.id + '\')" class="text-xs text-[var(--accent)] hover:underline font-medium">View all ' + nextTasks.length + ' tasks \u2192</button></div>' : ''}
+        </div>
+      `;
+      break;
+    }
+
+    case 'today-events': {
+      const connected = typeof window.isGCalConnected === 'function' ? window.isGCalConnected() : false;
+      const expired = !!state.gcalTokenExpired;
+      const events = typeof window.getGCalEventsForDate === 'function' ? (window.getGCalEventsForDate(today) || []) : [];
+
+      if (!connected) {
+        content = `
+          <div class="py-6 text-center">
+            <p class="text-sm text-[var(--text-muted)] mb-2">Google Calendar is not connected</p>
+            <button onclick="switchTab('settings')" class="text-xs text-[var(--accent)] hover:underline font-medium">Connect in Settings &rarr;</button>
+          </div>
+        `;
+        break;
+      }
+
+      if (expired) {
+        content = `
+          <div class="py-6 text-center">
+            <p class="text-sm text-amber-700 mb-2">Calendar session expired</p>
+            <button onclick="switchTab('settings')" class="text-xs text-[var(--accent)] hover:underline font-medium">Reconnect Calendar &rarr;</button>
+          </div>
+        `;
+        break;
+      }
+
+      content = events.length === 0 ? `
+        <div class="py-6 text-center text-[var(--text-muted)] text-sm">No events today</div>
+      ` : `
+        <div class="max-h-[300px] overflow-y-auto space-y-1">
+          ${events.slice(0, 6).map(event => `
+            <button
+              onclick="${event.htmlLink ? `window.open('${String(event.htmlLink).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}','_blank')` : `switchTab('calendar'); calendarSelectDate('${today}')`}"
+              class="w-full text-left rounded-lg px-2.5 py-2 hover:bg-[var(--bg-secondary)] transition border border-transparent hover:border-[var(--border-light)]">
+              <div class="flex items-start gap-2.5">
+                <span class="mt-1 w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                <div class="min-w-0 flex-1">
+                  <p class="text-[13px] font-medium text-[var(--text-primary)] truncate">${event.summary ? event.summary.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '(No title)'}</p>
+                  <p class="text-[11px] text-[var(--text-muted)] mt-0.5">${formatHomeEventTime(event)}</p>
+                </div>
+              </div>
+            </button>
+          `).join('')}
+          ${events.length > 6 ? `
+            <div class="px-2 py-2 text-center">
+              <button onclick="switchTab('calendar'); calendarSelectDate('${today}')" class="text-xs text-[var(--accent)] hover:underline font-medium">View all ${events.length} events &rarr;</button>
+            </div>
+          ` : ''}
         </div>
       `;
       break;
@@ -534,6 +598,7 @@ export function renderHomeWidget(widget, isEditing) {
     'stats': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg>',
     'quick-add': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>',
     'today-tasks': THINGS3_ICONS.today,
+    'today-events': THINGS3_ICONS.calendar,
     'next-tasks': THINGS3_ICONS.next,
     'prayers': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>',
     'glucose': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>',
@@ -547,6 +612,7 @@ export function renderHomeWidget(widget, isEditing) {
     'stats': '#6B7280',
     'quick-add': '#147EFB',
     'today-tasks': '#FFCA28',
+    'today-events': '#2F9B6A',
     'next-tasks': '#8B5CF6',
     'prayers': '#10B981',
     'glucose': '#EF4444',
@@ -586,7 +652,7 @@ export function renderHomeWidget(widget, isEditing) {
         <h3 class="widget-title text-sm font-medium text-[var(--text-primary)]">${widget.title}</h3>
         ${editControls}
       </div>
-      <div class="widget-body ${widget.type === 'today-tasks' || widget.type === 'next-tasks' || widget.type === 'perspective' ? 'px-2 py-1' : 'p-4'}">
+      <div class="widget-body ${widget.type === 'today-tasks' || widget.type === 'today-events' || widget.type === 'next-tasks' || widget.type === 'perspective' ? 'px-2 py-1' : 'p-4'}">
         ${content}
       </div>
     </div>
