@@ -72,25 +72,12 @@ export async function signInWithGoogleCalendar(options = {}) {
     return gisToken;
   }
 
-  // Silent mode should not force navigation.
-  if (mode === 'silent') return null;
-
-  // Fallback for environments where GIS isn't available.
-  const nonce = generateNonce();
-  sessionStorage.setItem('oauth_nonce', nonce);
-  sessionStorage.setItem('oauth_calendar', '1');
-
-  const params = new URLSearchParams({
-    client_id: GOOGLE_CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
-    response_type: 'id_token token',
-    scope: 'openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly',
-    nonce: nonce,
-    include_granted_scopes: 'true',
-    prompt: 'consent'
-  });
-
-  window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  // Do not fallback to redirect flow here, because any origin/redirect mismatch
+  // leads to a hard OAuth error page and breaks app UX.
+  if (mode === 'interactive') {
+    state.gcalError = 'Google Calendar/Contacts authorization failed. In Google Cloud Console, add Authorized JavaScript origin: https://mhabib306-sys.github.io';
+    window.render?.();
+  }
   return null;
 }
 

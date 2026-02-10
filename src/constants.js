@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.16.11 - Homebase';
+export const APP_VERSION = '4.16.12 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -224,6 +224,7 @@ export const defaultDayData = {
   whoop: {
     sleepPerf: '', recovery: '', strain: '', whoopAge: ''
   },
+  libre: { currentGlucose: '', trend: '', readingsCount: 0, lastReading: '' },
   family: { mom: false, dad: false, jana: false, tia: false, ahmed: false, eman: false },
   habits: { exercise: 0, reading: 0, meditation: 0, water: '', vitamins: false, brushTeeth: 0, nop: '' }
 };
