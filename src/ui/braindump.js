@@ -98,15 +98,10 @@ export async function processBraindump() {
 export function startBraindumpVoiceCapture() {
   if (state.braindumpVoiceRecording || state.braindumpVoiceTranscribing) return;
   state.braindumpVoiceError = null;
-  if (!getAnthropicKey()) {
-    state.braindumpVoiceError = 'Add your Anthropic API key in Settings to use Braindump voice mode.';
-    window.render();
-    return;
-  }
 
   const SpeechCtor = getSpeechRecognitionCtor();
   if (!SpeechCtor) {
-    state.braindumpVoiceError = 'Voice input is not supported on this device/browser.';
+    state.braindumpVoiceError = 'Voice input is not supported in this browser. Try Safari/Chrome on mobile and enable microphone permission.';
     window.render();
     return;
   }
@@ -137,11 +132,12 @@ export function startBraindumpVoiceCapture() {
     }
     if (finalChunk) {
       speechFinalText += finalChunk;
+      const merged = ((state.braindumpRawText || '').trim()
+        ? `${state.braindumpRawText.trim()}\n${speechFinalText.trim()}`
+        : speechFinalText.trim());
+      state.braindumpRawText = merged;
       const ta = document.getElementById('braindump-textarea');
       if (ta) {
-        const merged = ((state.braindumpRawText || '').trim()
-          ? `${state.braindumpRawText.trim()}\n${speechFinalText.trim()}`
-          : speechFinalText.trim());
         ta.value = merged;
       }
     }
@@ -164,8 +160,17 @@ export function startBraindumpVoiceCapture() {
     state.braindumpVoiceTranscribing = !!rawTranscript;
     window.render();
     if (rawTranscript) {
-      const cleaned = await refineVoiceTranscriptWithAI(rawTranscript);
-      mergeTranscript(cleaned);
+      const hasAnthropicKey = !!getAnthropicKey();
+      if (hasAnthropicKey) {
+        try {
+          const cleaned = await refineVoiceTranscriptWithAI(rawTranscript);
+          mergeTranscript(cleaned || rawTranscript);
+        } catch {
+          mergeTranscript(rawTranscript);
+        }
+      } else {
+        mergeTranscript(rawTranscript);
+      }
     }
     state.braindumpVoiceTranscribing = false;
     window.render();
@@ -177,9 +182,17 @@ export function startBraindumpVoiceCapture() {
     }, 50);
   };
 
-  state.braindumpVoiceTranscribing = true;
+  state.braindumpVoiceTranscribing = false;
   window.render();
-  recognition.start();
+  try {
+    recognition.start();
+  } catch (err) {
+    speechRecognition = null;
+    state.braindumpVoiceRecording = false;
+    state.braindumpVoiceTranscribing = false;
+    state.braindumpVoiceError = `Voice input could not start: ${err?.message || 'unknown error'}`;
+    window.render();
+  }
 }
 
 export function stopBraindumpVoiceCapture() {
@@ -419,7 +432,7 @@ function renderInputStep() {
         <div class="braindump-footer">
           <div class="braindump-footer-left">
             <span id="braindump-count" class="text-xs text-[var(--text-muted)]">${lineCount > 0 ? `${lineCount} item${lineCount !== 1 ? 's' : ''}` : ''}</span>
-            <button onclick="toggleBraindumpVoiceCapture()" class="braindump-voice-btn ${voiceActive ? 'is-recording' : ''}" ${(state.braindumpVoiceTranscribing || (!hasAnthropicKey && !voiceActive)) ? 'disabled' : ''} title="${hasAnthropicKey ? 'Use Anthropic-backed voice mode' : 'Add Anthropic API key in Settings first'}">
+            <button onclick="toggleBraindumpVoiceCapture()" class="braindump-voice-btn ${voiceActive ? 'is-recording' : ''}" ${state.braindumpVoiceTranscribing ? 'disabled' : ''} title="${hasAnthropicKey ? 'Voice capture + Anthropic cleanup' : 'Voice capture on-device (add Anthropic key for cleanup)'}">
               ${voiceActive ? `
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
               ` : `
