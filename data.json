@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T16:20:30.004Z",
+  "lastUpdated": "2026-02-10T16:21:16.154Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1661,7 +1661,7 @@
         "fajr": "1",
         "dhuhr": "",
         "asr": "",
-        "maghrib": "",
+        "maghrib": 1,
         "isha": 0.1,
         "quran": 0
       },
