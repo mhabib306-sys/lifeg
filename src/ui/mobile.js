@@ -9,6 +9,40 @@ import { state } from '../state.js';
 import { saveViewState } from '../data/storage.js';
 import { THINGS3_ICONS } from '../constants.js';
 
+let drawerPreviouslyFocused = null;
+let drawerKeydownHandlerBound = false;
+
+function getDrawerFocusableElements() {
+  const drawer = document.querySelector('#mobile-sidebar-overlay .mobile-sidebar-drawer');
+  if (!drawer) return [];
+  return Array.from(drawer.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+    .filter(el => !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden'));
+}
+
+function handleDrawerKeydown(e) {
+  if (!state.mobileDrawerOpen) return;
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    closeMobileDrawer();
+    return;
+  }
+  if (e.key !== 'Tab') return;
+
+  const focusable = getDrawerFocusableElements();
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  const active = document.activeElement;
+
+  if (e.shiftKey && active === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && active === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Mobile Drawer
 // ---------------------------------------------------------------------------
@@ -18,10 +52,20 @@ import { THINGS3_ICONS } from '../constants.js';
  * Sets mobileDrawerOpen = true, prevents body scroll, and toggles the overlay.
  */
 export function openMobileDrawer() {
+  drawerPreviouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   state.mobileDrawerOpen = true;
   document.body.style.overflow = 'hidden';
   document.body.classList.add('drawer-open');
+  document.body.classList.add('body-modal-open');
   renderMobileDrawer();
+  if (!drawerKeydownHandlerBound) {
+    document.addEventListener('keydown', handleDrawerKeydown);
+    drawerKeydownHandlerBound = true;
+  }
+  setTimeout(() => {
+    const closeBtn = document.getElementById('mobile-drawer-close');
+    if (closeBtn) closeBtn.focus();
+  }, 20);
 }
 
 /**
@@ -32,7 +76,17 @@ export function closeMobileDrawer() {
   state.mobileDrawerOpen = false;
   document.body.style.overflow = '';
   document.body.classList.remove('drawer-open');
+  if (!state.showTaskModal && !state.showPerspectiveModal && !state.showCategoryModal && !state.showLabelModal && !state.showPersonModal && !state.showBraindump && !state.calendarEventModalOpen) {
+    document.body.classList.remove('body-modal-open');
+  }
+  if (drawerKeydownHandlerBound) {
+    document.removeEventListener('keydown', handleDrawerKeydown);
+    drawerKeydownHandlerBound = false;
+  }
   renderMobileDrawer();
+  if (drawerPreviouslyFocused && typeof drawerPreviouslyFocused.focus === 'function') {
+    drawerPreviouslyFocused.focus();
+  }
 }
 
 /**

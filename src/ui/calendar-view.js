@@ -208,6 +208,13 @@ export function setCalendarMeetingNotesScope(scope) {
   window.render();
 }
 
+export function toggleCalendarMobilePanel(panel) {
+  if (panel === 'today') state.calendarMobileShowToday = !state.calendarMobileShowToday;
+  if (panel === 'events') state.calendarMobileShowEvents = !state.calendarMobileShowEvents;
+  if (panel === 'scheduled') state.calendarMobileShowScheduled = !state.calendarMobileShowScheduled;
+  window.render();
+}
+
 export function closeCalendarMeetingNotes() {
   state.calendarMeetingNotesEventKey = null;
   window.render();
@@ -499,6 +506,7 @@ export function renderCalendarView() {
   if (state.calendarMeetingNotesEventKey) {
     return renderMeetingNotesPage();
   }
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
 
   const today = getLocalDateString();
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -554,6 +562,11 @@ export function renderCalendarView() {
   }) : [];
 
   const gcalEvents = window.getGCalEventsForDate?.(state.calendarSelectedDate) || [];
+  const monthBtnLabel = isMobile ? 'M' : 'Month';
+  const weekBtnLabel = isMobile ? 'W' : 'Week';
+  const threeDayBtnLabel = isMobile ? '3D' : '3 Days';
+  const dayGridBtnLabel = isMobile ? 'Day' : 'Day Timeline';
+  const weekGridBtnLabel = isMobile ? 'Week TL' : 'Week Timeline';
   const viewLabelMap = {
     month: `${monthNames[state.calendarMonth]} ${state.calendarYear}`,
     week: 'Week View',
@@ -774,11 +787,11 @@ export function renderCalendarView() {
           <div class="flex items-center gap-3 calendar-toolbar-center">
             <h3 class="text-[15px] font-semibold text-[var(--text-primary)]">${viewLabelMap[state.calendarViewMode] || viewLabelMap.month}</h3>
             <div class="calendar-view-toggle">
-              <button onclick="setCalendarViewMode('month')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'month' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'month'}">Month</button>
-              <button onclick="setCalendarViewMode('week')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'week' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'week'}">Week</button>
-              <button onclick="setCalendarViewMode('3days')" class="calendar-view-toggle-btn ${state.calendarViewMode === '3days' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === '3days'}">3 Days</button>
-              <button onclick="setCalendarViewMode('daygrid')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'daygrid' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'daygrid'}">Day Timeline</button>
-              <button onclick="setCalendarViewMode('weekgrid')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'weekgrid' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'weekgrid'}">Week Timeline</button>
+              <button onclick="setCalendarViewMode('month')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'month' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'month'}">${monthBtnLabel}</button>
+              <button onclick="setCalendarViewMode('week')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'week' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'week'}">${weekBtnLabel}</button>
+              <button onclick="setCalendarViewMode('3days')" class="calendar-view-toggle-btn ${state.calendarViewMode === '3days' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === '3days'}">${threeDayBtnLabel}</button>
+              <button onclick="setCalendarViewMode('daygrid')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'daygrid' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'daygrid'}">${dayGridBtnLabel}</button>
+              <button onclick="setCalendarViewMode('weekgrid')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'weekgrid' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'weekgrid'}">${weekGridBtnLabel}</button>
             </div>
             <button onclick="calendarGoToday()" class="text-[11px] px-2.5 py-1 rounded-full bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--accent)] transition font-medium">Today</button>
             ${state.gcalSyncing ? '<span class="text-[10px] text-[var(--text-muted)]">Syncing...</span>' : ''}
@@ -797,28 +810,37 @@ export function renderCalendarView() {
 
         <aside class="space-y-3">
           <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+            <button onclick="toggleCalendarMobilePanel('today')" class="calendar-mobile-panel-toggle px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between w-full text-left" aria-expanded="${state.calendarMobileShowToday ? 'true' : 'false'}">
               <h4 class="text-sm font-semibold text-[var(--text-primary)]">Today</h4>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--bg-secondary)] text-[var(--text-muted)] font-medium">${todayTasks.length}</span>
-            </div>
-            <div class="calendar-side-list">${todayListHtml}</div>
+              <span class="flex items-center gap-2">
+                <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--bg-secondary)] text-[var(--text-muted)] font-medium">${todayTasks.length}</span>
+                <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform ${state.calendarMobileShowToday ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+              </span>
+            </button>
+            <div class="calendar-side-list ${isMobile && !state.calendarMobileShowToday ? 'calendar-panel-collapsed' : ''}">${todayListHtml}</div>
           </div>
 
           <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+            <button onclick="toggleCalendarMobilePanel('events')" class="calendar-mobile-panel-toggle px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between w-full text-left" aria-expanded="${state.calendarMobileShowEvents ? 'true' : 'false'}">
               <h4 class="text-sm font-semibold text-[var(--text-primary)]">Events</h4>
-              <span class="text-xs text-[var(--text-muted)]">${selectedLabel}</span>
-            </div>
-            <div class="calendar-side-list">${eventsListHtml}</div>
+              <span class="flex items-center gap-2">
+                <span class="text-xs text-[var(--text-muted)]">${selectedLabel}</span>
+                <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform ${state.calendarMobileShowEvents ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+              </span>
+            </button>
+            <div class="calendar-side-list ${isMobile && !state.calendarMobileShowEvents ? 'calendar-panel-collapsed' : ''}">${eventsListHtml}</div>
           </div>
 
           ${(dueTasks.length > 0 || deferTasks.length > 0) ? `
             <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)] overflow-hidden">
-              <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+              <button onclick="toggleCalendarMobilePanel('scheduled')" class="calendar-mobile-panel-toggle px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between w-full text-left" aria-expanded="${state.calendarMobileShowScheduled ? 'true' : 'false'}">
                 <h4 class="text-sm font-semibold text-[var(--text-primary)]">Scheduled</h4>
-                <span class="text-xs text-[var(--text-muted)]">${selectedDateLabel}</span>
-              </div>
-              <div class="calendar-side-list">
+                <span class="flex items-center gap-2">
+                  <span class="text-xs text-[var(--text-muted)]">${selectedDateLabel}</span>
+                  <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform ${state.calendarMobileShowScheduled ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                </span>
+              </button>
+              <div class="calendar-side-list ${isMobile && !state.calendarMobileShowScheduled ? 'calendar-panel-collapsed' : ''}">
                 ${dueTasks.length > 0 ? `
                   <div class="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[#B55322]">Due</div>
                   ${dueTasks.map(task => renderCalendarSidebarTaskItem(task)).join('')}

@@ -112,6 +112,17 @@ function initApp() {
     console.log('Offline — changes saved locally');
   });
 
+  // Improve mobile keyboard UX: hide fixed bottom nav while keyboard is open
+  if (window.visualViewport) {
+    const updateKeyboardClass = () => {
+      const keyboardLikelyOpen = window.innerHeight - window.visualViewport.height > 140;
+      document.body.classList.toggle('mobile-keyboard-open', keyboardLikelyOpen);
+    };
+    window.visualViewport.addEventListener('resize', updateKeyboardClass);
+    window.visualViewport.addEventListener('scroll', updateKeyboardClass);
+    updateKeyboardClass();
+  }
+
   console.log('Homebase initialized');
 }
 

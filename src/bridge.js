@@ -135,6 +135,7 @@ import {
   openCalendarMeetingNotes,
   openCalendarMeetingWorkspaceByEventKey,
   closeCalendarMeetingNotes,
+  toggleCalendarMobilePanel,
   setCalendarMeetingNotesScope,
   convertCalendarEventToTask,
   startCalendarEventDrag,
@@ -230,6 +231,7 @@ Object.assign(window, {
   initGCalSync, toggleCalendarSelection,
   openCalendarEventActions, closeCalendarEventActions,
   openCalendarMeetingNotes, openCalendarMeetingWorkspaceByEventKey, closeCalendarMeetingNotes, setCalendarMeetingNotesScope,
+  toggleCalendarMobilePanel,
   convertCalendarEventToTask, startCalendarEventDrag, clearCalendarEventDrag, dropCalendarEventToSlot,
   addMeetingLinkedItem, handleMeetingItemInputKeydown,
 
