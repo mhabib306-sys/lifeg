@@ -54,16 +54,17 @@ async function fetchSheetData() {
   if (sheets.length === 0) return { error: 'No tabs found in spreadsheet' };
 
   // Build range list for batch get — all tabs
-  // Sheet names must be wrapped in single quotes for A1 notation (handles spaces/special chars)
   const tabNames = sheets.map(s => s.properties.title);
-  const ranges = tabNames.map(name => encodeURIComponent(`'${name}'`));
 
-  // Step 2: Batch fetch all tabs in one API call
-  const rangeParams = ranges.map(r => `ranges=${r}`).join('&');
-  const batchRes = await fetch(
-    `${SHEETS_API}/${GSHEET_SPREADSHEET_ID}/values:batchGet?${rangeParams}`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
+  // Step 2: Batch fetch all tabs in one API call using URL API for proper encoding
+  const batchUrl = new URL(`${SHEETS_API}/${GSHEET_SPREADSHEET_ID}/values:batchGet`);
+  for (const name of tabNames) {
+    // Single-quote wrapping is required for A1 notation (handles spaces/special chars)
+    batchUrl.searchParams.append('ranges', `'${name}'`);
+  }
+  const batchRes = await fetch(batchUrl.href, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
   if (batchRes.status === 401) return { authExpired: true };
   if (!batchRes.ok) return { error: `Sheets batch fetch failed (${batchRes.status})` };
@@ -71,12 +72,11 @@ async function fetchSheetData() {
   const batchData = await batchRes.json();
   const valueRanges = batchData?.valueRanges || [];
 
-  // Step 3: Structure data per tab
+  // Step 3: Structure data per tab (include all tabs, even empty ones)
   const tabs = [];
   for (let i = 0; i < valueRanges.length; i++) {
     const tabName = tabNames[i] || `Sheet${i + 1}`;
     const rows = valueRanges[i]?.values || [];
-    if (rows.length === 0) continue;
 
     tabs.push({
       name: tabName,
@@ -103,6 +103,7 @@ async function fetchSheetData() {
 
   return {
     tabs,
+    discoveredTabs: tabNames.length,
     rows: legacyRows, // backward compat
     tabName: primaryTab?.name || '',
     lastSync: new Date().toISOString(),

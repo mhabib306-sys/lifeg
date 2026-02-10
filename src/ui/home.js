@@ -823,6 +823,7 @@ export function renderHomeWidget(widget, isEditing) {
       // Footer: saved prompt display + edit/refresh actions
       const sheetData = state.gsheetData;
       const tabCount = sheetData?.tabs?.length || 0;
+      const tabNames = sheetData?.tabs?.map(t => t.name).join(', ') || '';
 
       content = `
         ${responseHtml}
@@ -831,7 +832,7 @@ export function renderHomeWidget(widget, isEditing) {
             <span class="text-[10px] text-[var(--text-muted)] truncate block group-hover:text-[var(--accent)] transition">${savedPrompt.replace(/</g, '&lt;')}</span>
           </button>
           <div class="flex items-center gap-2 ml-2 flex-shrink-0">
-            ${tabCount ? `<span class="text-[10px] text-[var(--text-muted)]">${tabCount} tabs</span>` : ''}
+            ${tabCount ? `<span class="text-[10px] text-[var(--text-muted)]" title="${tabNames}">${tabCount} tabs</span>` : ''}
             <button onclick="handleGSheetRefresh()" class="inline-flex items-center gap-1 text-[10px] text-[var(--accent)] hover:underline font-medium ${asking || syncing ? 'opacity-50 pointer-events-none' : ''}" ${asking || syncing ? 'disabled' : ''} title="Re-run prompt">
               <svg class="w-3 h-3 ${asking ? 'animate-spin' : ''}" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
               ${asking ? '' : 'Refresh'}
