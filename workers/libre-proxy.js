@@ -28,6 +28,7 @@ const REGION_URLS = {
   jp: 'https://api-jp.libreview.io',
   ap: 'https://api-ap.libreview.io',
   au: 'https://api-au.libreview.io',
+  ae: 'https://api-ae.libreview.io',
 };
 
 const TOKEN_CACHE_KEY = 'libre_auth_token';
@@ -50,9 +51,39 @@ function json(data, status = 200) {
 // LibreLinkUp API helpers
 // ---------------------------------------------------------------------------
 
+// Common headers required by the LibreLinkUp API (v4.16+)
+const LLU_HEADERS = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'product': 'llu.android',
+  'version': '4.16.0',
+  'User-Agent': 'Mozilla/5.0',
+  'Cache-Control': 'no-cache',
+};
+
+// Compute SHA-256 hex hash (required as Account-Id header since v4.16)
+async function sha256hex(str) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function getBaseUrl(env) {
   const region = (env.LIBRE_REGION || 'us').toLowerCase();
   return REGION_URLS[region] || REGION_URLS.us;
+}
+
+/**
+ * Extract auth result from login response data.
+ * Returns { token, accountId, baseUrl } where accountId is SHA-256 of user ID.
+ */
+async function extractAuth(loginData, baseUrl) {
+  const userId = loginData.data?.user?.id;
+  const token = loginData.data?.authTicket?.token;
+  const accountId = userId ? await sha256hex(userId) : '';
+  return { token, accountId, baseUrl };
 }
 
 async function authenticate(env) {
@@ -67,17 +98,15 @@ async function authenticate(env) {
   }
 
   const baseUrl = await getBaseUrl(env);
+  const loginBody = JSON.stringify({
+    email: env.LIBRE_EMAIL,
+    password: env.LIBRE_PASSWORD,
+  });
+
   const loginRes = await fetch(`${baseUrl}/llu/auth/login`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'product': 'llu.android',
-      'version': '4.7.0',
-    },
-    body: JSON.stringify({
-      email: env.LIBRE_EMAIL,
-      password: env.LIBRE_PASSWORD,
-    }),
+    headers: LLU_HEADERS,
+    body: loginBody,
   });
 
   if (!loginRes.ok) {
@@ -93,15 +122,8 @@ async function authenticate(env) {
 
     const retryRes = await fetch(`${redirectUrl}/llu/auth/login`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'product': 'llu.android',
-        'version': '4.7.0',
-      },
-      body: JSON.stringify({
-        email: env.LIBRE_EMAIL,
-        password: env.LIBRE_PASSWORD,
-      }),
+      headers: LLU_HEADERS,
+      body: loginBody,
     });
 
     if (!retryRes.ok) {
@@ -109,10 +131,7 @@ async function authenticate(env) {
     }
 
     const retryData = await retryRes.json();
-    const authResult = {
-      token: retryData.data?.authTicket?.token,
-      baseUrl: redirectUrl,
-    };
+    const authResult = await extractAuth(retryData, redirectUrl);
 
     if (env.LIBRE_KV && authResult.token) {
       await env.LIBRE_KV.put(TOKEN_CACHE_KEY, JSON.stringify(authResult), { expirationTtl: TOKEN_TTL });
@@ -121,10 +140,7 @@ async function authenticate(env) {
     return authResult;
   }
 
-  const authResult = {
-    token: loginData.data?.authTicket?.token,
-    baseUrl,
-  };
+  const authResult = await extractAuth(loginData, baseUrl);
 
   if (env.LIBRE_KV && authResult.token) {
     await env.LIBRE_KV.put(TOKEN_CACHE_KEY, JSON.stringify(authResult), { expirationTtl: TOKEN_TTL });
@@ -133,13 +149,17 @@ async function authenticate(env) {
   return authResult;
 }
 
+function authHeaders(auth) {
+  return {
+    ...LLU_HEADERS,
+    'Authorization': `Bearer ${auth.token}`,
+    'Account-Id': auth.accountId,
+  };
+}
+
 async function fetchConnections(auth) {
   const res = await fetch(`${auth.baseUrl}/llu/connections`, {
-    headers: {
-      'Authorization': `Bearer ${auth.token}`,
-      'product': 'llu.android',
-      'version': '4.7.0',
-    },
+    headers: authHeaders(auth),
   });
 
   if (!res.ok) throw new Error(`Connections fetch failed: ${res.status}`);
@@ -148,11 +168,7 @@ async function fetchConnections(auth) {
 
 async function fetchGraphData(auth, patientId) {
   const res = await fetch(`${auth.baseUrl}/llu/connections/${patientId}/graph`, {
-    headers: {
-      'Authorization': `Bearer ${auth.token}`,
-      'product': 'llu.android',
-      'version': '4.7.0',
-    },
+    headers: authHeaders(auth),
   });
 
   if (!res.ok) throw new Error(`Graph data fetch failed: ${res.status}`);
