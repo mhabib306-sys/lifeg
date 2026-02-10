@@ -428,6 +428,11 @@ input[type="checkbox"]:focus {
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-sm);
 }
+.quick-add-widget {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
 .widget.dragging {
   opacity: 0.4;
   transform: scale(0.98);

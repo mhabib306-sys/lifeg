@@ -635,7 +635,7 @@ export function renderHomeWidget(widget, isEditing) {
   // Quick-add widget has minimal styling (no border, no background, no header)
   if (widget.type === 'quick-add' && !isEditing) {
     return `
-      <div class="widget ${sizeClass} widget-drop-target">
+      <div class="widget quick-add-widget ${sizeClass} widget-drop-target">
         <div class="py-2">
           ${content}
         </div>
