@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T15:40:31.246Z",
+  "lastUpdated": "2026-02-10T15:40:34.397Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -9068,11 +9068,19 @@
       "visible": true
     },
     {
+      "id": "whoop",
+      "type": "whoop",
+      "title": "Whoop",
+      "size": "half",
+      "order": 6,
+      "visible": true
+    },
+    {
       "id": "todays-score",
       "type": "score",
       "title": "Today's Score",
       "size": "half",
-      "order": 6,
+      "order": 7,
       "visible": true
     },
     {
@@ -9080,7 +9088,7 @@
       "type": "next-tasks",
       "title": "Next",
       "size": "half",
-      "order": 7,
+      "order": 8,
       "visible": true
     },
     {
@@ -9088,21 +9096,13 @@
       "type": "prayers",
       "title": "Prayers",
       "size": "half",
-      "order": 8,
+      "order": 9,
       "visible": true
     },
     {
       "id": "gsheet-yesterday",
       "type": "gsheet-yesterday",
       "title": "Yesterday",
-      "size": "half",
-      "order": 9,
-      "visible": true
-    },
-    {
-      "id": "whoop",
-      "type": "whoop",
-      "title": "Whoop",
       "size": "half",
       "order": 10,
       "visible": true
