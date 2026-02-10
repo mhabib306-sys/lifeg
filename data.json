@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T03:24:09.926Z",
+  "lastUpdated": "2026-02-10T03:24:39.621Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3175,45 +3175,55 @@
     {
       "id": "person_1769977441169",
       "name": "Seif Ghallab",
-      "color": "#6b7280"
+      "color": "#6b7280",
+      "email": ""
     },
     {
       "id": "person_1769988307264",
-      "name": "Mostafa Amin"
+      "name": "Mostafa Amin",
+      "email": ""
     },
     {
       "id": "person_1769988593103",
-      "name": "Jana"
+      "name": "Jana",
+      "email": ""
     },
     {
       "id": "person_1769988596657",
-      "name": "Tia"
+      "name": "Tia",
+      "email": ""
     },
     {
       "id": "person_1770019362229",
-      "name": "Omar Metwally"
+      "name": "Omar Metwally",
+      "email": ""
     },
     {
       "id": "person_1770450952169",
-      "name": "Ahmed Habib"
+      "name": "Ahmed Habib",
+      "email": ""
     },
     {
       "id": "person-1770490296950",
-      "name": "Nancy"
+      "name": "Nancy",
+      "email": ""
     },
     {
       "id": "person-1770510421604",
-      "name": "Ali Refaai"
+      "name": "Ali Refaai",
+      "email": ""
     },
     {
       "id": "person_1770576686684",
       "name": "Joehnny",
-      "color": "#7C6B8E"
+      "color": "#7C6B8E",
+      "email": ""
     },
     {
       "id": "person_1770591589441",
       "name": "Nadine",
-      "color": "#4A90A4"
+      "color": "#4A90A4",
+      "email": ""
     }
   ],
   "customPerspectives": [
