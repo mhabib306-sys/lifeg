@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T04:02:46.960Z",
+  "lastUpdated": "2026-02-10T04:04:52.476Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3200,45 +3200,55 @@
     {
       "id": "person_1769977441169",
       "name": "Seif Ghallab",
-      "color": "#6b7280"
+      "color": "#6b7280",
+      "email": ""
     },
     {
       "id": "person_1769988307264",
-      "name": "Mostafa Amin"
+      "name": "Mostafa Amin",
+      "email": ""
     },
     {
       "id": "person_1769988593103",
-      "name": "Jana"
+      "name": "Jana",
+      "email": ""
     },
     {
       "id": "person_1769988596657",
-      "name": "Tia"
+      "name": "Tia",
+      "email": ""
     },
     {
       "id": "person_1770019362229",
-      "name": "Omar Metwally"
+      "name": "Omar Metwally",
+      "email": ""
     },
     {
       "id": "person_1770450952169",
-      "name": "Ahmed Habib"
+      "name": "Ahmed Habib",
+      "email": ""
     },
     {
       "id": "person-1770490296950",
-      "name": "Nancy"
+      "name": "Nancy",
+      "email": ""
     },
     {
       "id": "person-1770510421604",
-      "name": "Ali Refaai"
+      "name": "Ali Refaai",
+      "email": ""
     },
     {
       "id": "person_1770576686684",
       "name": "Joehnny",
-      "color": "#7C6B8E"
+      "color": "#7C6B8E",
+      "email": ""
     },
     {
       "id": "person_1770591589441",
       "name": "Nadine",
-      "color": "#4A90A4"
+      "color": "#4A90A4",
+      "email": ""
     },
     {
       "id": "person_1770695842533",
@@ -3314,11 +3324,19 @@
       "visible": true
     },
     {
+      "id": "today-events",
+      "type": "today-events",
+      "title": "Today's Events",
+      "size": "half",
+      "order": 5,
+      "visible": true
+    },
+    {
       "id": "next-tasks",
       "type": "next-tasks",
       "title": "Next",
       "size": "half",
-      "order": 5,
+      "order": 6,
       "visible": true
     },
     {
@@ -3326,7 +3344,7 @@
       "type": "prayers",
       "title": "Prayers",
       "size": "half",
-      "order": 6,
+      "order": 7,
       "visible": true
     },
     {
@@ -3334,7 +3352,7 @@
       "type": "glucose",
       "title": "Glucose",
       "size": "half",
-      "order": 7,
+      "order": 8,
       "visible": true
     },
     {
@@ -3342,7 +3360,7 @@
       "type": "whoop",
       "title": "Whoop",
       "size": "half",
-      "order": 8,
+      "order": 9,
       "visible": true
     },
     {
@@ -3350,7 +3368,7 @@
       "type": "habits",
       "title": "Habits",
       "size": "half",
-      "order": 9,
+      "order": 10,
       "visible": true
     }
   ],
