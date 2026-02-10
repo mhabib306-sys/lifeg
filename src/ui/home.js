@@ -420,6 +420,12 @@ export function renderHomeWidget(widget, isEditing) {
     case 'whoop': {
       const todayDataW = state.allData[today] || JSON.parse(JSON.stringify(defaultDayData));
       const whoopData = todayDataW.whoop || {};
+      const whoopConnected = typeof window.isWhoopConnected === 'function' && window.isWhoopConnected();
+      const whoopSyncing = typeof window.state?.syncStatus !== 'undefined' && false; // no dedicated syncing flag, use button disable on click
+      const whoopLastSync = typeof window.getWhoopLastSync === 'function' ? window.getWhoopLastSync() : null;
+      const whoopSyncStr = whoopLastSync
+        ? new Date(whoopLastSync).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+        : '';
 
       content = `
         <div class="grid grid-cols-3 gap-3">
@@ -445,6 +451,14 @@ export function renderHomeWidget(widget, isEditing) {
               class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
           </div>
         </div>
+        ${whoopConnected ? `
+        <div class="flex items-center justify-between mt-3 pt-2 border-t border-[var(--border-light)]">
+          <span class="text-[10px] text-[var(--text-muted)]">${whoopSyncStr ? `Synced ${whoopSyncStr}` : ''}</span>
+          <button onclick="this.querySelector('svg').classList.add('animate-spin');this.classList.add('opacity-50','pointer-events-none');syncWhoopNow().finally(()=>render())" class="inline-flex items-center gap-1 text-[10px] text-[var(--accent)] hover:underline font-medium">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+            Sync
+          </button>
+        </div>` : ''}
       `;
       break;
     }
