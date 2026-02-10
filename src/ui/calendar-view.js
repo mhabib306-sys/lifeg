@@ -643,11 +643,15 @@ function renderMeetingNotesPage() {
             <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-2">Attendees</h3>
             ${attendees.length > 0 ? `
               <div class="flex flex-wrap gap-1.5">
-                ${attendees.map(a => `
+                ${attendees.map(a => {
+                  const normEmail = normalizeEmail(a.email);
+                  const matchedPerson = normEmail ? state.taskPeople.find(p => normalizeEmail(p.email) === normEmail) : null;
+                  const label = matchedPerson?.name || a.displayName || a.email || 'Guest';
+                  return `
                   <span class="text-xs px-2 py-1 rounded-full bg-[var(--bg-secondary)] text-[var(--text-primary)]">
-                    ${escapeHtml(a.displayName || a.email || 'Guest')}
-                  </span>
-                `).join('')}
+                    ${escapeHtml(label)}
+                  </span>`;
+                }).join('')}
               </div>
             ` : '<p class="text-xs text-[var(--text-muted)]">No attendee metadata available for this event.</p>'}
           </div>
