@@ -2,12 +2,13 @@
 // TASKS TAB UI MODULE
 // ============================================================================
 // Renders the full Tasks workspace view: sidebar, task list, area view,
-// calendar view, notes outliner, and individual task items.
+// notes outliner, and individual task items.
 
 import { state } from '../state.js';
 import { THINGS3_ICONS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
 import { escapeHtml, formatSmartDate, getLocalDateString } from '../utils.js';
 import { getCategoryById, getLabelById, getPersonById, getTasksByPerson } from '../features/categories.js';
+import { saveViewState } from '../data/storage.js';
 
 // ---------------------------------------------------------------------------
 // These filter/grouping functions are NOT yet extracted to src modules, so we
@@ -35,10 +36,6 @@ function getTasksByLabel(labelId) {
   return window.getTasksByLabel(labelId);
 }
 
-// renderCalendarView and renderNotesOutliner are still in index.html
-function renderCalendarView() {
-  return window.renderCalendarView();
-}
 function renderNotesOutliner(filter) {
   return window.renderNotesOutliner(filter);
 }
@@ -63,12 +60,12 @@ function buildLabelPersonNotesSection(filteredTasks, viewInfo) {
     <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden mt-4">
       <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <svg class="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>
-          <span class="text-sm font-semibold text-charcoal">Notes</span>
-          <span class="text-xs text-charcoal/40 ml-1">${noteCount}</span>
+          <svg class="w-4 h-4 text-[var(--accent)]" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>
+          <span class="text-sm font-semibold text-[var(--text-primary)]">Notes</span>
+          <span class="text-xs text-[var(--text-muted)] ml-1">${noteCount}</span>
         </div>
         <button onclick="window.createRootNote(${filterArg})"
-          class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-purple-600 hover:bg-purple-50 rounded-lg transition">
+          class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
           Add Note
         </button>
@@ -78,16 +75,16 @@ function buildLabelPersonNotesSection(filteredTasks, viewInfo) {
         <div class="py-2">${renderNotesOutliner(filterObj)}</div>
         <div class="px-4 py-2 border-t border-[var(--border-light)]">
           <button onclick="window.createRootNote(${filterArg})"
-            class="flex items-center gap-2 px-3 py-2 w-full text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50/50 rounded-lg transition text-left">
+            class="flex items-center gap-2 px-3 py-2 w-full text-sm text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition text-left">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             Add another note...
           </button>
         </div>
       ` : `
         <div class="px-4 py-8 text-center">
-          <p class="text-sm text-charcoal/40 mb-3">No notes here yet</p>
+          <p class="text-sm text-[var(--text-muted)] mb-3">No notes here yet</p>
           <button onclick="window.createRootNote(${filterArg})"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-600 text-sm font-medium rounded-lg hover:bg-purple-100 transition">
+            class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent-light)] text-[var(--accent)] text-sm font-medium rounded-lg hover:bg-[var(--accent-light)] transition">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             Create your first note
           </button>
@@ -204,7 +201,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
         <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-[var(--modal-bg)]/95 backdrop-blur-sm rounded-lg px-1.5 py-1 shadow-sm" onclick="event.stopPropagation()">
           ${task.isNote && !task.completed ? `
             <button onclick="event.stopPropagation(); window.createChildNote('${task.id}')"
-              class="p-1 text-purple-400 hover:text-purple-600 hover:bg-purple-50 rounded-md transition" title="Add child note">
+              class="p-1 text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-md transition" title="Add child note">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             </button>
             <button onclick="event.stopPropagation(); window.outdentNote('${task.id}')"
@@ -323,7 +320,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div class="flex-1"></div>
           <div class="flex items-center gap-2">
             <button onclick="window.createRootNote('${currentCategory.id}')"
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-purple-600 hover:bg-purple-50 transition">
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] transition">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
               Note
             </button>
@@ -349,9 +346,9 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <input type="text" id="quick-add-input"
             placeholder="${state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
             onkeydown="window.handleQuickAddKeydown(event, this)"
-            class="flex-1 text-[15px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none focus:ring-0">
+            class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] bg-transparent border-0 outline-none focus:ring-0">
           <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
-            class="text-charcoal/30 hover:opacity-70 transition p-1" style="color: ${categoryColor}">
+            class="text-[var(--text-muted)] hover:opacity-70 transition p-1" style="color: ${categoryColor}">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
           </button>
         </div>
@@ -386,8 +383,8 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
             <div class="px-4 py-3 bg-amber-50/50 border-b border-[var(--border-light)] flex items-center gap-2">
               <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
-              <span class="text-sm font-semibold text-charcoal">Today</span>
-              <span class="text-xs text-charcoal/40 ml-1">${todayTasks.length}</span>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Today</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${todayTasks.length}</span>
             </div>
             <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
@@ -404,8 +401,8 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
             <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
               <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
-              <span class="text-sm font-semibold text-charcoal">Upcoming</span>
-              <span class="text-xs text-charcoal/40 ml-1">${upcomingTasks.length}</span>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Upcoming</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${upcomingTasks.length}</span>
             </div>
             <div class="task-list">${upcomingTasks.map(task => renderTaskItem(task)).join('')}</div>
           </div>
@@ -416,7 +413,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
               <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
               <span class="text-sm font-semibold text-[var(--text-muted)]">Deferred</span>
-              <span class="text-xs text-charcoal/40 ml-1">${deferredTasks.length}</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${deferredTasks.length}</span>
             </div>
             <div class="task-list">${deferredTasks.map(task => renderTaskItem(task)).join('')}</div>
           </div>
@@ -426,8 +423,8 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
             <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
               <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h4.18c.26 1.7 1.74 3 3.57 3h2.5c1.83 0 3.31-1.3 3.57-3H21v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6zm0-2l3-7h12l3 7h-4.18c-.26-1.7-1.74-3-3.57-3h-2.5c-1.83 0-3.31 1.3-3.57 3H3z"/></svg>
-              <span class="text-sm font-semibold text-charcoal">Inbox</span>
-              <span class="text-xs text-charcoal/40 ml-1">${inboxTasks.length}</span>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Inbox</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${inboxTasks.length}</span>
             </div>
             <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
@@ -444,8 +441,8 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
             <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
               <svg class="w-4 h-4 text-teal-500" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="2"/><rect x="3" y="10" width="18" height="4" rx="2"/><rect x="3" y="16" width="18" height="4" rx="2"/></svg>
-              <span class="text-sm font-semibold text-charcoal">Anytime</span>
-              <span class="text-xs text-charcoal/40 ml-1">${anytimeTasks.length}</span>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Anytime</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${anytimeTasks.length}</span>
             </div>
             <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
@@ -462,8 +459,8 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
             <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
               <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h18v4H3V3zm1 5h16v13a1 1 0 01-1 1H5a1 1 0 01-1-1V8zm5 3v2h6v-2H9z"/></svg>
-              <span class="text-sm font-semibold text-charcoal">Someday</span>
-              <span class="text-xs text-charcoal/40 ml-1">${somedayTasks.length}</span>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Someday</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${somedayTasks.length}</span>
             </div>
             <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
@@ -480,12 +477,12 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
         <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
           <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>
-              <span class="text-sm font-semibold text-charcoal">Notes</span>
-              <span class="text-xs text-charcoal/40 ml-1">${noteItems.length}</span>
+              <svg class="w-4 h-4 text-[var(--accent)]" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Notes</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${noteItems.length}</span>
             </div>
             <button onclick="window.createRootNote('${currentCategory.id}')"
-              class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-purple-600 hover:bg-purple-50 rounded-lg transition">
+              class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
               Add Note
             </button>
@@ -494,16 +491,16 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             <div class="py-2">${renderNotesOutliner(currentCategory.id)}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
               <button onclick="window.createRootNote('${currentCategory.id}')"
-                class="flex items-center gap-2 px-3 py-2 w-full text-sm text-purple-400 hover:text-purple-600 hover:bg-purple-50/50 rounded-lg transition text-left">
+                class="flex items-center gap-2 px-3 py-2 w-full text-sm text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition text-left">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Add another note...
               </button>
             </div>
           ` : `
             <div class="px-4 py-8 text-center">
-              <p class="text-sm text-charcoal/40 mb-3">No notes in this area yet</p>
+              <p class="text-sm text-[var(--text-muted)] mb-3">No notes in this area yet</p>
               <button onclick="window.createRootNote('${currentCategory.id}')"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-600 text-sm font-medium rounded-lg hover:bg-purple-100 transition">
+                class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent-light)] text-[var(--accent)] text-sm font-medium rounded-lg hover:bg-[var(--accent-light)] transition">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Create your first note
               </button>
@@ -513,12 +510,12 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
 
         ${totalTasks === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
-            <div class="flex flex-col items-center justify-center text-charcoal/30">
+            <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
               <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style="background: ${categoryColor}10">
                 <svg class="w-10 h-10" style="color: ${categoryColor}" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>
               </div>
-              <p class="text-lg font-medium text-charcoal/50 mb-1">No items yet</p>
-              <p class="text-sm text-charcoal/30 mb-4">Add your first task or note to ${currentCategory.name}</p>
+              <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No items yet</p>
+              <p class="text-sm text-[var(--text-muted)] mb-4">Add your first task or note to ${currentCategory.name}</p>
               <button onclick="window.openNewTaskModal()"
                 class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${categoryColor}">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
@@ -537,10 +534,16 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
 // ============================================================================
 /**
  * Render the entire Tasks tab including sidebar and main content area.
- * Handles all perspective views, area views, calendar view, and notes outliner.
+ * Handles all perspective views, area views, and notes outliner.
  * @returns {string} HTML string for the complete tasks tab
  */
 export function renderTasksTab() {
+  // Legacy fallback: calendar perspective now belongs to Calendar tab only.
+  if (state.activePerspective === 'calendar') {
+    state.activePerspective = 'inbox';
+    saveViewState();
+  }
+
   const allPerspectives = [...BUILTIN_PERSPECTIVES, ...state.customPerspectives];
   const filteredTasks = getCurrentFilteredTasks();
   const viewInfo = getCurrentViewInfo();
@@ -551,14 +554,8 @@ export function renderTasksTab() {
   const todayDate = getLocalDateString();
   BUILTIN_PERSPECTIVES.forEach(p => {
     if (p.id === 'today') {
-      // Today count shows only dated tasks (not Next-tagged tasks)
-      taskCounts[p.id] = state.tasksData.filter(t => {
-        if (t.completed) return false;
-        const isDueToday = t.dueDate === todayDate;
-        const isOverdue = t.dueDate && t.dueDate < todayDate;
-        const isScheduledForToday = t.deferDate && t.deferDate <= todayDate;
-        return t.today || isDueToday || isOverdue || isScheduledForToday;
-      }).length;
+      // Keep sidebar count aligned with Today sections visible in the list.
+      taskCounts[p.id] = getFilteredTasks('today').length;
     } else {
       taskCounts[p.id] = getFilteredTasks(p.id).length;
     }
@@ -805,8 +802,7 @@ export function renderTasksTab() {
   const currentCategory = isAreaView ? getCategoryById(state.activeCategoryFilter) : null;
 
   // Build task list (default view for non-area views)
-  const isCalendarView = state.activeFilterType === 'perspective' && state.activePerspective === 'calendar';
-  const taskListHtml = isCalendarView ? renderCalendarView() : isAreaView ? buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate) : `
+  const taskListHtml = isAreaView ? buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate) : `
     <div class="flex-1">
       <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
         <div class="task-list-header-desktop px-5 py-4 flex items-center justify-between">
@@ -855,7 +851,7 @@ export function renderTasksTab() {
             <div class="empty-state flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
               <div class="w-16 h-16 mb-4 flex items-center justify-center opacity-40">${viewInfo.icon}</div>
               <p class="text-[15px] font-medium">No tasks in ${viewInfo.name}</p>
-              ${state.activePerspective === 'inbox' ? '<p class="text-[13px] mt-1 text-[var(--text-muted)]/60">Add a task to get started</p>' : ''}
+              ${state.activePerspective === 'inbox' ? '<p class="text-[13px] mt-1 text-[var(--text-muted)]">Add a task to get started</p>' : ''}
             </div>
           ` : (state.activePerspective === 'upcoming' ? `
             <!-- Upcoming view grouped by date -->
@@ -863,7 +859,7 @@ export function renderTasksTab() {
               ${groupTasksByDate(filteredTasks).map(group => `
                 <div class="date-group mb-6">
                   <div class="px-5 py-2 sticky top-0 bg-[var(--bg-card)]">
-                    <span class="text-[13px] font-semibold text-charcoal/50">${group.label}</span>
+                    <span class="text-[13px] font-semibold text-[var(--text-muted)]">${group.label}</span>
                   </div>
                   <div>
                     ${group.tasks.map(task => renderTaskItem(task, false)).join('')}
@@ -877,7 +873,7 @@ export function renderTasksTab() {
               ${groupTasksByCompletionDate(filteredTasks).map(group => `
                 <div class="date-group mb-6">
                   <div class="px-5 py-2 sticky top-0 bg-[var(--bg-card)]">
-                    <span class="text-[13px] font-semibold text-charcoal/50">${group.label}</span>
+                    <span class="text-[13px] font-semibold text-[var(--text-muted)]">${group.label}</span>
                   </div>
                   <div>
                     ${group.tasks.map(task => renderTaskItem(task, false)).join('')}
@@ -924,8 +920,8 @@ export function renderTasksTab() {
                 <div class="px-5 py-2 bg-[var(--bg-card)]">
                   <div class="flex items-center gap-2">
                     <span style="color: ${color}">${icon}</span>
-                    <span class="text-[13px] font-semibold text-charcoal/50 uppercase tracking-wider">${label}</span>
-                    <span class="text-xs text-charcoal/30">${tasks.length}</span>
+                    <span class="text-[13px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">${label}</span>
+                    <span class="text-xs text-[var(--text-muted)]">${tasks.length}</span>
                   </div>
                 </div>
                 ${tasks.map(task => renderTaskItem(task)).join('')}
@@ -948,7 +944,7 @@ export function renderTasksTab() {
               ${renderSection(nextTasks, THINGS3_ICONS.next, 'Next', '#8B5CF6',
                 allDated.length > 0 ? 'mt-4' : '')}
               ${totalTasks === 0 ? `
-                <div class="empty-state flex flex-col items-center justify-center py-20 text-charcoal/30">
+                <div class="empty-state flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
                   <div class="w-16 h-16 mb-4 flex items-center justify-center opacity-50">${viewInfo.icon}</div>
                   <p class="text-[15px] font-medium">No tasks in ${viewInfo.name}</p>
                 </div>
@@ -958,18 +954,18 @@ export function renderTasksTab() {
           })() : (state.activePerspective === 'notes' ? `
             <!-- Notes Outliner View -->
             <div class="notes-outliner bg-[var(--bg-card)]">
-              <div class="px-4 py-3 border-b border-charcoal/5 flex items-center justify-between">
+              <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   ${activeNotesCategory ? `
-                    <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
+                    <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-[var(--accent-light)] text-[var(--accent)]">
                       <span class="w-2 h-2 rounded-full" style="background:${activeNotesCategory.color || '#8B5CF6'}"></span>
                       ${escapeHtml(activeNotesCategory.name)}
                     </span>
                   ` : ''}
-                  <span class="text-xs text-charcoal/30">${taskCounts['notes'] || 0} notes</span>
+                  <span class="text-xs text-[var(--text-muted)]">${taskCounts['notes'] || 0} notes</span>
                 </div>
                 <button onclick="window.createRootNote(${state.activeCategoryFilter ? `'${state.activeCategoryFilter}'` : 'null'})"
-                  class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-purple-600 hover:bg-purple-50 rounded-lg transition">
+                  class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition">
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                   New note
                 </button>

@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.17.6 - Homebase';
+export const APP_VERSION = '4.17.7 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -209,7 +209,6 @@ export const BUILTIN_PERSPECTIVES = [
   { id: 'today', name: 'Today', icon: THINGS3_ICONS.today, color: '#FFCA28', filter: { today: true }, builtin: true },
   { id: 'flagged', name: 'Flagged', icon: THINGS3_ICONS.flagged, color: '#FB8C00', filter: { flagged: true }, builtin: true },
   { id: 'upcoming', name: 'Upcoming', icon: THINGS3_ICONS.upcoming, color: '#EF5350', filter: { upcoming: true }, builtin: true },
-  { id: 'calendar', name: 'Calendar', icon: THINGS3_ICONS.calendar, color: '#8B5CF6', filter: { calendar: true }, builtin: true },
   { id: 'anytime', name: 'Anytime', icon: THINGS3_ICONS.anytime, color: '#26A69A', filter: { status: 'anytime' }, builtin: true },
   { id: 'someday', name: 'Someday', icon: THINGS3_ICONS.someday, color: '#D4A24C', filter: { status: 'someday' }, builtin: true },
   { id: 'logbook', name: 'Logbook', icon: THINGS3_ICONS.logbook, color: '#66BB6A', filter: { completed: true }, builtin: true }

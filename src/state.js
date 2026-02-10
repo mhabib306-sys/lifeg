@@ -129,6 +129,8 @@ if (!['home', 'life', 'tasks', 'calendar', 'settings'].includes(initialActiveTab
 let initialActivePerspective = savedViewState.activePerspective || 'inbox';
 // Migrate old 'home' perspective to 'inbox' since Home is now a separate tab
 if (initialActivePerspective === 'home') initialActivePerspective = 'inbox';
+// Calendar perspective now belongs exclusively to the Calendar tab.
+if (initialActivePerspective === 'calendar') initialActivePerspective = 'inbox';
 
 // ---------------------------------------------------------------------------
 // Collapsed notes (Set) — loaded from localStorage

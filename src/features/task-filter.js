@@ -38,6 +38,9 @@ export function initializeTaskOrders() {
  * @returns {Task[]} Filtered and sorted task array
  */
 export function getFilteredTasks(perspectiveId) {
+  // Workspace no longer owns a calendar perspective.
+  if (perspectiveId === 'calendar') perspectiveId = 'inbox';
+
   // Notes perspective shows tasks marked as notes
   if (perspectiveId === 'notes') {
     return state.tasksData.filter(task => task.isNote && !task.completed)
@@ -88,11 +91,6 @@ export function getFilteredTasks(perspectiveId) {
       const isNextTask = nextLabel && (task.labels || []).includes(nextLabel.id);
 
       return isTodayTask || isNextTask;
-    }
-
-    // Calendar: Tasks with any date (dueDate or deferDate)
-    if (perspectiveId === 'calendar') {
-      return !!(task.dueDate || task.deferDate);
     }
 
     // Upcoming: Tasks with future due dates (not today, not overdue)

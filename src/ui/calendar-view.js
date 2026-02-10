@@ -28,7 +28,7 @@ function getMeetingScopeKeys(event) {
   return keys;
 }
 
-function hasMeetingWorkspace(event) {
+function hasMeetingNotes(event) {
   const keys = getMeetingScopeKeys(event);
   if (!keys.length) return false;
   const docs = state.meetingNotesByEvent || {};
@@ -287,7 +287,7 @@ function dateToStr(dateObj) {
 export function openCalendarEventActions(calendarId, eventId) {
   const event = findCalendarEvent(calendarId, eventId);
   if (!event) return;
-  if (hasMeetingWorkspace(event)) {
+  if (hasMeetingNotes(event)) {
     openCalendarMeetingNotes(calendarId, eventId);
     return;
   }
@@ -317,7 +317,7 @@ export function openCalendarMeetingNotes(calendarId, eventId) {
   window.render();
 }
 
-export function openCalendarMeetingWorkspaceByEventKey(eventKey) {
+export function openCalendarMeetingNotesByEventKey(eventKey) {
   if (!eventKey) return;
   const parts = String(eventKey).split('::');
   if (parts.length >= 3) {
@@ -331,6 +331,11 @@ export function openCalendarMeetingWorkspaceByEventKey(eventKey) {
   window.render();
 }
 
+// Legacy alias kept for compatibility with older onclick handlers/state.
+export function openCalendarMeetingWorkspaceByEventKey(eventKey) {
+  openCalendarMeetingNotesByEventKey(eventKey);
+}
+
 export function setCalendarMeetingNotesScope(scope) {
   if (!['instance', 'series'].includes(scope)) return;
   const previousScope = state.calendarMeetingNotesScope || 'instance';
@@ -340,7 +345,7 @@ export function setCalendarMeetingNotesScope(scope) {
     return window.render();
   }
 
-  // Guard against "disappearing" items when promoting a single instance workspace
+  // Guard against "disappearing" items when promoting a single event note
   // to series scope by migrating linked entities to the series key.
   if (previousScope === 'instance' && scope === 'series' && currentEvent.recurringEventId) {
     const instanceKey = getEventKeyForScope(currentEvent, 'instance');
@@ -677,7 +682,7 @@ function renderMeetingNotesPage() {
 
 function renderEventActionsModal(event) {
   if (!event) return '';
-  const hasNotes = hasMeetingWorkspace(event);
+  const hasNotes = hasMeetingNotes(event);
   if (hasNotes) return '';
   const meetingActionLabel = event.meetingProvider ? `Join ${escapeHtml(event.meetingProvider)}` : 'Open Meeting Link';
   const meetingSubLabel = event.meetingLink ? 'Open call link' : 'No call link found';
@@ -844,7 +849,7 @@ export function renderCalendarView() {
                 return `<div class="calendar-task-line ${cls}">${escapeHtml(t.title)}</div>`;
               }).join('')}
               ${cellEvents.map(e => {
-                const withNotes = hasMeetingWorkspace(e);
+                const withNotes = hasMeetingNotes(e);
                 return `<div class="calendar-task-line event ${withNotes ? 'with-notes' : ''}" onclick="event.stopPropagation(); openCalendarEventActions('${q(e.calendarId)}','${q(e.id)}')">${withNotes ? '<span class="calendar-line-note-indicator"></span>' : ''}${escapeHtml(e.summary)}</div>`;
               }).join('')}
             </div>
@@ -896,7 +901,7 @@ export function renderCalendarView() {
                 ? '<div class="calendar-range-empty">No items</div>'
                 : allItems.map(item => {
                   if (item.type === 'event') {
-                    const withNotes = hasMeetingWorkspace(item.event);
+                    const withNotes = hasMeetingNotes(item.event);
                     return `<div class="calendar-task-line event ${withNotes ? 'with-notes' : ''}" onclick="event.stopPropagation(); openCalendarEventActions('${q(item.event.calendarId)}','${q(item.event.id)}')">${withNotes ? '<span class="calendar-line-note-indicator"></span>' : ''}${escapeHtml(item.event.summary)}</div>`;
                   }
                   const t = item.task;
@@ -990,7 +995,7 @@ export function renderCalendarView() {
       const summary = String(e?.summary || '(No title)');
       const title = escapeHtml(summary.length > 60 ? summary.slice(0, 57) + '...' : summary);
       const timeStr = formatEventTimeLabel(e) || 'All day';
-      const withNotes = hasMeetingWorkspace(e);
+      const withNotes = hasMeetingNotes(e);
       return `
         <button onclick="openCalendarEventActions('${q(e.calendarId)}','${q(e.id)}')" class="calendar-side-event-row w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-[var(--bg-secondary)] transition rounded-lg ${withNotes ? 'calendar-side-event-with-notes' : ''}">
           <span class="w-2.5 h-2.5 rounded-full ${withNotes ? 'bg-coral' : 'bg-[#2F9B6A]'} flex-shrink-0"></span>

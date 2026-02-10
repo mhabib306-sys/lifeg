@@ -123,10 +123,11 @@ export function updateDailyField(category, field, value) {
  * Persist current view state (active tab, filters, etc.) to localStorage
  */
 export function saveViewState() {
+  const safePerspective = state.activePerspective === 'calendar' ? 'inbox' : state.activePerspective;
   localStorage.setItem(VIEW_STATE_KEY, JSON.stringify({
     activeTab: state.activeTab,
     activeSubTab: state.activeSubTab,
-    activePerspective: state.activePerspective,
+    activePerspective: safePerspective,
     activeFilterType: state.activeFilterType,
     activeCategoryFilter: state.activeCategoryFilter,
     activeLabelFilter: state.activeLabelFilter,
