@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T03:56:55.351Z",
+  "lastUpdated": "2026-02-10T03:57:25.119Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3249,6 +3249,11 @@
       "name": "Nadine",
       "color": "#4A90A4",
       "email": ""
+    },
+    {
+      "id": "person_1770695842533",
+      "name": "Ahmad Joehnny",
+      "email": "ahmad.joehnny@breadfast.com"
     }
   ],
   "customPerspectives": [
