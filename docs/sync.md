@@ -45,6 +45,7 @@
 - Merge by `eventKey`.
 - Newer `updatedAt` (fallback `createdAt`) wins.
 - Meeting workspace bullets/tasks are stored in `tasks[]` via `meetingEventKey` and follow task merge rules.
+- Instance -> series promotion migrates linked tasks to the series key to prevent workspace disappearance on scope switch.
 
 ### Metadata collections (categories/labels/people/perspectives/widgets)
 - Merge by `id`.

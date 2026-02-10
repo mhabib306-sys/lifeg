@@ -36,7 +36,7 @@
 ## Meeting Notes Object
 ```
 {
-  eventKey: string,          // "<calendarId>::<eventId>"
+  eventKey: string,          // "<calendarId>::instance::<eventId>" | "<calendarId>::series::<recurringEventId>"
   calendarId: string,
   eventId: string,
   title: string,

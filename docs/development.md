@@ -25,9 +25,11 @@ npm run deploy
 - Load cloud, modify same task locally, confirm newer `updatedAt` wins after sync.
 4. Meeting notes:
 - Create/edit notes from calendar event, reload, verify persistence.
-5. Canceled events:
+5. Meeting note scope conversion:
+- Add bullets/tasks in instance scope, switch to series, verify linked items remain visible and editable, reload and verify no loss.
+6. Canceled events:
 - Confirm canceled Google events do not render in calendar grids/lists.
-6. Mobile:
+7. Mobile:
 - Verify calendar page layout + event actions modal on narrow viewport.
 
 ## QA Matrix (Minimum)

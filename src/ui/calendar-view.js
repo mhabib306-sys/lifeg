@@ -7,13 +7,16 @@ import { getTasksForDate } from '../features/calendar.js';
 import { THINGS3_ICONS, MEETING_NOTES_KEY } from '../constants.js';
 import { escapeHtml, getLocalDateString } from '../utils.js';
 
-function getEventKey(event) {
+function getEventKeyForScope(event, scope = 'instance') {
   if (!event) return '';
-  const scope = state.calendarMeetingNotesScope || 'instance';
   if (scope === 'series' && event.recurringEventId) {
     return `${event.calendarId}::series::${event.recurringEventId}`;
   }
   return `${event.calendarId}::instance::${event.id}`;
+}
+
+function getEventKey(event) {
+  return getEventKeyForScope(event, state.calendarMeetingNotesScope || 'instance');
 }
 
 function getMeetingScopeKeys(event) {
@@ -87,7 +90,11 @@ function getMeetingNotesEvent() {
 
 function getMeetingLinkedItems(eventKey) {
   if (!eventKey) return [];
-  return state.tasksData.filter(t => t.meetingEventKey === eventKey);
+  if (typeof eventKey === 'string') {
+    return state.tasksData.filter(t => t.meetingEventKey === eventKey);
+  }
+  const scopeKeys = getMeetingScopeKeys(eventKey);
+  return state.tasksData.filter(t => scopeKeys.includes(t.meetingEventKey));
 }
 
 function renderMultilineText(text) {
@@ -200,10 +207,53 @@ export function openCalendarMeetingWorkspaceByEventKey(eventKey) {
 
 export function setCalendarMeetingNotesScope(scope) {
   if (!['instance', 'series'].includes(scope)) return;
+  const previousScope = state.calendarMeetingNotesScope || 'instance';
+  const currentEvent = getMeetingNotesEvent();
+  if (!currentEvent) {
+    state.calendarMeetingNotesScope = scope;
+    return window.render();
+  }
+
+  // Guard against "disappearing" items when promoting a single instance workspace
+  // to series scope by migrating linked entities to the series key.
+  if (previousScope === 'instance' && scope === 'series' && currentEvent.recurringEventId) {
+    const instanceKey = getEventKeyForScope(currentEvent, 'instance');
+    const seriesKey = getEventKeyForScope(currentEvent, 'series');
+
+    if (instanceKey && seriesKey && instanceKey !== seriesKey) {
+      if (!state.meetingNotesByEvent) state.meetingNotesByEvent = {};
+      const sourceDoc = state.meetingNotesByEvent[instanceKey];
+      const targetDoc = state.meetingNotesByEvent[seriesKey];
+      const nowIso = new Date().toISOString();
+
+      if (sourceDoc && !targetDoc) {
+        state.meetingNotesByEvent[seriesKey] = {
+          ...sourceDoc,
+          eventKey: seriesKey,
+          updatedAt: nowIso,
+        };
+      } else if (sourceDoc && targetDoc && !String(targetDoc.content || '').trim() && String(sourceDoc.content || '').trim()) {
+        targetDoc.content = sourceDoc.content;
+        targetDoc.updatedAt = nowIso;
+      }
+
+      let movedCount = 0;
+      for (const task of state.tasksData) {
+        if (task.meetingEventKey === instanceKey) {
+          task.meetingEventKey = seriesKey;
+          task.updatedAt = nowIso;
+          movedCount++;
+        }
+      }
+      if (movedCount > 0) {
+        window.saveTasksData?.();
+      }
+      persistMeetingNotes();
+    }
+  }
+
   state.calendarMeetingNotesScope = scope;
-  const event = getMeetingNotesEvent();
-  if (!event) return window.render();
-  const doc = ensureMeetingNoteDoc(event);
+  const doc = ensureMeetingNoteDoc(currentEvent);
   if (doc) state.calendarMeetingNotesEventKey = doc.eventKey;
   window.render();
 }
@@ -304,7 +354,7 @@ function renderMeetingNotesPage() {
   const eventDate = formatEventDateLabel(event);
   const eventTime = formatEventTimeLabel(event);
   const attendees = Array.isArray(event.attendees) ? event.attendees : [];
-  const linkedItems = getMeetingLinkedItems(key);
+  const linkedItems = getMeetingLinkedItems(event);
   const openItems = linkedItems.filter(item => !item.completed);
   const completedItems = linkedItems.filter(item => item.completed);
   const itemRows = openItems.length > 0
