@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T13:40:44.617Z",
+  "lastUpdated": "2026-02-10T13:41:28.270Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2563,8 +2563,8 @@
         "label_1770020325388"
       ],
       "people": [
-        "person_1770576686684",
-        "person-1770510421604"
+        "person-1770510421604",
+        "person_1770695842533"
       ],
       "deferDate": null,
       "dueDate": null,
@@ -2574,7 +2574,7 @@
       "indent": 0,
       "order": 16000,
       "createdAt": "2026-02-08T18:51:44.364Z",
-      "updatedAt": "2026-02-10T03:26:51.303Z",
+      "updatedAt": "2026-02-10T13:41:24.905Z",
       "meetingEventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260211T083000Z"
     },
     {
