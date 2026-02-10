@@ -120,7 +120,7 @@ localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedData));
 const savedViewState = JSON.parse(localStorage.getItem(VIEW_STATE_KEY) || '{}');
 
 let initialActiveTab = savedViewState.activeTab || 'home';
-let initialActiveSubTab = savedViewState.activeSubTab || 'daily';
+let initialActiveSubTab = savedViewState.activeSubTab || 'dashboard';
 
 // Migrate old tab values to new structure
 if (initialActiveTab === 'track' || initialActiveTab === 'bulk' || initialActiveTab === 'dashboard') {

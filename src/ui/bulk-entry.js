@@ -3,6 +3,7 @@
 // ============================================================================
 // Renders the spreadsheet-style bulk data entry interface for
 // backfilling tracking data across an entire month.
+// Polished in v4.18.5: skip auto-synced columns, modernized styling.
 
 import { state } from '../state.js';
 import { getLocalDateString, fmt } from '../utils.js';
@@ -10,6 +11,8 @@ import { defaultDayData, THINGS3_ICONS } from '../constants.js';
 import { calculateScores, invalidateScoresCache } from '../features/scoring.js';
 import { saveData } from '../data/storage.js';
 import { getAccentColor } from '../data/github-sync.js';
+import { isWhoopConnected } from '../data/whoop-sync.js';
+import { isLibreConnected } from '../data/libre-sync.js';
 
 /**
  * Set the bulk entry month and year, then re-render.
@@ -110,14 +113,21 @@ export function renderBulkEntryTab() {
 
   // Category colors matching Daily tab
   const categoryColors = {
-    prayers: '#4A90A4',  // teal
-    glucose: '#6B8E5A', // green
-    whoop: '#7C6B8E',   // purple
-    family: '#C4943D',  // amber
-    habits: '#6B7280'   // slate
+    prayers: '#4A90A4',
+    glucose: '#6B8E5A',
+    whoop: '#7C6B8E',
+    family: '#C4943D',
+    habits: '#6B7280'
   };
 
-  const categories = {
+  const whoopConnected = isWhoopConnected();
+  const libreConnected = isLibreConnected();
+
+  // Auto-synced fields to skip when connected
+  const autoSyncedWhoopFields = ['sleepPerf', 'recovery', 'strain'];
+  const autoSyncedGlucoseFields = ['avg', 'tir'];
+
+  const allCategories = {
     prayers: { label: '🕌 Prayers', fields: ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'quran'], headers: ['F', 'D', 'A', 'M', 'I', 'Q'] },
     glucose: { label: '💉 Glucose', fields: ['avg', 'tir', 'insulin'], headers: ['Avg', 'TIR', 'Insulin'] },
     whoop: { label: '⏱️ Whoop', fields: ['sleepPerf', 'recovery', 'strain'], headers: ['Sleep%', 'Rec', 'Strain'] },
@@ -125,7 +135,53 @@ export function renderBulkEntryTab() {
     habits: { label: '✨ Habits', fields: ['exercise', 'reading', 'meditation', 'water', 'vitamins', 'brushTeeth', 'nop'], headers: ['🏋️', '📚', '🧘', '💧', '💊', '🦷', '💤'] }
   };
 
+  // Filter out auto-synced fields when connected
+  const categories = JSON.parse(JSON.stringify(allCategories));
+  let autoSyncNote = '';
+
+  if (whoopConnected && state.bulkCategory === 'whoop') {
+    categories.whoop.fields = categories.whoop.fields.filter(f => !autoSyncedWhoopFields.includes(f));
+    categories.whoop.headers = [];
+    // Only keep whoopAge if it existed, but whoop category doesn't have it in bulk
+    // All whoop fields are auto-synced, show message
+    if (categories.whoop.fields.length === 0) {
+      autoSyncNote = `
+        <div class="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
+          <span class="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span>
+          All Whoop metrics are auto-synced. No manual entry needed.
+        </div>
+      `;
+    }
+  }
+  if (libreConnected && state.bulkCategory === 'glucose') {
+    const origFields = categories.glucose.fields;
+    const origHeaders = categories.glucose.headers;
+    const filteredFields = [];
+    const filteredHeaders = [];
+    origFields.forEach((f, i) => {
+      if (!autoSyncedGlucoseFields.includes(f)) {
+        filteredFields.push(f);
+        filteredHeaders.push(origHeaders[i]);
+      }
+    });
+    categories.glucose.fields = filteredFields;
+    categories.glucose.headers = filteredHeaders;
+    if (filteredFields.length > 0) {
+      autoSyncNote = `
+        <div class="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
+          <span class="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span>
+          Avg & TIR are auto-synced by Libre. Only Insulin shown for manual entry.
+        </div>
+      `;
+    }
+  }
+
   const cat = categories[state.bulkCategory];
+
+  // If no fields left (all auto-synced), show just the note
+  if (cat.fields.length === 0) {
+    return renderBulkShell(monthName, categoryColors, categories, allCategories, autoSyncNote, daysInMonth);
+  }
 
   // Generate month options (2026 and 2027)
   let monthOptions = '';
@@ -153,47 +209,48 @@ export function renderBulkEntryTab() {
 
       if (state.bulkCategory === 'family' || (state.bulkCategory === 'habits' && field === 'vitamins')) {
         const checked = value ? 'checked' : '';
-        cells += '<td class="border border-softborder px-1 py-1 text-center">' +
+        cells += '<td class="border border-[var(--border)] px-1 py-1 text-center">' +
           '<input type="checkbox" ' + checked +
-          ' class="w-5 h-5 rounded border-softborder text-coral focus:ring-coral cursor-pointer"' +
+          ' class="w-5 h-5 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)] cursor-pointer"' +
           ' onchange="updateBulkData(\'' + dateStr + '\', \'' + state.bulkCategory + '\', \'' + field + '\', this.checked ? \'1\' : \'\')">' +
           '</td>';
       } else if (state.bulkCategory === 'prayers' && field !== 'quran') {
-        cells += '<td class="border border-softborder px-1 py-1">' +
+        cells += '<td class="border border-[var(--border)] px-1 py-1">' +
           '<input type="text" value="' + (value || '') + '" placeholder="X.Y"' +
-          ' class="w-full px-1 py-1 text-center text-sm font-mono border-0 focus:ring-2 focus:ring-coral rounded bg-[var(--bg-input)]"' +
+          ' class="w-full px-1 py-1 text-center text-sm font-mono border-0 focus:ring-2 focus:ring-[var(--accent)] rounded bg-[var(--bg-input)]"' +
           ' onchange="updateBulkData(\'' + dateStr + '\', \'' + state.bulkCategory + '\', \'' + field + '\', this.value)">' +
           '</td>';
       } else {
-        cells += '<td class="border border-softborder px-1 py-1">' +
+        cells += '<td class="border border-[var(--border)] px-1 py-1">' +
           '<input type="number" step="any" value="' + (value || '') + '"' +
-          ' class="w-full px-1 py-1 text-center text-sm border-0 focus:ring-2 focus:ring-coral rounded bg-[var(--bg-input)]"' +
+          ' class="w-full px-1 py-1 text-center text-sm border-0 focus:ring-2 focus:ring-[var(--accent)] rounded bg-[var(--bg-input)]"' +
           ' onchange="updateBulkData(\'' + dateStr + '\', \'' + state.bulkCategory + '\', \'' + field + '\', this.value)">' +
           '</td>';
       }
     });
 
-    const rowClass = (isWeekend ? 'bg-warmgray/50 ' : '') + (isToday ? 'bg-coral/10 ' : '') + 'hover:bg-warmgray';
-    const dayCellClass = 'border border-softborder px-2 py-1 font-medium text-center text-charcoal sticky left-0 z-10 ' + (isToday ? 'bg-coral/20' : 'bg-[var(--bg-card)]');
-    const weekdayCellClass = 'border border-softborder px-2 py-1 text-xs text-charcoal/50 text-center sticky left-10 z-10 ' + (isToday ? 'bg-coral/20' : 'bg-[var(--bg-card)]');
+    const rowClass = (isWeekend ? 'bg-[var(--bg-secondary)]/50 ' : '') + (isToday ? 'bg-[var(--accent)]/10 ' : '') + 'hover:bg-[var(--bg-secondary)]';
+    const dayCellClass = 'border border-[var(--border)] px-2 py-1 font-medium text-center text-[var(--text-primary)] sticky left-0 z-10 ' + (isToday ? 'bg-[var(--accent)]/20' : 'bg-[var(--bg-card)]');
+    const weekdayCellClass = 'border border-[var(--border)] px-2 py-1 text-xs text-[var(--text-muted)] text-center sticky left-10 z-10 ' + (isToday ? 'bg-[var(--accent)]/20' : 'bg-[var(--bg-card)]');
 
     tableRows += '<tr class="' + rowClass + '">' +
       '<td class="' + dayCellClass + '">' + day + '</td>' +
       '<td class="' + weekdayCellClass + '">' + dayOfWeek + '</td>' +
       cells +
-      '<td id="score-' + dateStr + '" class="border border-softborder px-2 py-1 text-center font-semibold text-coral">' + fmt(scores.total) + '</td>' +
+      '<td id="score-' + dateStr + '" class="border border-[var(--border)] px-2 py-1 text-center font-semibold text-[var(--accent)]">' + fmt(scores.total) + '</td>' +
       '</tr>';
   }
 
-  // Category buttons with section colors
+  // Category buttons — pill style
   let catButtons = '';
-  Object.entries(categories).forEach(function([key, val]) {
+  Object.entries(allCategories).forEach(function([key, val]) {
     const color = categoryColors[key];
-    const btnClass = state.bulkCategory === key
-      ? 'text-white'
-      : 'bg-warmgray hover:bg-softborder text-charcoal';
-    const btnStyle = state.bulkCategory === key ? 'background-color: ' + color : '';
-    catButtons += '<button onclick="setBulkCategory(\'' + key + '\')" class="px-3 py-2 rounded-lg text-sm font-medium transition ' + btnClass + '" style="' + btnStyle + '">' + val.label + '</button>';
+    const isActive = state.bulkCategory === key;
+    const btnClass = isActive
+      ? 'text-white shadow-sm'
+      : 'bg-[var(--bg-secondary)] hover:bg-[var(--border)] text-[var(--text-secondary)]';
+    const btnStyle = isActive ? 'background-color: ' + color : '';
+    catButtons += '<button onclick="setBulkCategory(\'' + key + '\')" class="px-4 py-1.5 rounded-full text-sm font-medium transition ' + btnClass + '" style="' + btnStyle + '">' + val.label + '</button>';
   });
 
   // Header cells with category color
@@ -215,36 +272,30 @@ export function renderBulkEntryTab() {
   const avgScore = daysWithData > 0 ? Math.round(totalScore / daysWithData) : 0;
   const completionRate = Math.round((daysWithData / daysInMonth) * 100);
 
-  const prayerHint = state.bulkCategory === 'prayers' ? '<span class="ml-2 text-charcoal/70">• Use X.Y format: e.g., 1 = on-time, 0.1 = late, 1.2 = 1 on-time + 2 late</span>' : '';
-  const familyHint = state.bulkCategory === 'family' ? '<span class="ml-2 text-charcoal/70">• Check box if you connected with that person</span>' : '';
+  const prayerHint = state.bulkCategory === 'prayers' ? '<span class="ml-2 text-[var(--text-muted)]">X.Y format: 1 = on-time, 0.1 = late, 1.2 = 1 on-time + 2 late</span>' : '';
+  const familyHint = state.bulkCategory === 'family' ? '<span class="ml-2 text-[var(--text-muted)]">Check box if you connected with that person</span>' : '';
 
   return '<div class="space-y-4">' +
-    // Controls card
-    '<div class="sb-card rounded-lg overflow-hidden">' +
-      '<div class="px-5 py-3 bg-warmgray" style="border-bottom: 3px solid ' + getAccentColor() + '">' +
-        '<h3 class="font-semibold text-charcoal">📅 Bulk Entry</h3>' +
+    // Controls — simpler inline layout
+    '<div class="flex flex-wrap items-end gap-4">' +
+      '<div>' +
+        '<label class="text-xs text-[var(--text-muted)] block mb-1.5">Month</label>' +
+        '<select onchange="const [m,y] = this.value.split(\'-\'); setBulkMonth(m, y)" class="px-3 py-2 border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--accent)] outline-none bg-[var(--bg-input)] text-[var(--text-primary)] text-sm">' +
+          monthOptions +
+        '</select>' +
       '</div>' +
-      '<div class="p-5 bg-[var(--bg-card)]">' +
-        '<div class="flex flex-wrap items-center gap-4">' +
-          '<div>' +
-            '<label class="text-sm text-charcoal/60 block mb-1">Month</label>' +
-            '<select onchange="const [m,y] = this.value.split(\'-\'); setBulkMonth(m, y)" class="px-3 py-2 border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-coral outline-none bg-[var(--bg-input)] text-charcoal">' +
-              monthOptions +
-            '</select>' +
-          '</div>' +
-          '<div>' +
-            '<label class="text-sm text-charcoal/60 block mb-1">Area</label>' +
-            '<div class="flex gap-1 flex-wrap">' + catButtons + '</div>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
+      '<div class="flex gap-1.5 flex-wrap">' + catButtons + '</div>' +
     '</div>' +
+    // Auto-sync note (if applicable)
+    (autoSyncNote ? '<div class="mt-2">' + autoSyncNote + '</div>' : '') +
     // Info hint
-    '<div class="rounded-lg p-3 text-sm" style="background-color: ' + catColor + '15; border-left: 3px solid ' + catColor + '">' +
-      '<strong class="text-charcoal">' + monthName + '</strong> <span class="text-charcoal/70">' + cat.label + '</span>' + prayerHint + familyHint +
+    '<div class="rounded-lg px-3 py-2 text-sm flex items-center gap-2" style="background-color: ' + catColor + '12; border-left: 3px solid ' + catColor + '">' +
+      '<strong class="text-[var(--text-primary)]">' + monthName + '</strong>' +
+      '<span class="text-[var(--text-secondary)]">' + cat.label + '</span>' +
+      prayerHint + familyHint +
     '</div>' +
     // Data table
-    '<div class="sb-card rounded-lg overflow-hidden">' +
+    '<div class="rounded-xl border border-[var(--border-light)] overflow-hidden bg-[var(--bg-card)]">' +
       '<div class="overflow-x-auto">' +
         '<table class="w-full text-sm">' +
           '<thead>' +
@@ -259,30 +310,93 @@ export function renderBulkEntryTab() {
         '</table>' +
       '</div>' +
     '</div>' +
-    // Summary card
-    '<div class="sb-card rounded-lg overflow-hidden">' +
-      '<div class="px-5 py-3 bg-warmgray" style="border-bottom: 3px solid ' + getAccentColor() + '">' +
-        '<h3 class="font-semibold text-charcoal flex items-center gap-2">' + THINGS3_ICONS.lifeScore + ' ' + monthName + ' Summary</h3>' +
+    // Summary
+    '<div class="grid grid-cols-2 md:grid-cols-4 gap-3">' +
+      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+        '<div id="bulk-days-logged" class="text-2xl font-bold text-[var(--text-primary)]">' + fmt(daysWithData) + '</div>' +
+        '<div class="text-xs text-[var(--text-muted)] mt-1">Days Logged</div>' +
       '</div>' +
-      '<div class="p-5 bg-[var(--bg-card)]">' +
-        '<div class="grid grid-cols-2 md:grid-cols-4 gap-4">' +
-          '<div class="bg-warmgray rounded-lg p-3 text-center">' +
-            '<div id="bulk-days-logged" class="text-2xl font-bold text-charcoal">' + fmt(daysWithData) + '</div>' +
-            '<div class="text-xs text-charcoal/60">Days Logged</div>' +
-          '</div>' +
-          '<div class="bg-warmgray rounded-lg p-3 text-center">' +
-            '<div id="bulk-total-score" class="text-2xl font-bold text-coral">' + fmt(totalScore) + '</div>' +
-            '<div class="text-xs text-charcoal/60">Total Score</div>' +
-          '</div>' +
-          '<div class="bg-warmgray rounded-lg p-3 text-center">' +
-            '<div id="bulk-avg-score" class="text-2xl font-bold text-charcoal">' + fmt(avgScore) + '</div>' +
-            '<div class="text-xs text-charcoal/60">Avg Daily Score</div>' +
-          '</div>' +
-          '<div class="bg-warmgray rounded-lg p-3 text-center">' +
-            '<div id="bulk-completion" class="text-2xl font-bold text-charcoal">' + completionRate + '%</div>' +
-            '<div class="text-xs text-charcoal/60">Completion Rate</div>' +
-          '</div>' +
-        '</div>' +
+      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+        '<div id="bulk-total-score" class="text-2xl font-bold text-[var(--accent)]">' + fmt(totalScore) + '</div>' +
+        '<div class="text-xs text-[var(--text-muted)] mt-1">Total Score</div>' +
+      '</div>' +
+      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+        '<div id="bulk-avg-score" class="text-2xl font-bold text-[var(--text-primary)]">' + fmt(avgScore) + '</div>' +
+        '<div class="text-xs text-[var(--text-muted)] mt-1">Avg Daily Score</div>' +
+      '</div>' +
+      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+        '<div id="bulk-completion" class="text-2xl font-bold text-[var(--text-primary)]">' + completionRate + '%</div>' +
+        '<div class="text-xs text-[var(--text-muted)] mt-1">Completion Rate</div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/**
+ * Render the bulk entry shell when all fields are auto-synced (no table needed).
+ */
+function renderBulkShell(monthName, categoryColors, categories, allCategories, autoSyncNote, daysInMonth) {
+  // Generate month options
+  let monthOptions = '';
+  [2026, 2027].forEach(function(year) {
+    for (let m = 0; m < 12; m++) {
+      const label = new Date(year, m).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      const selected = m === state.bulkMonth && year === state.bulkYear ? 'selected' : '';
+      monthOptions += '<option value="' + m + '-' + year + '" ' + selected + '>' + label + '</option>';
+    }
+  });
+
+  // Category buttons — pill style
+  let catButtons = '';
+  Object.entries(allCategories).forEach(function([key, val]) {
+    const color = categoryColors[key];
+    const isActive = state.bulkCategory === key;
+    const btnClass = isActive
+      ? 'text-white shadow-sm'
+      : 'bg-[var(--bg-secondary)] hover:bg-[var(--border)] text-[var(--text-secondary)]';
+    const btnStyle = isActive ? 'background-color: ' + color : '';
+    catButtons += '<button onclick="setBulkCategory(\'' + key + '\')" class="px-4 py-1.5 rounded-full text-sm font-medium transition ' + btnClass + '" style="' + btnStyle + '">' + val.label + '</button>';
+  });
+
+  // Summary stats
+  let totalScore = 0, daysWithData = 0;
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = state.bulkYear + '-' + String(state.bulkMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+    if (state.allData[dateStr]) {
+      daysWithData++;
+      totalScore += calculateScores(state.allData[dateStr]).total;
+    }
+  }
+  const avgScore = daysWithData > 0 ? Math.round(totalScore / daysWithData) : 0;
+  const completionRate = Math.round((daysWithData / daysInMonth) * 100);
+
+  return '<div class="space-y-4">' +
+    '<div class="flex flex-wrap items-end gap-4">' +
+      '<div>' +
+        '<label class="text-xs text-[var(--text-muted)] block mb-1.5">Month</label>' +
+        '<select onchange="const [m,y] = this.value.split(\'-\'); setBulkMonth(m, y)" class="px-3 py-2 border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--accent)] outline-none bg-[var(--bg-input)] text-[var(--text-primary)] text-sm">' +
+          monthOptions +
+        '</select>' +
+      '</div>' +
+      '<div class="flex gap-1.5 flex-wrap">' + catButtons + '</div>' +
+    '</div>' +
+    autoSyncNote +
+    '<div class="grid grid-cols-2 md:grid-cols-4 gap-3">' +
+      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+        '<div id="bulk-days-logged" class="text-2xl font-bold text-[var(--text-primary)]">' + fmt(daysWithData) + '</div>' +
+        '<div class="text-xs text-[var(--text-muted)] mt-1">Days Logged</div>' +
+      '</div>' +
+      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+        '<div id="bulk-total-score" class="text-2xl font-bold text-[var(--accent)]">' + fmt(totalScore) + '</div>' +
+        '<div class="text-xs text-[var(--text-muted)] mt-1">Total Score</div>' +
+      '</div>' +
+      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+        '<div id="bulk-avg-score" class="text-2xl font-bold text-[var(--text-primary)]">' + fmt(avgScore) + '</div>' +
+        '<div class="text-xs text-[var(--text-muted)] mt-1">Avg Daily Score</div>' +
+      '</div>' +
+      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+        '<div id="bulk-completion" class="text-2xl font-bold text-[var(--text-primary)]">' + completionRate + '%</div>' +
+        '<div class="text-xs text-[var(--text-muted)] mt-1">Completion Rate</div>' +
       '</div>' +
     '</div>' +
   '</div>';

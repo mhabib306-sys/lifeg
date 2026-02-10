@@ -315,14 +315,14 @@ export function render() {
       <div class="bg-[var(--bg-secondary)]/50 border-b border-[var(--border-light)]">
         <div class="life-sub-nav max-w-6xl mx-auto px-6">
           <div class="flex gap-1 py-2">
+            <button type="button" onclick="switchSubTab('dashboard')" class="px-4 py-1.5 text-sm rounded-lg transition ${state.activeSubTab === 'dashboard' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
+              Dashboard
+            </button>
             <button type="button" onclick="switchSubTab('daily')" class="px-4 py-1.5 text-sm rounded-lg transition ${state.activeSubTab === 'daily' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
               Daily Entry
             </button>
             <button type="button" onclick="switchSubTab('bulk')" class="px-4 py-1.5 text-sm rounded-lg transition ${state.activeSubTab === 'bulk' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
               Bulk Entry
-            </button>
-            <button type="button" onclick="switchSubTab('dashboard')" class="px-4 py-1.5 text-sm rounded-lg transition ${state.activeSubTab === 'dashboard' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
-              Dashboard
             </button>
           </div>
         </div>

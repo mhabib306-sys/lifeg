@@ -431,24 +431,30 @@ export function renderHomeWidget(widget, isEditing) {
         <div class="grid grid-cols-3 gap-3">
           <div class="text-center">
             <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Sleep %</label>
-            <input type="number" value="${whoopData.sleepPerf || ''}" placeholder="--"
+            ${whoopConnected && whoopData.sleepPerf
+              ? `<div class="w-full px-3 py-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-sm font-medium text-[var(--text-secondary)] text-center">${whoopData.sleepPerf}<span class="text-xs text-[var(--text-muted)] ml-0.5">%</span></div>`
+              : `<input type="number" value="${whoopData.sleepPerf || ''}" placeholder="--"
               autocomplete="off"
               onchange="updateDailyField('whoop', 'sleepPerf', this.value)"
-              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">`}
           </div>
           <div class="text-center">
             <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Recovery</label>
-            <input type="number" value="${whoopData.recovery || ''}" placeholder="--"
+            ${whoopConnected && whoopData.recovery
+              ? `<div class="w-full px-3 py-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-sm font-medium text-[var(--text-secondary)] text-center">${whoopData.recovery}<span class="text-xs text-[var(--text-muted)] ml-0.5">%</span></div>`
+              : `<input type="number" value="${whoopData.recovery || ''}" placeholder="--"
               autocomplete="off"
               onchange="updateDailyField('whoop', 'recovery', this.value)"
-              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">`}
           </div>
           <div class="text-center">
             <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Strain</label>
-            <input type="number" value="${whoopData.strain || ''}" placeholder="--"
+            ${whoopConnected && whoopData.strain
+              ? `<div class="w-full px-3 py-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-sm font-medium text-[var(--text-secondary)] text-center">${whoopData.strain}<span class="text-xs text-[var(--text-muted)] ml-0.5">/21</span></div>`
+              : `<input type="number" value="${whoopData.strain || ''}" placeholder="--"
               autocomplete="off"
               onchange="updateDailyField('whoop', 'strain', this.value)"
-              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+              class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">`}
           </div>
         </div>
         ${whoopConnected ? `

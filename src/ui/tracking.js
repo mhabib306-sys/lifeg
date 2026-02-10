@@ -3,6 +3,7 @@
 // ============================================================================
 // Renders the daily tracking form with prayer inputs, family toggles,
 // glucose, whoop, habits sections and score cards.
+// Revamped in v4.18.5: single-column flow, auto-synced fields as read-only.
 
 import { state } from '../state.js';
 import { getLocalDateString, fmt } from '../utils.js';
@@ -18,12 +19,10 @@ import {
   createNumberInput,
   createCounter,
   createScoreCard,
-  createCard
 } from './input-builders.js';
 
 /**
- * Render the daily tracking tab with prayer inputs, glucose, whoop,
- * family check-ins, habits, and today's summary.
+ * Render the daily tracking tab — single-column flow with auto-synced read-only fields.
  * @returns {string} HTML string for the tracking tab
  */
 export function renderTrackingTab() {
@@ -45,30 +44,11 @@ export function renderTrackingTab() {
     prayerLate: rawScores?.prayerLate ?? 0
   };
 
-  const prayerHelp = `<span class="text-xs text-charcoal/50">X.Y = X on-time + Y late</span>`;
-  const prayersContent = `
-    <div class="flex gap-2 mb-4">
-      ${['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map(p =>
-        createPrayerInput(p, p.charAt(0).toUpperCase() + p.slice(1), data.prayers[p])
-      ).join('')}
-    </div>
-    <div class="border-t border-softborder pt-4">
-      <div class="flex items-center justify-center gap-3">
-        <span class="text-sm text-charcoal/70">📖 Quran</span>
-        <button onclick="updateData('prayers', 'quran', Math.max(0, ${parseInt(data.prayers.quran) || 0} - 1))"
-          class="w-7 h-7 rounded-full bg-warmgray hover:bg-softborder flex items-center justify-center font-bold text-charcoal/60">−</button>
-        <span class="w-8 text-center font-semibold text-lg">${parseInt(data.prayers.quran) || 0}</span>
-        <button onclick="updateData('prayers', 'quran', ${parseInt(data.prayers.quran) || 0} + 1)"
-          class="w-7 h-7 rounded-full bg-coral hover:bg-coralDark text-white flex items-center justify-center font-bold">+</button>
-        <span class="text-xs text-charcoal/50">pages · ${(parseInt(data.prayers.quran) || 0) * 5} pts</span>
-      </div>
-    </div>
-  `;
-
   const insulinThreshold = (state.WEIGHTS.glucose && state.WEIGHTS.glucose.insulinThreshold) || 40;
   const libreSynced = isLibreConnected() && getLibreLastSync();
   const libreData = data.libre || {};
   const hasLiveGlucose = libreSynced && libreData.currentGlucose;
+  const whoopSynced = isWhoopConnected() && getWhoopLastSync();
 
   // Color coding for live glucose
   let liveGlucoseColor = 'text-green-600';
@@ -78,112 +58,16 @@ export function renderTrackingTab() {
     else if (val > 140) liveGlucoseColor = 'text-amber-600';
   }
 
-  const glucoseContent = `
-    ${hasLiveGlucose ? `
-      <div class="flex items-center justify-between mb-3 pb-3 border-b border-softborder">
-        <div class="flex items-center gap-2">
-          <span class="text-xl font-bold ${liveGlucoseColor}">${libreData.currentGlucose}</span>
-          <span class="text-base ${liveGlucoseColor}">${libreData.trend || '→'}</span>
-          <span class="text-xs text-charcoal/50">mg/dL now</span>
-        </div>
-        <span class="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-          <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Libre
-        </span>
-      </div>
-    ` : ''}
-    <div class="flex gap-3">
-      ${libreSynced && data.glucose.avg
-        ? `<div class="flex-1 text-center">
-            <label class="block text-xs font-medium text-charcoal/60 mb-1">Avg Glucose</label>
-            <div class="px-3 py-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-sm font-medium text-[var(--text-secondary)]">${data.glucose.avg} <span class="text-xs text-charcoal/40">mg/dL</span></div>
-            <div class="text-[10px] text-green-600 mt-1">Auto-synced</div>
-          </div>`
-        : createNumberInput('Avg Glucose', data.glucose.avg, 'glucose', 'avg', '105', 'mg/dL', '105=10pts')}
-      ${libreSynced && data.glucose.tir
-        ? `<div class="flex-1 text-center">
-            <label class="block text-xs font-medium text-charcoal/60 mb-1">TIR</label>
-            <div class="px-3 py-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-sm font-medium text-[var(--text-secondary)]">${data.glucose.tir} <span class="text-xs text-charcoal/40">%</span></div>
-            <div class="text-[10px] text-green-600 mt-1">Auto-synced</div>
-          </div>`
-        : createNumberInput('TIR', data.glucose.tir, 'glucose', 'tir', '70+', '%', '0.1pts/%')}
-      ${createNumberInput('Insulin', data.glucose.insulin, 'glucose', 'insulin', '≤' + insulinThreshold, 'units', '≤' + insulinThreshold + '=+5')}
+  // Helper: read-only display value
+  const readOnlyValue = (value, unit) => `
+    <div class="px-3 py-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-sm font-medium text-[var(--text-secondary)] text-center">
+      ${value} <span class="text-xs text-[var(--text-muted)]">${unit}</span>
     </div>
-  `;
-
-  const whoopSynced = isWhoopConnected() && getWhoopLastSync();
-  const whoopHelp = whoopSynced
-    ? `<span class="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Auto-synced</span>`
-    : `<span class="text-xs text-charcoal/50">Hover ⓘ for tips</span>`;
-  const whoopContent = `
-    <div class="grid grid-cols-3 gap-3">
-      ${createNumberInput('Sleep Perf', data.whoop.sleepPerf, 'whoop', 'sleepPerf', '≥90', '%', '≥90%', '<b>How to improve:</b><br>• Consistent bedtime/wake time<br>• Cool room (65-68°F)<br>• No screens 1h before bed', 'left')}
-      ${createNumberInput('Recovery', data.whoop.recovery, 'whoop', 'recovery', '≥66', '%', '≥66%', '<b>How to improve recovery:</b><br>• Prioritize sleep quality<br>• Hydrate well<br>• Eat nutritious foods', 'center')}
-      ${createNumberInput('Strain', data.whoop.strain, 'whoop', 'strain', '10-14', '/21', 'match', '<b>Recovery-matched:</b><br>• Green (≥66%) → 14+ strain<br>• Yellow (33-65%) → 10-14 strain<br>• Red (<33%) → rest', 'right')}
-    </div>
-  `;
-
-  const familyContent = ['mom', 'dad', 'jana', 'tia', 'ahmed', 'eman'].map(p =>
-    createToggle(p.charAt(0).toUpperCase() + p.slice(1), data.family[p], 'family', p)
-  ).join('');
-
-  const habitsContent = `
-    <div class="space-y-2">
-      ${createCounter('🏋️ Exercise', data.habits.exercise || 0, 'habits', 'exercise', 5)}
-      ${createCounter('📚 Reading', data.habits.reading || 0, 'habits', 'reading', 5)}
-      ${createCounter('🧘 Meditation', data.habits.meditation || 0, 'habits', 'meditation', 5)}
-      ${createCounter('🦷 Brush Teeth', data.habits.brushTeeth || 0, 'habits', 'brushTeeth', 3)}
-      ${createToggle('💊 Vitamins taken', data.habits.vitamins, 'habits', 'vitamins')}
-    </div>
-    <div class="flex gap-3 mt-3 pt-3 border-t border-softborder">
-      <div class="flex-1 text-center">
-        <input type="number" step="any" value="${data.habits.water}" placeholder="2.5"
-          class="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none mb-1"
-          onchange="updateData('habits', 'water', this.value)">
-        <div class="text-xs font-medium text-charcoal/70">💧 Water</div>
-        <div class="text-xs text-charcoal/40">L · 1pt/L</div>
-      </div>
-      <div class="flex-1 text-center">
-        <input type="number" step="1" value="${data.habits.nop}" placeholder="0-1"
-          class="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none mb-1"
-          onchange="updateData('habits', 'nop', this.value)">
-        <div class="text-xs font-medium text-charcoal/70">💤 NoP</div>
-        <div class="text-xs text-charcoal/40">1=+2, 0=-2</div>
-      </div>
-    </div>
-  `;
-
-  const summaryContent = `
-    <div class="space-y-3">
-      <div class="p-3 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-light)]">
-        <div class="flex justify-between items-center">
-          <span class="font-medium text-[var(--text-primary)]">Whoop Age</span>
-          <div class="flex items-center gap-2">
-            <input type="number" step="0.1" value="${data.whoop.whoopAge || ''}" placeholder="—"
-              class="w-16 px-2 py-1 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] font-bold text-[var(--accent)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none"
-              onchange="updateData('whoop', 'whoopAge', this.value)">
-            <span class="text-xs text-[var(--text-muted)]">yrs</span>
-          </div>
-        </div>
-      </div>
-      <div class="p-3 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-light)]">
-        <div class="flex justify-between items-center">
-          <span class="font-medium text-[var(--text-primary)]">Prayers</span>
-          <span class="font-bold text-[var(--accent)]">${scores.prayer} pts</span>
-        </div>
-        <div class="text-xs mt-1">
-          <span class="inline-block bg-green-100 text-green-700 px-2 py-0.5 rounded mr-1">${scores.prayerOnTime} on-time</span>
-          <span class="inline-block bg-amber-100 text-amber-700 px-2 py-0.5 rounded">${scores.prayerLate} late</span>
-        </div>
-      </div>
-      <div class="flex justify-between items-center p-3 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-light)]">
-        <span class="font-medium text-[var(--text-primary)]">Family</span>
-        <span class="font-bold text-[var(--accent)]">${Object.values(data.family).filter(Boolean).length}/6</span>
-      </div>
-    </div>
+    <div class="text-[10px] text-green-600 mt-1 text-center">Auto-synced</div>
   `;
 
   return `
+    <!-- Score Cards Row -->
     <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
       ${createScoreCard('Prayer', scores.prayer, state.MAX_SCORES.prayer, 'bg-blue-500')}
       ${createScoreCard('Diabetes', scores.diabetes, state.MAX_SCORES.diabetes, 'bg-green-500')}
@@ -201,16 +85,189 @@ export function renderTrackingTab() {
         </div>
       </div>
     </div>
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-      ${createCard('Prayers', '🕌', '#4A90A4', prayersContent, prayerHelp)}
-      ${createCard('Glucose (Libre)', '💉', '#6B8E5A', glucoseContent, libreSynced
-        ? `<span class="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Auto-synced</span>`
-        : '')}
-      ${createCard('Whoop Age Metrics', '⏱️', '#7C6B8E', whoopContent, whoopHelp)}
-      ${createCard('Family Check-ins', '👨‍👩‍👧‍👦', '#C4943D', familyContent)}
-      ${createCard('Habits', '✨', '#6B7280', habitsContent)}
-      ${createCard("Today's Summary", '📈', getAccentColor(), summaryContent)}
+
+    <!-- Single Column Flow -->
+    <div class="max-w-2xl mx-auto space-y-8">
+
+      <!-- Prayers Section -->
+      <section>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-base">🕌</span>
+          <h3 class="text-sm font-semibold text-[var(--text-secondary)]">Prayers</h3>
+          <span class="text-xs text-[var(--text-muted)]">${scores.prayer} pts</span>
+        </div>
+        <div class="flex gap-2 mb-4">
+          ${['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map(p =>
+            createPrayerInput(p, p.charAt(0).toUpperCase() + p.slice(1), data.prayers[p])
+          ).join('')}
+        </div>
+        <div class="border-t border-[var(--border-light)] pt-4">
+          <div class="flex items-center justify-center gap-3">
+            <span class="text-sm text-[var(--text-secondary)]">📖 Quran</span>
+            <button onclick="updateData('prayers', 'quran', Math.max(0, ${parseInt(data.prayers.quran) || 0} - 1))"
+              class="w-7 h-7 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--border)] flex items-center justify-center font-bold text-[var(--text-muted)]">−</button>
+            <span class="w-8 text-center font-semibold text-lg text-[var(--text-primary)]">${parseInt(data.prayers.quran) || 0}</span>
+            <button onclick="updateData('prayers', 'quran', ${parseInt(data.prayers.quran) || 0} + 1)"
+              class="w-7 h-7 rounded-full bg-[var(--accent)] hover:opacity-80 text-white flex items-center justify-center font-bold">+</button>
+            <span class="text-xs text-[var(--text-muted)]">pages · ${(parseInt(data.prayers.quran) || 0) * 5} pts</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="border-t border-[var(--border-light)]"></div>
+
+      <!-- Glucose Section -->
+      <section>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-base">💉</span>
+          <h3 class="text-sm font-semibold text-[var(--text-secondary)]">Glucose</h3>
+          ${libreSynced ? `
+            <span class="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full ml-auto">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Libre Connected
+            </span>
+          ` : ''}
+        </div>
+        ${hasLiveGlucose ? `
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-[var(--border-light)]">
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-bold ${liveGlucoseColor}">${libreData.currentGlucose}</span>
+              <span class="text-base ${liveGlucoseColor}">${libreData.trend || '→'}</span>
+              <span class="text-xs text-[var(--text-muted)]">mg/dL now</span>
+            </div>
+          </div>
+        ` : ''}
+        <div class="grid grid-cols-3 gap-4">
+          <div class="text-center">
+            <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Avg Glucose</label>
+            ${libreSynced && data.glucose.avg
+              ? readOnlyValue(data.glucose.avg, 'mg/dL')
+              : `<input type="number" step="any" value="${data.glucose.avg}" placeholder="105"
+                  class="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none"
+                  onchange="updateData('glucose', 'avg', this.value)">
+                <div class="text-xs text-[var(--text-muted)] mt-1 text-center">mg/dL · 105=10pts</div>`}
+          </div>
+          <div class="text-center">
+            <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">TIR</label>
+            ${libreSynced && data.glucose.tir
+              ? readOnlyValue(data.glucose.tir, '%')
+              : `<input type="number" step="any" value="${data.glucose.tir}" placeholder="70+"
+                  class="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none"
+                  onchange="updateData('glucose', 'tir', this.value)">
+                <div class="text-xs text-[var(--text-muted)] mt-1 text-center">% · 0.1pts/%</div>`}
+          </div>
+          <div class="text-center">
+            <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Insulin</label>
+            <input type="number" step="any" value="${data.glucose.insulin}" placeholder="≤${insulinThreshold}"
+              class="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none"
+              onchange="updateData('glucose', 'insulin', this.value)">
+            <div class="text-xs text-[var(--text-muted)] mt-1 text-center">units · ≤${insulinThreshold}=+5</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="border-t border-[var(--border-light)]"></div>
+
+      <!-- Whoop Section -->
+      <section>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-base">⏱️</span>
+          <h3 class="text-sm font-semibold text-[var(--text-secondary)]">Whoop</h3>
+          ${whoopSynced ? `
+            <span class="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full ml-auto">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Auto-synced
+            </span>
+          ` : ''}
+        </div>
+        <div class="grid grid-cols-3 gap-4 mb-4">
+          <div class="text-center">
+            <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Sleep Perf</label>
+            ${whoopSynced && data.whoop.sleepPerf
+              ? readOnlyValue(data.whoop.sleepPerf, '%')
+              : `<input type="number" step="any" value="${data.whoop.sleepPerf}" placeholder="≥90"
+                  class="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none"
+                  onchange="updateData('whoop', 'sleepPerf', this.value)">
+                <div class="text-xs text-[var(--text-muted)] mt-1 text-center">% · ≥90%</div>`}
+          </div>
+          <div class="text-center">
+            <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Recovery</label>
+            ${whoopSynced && data.whoop.recovery
+              ? readOnlyValue(data.whoop.recovery, '%')
+              : `<input type="number" step="any" value="${data.whoop.recovery}" placeholder="≥66"
+                  class="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none"
+                  onchange="updateData('whoop', 'recovery', this.value)">
+                <div class="text-xs text-[var(--text-muted)] mt-1 text-center">% · ≥66%</div>`}
+          </div>
+          <div class="text-center">
+            <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Strain</label>
+            ${whoopSynced && data.whoop.strain
+              ? readOnlyValue(data.whoop.strain, '/21')
+              : `<input type="number" step="any" value="${data.whoop.strain}" placeholder="10-14"
+                  class="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none"
+                  onchange="updateData('whoop', 'strain', this.value)">
+                <div class="text-xs text-[var(--text-muted)] mt-1 text-center">/21 · match recovery</div>`}
+          </div>
+        </div>
+        <!-- Whoop Age (always manual) -->
+        <div class="flex items-center justify-between p-3 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-light)]">
+          <span class="text-sm font-medium text-[var(--text-primary)]">Whoop Age</span>
+          <div class="flex items-center gap-2">
+            <input type="number" step="0.1" value="${data.whoop.whoopAge || ''}" placeholder="—"
+              class="w-16 px-2 py-1 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] font-bold text-[var(--accent)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none"
+              onchange="updateData('whoop', 'whoopAge', this.value)">
+            <span class="text-xs text-[var(--text-muted)]">yrs</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="border-t border-[var(--border-light)]"></div>
+
+      <!-- Family Section -->
+      <section>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-base">👨‍👩‍👧‍👦</span>
+          <h3 class="text-sm font-semibold text-[var(--text-secondary)]">Family Check-ins</h3>
+          <span class="text-xs text-[var(--text-muted)]">${Object.values(data.family).filter(Boolean).length}/6</span>
+        </div>
+        <div class="space-y-0.5">
+          ${['mom', 'dad', 'jana', 'tia', 'ahmed', 'eman'].map(p =>
+            createToggle(p.charAt(0).toUpperCase() + p.slice(1), data.family[p], 'family', p)
+          ).join('')}
+        </div>
+      </section>
+
+      <div class="border-t border-[var(--border-light)]"></div>
+
+      <!-- Habits Section -->
+      <section>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-base">✨</span>
+          <h3 class="text-sm font-semibold text-[var(--text-secondary)]">Habits</h3>
+        </div>
+        <div class="space-y-1">
+          ${createCounter('🏋️ Exercise', data.habits.exercise || 0, 'habits', 'exercise', 5)}
+          ${createCounter('📚 Reading', data.habits.reading || 0, 'habits', 'reading', 5)}
+          ${createCounter('🧘 Meditation', data.habits.meditation || 0, 'habits', 'meditation', 5)}
+          ${createCounter('🦷 Brush Teeth', data.habits.brushTeeth || 0, 'habits', 'brushTeeth', 3)}
+          ${createToggle('💊 Vitamins taken', data.habits.vitamins, 'habits', 'vitamins')}
+        </div>
+        <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-[var(--border-light)]">
+          <div class="text-center">
+            <input type="number" step="any" value="${data.habits.water}" placeholder="2.5"
+              class="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none mb-1"
+              onchange="updateData('habits', 'water', this.value)">
+            <div class="text-xs font-medium text-[var(--text-secondary)]">💧 Water</div>
+            <div class="text-xs text-[var(--text-muted)]">L · 1pt/L</div>
+          </div>
+          <div class="text-center">
+            <input type="number" step="1" value="${data.habits.nop}" placeholder="0-1"
+              class="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none mb-1"
+              onchange="updateData('habits', 'nop', this.value)">
+            <div class="text-xs font-medium text-[var(--text-secondary)]">💤 NoP</div>
+            <div class="text-xs text-[var(--text-muted)]">1=+2, 0=-2</div>
+          </div>
+        </div>
+      </section>
+
     </div>
   `;
 }
