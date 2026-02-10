@@ -2104,7 +2104,7 @@ body.mobile-keyboard-open .main-content {
   background: transparent;
   color: var(--text-secondary);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   padding: 7px 10px;
   min-height: 36px;
   white-space: nowrap;
@@ -2114,6 +2114,7 @@ body.mobile-keyboard-open .main-content {
 .calendar-view-toggle-btn.active {
   background: var(--bg-card);
   color: var(--text-primary);
+  font-weight: 600;
   box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 .calendar-range-grid {
@@ -2587,11 +2588,64 @@ body.mobile-keyboard-open .main-content {
   padding: 10px;
 }
 .calendar-toolbar {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
-.calendar-toolbar-center {
+.calendar-period-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.calendar-period-nav {
   min-width: 0;
-  flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.calendar-period-title {
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+.calendar-period-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  background: transparent;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.calendar-period-btn:hover {
+  background: var(--bg-secondary);
+}
+.calendar-period-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.calendar-today-btn {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.calendar-today-btn:hover {
+  color: var(--accent);
+}
+.calendar-views-row {
+  display: flex;
+  align-items: center;
   justify-content: center;
 }
 .calendar-mobile-panel-toggle {
@@ -2753,14 +2807,25 @@ body.mobile-keyboard-open .main-content {
   .calendar-toolbar {
     align-items: flex-start;
   }
-  .calendar-toolbar-center {
-    justify-content: flex-start;
-    gap: 8px;
-  }
-  .calendar-toolbar-center h3 {
+  .calendar-period-row {
     width: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .calendar-period-title {
     font-size: 14px;
-    line-height: 1.2;
+  }
+  .calendar-period-actions {
+    gap: 6px;
+  }
+  .calendar-today-btn {
+    min-height: 32px;
+    padding: 0 11px;
+    font-size: 11px;
+  }
+  .calendar-views-row {
+    width: 100%;
+    justify-content: flex-start;
   }
   .calendar-view-toggle-btn {
     min-width: 42px;

@@ -1014,25 +1014,31 @@ export function renderCalendarView() {
             </button>
           </div>
 
-          <div class="px-5 py-3 calendar-toolbar flex items-center justify-between border-b border-[var(--border-light)]">
-            <button onclick="calendarPrevMonth()" class="w-9 h-9 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]" aria-label="Previous period">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-            </button>
-          <div class="flex items-center gap-3 calendar-toolbar-center">
-            <h3 class="text-[15px] font-semibold text-[var(--text-primary)]">${viewLabelMap[state.calendarViewMode] || viewLabelMap.month}</h3>
-            <div class="calendar-view-toggle">
-              <button onclick="setCalendarViewMode('month')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'month' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'month'}">${monthBtnLabel}</button>
-              <button onclick="setCalendarViewMode('week')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'week' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'week'}">${weekBtnLabel}</button>
-              <button onclick="setCalendarViewMode('3days')" class="calendar-view-toggle-btn ${state.calendarViewMode === '3days' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === '3days'}">${threeDayBtnLabel}</button>
-              <button onclick="setCalendarViewMode('daygrid')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'daygrid' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'daygrid'}">${dayGridBtnLabel}</button>
-              <button onclick="setCalendarViewMode('weekgrid')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'weekgrid' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'weekgrid'}">${weekGridBtnLabel}</button>
+          <div class="px-5 py-3 calendar-toolbar border-b border-[var(--border-light)]">
+            <div class="calendar-period-row">
+              <div class="calendar-period-nav">
+                <button onclick="calendarPrevMonth()" class="calendar-period-btn" aria-label="Previous period">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                </button>
+                <h3 class="calendar-period-title">${viewLabelMap[state.calendarViewMode] || viewLabelMap.month}</h3>
+                <button onclick="calendarNextMonth()" class="calendar-period-btn" aria-label="Next period">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                </button>
+              </div>
+              <div class="calendar-period-actions">
+                <button onclick="calendarGoToday()" class="calendar-today-btn">Today</button>
+                ${state.gcalSyncing ? '<span class="text-[10px] text-[var(--text-muted)]">Syncing...</span>' : ''}
+              </div>
             </div>
-            <button onclick="calendarGoToday()" class="text-[11px] px-2.5 py-1 rounded-full bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--accent)] transition font-medium">Today</button>
-            ${state.gcalSyncing ? '<span class="text-[10px] text-[var(--text-muted)]">Syncing...</span>' : ''}
-          </div>
-            <button onclick="calendarNextMonth()" class="w-9 h-9 rounded-full hover:bg-[var(--bg-secondary)] flex items-center justify-center transition text-[var(--text-secondary)]" aria-label="Next period">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-            </button>
+            <div class="calendar-views-row">
+              <div class="calendar-view-toggle">
+                <button onclick="setCalendarViewMode('month')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'month' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'month'}">${monthBtnLabel}</button>
+                <button onclick="setCalendarViewMode('week')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'week' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'week'}">${weekBtnLabel}</button>
+                <button onclick="setCalendarViewMode('3days')" class="calendar-view-toggle-btn ${state.calendarViewMode === '3days' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === '3days'}">${threeDayBtnLabel}</button>
+                <button onclick="setCalendarViewMode('daygrid')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'daygrid' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'daygrid'}">${dayGridBtnLabel}</button>
+                <button onclick="setCalendarViewMode('weekgrid')" class="calendar-view-toggle-btn ${state.calendarViewMode === 'weekgrid' ? 'active' : ''}" aria-pressed="${state.calendarViewMode === 'weekgrid'}">${weekGridBtnLabel}</button>
+              </div>
+            </div>
           </div>
 
           ${tokenBanner}
