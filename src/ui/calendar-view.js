@@ -522,11 +522,11 @@ function renderMeetingNotesPage() {
           ` : ''}
         </div>
         <div class="calendar-meeting-notes-actions flex items-center gap-2">
-          <button onclick="closeCalendarMeetingNotes()" class="calendar-meeting-btn px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] text-sm font-medium hover:opacity-90 transition">Back</button>
-          <button onclick="window.open('${q(event.htmlLink)}','_blank')" class="calendar-meeting-btn px-3 py-1.5 rounded-lg bg-coral/10 text-coral text-sm font-medium hover:bg-coral/20 transition ${event.htmlLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.htmlLink ? '' : 'disabled'}>
+          <button onclick="closeCalendarMeetingNotes()" class="calendar-meeting-btn calendar-meeting-btn-neutral px-3 py-1.5 rounded-lg text-sm font-medium hover:opacity-90 transition">Back</button>
+          <button onclick="window.open('${q(event.htmlLink)}','_blank')" class="calendar-meeting-btn calendar-meeting-btn-accent px-3 py-1.5 rounded-lg text-sm font-medium hover:opacity-90 transition ${event.htmlLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.htmlLink ? '' : 'disabled'}>
             Open Event
           </button>
-          <button onclick="window.open('${q(event.meetingLink)}','_blank')" class="calendar-meeting-btn px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-sm font-medium hover:bg-emerald-200 transition ${event.meetingLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.meetingLink ? '' : 'disabled'}>
+          <button onclick="window.open('${q(event.meetingLink)}','_blank')" class="calendar-meeting-btn calendar-meeting-btn-success px-3 py-1.5 rounded-lg text-sm font-medium hover:opacity-90 transition ${event.meetingLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.meetingLink ? '' : 'disabled'}>
             ${event.meetingProvider ? `Join ${escapeHtml(event.meetingProvider)}` : 'Join Meeting'}
           </button>
         </div>
@@ -547,8 +547,8 @@ function renderMeetingNotesPage() {
                 onkeydown="handleMeetingItemInputKeydown(event, 'note')"
                 class="flex-1 min-w-0 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-light)] focus:border-[var(--accent)]"
               />
-              <button onclick="addMeetingLinkedItem('note')" class="px-3 py-2 rounded-lg text-xs font-semibold bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:opacity-90">Add Bullet</button>
-              <button onclick="addMeetingLinkedItem('task')" class="px-3 py-2 rounded-lg text-xs font-semibold bg-coral/10 text-coral hover:bg-coral/20">Add Task</button>
+              <button onclick="addMeetingLinkedItem('note')" class="calendar-meeting-btn calendar-meeting-btn-neutral px-3 py-2 rounded-lg text-xs font-semibold hover:opacity-90">Add Bullet</button>
+              <button onclick="addMeetingLinkedItem('task')" class="calendar-meeting-btn calendar-meeting-btn-accent px-3 py-2 rounded-lg text-xs font-semibold hover:opacity-90">Add Task</button>
             </div>
             <div class="space-y-2">
               ${itemRows}
@@ -843,7 +843,8 @@ export function renderCalendarView() {
         if (isCellToday) classes.push('today');
         if (isSelected) classes.push('selected');
         const stackCount = cellTasks.length + cellEvents.length;
-        const dynamicMinHeight = Math.min(260, Math.max(94, 48 + (stackCount * 17)));
+        const maxHeight = isMobile ? 190 : 260;
+        const dynamicMinHeight = Math.min(maxHeight, Math.max(94, 48 + (stackCount * 17)));
 
         return `<div class="${classes.join(' ')}" style="min-height:${dynamicMinHeight}px" onclick="calendarSelectDate('${cell.dateStr}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); calendarSelectDate('${cell.dateStr}');}">
           <div class="calendar-day-num">${cell.day}</div>
@@ -1004,7 +1005,7 @@ export function renderCalendarView() {
       const timeStr = formatEventTimeLabel(e) || 'All day';
       const withNotes = hasMeetingWorkspace(e);
       return `
-        <button onclick="openCalendarEventActions('${q(e.calendarId)}','${q(e.id)}')" class="w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-[var(--bg-secondary)] transition rounded-lg ${withNotes ? 'calendar-side-event-with-notes' : ''}">
+        <button onclick="openCalendarEventActions('${q(e.calendarId)}','${q(e.id)}')" class="calendar-side-event-row w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-[var(--bg-secondary)] transition rounded-lg ${withNotes ? 'calendar-side-event-with-notes' : ''}">
           <span class="w-2.5 h-2.5 rounded-full ${withNotes ? 'bg-coral' : 'bg-[#2F9B6A]'} flex-shrink-0"></span>
           <span class="text-sm text-[var(--text-primary)] flex-1 truncate">${title}</span>
           ${withNotes ? '<span class="calendar-notes-chip">Notes</span>' : ''}

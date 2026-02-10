@@ -16,6 +16,9 @@ body {
   font-family: var(--font-family);
   background: var(--bg-primary);
   color: var(--text-primary);
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   transition: background 0.3s ease, color 0.3s ease;
   overflow-x: hidden;
 }
@@ -39,6 +42,7 @@ button:hover,
 
 button {
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .sb-card {
   background: var(--bg-card);
@@ -49,6 +53,8 @@ button {
 .sb-btn {
   background: var(--btn-bg);
   color: white;
+  min-height: 36px;
+  padding-inline: 14px;
   transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   border-radius: var(--border-radius);
 }
@@ -204,6 +210,7 @@ input[type="checkbox"]:focus {
   border-radius: 8px;
   margin: 0 4px;
   border-bottom: 1px solid var(--border-light);
+  min-height: 40px;
 }
 .task-item:last-child {
   border-bottom: none;
@@ -270,6 +277,7 @@ input[type="checkbox"]:focus {
 .sidebar-item {
   transition: background 0.1s ease-out, transform 0.1s ease-out;
   border-radius: 8px;
+  min-height: 36px;
 }
 .sidebar-item:hover {
   background: var(--sidebar-hover, rgba(0, 0, 0, 0.04));
@@ -285,6 +293,7 @@ input[type="checkbox"]:focus {
 /* Nav tab hover */
 .nav-tab {
   position: relative;
+  min-height: 44px;
 }
 .nav-tab:hover {
   background: var(--sidebar-hover, rgba(0, 0, 0, 0.04));
@@ -415,6 +424,9 @@ input[type="checkbox"]:focus {
 .widget {
   transition: all 0.2s ease;
   position: relative;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
 }
 .widget.dragging {
   opacity: 0.4;
@@ -448,7 +460,7 @@ input[type="checkbox"]:focus {
 .widget-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  gap: 14px;
   width: 100%;
   align-items: start;
 }
@@ -1017,7 +1029,7 @@ input[type="checkbox"]:focus {
   z-index: 100;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.06);
 }
 
 .mobile-bottom-nav-inner {
@@ -1040,7 +1052,7 @@ input[type="checkbox"]:focus {
   flex-direction: column;
   gap: 4px;
   padding: 8px 6px;
-  min-height: 54px;
+  min-height: 58px;
   border-radius: 12px;
   color: var(--text-muted);
   transition: all 0.2s ease;
@@ -1058,7 +1070,7 @@ input[type="checkbox"]:focus {
 }
 
 .mobile-nav-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.02em;
   line-height: 1.1;
@@ -1088,6 +1100,7 @@ input[type="checkbox"]:focus {
 /* Mobile Header Compact */
 .mobile-header-compact {
   display: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 @media (max-width: 768px) {
@@ -1109,8 +1122,8 @@ input[type="checkbox"]:focus {
     display: flex !important;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
-    padding-top: max(12px, env(safe-area-inset-top));
+    padding: 10px 14px;
+    padding-top: max(8px, env(safe-area-inset-top));
   }
 
   .mobile-header-center {
@@ -1129,8 +1142,8 @@ input[type="checkbox"]:focus {
   }
 
   .mobile-header-title {
-    font-size: 19px !important;
-    font-weight: 700 !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
     letter-spacing: -0.01em;
     line-height: 1.15;
   }
@@ -1141,8 +1154,8 @@ input[type="checkbox"]:focus {
 
   /* Active press feedback for nav items */
   .mobile-nav-item:active {
-    transform: scale(0.9);
-    opacity: 0.7;
+    transform: scale(0.97);
+    opacity: 0.82;
   }
 
   /* Header adjustments */
@@ -1161,7 +1174,7 @@ input[type="checkbox"]:focus {
   /* Main content padding for bottom nav */
   main, .main-content {
     padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
-    scroll-padding-top: calc(70px + env(safe-area-inset-top));
+    scroll-padding-top: calc(64px + env(safe-area-inset-top));
   }
 
   /* Sidebar becomes full-screen overlay on mobile */
@@ -1326,6 +1339,7 @@ input[type="checkbox"]:focus {
   .widget {
     border-radius: 16px;
     margin: 0;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
   }
 
   /* Modal - fullscreen on mobile */
@@ -1339,7 +1353,7 @@ input[type="checkbox"]:focus {
     max-height: calc(100dvh - env(safe-area-inset-top) - 8px) !important;
     width: 100% !important;
     max-width: 100% !important;
-    border-radius: 20px 20px 0 0 !important;
+    border-radius: 18px 18px 0 0 !important;
     animation: slideUpModal 0.3s ease;
   }
 
@@ -1428,6 +1442,7 @@ input[type="checkbox"]:focus {
 
   .widget-header {
     padding: 12px 14px !important;
+    min-height: 48px;
   }
 
   .widget-body {
@@ -1437,6 +1452,7 @@ input[type="checkbox"]:focus {
 
   .widget-title {
     font-size: 14px !important;
+    font-weight: 600;
   }
 
   .widget .task-item {
@@ -1822,6 +1838,18 @@ input[type="checkbox"]:focus {
   overflow: hidden !important;
 }
 
+.body-modal-open .mobile-bottom-nav {
+  transform: translateY(120%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.body-modal-open .mobile-header-compact {
+  transform: translateY(-120%);
+  opacity: 0;
+  pointer-events: none;
+}
+
 .drawer-open .mobile-bottom-nav {
   pointer-events: none;
   opacity: 0.35;
@@ -2047,7 +2075,7 @@ body.mobile-keyboard-open .main-content {
 .calendar-page-grid {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
-  gap: 14px;
+  gap: 16px;
 }
 .calendar-side-list {
   max-height: 320px;
@@ -2078,7 +2106,7 @@ body.mobile-keyboard-open .main-content {
   font-size: 11px;
   font-weight: 600;
   padding: 7px 10px;
-  min-height: 34px;
+  min-height: 36px;
   white-space: nowrap;
   border-radius: 999px;
   transition: all 0.14s ease;
@@ -2244,29 +2272,29 @@ body.mobile-keyboard-open .main-content {
   border: 1px solid transparent;
 }
 .calendar-task-line.due {
-  color: #7b3919;
-  background: #fff4ec;
-  border-color: #efd2c0;
+  color: #7a4623;
+  background: #fef7f2;
+  border-color: #f0ddd1;
 }
 .calendar-task-line.defer {
-  color: #24517e;
-  background: #eff6ff;
-  border-color: #c8dbf2;
+  color: #2f5375;
+  background: #f2f7fc;
+  border-color: #d5e2f0;
 }
 .calendar-task-line.overdue {
-  color: #702620;
-  background: #fceceb;
-  border-color: #f0c8c5;
+  color: #7a2f2f;
+  background: #fdf3f3;
+  border-color: #efd6d6;
 }
 .calendar-task-line.event {
-  color: #245d40;
-  background: #eef8f2;
-  border-color: #c8e2d2;
+  color: #285b46;
+  background: #f1f8f4;
+  border-color: #d5e6dc;
 }
 .calendar-task-line.event.with-notes {
-  color: #7a3a1b;
-  background: #fff3e8;
-  border-color: #efcfba;
+  color: #7b451f;
+  background: #fef6ef;
+  border-color: #edd8c7;
   font-weight: 600;
 }
 .calendar-line-note-indicator {
@@ -2279,17 +2307,20 @@ body.mobile-keyboard-open .main-content {
   vertical-align: middle;
 }
 .calendar-side-event-with-notes {
-  background: #fff8f3;
-  border: 1px solid #f5dccb;
+  background: #fdf8f4;
+  border: 1px solid #eedfd2;
+}
+.calendar-side-event-row {
+  min-height: 44px;
 }
 .calendar-notes-chip {
   font-size: 10px;
   line-height: 1;
   padding: 3px 6px;
   border-radius: 9999px;
-  background: #fff1e7;
-  color: #8a3b14;
-  border: 1px solid #f1cfb6;
+  background: #fef6f0;
+  color: #7c4925;
+  border: 1px solid #ecd8c9;
   font-weight: 600;
   flex-shrink: 0;
 }
@@ -2311,7 +2342,7 @@ body.mobile-keyboard-open .main-content {
   gap: 12px;
   text-align: left;
   padding: 12px 14px;
-  min-height: 56px;
+  min-height: 58px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--bg-input);
@@ -2349,7 +2380,7 @@ body.mobile-keyboard-open .main-content {
 }
 .calendar-event-action-title {
   display: block;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.2;
   font-weight: 600;
   color: var(--text-primary);
@@ -2378,7 +2409,19 @@ body.mobile-keyboard-open .main-content {
   flex-wrap: wrap;
 }
 .calendar-meeting-btn {
-  min-height: 40px;
+  min-height: 44px;
+}
+.calendar-meeting-btn-neutral {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+.calendar-meeting-btn-accent {
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-card));
+  color: color-mix(in srgb, var(--accent) 82%, #0f172a);
+}
+.calendar-meeting-btn-success {
+  background: color-mix(in srgb, #22c55e 14%, var(--bg-card));
+  color: #12633c;
 }
 .calendar-meeting-notes-textarea {
   overscroll-behavior: contain;
@@ -2451,8 +2494,9 @@ body.mobile-keyboard-open .main-content {
   color: var(--text-primary);
   margin-bottom: 3px;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 .discussion-pool-item-meta {
   display: flex;
@@ -2476,6 +2520,7 @@ body.mobile-keyboard-open .main-content {
 }
 .discussion-pool-link-btn {
   min-width: 64px;
+  min-height: 34px;
   border-radius: 8px;
   font-size: 11px;
   font-weight: 700;
@@ -2545,7 +2590,7 @@ body.mobile-keyboard-open .main-content {
     gap: 3px;
   }
   .calendar-side-list {
-    max-height: 46vh;
+    max-height: 42vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -2619,11 +2664,11 @@ body.mobile-keyboard-open .main-content {
     gap: 8px;
   }
   .calendar-meeting-btn {
-    flex: 1 1 calc(50% - 8px);
+    flex: 1 1 100%;
     text-align: center;
     font-size: 13px;
     padding: 9px 10px;
-    min-height: 40px;
+    min-height: 44px;
   }
   .calendar-meeting-notes-body {
     padding: 12px;
@@ -2793,15 +2838,16 @@ body.mobile-keyboard-open .main-content {
 /* Enhanced modal styles */
 .modal-enhanced {
   background: var(--modal-bg);
-  border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border-radius: 18px;
+  box-shadow: 0 18px 40px -16px rgba(15, 23, 42, 0.34);
+  border: 1px solid var(--border-light);
   overflow: hidden;
   max-height: calc(100vh - 32px);
   display: flex;
   flex-direction: column;
 }
 .modal-header-enhanced {
-  padding: 20px 24px;
+  padding: 18px 22px;
   border-bottom: 1px solid var(--border-light);
   display: flex;
   align-items: center;
@@ -2809,14 +2855,14 @@ body.mobile-keyboard-open .main-content {
   background: var(--modal-bg);
 }
 .modal-body-enhanced {
-  padding: 20px 24px 24px;
+  padding: 18px 22px 22px;
   overflow-y: auto;
   flex: 1;
   min-height: 0;
   overscroll-behavior: contain;
 }
 .modal-footer-enhanced {
-  padding: 20px 24px;
+  padding: 16px 22px;
   border-top: 1px solid var(--border-light);
   display: flex;
   justify-content: flex-end;
@@ -2846,7 +2892,8 @@ body.mobile-keyboard-open .main-content {
 }
 .modal-input-enhanced {
   width: 100%;
-  padding: 12px 14px;
+  min-height: 42px;
+  padding: 10px 14px;
   border: 1px solid var(--border);
   border-radius: 10px;
   font-size: 15px;
@@ -3261,7 +3308,7 @@ body.mobile-keyboard-open .main-content {
 .braindump-overlay {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 340;
   background: var(--bg-primary);
   display: flex;
   align-items: flex-start;
@@ -3276,6 +3323,7 @@ body.mobile-keyboard-open .main-content {
 .braindump-container {
   width: 100%;
   max-width: 640px;
+  max-height: 100dvh;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
@@ -3289,7 +3337,7 @@ body.mobile-keyboard-open .main-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--border-light);
 }
 .braindump-icon {
@@ -3306,6 +3354,8 @@ body.mobile-keyboard-open .main-content {
   color: var(--text-muted);
   background: none;
   border: none;
+  min-width: 40px;
+  min-height: 40px;
   padding: 8px;
   border-radius: 8px;
   transition: background 0.15s;
@@ -3318,6 +3368,8 @@ body.mobile-keyboard-open .main-content {
   color: var(--text-secondary);
   background: none;
   border: none;
+  min-width: 36px;
+  min-height: 36px;
   padding: 6px;
   border-radius: 8px;
   transition: background 0.15s;
@@ -3375,9 +3427,10 @@ body.mobile-keyboard-open .main-content {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 16px 0;
+  padding: 12px 0;
   border-top: 1px solid var(--border-light);
   flex-wrap: wrap;
+  background: var(--bg-primary);
 }
 .braindump-footer-left {
   display: flex;
@@ -3448,17 +3501,17 @@ body.mobile-keyboard-open .main-content {
     max-width: 100%;
     max-height: 100dvh;
     min-height: 100dvh;
-    padding-top: max(8px, env(safe-area-inset-top));
+    padding-top: max(4px, env(safe-area-inset-top));
     padding-left: max(12px, env(safe-area-inset-left));
     padding-right: max(12px, env(safe-area-inset-right));
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
   }
   .braindump-header {
     position: sticky;
     top: 0;
     z-index: 2;
     background: var(--bg-primary);
-    padding: 10px 0;
+    padding: 8px 0;
   }
   .braindump-header h2 {
     font-size: 16px;
@@ -3475,18 +3528,19 @@ body.mobile-keyboard-open .main-content {
     padding: 10px;
   }
   .braindump-body {
-    padding: 10px 0;
+    padding: 8px 0;
   }
   .braindump-textarea {
-    min-height: 220px;
+    min-height: 48vh;
     font-size: 16px;
+    line-height: 1.5;
   }
   .braindump-footer {
     position: sticky;
     bottom: 0;
     z-index: 2;
     background: var(--bg-primary);
-    padding: 10px 0;
+    padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
   }
   .braindump-process-btn,
   .braindump-submit-btn {
