@@ -1,10 +1,13 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const isTauri = !!process.env.TAURI_ENV_PLATFORM;
+
 export default defineConfig({
-  base: '/lifeg/',
+  base: isTauri ? '/' : '/lifeg/',
   plugins: [
-    VitePWA({
+    // Skip PWA plugin during Tauri builds — service workers not needed in native app
+    ...(!isTauri ? [VitePWA({
       registerType: 'autoUpdate',
       minify: false,
       includeAssets: ['icons/*.svg'],
@@ -53,13 +56,23 @@ export default defineConfig({
           }
         ]
       }
-    })
+    })] : [])
   ],
   css: {
     postcss: './postcss.config.js'
   },
   build: {
-    target: 'es2020',
+    target: isTauri ? 'safari13' : 'es2020',
     outDir: 'dist'
+  },
+  // Tauri dev server settings
+  server: {
+    strictPort: true,
+    ...(isTauri ? {
+      host: '0.0.0.0',
+      watch: {
+        ignored: ['**/src-tauri/**']
+      }
+    } : {})
   }
 });

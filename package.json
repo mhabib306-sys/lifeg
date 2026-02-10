@@ -8,6 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "vite build && cd dist && rm -f .DS_Store && touch .nojekyll && git init && git checkout -b gh-pages && git add -A && git commit -m Deploy && git remote add origin https://github.com/mhabib306-sys/lifeg.git && git push -f origin gh-pages && rm -rf .git",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
     "mcp:homebase": "node mcp/homebase-server.mjs"
   },
   "repository": {
@@ -23,6 +26,7 @@
   "homepage": "https://github.com/mhabib306-sys/lifeg#readme",
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
+    "@tauri-apps/cli": "^2.10.0",
     "autoprefixer": "^10.4.24",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
