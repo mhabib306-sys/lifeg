@@ -69,7 +69,7 @@ export function renderBottomNav() {
         </button>
         <button onclick="switchTab('tasks')" class="mobile-nav-item ${state.activeTab === 'tasks' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'tasks'}" aria-label="Workspace">
           ${THINGS3_ICONS.workspace}
-          <span class="mobile-nav-label">Tasks</span>
+          <span class="mobile-nav-label">Workspace</span>
         </button>
         <button onclick="switchTab('life')" class="mobile-nav-item ${state.activeTab === 'life' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'life'}" aria-label="Life Score">
           ${THINGS3_ICONS.lifeScore}

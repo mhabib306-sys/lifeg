@@ -138,9 +138,14 @@ export function render() {
   try {
     const app = document.getElementById('app');
     const isCalendarTabActive = state.activeTab === 'calendar';
+    const resetBodyUiState = () => {
+      document.body.classList.remove('body-modal-open');
+      document.body.style.overflow = '';
+    };
 
     // ---- Auth gate: loading spinner ----
     if (state.authLoading) {
+      resetBodyUiState();
       app.innerHTML = `
         <div class="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-primary)]">
           <svg class="w-16 h-16 mb-6 animate-pulse" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -156,6 +161,7 @@ export function render() {
 
     // ---- Auth gate: login screen ----
     if (!state.currentUser) {
+      resetBodyUiState();
       app.innerHTML = `
         <div class="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-primary)] px-6">
           <svg class="w-20 h-20 mb-4" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -347,7 +353,7 @@ export function render() {
           </button>
           <button onclick="switchTab('tasks')" class="mobile-nav-item ${state.activeTab === 'tasks' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'tasks'}" aria-label="Workspace">
             ${THINGS3_ICONS.workspace}
-            <span class="mobile-nav-label">Tasks</span>
+            <span class="mobile-nav-label">Workspace</span>
           </button>
           <button onclick="switchTab('life')" class="mobile-nav-item ${state.activeTab === 'life' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'life'}" aria-label="Life Score">
             ${THINGS3_ICONS.lifeScore}
@@ -410,6 +416,19 @@ export function render() {
         setupInlineAutocomplete('home-quick-add-input');
       }
     }, 60);
+
+    const anyModalOpen = !!(
+      state.showTaskModal ||
+      state.showPerspectiveModal ||
+      state.showCategoryModal ||
+      state.showLabelModal ||
+      state.showPersonModal ||
+      state.showBraindump ||
+      state.calendarEventModalOpen
+    );
+    document.body.classList.toggle('body-modal-open', anyModalOpen);
+    if (anyModalOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
 
     const renderMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - renderStart;
     const perf = state.renderPerf || { lastMs: 0, avgMs: 0, maxMs: 0, count: 0 };

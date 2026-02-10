@@ -20,6 +20,12 @@ body {
   overflow-x: hidden;
 }
 
+html,
+body {
+  max-width: 100%;
+  overscroll-behavior-x: none;
+}
+
 #app {
   min-width: 0;
 }
@@ -1007,6 +1013,7 @@ input[type="checkbox"]:focus {
   z-index: 100;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
 }
 
 .mobile-bottom-nav-inner {
@@ -1016,11 +1023,14 @@ input[type="checkbox"]:focus {
   max-width: none;
   width: 100%;
   margin: 0 auto;
+  gap: 2px;
+  padding: 0 6px;
 }
 
 .mobile-nav-item {
   display: flex;
   flex: 1 1 0;
+  min-width: 0;
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -1040,12 +1050,19 @@ input[type="checkbox"]:focus {
 
 .mobile-nav-item.active {
   color: var(--accent);
+  background: color-mix(in srgb, var(--accent-light) 70%, transparent);
 }
 
 .mobile-nav-label {
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.mobile-nav-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 /* Quick-add task/note type toggle */
@@ -1125,10 +1142,10 @@ input[type="checkbox"]:focus {
   }
 
   /* Header adjustments */
-  header {
+  .mobile-header-compact {
     position: sticky;
     top: 0;
-    z-index: 50;
+    z-index: 80;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }
@@ -1139,18 +1156,21 @@ input[type="checkbox"]:focus {
 
   /* Main content padding for bottom nav */
   main, .main-content {
-    padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+    padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+    scroll-padding-top: calc(70px + env(safe-area-inset-top));
   }
 
   /* Sidebar becomes full-screen overlay on mobile */
   .mobile-sidebar-overlay {
     position: fixed;
     inset: 0;
+    height: 100dvh;
     background: rgba(0,0,0,0.5);
     z-index: 200;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
+    touch-action: none;
   }
 
   .mobile-sidebar-overlay.show {
@@ -1163,8 +1183,8 @@ input[type="checkbox"]:focus {
     top: 0;
     left: 0;
     bottom: 0;
-    width: 92%;
-    max-width: 360px;
+    width: min(88vw, 340px);
+    max-width: 340px;
     background: var(--bg-primary);
     z-index: 201;
     transform: translate3d(-100%, 0, 0);
@@ -1174,6 +1194,7 @@ input[type="checkbox"]:focus {
     -webkit-overflow-scrolling: touch;
     padding-top: max(12px, env(safe-area-inset-top));
     padding-bottom: max(12px, env(safe-area-inset-bottom));
+    box-shadow: 10px 0 24px rgba(15, 23, 42, 0.16);
   }
 
   .mobile-sidebar-overlay.show .mobile-sidebar-drawer {
@@ -1247,7 +1268,7 @@ input[type="checkbox"]:focus {
   /* Task items - larger touch targets */
   .task-item {
     padding: 4px 8px;
-    min-height: 44px;
+    min-height: 50px;
     margin: 0 !important;
     border-radius: 0 !important;
   }
@@ -1306,11 +1327,12 @@ input[type="checkbox"]:focus {
   /* Modal - fullscreen on mobile */
   .modal-overlay {
     align-items: flex-end !important;
+    min-height: 100dvh;
   }
 
   .modal-content, .modal-enhanced {
     margin: 0 !important;
-    max-height: calc(100vh - env(safe-area-inset-top) - 8px) !important;
+    max-height: calc(100dvh - env(safe-area-inset-top) - 8px) !important;
     width: 100% !important;
     max-width: 100% !important;
     border-radius: 20px 20px 0 0 !important;
@@ -1749,10 +1771,10 @@ input[type="checkbox"]:focus {
 
   /* Larger touch target for task checkbox */
   .task-item .task-checkbox {
-    min-width: 24px !important;
-    min-height: 24px !important;
-    width: 24px !important;
-    height: 24px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    width: 22px !important;
+    height: 22px !important;
   }
 
   /* Task metadata on mobile - smaller but readable */
@@ -1783,11 +1805,17 @@ input[type="checkbox"]:focus {
 
 /* iOS safe areas */
 @supports (padding: max(0px)) {
-  body {
-    padding-left: max(0px, env(safe-area-inset-left));
-    padding-right: max(0px, env(safe-area-inset-right));
-    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  @media (max-width: 768px) {
+    body {
+      padding-left: max(0px, env(safe-area-inset-left));
+      padding-right: max(0px, env(safe-area-inset-right));
+      padding-bottom: max(0px, env(safe-area-inset-bottom));
+    }
   }
+}
+
+.body-modal-open {
+  overflow: hidden !important;
 }
 
 /* ========== AUTOCOMPLETE STYLES ========== */
@@ -2312,6 +2340,9 @@ input[type="checkbox"]:focus {
   border: 1px solid var(--border-light);
   box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18);
 }
+.calendar-event-modal-overlay {
+  align-items: center !important;
+}
 .calendar-event-modal .modal-header-enhanced {
   background: linear-gradient(180deg, color-mix(in srgb, var(--bg-secondary) 55%, var(--bg-card)) 0%, var(--bg-card) 100%);
 }
@@ -2336,6 +2367,9 @@ input[type="checkbox"]:focus {
   justify-content: center;
 }
 @media (max-width: 768px) {
+  .calendar-event-modal-overlay {
+    align-items: flex-end !important;
+  }
   .calendar-page-grid {
     grid-template-columns: 1fr;
     gap: 10px;

@@ -419,7 +419,7 @@ function renderEventActionsModal(event) {
   const notesSubLabel = hasNotes ? 'Review linked bullets/tasks and event metadata' : 'Start linked bullets/tasks for this event';
 
   return `
-    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[320]" onclick="if(event.target===this) closeCalendarEventActions()">
+    <div class="modal-overlay calendar-event-modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[320]" onclick="if(event.target===this) closeCalendarEventActions()">
       <div class="modal-enhanced calendar-event-modal w-full max-w-md mx-4" onclick="event.stopPropagation()">
         <div class="modal-header-enhanced">
           <div class="flex items-center gap-3 min-w-0">
