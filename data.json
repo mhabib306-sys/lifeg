@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T14:40:51.082Z",
+  "lastUpdated": "2026-02-10T14:43:12.023Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -9105,6 +9105,14 @@
       "title": "Habits",
       "size": "half",
       "order": 10,
+      "visible": true
+    },
+    {
+      "id": "gsheet-yesterday",
+      "type": "gsheet-yesterday",
+      "title": "Yesterday",
+      "size": "half",
+      "order": 11,
       "visible": true
     }
   ],
