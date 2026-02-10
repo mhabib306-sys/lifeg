@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T06:57:52.509Z",
+  "lastUpdated": "2026-02-10T06:59:35.152Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3125,18 +3125,13 @@
   "taskCategories": [
     {
       "id": "personal",
-      "name": "Personal",
-      "color": "#4A90A4"
+      "name": "Self",
+      "color": "#4a90a4"
     },
     {
       "id": "work",
-      "name": "Work",
-      "color": "#6B8E5A"
-    },
-    {
-      "id": "health",
-      "name": "Health",
-      "color": "#E5533D"
+      "name": "Breadfast",
+      "color": "#ea39b2"
     },
     {
       "id": "family",
@@ -3144,14 +3139,19 @@
       "color": "#C4943D"
     },
     {
-      "id": "learning",
-      "name": "Learning",
-      "color": "#7C6B8E"
+      "id": "health",
+      "name": "Health",
+      "color": "#E5533D"
     },
     {
       "id": "cat_1769983795940",
       "name": "Nancy",
       "color": "#6b7280"
+    },
+    {
+      "id": "learning",
+      "name": "Learning",
+      "color": "#7C6B8E"
     },
     {
       "id": "cat_1769987564631",
@@ -3160,11 +3160,6 @@
     }
   ],
   "taskLabels": [
-    {
-      "id": "next",
-      "name": "Next",
-      "color": "#8B5CF6"
-    },
     {
       "id": "urgent",
       "name": "Urgent",
@@ -3199,51 +3194,66 @@
       "id": "label-1770510417167",
       "name": "portfolio",
       "color": "#3b82f6"
+    },
+    {
+      "id": "next",
+      "name": "Next",
+      "color": "#8B5CF6"
     }
   ],
   "taskPeople": [
     {
       "id": "person_1769977441169",
       "name": "Seif Ghallab",
-      "color": "#6b7280"
+      "color": "#6b7280",
+      "email": ""
     },
     {
       "id": "person_1769988307264",
-      "name": "Mostafa Amin"
+      "name": "Mostafa Amin",
+      "email": ""
     },
     {
       "id": "person_1769988593103",
-      "name": "Jana"
+      "name": "Jana",
+      "email": ""
     },
     {
       "id": "person_1769988596657",
-      "name": "Tia"
+      "name": "Tia",
+      "email": ""
     },
     {
       "id": "person_1770019362229",
-      "name": "Omar Metwally"
+      "name": "Omar Metwally",
+      "email": ""
     },
     {
       "id": "person_1770450952169",
-      "name": "Ahmed Habib"
+      "name": "Ahmed Habib",
+      "email": ""
     },
     {
       "id": "person-1770490296950",
-      "name": "Nancy"
+      "name": "Nancy",
+      "email": ""
     },
     {
       "id": "person-1770510421604",
-      "name": "Ali Refaai"
+      "name": "Ali Refaai",
+      "email": "ali.refaai@breadfast.com"
     },
     {
       "id": "person_1770576686684",
       "name": "Joehnny",
-      "color": "#7C6B8E"
+      "color": "#7C6B8E",
+      "email": ""
     },
     {
       "id": "person_1770591589441",
       "name": "Nadine",
-      "color": "#4A90A4"
+      "color": "#4A90A4",
+      "email": ""
     },
     {
       "id": "person_1770695842533",
@@ -3279,18 +3289,18 @@
   ],
   "homeWidgets": [
     {
-      "id": "quick-stats",
-      "type": "stats",
-      "title": "Quick Stats",
+      "id": "quick-add",
+      "type": "quick-add",
+      "title": "Quick Add Task",
       "size": "full",
       "order": 0,
       "visible": true
     },
     {
-      "id": "quick-add",
-      "type": "quick-add",
-      "title": "Quick Add Task",
-      "size": "full",
+      "id": "today-tasks",
+      "type": "today-tasks",
+      "title": "Today",
+      "size": "half",
       "order": 1,
       "visible": true
     },
@@ -3303,25 +3313,25 @@
       "visible": true
     },
     {
-      "id": "todays-score",
-      "type": "score",
-      "title": "Today's Score",
+      "id": "quick-stats",
+      "type": "stats",
+      "title": "Quick Stats",
       "size": "half",
       "order": 3,
-      "visible": true
-    },
-    {
-      "id": "today-tasks",
-      "type": "today-tasks",
-      "title": "Today",
-      "size": "half",
-      "order": 4,
       "visible": true
     },
     {
       "id": "today-events",
       "type": "today-events",
       "title": "Today's Events",
+      "size": "half",
+      "order": 4,
+      "visible": true
+    },
+    {
+      "id": "todays-score",
+      "type": "score",
+      "title": "Today's Score",
       "size": "half",
       "order": 5,
       "visible": true
