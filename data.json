@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-10T12:45:07.916Z",
+  "lastUpdated": "2026-02-10T13:02:46.198Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1666,8 +1666,8 @@
         "quran": 0
       },
       "glucose": {
-        "avg": "169",
-        "tir": "25",
+        "avg": "183",
+        "tir": "40",
         "insulin": ""
       },
       "whoop": {
@@ -1694,10 +1694,10 @@
         "nop": ""
       },
       "libre": {
-        "currentGlucose": 98,
-        "trend": "↓",
+        "currentGlucose": 221,
+        "trend": "↘",
         "readingsCount": 48,
-        "lastReading": "2/10/2026 11:44:19 AM"
+        "lastReading": "2/10/2026 3:02:30 PM"
       }
     }
   },
@@ -3247,7 +3247,7 @@
     {
       "id": "person-1770510421604",
       "name": "Ali Refaai",
-      "email": ""
+      "email": "ali.refaai@breadfast.com"
     },
     {
       "id": "person_1770576686684",
@@ -3327,9 +3327,9 @@
       "visible": true
     },
     {
-      "id": "todays-score",
-      "type": "score",
-      "title": "Today's Score",
+      "id": "glucose",
+      "type": "glucose",
+      "title": "Glucose",
       "size": "half",
       "order": 4,
       "visible": true
@@ -3343,25 +3343,25 @@
       "visible": true
     },
     {
+      "id": "todays-score",
+      "type": "score",
+      "title": "Today's Score",
+      "size": "half",
+      "order": 6,
+      "visible": true
+    },
+    {
       "id": "next-tasks",
       "type": "next-tasks",
       "title": "Next",
       "size": "half",
-      "order": 6,
+      "order": 7,
       "visible": true
     },
     {
       "id": "prayers",
       "type": "prayers",
       "title": "Prayers",
-      "size": "half",
-      "order": 7,
-      "visible": true
-    },
-    {
-      "id": "glucose",
-      "type": "glucose",
-      "title": "Glucose",
       "size": "half",
       "order": 8,
       "visible": true
