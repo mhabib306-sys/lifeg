@@ -10,7 +10,8 @@ import {
   GCAL_ACCESS_TOKEN_KEY, GCAL_TOKEN_TIMESTAMP_KEY,
   GCAL_SELECTED_CALENDARS_KEY, GCAL_TARGET_CALENDAR_KEY,
   GCAL_EVENTS_CACHE_KEY, GCAL_LAST_SYNC_KEY, GCAL_CONNECTED_KEY,
-  GCAL_OFFLINE_QUEUE_KEY
+  GCAL_OFFLINE_QUEUE_KEY,
+  GCONTACTS_SYNC_TOKEN_KEY, GCONTACTS_LAST_SYNC_KEY
 } from '../constants.js';
 
 const GCAL_API = 'https://www.googleapis.com/calendar/v3';
@@ -563,6 +564,7 @@ export async function connectGCal() {
   state.gcalError = null;
   const loaded = await fetchCalendarList();
   if (loaded) await syncGCalNow();
+  await window.syncGoogleContactsNow?.();
   window.render();
 }
 
@@ -574,12 +576,17 @@ export function disconnectGCal() {
   localStorage.removeItem(GCAL_TARGET_CALENDAR_KEY);
   localStorage.removeItem(GCAL_EVENTS_CACHE_KEY);
   localStorage.removeItem(GCAL_LAST_SYNC_KEY);
+  localStorage.removeItem(GCONTACTS_SYNC_TOKEN_KEY);
+  localStorage.removeItem(GCONTACTS_LAST_SYNC_KEY);
   state.gcalEvents = [];
   state.gcalCalendarList = [];
   state.gcalCalendarsLoading = false;
   state.gcalError = null;
   state.gcalSyncing = false;
   state.gcalTokenExpired = false;
+  state.gcontactsSyncing = false;
+  state.gcontactsLastSync = null;
+  state.gcontactsError = null;
   if (syncIntervalId) { clearInterval(syncIntervalId); syncIntervalId = null; }
   window.render();
 }
@@ -591,6 +598,7 @@ export async function reconnectGCal() {
   state.gcalError = null;
   const loaded = await fetchCalendarList();
   if (loaded) await syncGCalNow();
+  await window.syncGoogleContactsNow?.();
   window.render();
 }
 

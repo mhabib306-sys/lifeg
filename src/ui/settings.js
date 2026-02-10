@@ -15,7 +15,7 @@ import { getAnthropicKey } from '../features/braindump.js';
 import {
   isGCalConnected, getSelectedCalendars, getTargetCalendar
 } from '../data/google-calendar-sync.js';
-import { GCAL_LAST_SYNC_KEY } from '../constants.js';
+import { GCAL_LAST_SYNC_KEY, GCONTACTS_LAST_SYNC_KEY } from '../constants.js';
 
 // ============================================================================
 // createWeightInput — Single weight/max-score input row
@@ -116,6 +116,10 @@ function renderGCalSettingsCard() {
   const lastSyncText = lastSync
     ? new Date(parseInt(lastSync, 10)).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
     : 'Never';
+  const contactsLastSync = localStorage.getItem(GCONTACTS_LAST_SYNC_KEY);
+  const contactsLastSyncText = contactsLastSync
+    ? new Date(parseInt(contactsLastSync, 10)).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+    : 'Never';
   const gcalErrorUrlMatch = gcalError ? gcalError.match(/https?:\/\/[^\s]+/) : null;
   const gcalErrorUrl = gcalErrorUrlMatch ? gcalErrorUrlMatch[0] : '';
 
@@ -202,6 +206,21 @@ function renderGCalSettingsCard() {
           </select>
         </div>
       ` : '<p class="text-sm text-charcoal/40 mb-4">No calendars found for this account.</p>'}
+
+      <div class="mb-4 p-3 rounded-lg bg-warmgray/25 border border-softborder">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-sm font-medium text-charcoal">People Sync From Google Contacts</p>
+            <p class="text-xs text-charcoal/50 mt-1">Auto sync runs in background. Last sync: ${contactsLastSyncText}</p>
+          </div>
+          <button onclick="window.syncGoogleContactsNow()" class="px-3 py-1.5 bg-white border border-softborder rounded text-xs font-medium text-charcoal hover:bg-warmgray transition ${state.gcontactsSyncing ? 'opacity-60 cursor-not-allowed' : ''}" ${state.gcontactsSyncing ? 'disabled' : ''}>
+            ${state.gcontactsSyncing ? 'Syncing...' : 'Sync Contacts'}
+          </button>
+        </div>
+        ${state.gcontactsError ? `
+          <p class="text-xs text-amber-700 mt-2">${state.gcontactsError}</p>
+        ` : ''}
+      </div>
 
       <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
         <button onclick="window.syncGCalNow()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">

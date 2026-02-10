@@ -21,6 +21,7 @@ import { initializeNoteOrders } from './features/notes.js';
 import { initWeather } from './features/weather.js';
 import { initWhoopSync } from './data/whoop-sync.js';
 import { initGCalSync } from './data/google-calendar-sync.js';
+import { initGoogleContactsSync } from './data/google-contacts-sync.js';
 import { applyStoredTheme, loadCloudData, debouncedSaveToGithub } from './data/github-sync.js';
 import { initAuth } from './data/firebase.js';
 import { render } from './ui/render.js';
@@ -59,11 +60,13 @@ function initApp() {
       render();
       initWhoopSync();
       initGCalSync();
+      initGoogleContactsSync();
     })
     .catch(err => {
       console.warn('Cloud data load failed (will use local):', err.message);
       initWhoopSync();
       initGCalSync();
+      initGoogleContactsSync();
     });
 
   // Initialize weather

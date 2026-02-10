@@ -335,6 +335,9 @@ export const state = {
   gcalSyncing: false,        // True during active sync
   gcalTokenExpired: false,   // True when token needs refresh
   gcalOfflineQueue: safeJsonParse(GCAL_OFFLINE_QUEUE_KEY, []),
+  gcontactsSyncing: false,
+  gcontactsLastSync: null,
+  gcontactsError: null,
   calendarMobileShowToday: true,
   calendarMobileShowEvents: true,
   calendarMobileShowScheduled: true,

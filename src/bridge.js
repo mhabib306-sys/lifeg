@@ -48,6 +48,9 @@ import {
   syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
   initGCalSync, toggleCalendarSelection
 } from './data/google-calendar-sync.js';
+import {
+  syncGoogleContactsNow, initGoogleContactsSync
+} from './data/google-contacts-sync.js';
 
 // -- Features --
 import { fetchWeather, detectUserLocation, initWeather, loadWeatherLocation, saveWeatherLocation } from './features/weather.js';
@@ -231,6 +234,7 @@ Object.assign(window, {
   rescheduleGCalEventIfConnected, getGCalOfflineQueue, retryGCalOfflineQueue, clearGCalOfflineQueue, removeGCalOfflineQueueItem,
   syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
   initGCalSync, toggleCalendarSelection,
+  syncGoogleContactsNow, initGoogleContactsSync,
   openCalendarEventActions, closeCalendarEventActions,
   openCalendarMeetingNotes, openCalendarMeetingWorkspaceByEventKey, closeCalendarMeetingNotes, setCalendarMeetingNotesScope,
   addDiscussionItemToMeeting,
