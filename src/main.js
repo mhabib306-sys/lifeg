@@ -144,6 +144,22 @@ function bootstrap() {
   // Show loading spinner
   render();
 
+  // Mobile app-like behavior: prevent Safari double-tap zoom.
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    const delta = now - lastTouchEnd;
+    lastTouchEnd = now;
+    if (delta > 0 && delta < 320) {
+      const target = e.target;
+      const editable = target instanceof HTMLElement
+        && (target.closest('input, textarea, select, [contenteditable="true"]') !== null);
+      if (!editable) {
+        e.preventDefault();
+      }
+    }
+  }, { passive: false });
+
   // Wait for Firebase auth state
   initAuth((user) => {
     if (user) {
