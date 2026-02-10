@@ -257,7 +257,7 @@ export async function askGSheet(prompt) {
       'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
+      model: 'claude-opus-4-6',
       max_tokens: 1024,
       system: `You are a concise personal assistant. The user has a spreadsheet with ${tabCount} tab(s): ${tabList}. Here is ALL the data:\n\n${sheetText}\n\nAnswer the user's question about this data. Be brief and direct. Return your response as clean HTML for display in a widget. Use simple inline styles for visual clarity. Allowed tags: <div>, <span>, <strong>, <em>, <br>, <ul>, <ol>, <li>, <table>, <tr>, <td>, <th>. Use compact styling. Do NOT wrap in <html>, <body>, or <head> tags. Do NOT use markdown.`,
       messages: [{ role: 'user', content: prompt }],
