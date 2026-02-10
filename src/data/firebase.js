@@ -25,6 +25,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+let gisScriptLoadPromise = null;
 
 function generateNonce() {
   const array = new Uint8Array(32);
@@ -62,6 +63,19 @@ export function getCurrentUser() {
 
 export async function signInWithGoogleCalendar(options = {}) {
   const { mode = 'interactive' } = options;
+  // Prefer Google Identity Services token flow because it supports reliable
+  // prompt-less refresh without cross-origin iframe hash parsing.
+  const gisToken = await requestCalendarTokenWithGIS(mode);
+  if (gisToken) {
+    localStorage.setItem(GCAL_ACCESS_TOKEN_KEY, gisToken);
+    localStorage.setItem(GCAL_TOKEN_TIMESTAMP_KEY, String(Date.now()));
+    return gisToken;
+  }
+
+  // Silent mode should not force navigation.
+  if (mode === 'silent') return null;
+
+  // Fallback for environments where GIS isn't available.
   const nonce = generateNonce();
   sessionStorage.setItem('oauth_nonce', nonce);
   sessionStorage.setItem('oauth_calendar', '1');
@@ -73,58 +87,67 @@ export async function signInWithGoogleCalendar(options = {}) {
     scope: 'openid email profile https://www.googleapis.com/auth/calendar',
     nonce: nonce,
     include_granted_scopes: 'true',
-    prompt: mode === 'silent' ? 'none' : 'consent'
+    prompt: 'consent'
   });
 
-  if (mode === 'silent' && auth.currentUser?.email) {
-    params.set('login_hint', auth.currentUser.email);
-  }
-
-  if (mode === 'silent') {
-    // For silent refresh, try in a hidden iframe
-    try {
-      const accessToken = await silentTokenRefresh(params.toString());
-      if (accessToken) {
-        localStorage.setItem(GCAL_ACCESS_TOKEN_KEY, accessToken);
-        localStorage.setItem(GCAL_TOKEN_TIMESTAMP_KEY, String(Date.now()));
-        return accessToken;
-      }
-    } catch (e) {
-      console.warn('Silent calendar refresh failed:', e);
-    }
-    return null;
-  }
-
-  // Interactive — navigate to Google
   window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
   return null;
 }
 
-function silentTokenRefresh(queryString) {
-  return new Promise((resolve, reject) => {
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    const timeout = setTimeout(() => {
-      iframe.remove();
-      reject(new Error('Silent refresh timed out'));
-    }, 5000);
+function loadGoogleIdentityServicesScript() {
+  if (window.google?.accounts?.oauth2) return Promise.resolve(true);
+  if (gisScriptLoadPromise) return gisScriptLoadPromise;
 
-    iframe.src = `https://accounts.google.com/o/oauth2/v2/auth?${queryString}`;
-    iframe.onload = () => {
-      try {
-        const hash = iframe.contentWindow.location.hash;
-        const params = new URLSearchParams(hash.substring(1));
-        const accessToken = params.get('access_token');
-        clearTimeout(timeout);
-        iframe.remove();
-        resolve(accessToken);
-      } catch (e) {
-        clearTimeout(timeout);
-        iframe.remove();
-        reject(e);
-      }
-    };
-    document.body.appendChild(iframe);
+  gisScriptLoadPromise = new Promise((resolve) => {
+    const existing = document.querySelector('script[data-gis-client="1"]');
+    if (existing) {
+      existing.addEventListener('load', () => resolve(!!window.google?.accounts?.oauth2), { once: true });
+      existing.addEventListener('error', () => resolve(false), { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.dataset.gisClient = '1';
+    script.onload = () => resolve(!!window.google?.accounts?.oauth2);
+    script.onerror = () => resolve(false);
+    document.head.appendChild(script);
+  });
+
+  return gisScriptLoadPromise;
+}
+
+async function requestCalendarTokenWithGIS(mode = 'interactive') {
+  const gisReady = await loadGoogleIdentityServicesScript();
+  if (!gisReady || !window.google?.accounts?.oauth2) return null;
+
+  return new Promise((resolve) => {
+    try {
+      const tokenClient = window.google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: 'https://www.googleapis.com/auth/calendar',
+        callback: (resp) => {
+          if (resp?.access_token) resolve(resp.access_token);
+          else resolve(null);
+        },
+      });
+
+      const request = mode === 'silent'
+        ? {
+            prompt: '',
+            ...(auth.currentUser?.email ? { login_hint: auth.currentUser.email } : {}),
+          }
+        : {
+            prompt: 'consent',
+          };
+
+      tokenClient.requestAccessToken(request);
+    } catch (err) {
+      console.warn('GIS calendar token request failed:', err);
+      resolve(null);
+    }
   });
 }
 
