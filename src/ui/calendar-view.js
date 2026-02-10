@@ -97,6 +97,59 @@ function getMeetingLinkedItems(eventKey) {
   return state.tasksData.filter(t => scopeKeys.includes(t.meetingEventKey));
 }
 
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
+function getDiscussionPoolForEvent(event) {
+  if (!event) {
+    return { attendeePeople: [], matchingItems: [], tasks: [], notes: [] };
+  }
+
+  const attendeeEmails = new Set(
+    (Array.isArray(event.attendees) ? event.attendees : [])
+      .map(att => normalizeEmail(att?.email))
+      .filter(Boolean)
+  );
+  const attendeePeople = state.taskPeople.filter(person => attendeeEmails.has(normalizeEmail(person?.email)));
+  const attendeePersonIds = new Set(attendeePeople.map(person => person.id));
+  const meetingKeys = getMeetingScopeKeys(event);
+  const today = getLocalDateString();
+
+  const scoreItem = (task) => {
+    let score = 0;
+    if (!task.isNote) score += 20;
+    if (task.flagged) score += 14;
+    if (task.today) score += 10;
+    if (task.dueDate) {
+      if (task.dueDate < today) score += 22;
+      else if (task.dueDate === today) score += 18;
+      else {
+        const diffDays = Math.ceil((new Date(`${task.dueDate}T12:00:00`) - new Date(`${today}T12:00:00`)) / 86400000);
+        if (diffDays <= 7) score += 7;
+      }
+    }
+    if (meetingKeys.includes(task.meetingEventKey)) score += 12;
+    return score;
+  };
+
+  const matchingItems = state.tasksData
+    .filter(task => !task.completed)
+    .filter(task => (task.people || []).some(pid => attendeePersonIds.has(pid)))
+    .sort((a, b) => {
+      const scoreDiff = scoreItem(b) - scoreItem(a);
+      if (scoreDiff !== 0) return scoreDiff;
+      return String(b.updatedAt || b.createdAt || '').localeCompare(String(a.updatedAt || a.createdAt || ''));
+    });
+
+  return {
+    attendeePeople,
+    matchingItems,
+    tasks: matchingItems.filter(item => !item.isNote),
+    notes: matchingItems.filter(item => item.isNote),
+  };
+}
+
 function renderMultilineText(text) {
   return escapeHtml(text || '').replace(/\n/g, '<br>');
 }
@@ -330,6 +383,18 @@ export function addMeetingLinkedItem(itemType = 'note') {
   window.render();
 }
 
+export function addDiscussionItemToMeeting(taskId) {
+  const key = state.calendarMeetingNotesEventKey;
+  const event = getMeetingNotesEvent();
+  if (!taskId || !key || !event) return;
+  const meetingKeys = getMeetingScopeKeys(event);
+  const task = state.tasksData.find(t => t.id === taskId);
+  if (!task) return;
+  if (meetingKeys.includes(task.meetingEventKey)) return;
+  window.updateTask?.(taskId, { meetingEventKey: key });
+  window.render();
+}
+
 export function handleMeetingItemInputKeydown(event, itemType = 'note') {
   if (event.key === 'Enter') {
     event.preventDefault();
@@ -355,6 +420,8 @@ function renderMeetingNotesPage() {
   const eventTime = formatEventTimeLabel(event);
   const attendees = Array.isArray(event.attendees) ? event.attendees : [];
   const linkedItems = getMeetingLinkedItems(event);
+  const meetingKeys = getMeetingScopeKeys(event);
+  const discussionPool = getDiscussionPoolForEvent(event);
   const openItems = linkedItems.filter(item => !item.completed);
   const completedItems = linkedItems.filter(item => item.completed);
   const itemRows = openItems.length > 0
@@ -433,6 +500,72 @@ function renderMeetingNotesPage() {
         </div>
 
         <div class="space-y-3">
+          <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3 discussion-pool-card">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <div>
+                <h3 class="text-sm font-semibold text-[var(--text-primary)]">Discussion Pool</h3>
+                <p class="text-xs text-[var(--text-muted)]">Items tagged to meeting attendees (${discussionPool.attendeePeople.length} matched people)</p>
+              </div>
+              <span class="text-xs px-2 py-1 rounded-full bg-[var(--bg-secondary)] text-[var(--text-muted)]">${discussionPool.matchingItems.length}</span>
+            </div>
+
+            ${discussionPool.attendeePeople.length > 0 ? `
+              <div class="discussion-pool-people mb-3">
+                ${discussionPool.attendeePeople.map(person => `
+                  <span class="discussion-pool-person-pill">
+                    ${escapeHtml(person.name)}
+                    ${person.email ? `<span class="discussion-pool-person-email">${escapeHtml(person.email)}</span>` : ''}
+                  </span>
+                `).join('')}
+              </div>
+            ` : `
+              <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-2 mb-3">No People emails matched this meeting's attendees yet.</p>
+            `}
+
+            ${discussionPool.matchingItems.length > 0 ? `
+              <div class="discussion-pool-sections">
+                <div class="discussion-pool-section">
+                  <div class="discussion-pool-section-head">Tasks (${discussionPool.tasks.length})</div>
+                  ${discussionPool.tasks.length ? discussionPool.tasks.map(item => {
+                    const inThisMeeting = meetingKeys.includes(item.meetingEventKey);
+                    return `
+                      <div class="discussion-pool-item">
+                        <button onclick="window.inlineEditingTaskId=null; window.editingTaskId='${q(item.id)}'; window.showTaskModal=true; window.render()" class="discussion-pool-item-main">
+                          <span class="discussion-pool-item-title">${escapeHtml(item.title || 'Untitled task')}</span>
+                          <span class="discussion-pool-item-meta">
+                            ${item.dueDate ? `<span class="discussion-pool-item-badge">${item.dueDate <= getLocalDateString() ? 'Due' : 'Upcoming'} ${escapeHtml(item.dueDate)}</span>` : ''}
+                            ${inThisMeeting ? `<span class="discussion-pool-item-badge linked">In This Meeting</span>` : ''}
+                          </span>
+                        </button>
+                        <button onclick="addDiscussionItemToMeeting('${q(item.id)}')" class="discussion-pool-link-btn ${inThisMeeting ? 'is-linked' : ''}" ${inThisMeeting ? 'disabled' : ''}>${inThisMeeting ? 'Linked' : 'Add'}</button>
+                      </div>
+                    `;
+                  }).join('') : '<div class="discussion-pool-empty">No tasks tagged to attendees.</div>'}
+                </div>
+
+                <div class="discussion-pool-section">
+                  <div class="discussion-pool-section-head">Notes (${discussionPool.notes.length})</div>
+                  ${discussionPool.notes.length ? discussionPool.notes.map(item => {
+                    const inThisMeeting = meetingKeys.includes(item.meetingEventKey);
+                    return `
+                      <div class="discussion-pool-item">
+                        <button onclick="window.inlineEditingTaskId=null; window.editingTaskId='${q(item.id)}'; window.showTaskModal=true; window.render()" class="discussion-pool-item-main">
+                          <span class="discussion-pool-item-title">${escapeHtml(item.title || 'Untitled note')}</span>
+                          <span class="discussion-pool-item-meta">
+                            ${inThisMeeting ? `<span class="discussion-pool-item-badge linked">In This Meeting</span>` : ''}
+                          </span>
+                        </button>
+                        <button onclick="addDiscussionItemToMeeting('${q(item.id)}')" class="discussion-pool-link-btn ${inThisMeeting ? 'is-linked' : ''}" ${inThisMeeting ? 'disabled' : ''}>${inThisMeeting ? 'Linked' : 'Add'}</button>
+                      </div>
+                    `;
+                  }).join('') : '<div class="discussion-pool-empty">No notes tagged to attendees.</div>'}
+                </div>
+              </div>
+            ` : `
+              <div class="discussion-pool-empty">No open tasks/notes are currently tagged with matched attendees.</div>
+            `}
+          </div>
+
           <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
             <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-2">Attendees</h3>
             ${attendees.length > 0 ? `

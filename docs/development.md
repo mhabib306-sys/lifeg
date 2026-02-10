@@ -29,7 +29,9 @@ npm run deploy
 - Add bullets/tasks in instance scope, switch to series, verify linked items remain visible and editable, reload and verify no loss.
 6. Canceled events:
 - Confirm canceled Google events do not render in calendar grids/lists.
-7. Mobile:
+7. Meeting discussion pool:
+- Ensure attendee emails match People emails and discussion pool items can be linked into current meeting.
+8. Mobile:
 - Verify calendar page layout + event actions modal on narrow viewport.
 
 ## QA Matrix (Minimum)
