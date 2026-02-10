@@ -177,6 +177,7 @@ const initialTaskPeople = (safeJsonParse(TASK_PEOPLE_KEY, null) || DEFAULT_TASK_
   .map(item => ({
     ...item,
     email: typeof item?.email === 'string' ? item.email : '',
+    jobTitle: typeof item?.jobTitle === 'string' ? item.jobTitle : '',
   }));
 const initialCustomPerspectives = (safeJsonParse(PERSPECTIVES_KEY, []) || [])
   .filter(item => !isEntityDeleted('customPerspectives', item?.id));
@@ -258,6 +259,7 @@ export const state = {
   editingTaskId: null,
   inlineEditingTaskId: null,
   quickAddIsNote: false,
+  showAllSidebarPeople: false,
   newTaskContext: { categoryId: null, labelId: null, personId: null, status: 'inbox' },
   inlineAutocompleteMeta: new Map(),      // Maps inputId -> { categoryId, labels[], people[] }
 

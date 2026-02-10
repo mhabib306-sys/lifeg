@@ -716,15 +716,25 @@ export function renderTasksTab() {
       </div>
 
       <!-- People -->
+      ${(() => {
+        const peopleWithTasks = state.taskPeople
+          .filter(p => (peopleCounts[p.id] || 0) > 0)
+          .sort((a, b) => (peopleCounts[b.id] || 0) - (peopleCounts[a.id] || 0));
+        const MAX_SIDEBAR_PEOPLE = 10;
+        const showAll = state.showAllSidebarPeople;
+        const displayPeople = showAll ? peopleWithTasks : peopleWithTasks.slice(0, MAX_SIDEBAR_PEOPLE);
+        const hiddenCount = peopleWithTasks.length - MAX_SIDEBAR_PEOPLE;
+        const totalPeople = state.taskPeople.length;
+        return `
       <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
-          <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">People</h3>
+          <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">People${peopleWithTasks.length > 0 ? ` (${peopleWithTasks.length})` : ''}</h3>
           <button onclick="window.editingPersonId=null; window.showPersonModal=true; window.render()" aria-label="Add new person" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition p-1.5 -mr-1 rounded-lg hover:bg-[var(--bg-secondary)]">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
           </button>
         </div>
         <div class="py-2 px-2">
-          ${state.taskPeople.map(person => `
+          ${displayPeople.length === 0 ? `<div class="px-3 py-2 text-[12px] text-[var(--text-muted)]">No people with active tasks</div>` : displayPeople.map(person => `
             <div onclick="window.showPersonTasks('${person.id}')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.showPersonTasks('${person.id}');}"
               tabindex="0"
@@ -739,15 +749,28 @@ export function renderTasksTab() {
               </span>
               <span class="flex-1 min-w-0">
                 <span class="block text-[14px] truncate ${isPersonActive(person.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(person.name)}</span>
-                ${person.email ? `<span class="block text-[11px] truncate text-[var(--text-muted)]">${escapeHtml(person.email)}</span>` : ''}
+                ${person.jobTitle ? `<span class="block text-[11px] truncate text-[var(--text-muted)]">${escapeHtml(person.jobTitle)}</span>` : ''}
               </span>
               <span class="min-w-[20px] text-right text-[12px] group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${peopleCounts[person.id] || ''}</span>
               <span onclick="event.stopPropagation(); window.editingPersonId='${person.id}'; window.showPersonModal=true; window.render()"
                 class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
             </div>
           `).join('')}
+          ${!showAll && hiddenCount > 0 ? `
+          <button onclick="window.showAllSidebarPeople=true; window.render()"
+            class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
+            Show ${hiddenCount} more...
+          </button>` : ''}
+          ${showAll && hiddenCount > 0 ? `
+          <button onclick="window.showAllSidebarPeople=false; window.render()"
+            class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
+            Show less
+          </button>` : ''}
+          ${totalPeople > peopleWithTasks.length ? `
+          <div class="px-3 pt-1 pb-1 text-[11px] text-[var(--text-muted)]">${totalPeople - peopleWithTasks.length} people without tasks hidden</div>` : ''}
         </div>
-      </div>
+      </div>`;
+      })()}
     </div>
   `;
 
@@ -763,7 +786,10 @@ export function renderTasksTab() {
         <div class="task-list-header-desktop px-5 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <span class="text-2xl" ${viewInfo.color ? `style="color: ${viewInfo.color}"` : ''}>${viewInfo.icon}</span>
-            <h2 class="text-xl font-semibold text-[var(--text-primary)]">${viewInfo.name}</h2>
+            <div>
+              <h2 class="text-xl font-semibold text-[var(--text-primary)]">${viewInfo.name}</h2>
+              ${viewInfo.jobTitle || viewInfo.email ? `<p class="text-sm text-[var(--text-muted)]">${[viewInfo.jobTitle, viewInfo.email].filter(Boolean).join(' \u00B7 ')}</p>` : ''}
+            </div>
           </div>
           <button onclick="window.openNewTaskModal()"
             class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="${state.activePerspective === 'notes' ? 'Add Note' : 'Add Task'}">

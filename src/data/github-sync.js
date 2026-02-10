@@ -403,6 +403,7 @@ function mergeTaskCollectionsFromCloud(cloudData = {}) {
   state.taskPeople = mergedPeople.map(person => ({
     ...person,
     email: typeof person?.email === 'string' ? person.email : '',
+    jobTitle: typeof person?.jobTitle === 'string' ? person.jobTitle : '',
   }));
   localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
 

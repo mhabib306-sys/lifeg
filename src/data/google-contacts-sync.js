@@ -56,6 +56,12 @@ function pickPrimaryEmail(person) {
   return String(primary?.value || emails[0]?.value || '').trim();
 }
 
+function pickPrimaryJobTitle(person) {
+  const orgs = Array.isArray(person?.organizations) ? person.organizations : [];
+  const primary = orgs.find(o => o?.metadata?.primary);
+  return String(primary?.title || orgs[0]?.title || '').trim();
+}
+
 function randomPersonColor() {
   const palette = ['#4A90A4', '#6B8E5A', '#E5533D', '#C4943D', '#7C6B8E', '#6366F1', '#0EA5E9'];
   return palette[Math.floor(Math.random() * palette.length)];
@@ -74,6 +80,7 @@ function mergeGoogleContactsIntoPeople(contacts) {
     const resourceName = String(contact?.resourceName || '').trim();
     const name = pickPrimaryName(contact);
     const email = pickPrimaryEmail(contact);
+    const jobTitle = pickPrimaryJobTitle(contact);
     const emailNorm = normalizeEmail(email);
     const nameNorm = normalizeName(name);
 
@@ -102,14 +109,17 @@ function mergeGoogleContactsIntoPeople(contacts) {
     if (existing) {
       const nextName = name || existing.name;
       const nextEmail = email || existing.email || '';
+      const nextJobTitle = jobTitle || existing.jobTitle || '';
       const needsUpdate = (
         existing.name !== nextName ||
         String(existing.email || '') !== String(nextEmail || '') ||
+        String(existing.jobTitle || '') !== String(nextJobTitle || '') ||
         String(existing.googleContactId || '') !== resourceName
       );
       if (needsUpdate) {
         existing.name = nextName;
         existing.email = String(nextEmail || '').trim();
+        existing.jobTitle = String(nextJobTitle || '').trim();
         existing.googleContactId = resourceName;
         existing.updatedAt = new Date().toISOString();
         changed++;
@@ -124,6 +134,7 @@ function mergeGoogleContactsIntoPeople(contacts) {
       id: ensurePersonId(),
       name: name || email,
       email: String(email || '').trim(),
+      jobTitle: String(jobTitle || '').trim(),
       color: randomPersonColor(),
       googleContactId: resourceName,
       createdAt: new Date().toISOString(),
@@ -140,7 +151,7 @@ async function fetchConnectionsPage({ pageToken = '', syncToken = '', requestSyn
   if (!token) return null;
 
   const params = new URLSearchParams({
-    personFields: 'names,emailAddresses,metadata',
+    personFields: 'names,emailAddresses,organizations,metadata',
     pageSize: '500',
   });
   if (pageToken) params.set('pageToken', pageToken);

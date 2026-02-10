@@ -357,7 +357,7 @@ export function getCurrentViewInfo() {
     return { icon: '\u{1F3F7}\uFE0F', name: label?.name || 'Tag', color: label?.color };
   } else if (state.activeFilterType === 'person' && state.activePersonFilter) {
     const person = getPersonById(state.activePersonFilter);
-    return { icon: '\u{1F464}', name: person?.name || 'Person', color: person?.color };
+    return { icon: '\u{1F464}', name: person?.name || 'Person', color: person?.color, email: person?.email || '', jobTitle: person?.jobTitle || '' };
   } else {
     const allPerspectives = [...BUILTIN_PERSPECTIVES, ...state.customPerspectives];
     const p = allPerspectives.find(p => p.id === state.activePerspective) || BUILTIN_PERSPECTIVES[0];
