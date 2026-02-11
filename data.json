@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T11:56:27.830Z",
+  "lastUpdated": "2026-02-11T11:56:34.367Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3380,7 +3380,8 @@
       "self": "2026-02-10T02:15:08.973Z"
     },
     "taskCategories": {
-      "learning": "2026-02-11T11:56:17.459Z"
+      "learning": "2026-02-11T11:56:17.459Z",
+      "health": "2026-02-11T11:56:31.646Z"
     }
   },
   "taskCategories": [
@@ -3401,11 +3402,6 @@
       "name": "Family",
       "color": "#5AC8FA",
       "emoji": ""
-    },
-    {
-      "id": "health",
-      "name": "Health",
-      "color": "#E5533D"
     },
     {
       "id": "cat_1769983795940",
