@@ -16,6 +16,13 @@
   --overdue-color: #FF3B30;
   --deferred-color: #8E8E93;
   --notes-color: #5856D6;
+  --inbox-color: #E5533D;
+  --today-color: #FFCC00;
+  --upcoming-color: #FF3B30;
+  --anytime-color: #5AC8FA;
+  --someday-color: #C69C6D;
+  --logbook-color: #22C55E;
+  --trigger-color: #FFCC00;
   --border: #E5E3DE;
   --border-light: #F0EEE9;
   --success: #22C55E;
@@ -84,6 +91,7 @@
   --anytime-color: #5AC8FA;
   --someday-color: #C69C6D;
   --logbook-color: #34C759;
+  --trigger-color: #FFCC00;
 
   /* Buttons */
   --btn-bg: #147EFB;
@@ -162,6 +170,7 @@
   --anytime-color: #0070F3;
   --someday-color: #8F8F8F;
   --logbook-color: #46A758;
+  --trigger-color: #FFB224;
 
   /* Borders — gray-300 (#E6E6E6) and gray-100 (#F2F2F2) */
   --border: #E6E6E6;

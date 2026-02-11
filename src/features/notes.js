@@ -1602,24 +1602,24 @@ export function renderNotesOutliner(filter = null) {
 
   if (visibleNotes.length === 0 && !state.zoomedNoteId) {
     return `
-      <div class="text-center py-12 text-charcoal/40">
-        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-50 flex items-center justify-center">
-          <svg class="w-6 h-6 text-purple-300" fill="currentColor" viewBox="0 0 24 24">
+      <div class="text-center py-12 text-[var(--text-muted)]">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center">
+          <svg class="w-6 h-6 text-[var(--text-secondary)]" fill="currentColor" viewBox="0 0 24 24">
             <circle cx="4" cy="6" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="4" cy="18" r="2"/>
             <rect x="8" y="5" width="14" height="2" rx="1"/><rect x="8" y="11" width="14" height="2" rx="1"/><rect x="8" y="17" width="14" height="2" rx="1"/>
           </svg>
         </div>
         <p class="text-sm font-medium mb-1">No notes yet</p>
-        <p class="text-xs text-charcoal/30 mb-3">Capture the first thought and build from there</p>
+        <p class="text-xs text-[var(--text-muted)] mb-3">Capture the first thought and build from there</p>
       </div>
     `;
   }
 
   if (visibleNotes.length === 0 && state.zoomedNoteId) {
     return `
-      <div class="text-center py-8 text-charcoal/40">
+      <div class="text-center py-8 text-[var(--text-muted)]">
         <p class="text-sm font-medium mb-1">No child notes</p>
-        <p class="text-xs text-charcoal/30">Press Enter to create one</p>
+        <p class="text-xs text-[var(--text-muted)]">Press Enter to create one</p>
       </div>
     `;
   }

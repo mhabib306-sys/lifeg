@@ -84,18 +84,18 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
     <div class="px-4 py-2 border-t border-[var(--border-light)]">
       <button onclick="window.createTask('', { status: '${status}', ${createPropsExpr} }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && ${filterExpr} && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
         class="flex items-center gap-2 px-3 py-2 w-full text-sm hover:bg-opacity-50 rounded-lg transition text-left" style="color: ${color}">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         ${label}
       </button>
     </div>`;
 
   return `
     ${overdueTasks.length > 0 ? `
-      <div class="bg-[var(--bg-card)] rounded-xl overflow-hidden" style="border: 1px solid #FF3B3020">
-        <div class="px-4 py-3 flex items-center gap-2" style="background: #FF3B3008; border-bottom: 1px solid #FF3B3020">
-          <svg class="w-4 h-4" style="color: #FF3B30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-          <span class="text-sm font-semibold" style="color: #FF3B30">Overdue</span>
-          <span class="text-xs ml-1" style="color: #FF3B30; opacity: 0.6">${overdueTasks.length}</span>
+      <div class="bg-[var(--bg-card)] rounded-xl overflow-hidden" style="border: 1px solid color-mix(in srgb, var(--overdue-color) 12%, transparent)">
+        <div class="px-4 py-3 flex items-center gap-2" style="background: color-mix(in srgb, var(--overdue-color) 3%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--overdue-color) 12%, transparent)">
+          <svg class="w-4 h-4" style="color: var(--overdue-color)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span class="text-sm font-semibold" style="color: var(--overdue-color)">Overdue</span>
+          <span class="text-xs ml-1" style="color: var(--overdue-color); opacity: 0.6">${overdueTasks.length}</span>
         </div>
         <div class="task-list">${overdueTasks.map(task => renderTaskItem(task)).join('')}</div>
       </div>
@@ -103,20 +103,20 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
 
     ${todayTasks.length > 0 ? `
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-        <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2" style="background: #FFCC0008">
-          <svg class="w-4 h-4" style="color: #FFCC00" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
+        <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2" style="background: color-mix(in srgb, var(--today-color) 3%, transparent)">
+          <svg class="w-4 h-4" style="color: var(--today-color)" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Today</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${todayTasks.length}</span>
         </div>
         <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
-        ${addBtn('anytime', 'Add to Today...', '#FFCC00')}
+        ${addBtn('anytime', 'Add to Today...', 'var(--today-color)')}
       </div>
     ` : ''}
 
     ${upcomingTasks.length > 0 ? `
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-          <svg class="w-4 h-4" style="color: #FF3B30" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+          <svg class="w-4 h-4" style="color: var(--overdue-color)" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Upcoming</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${upcomingTasks.length}</span>
         </div>
@@ -127,7 +127,7 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
     ${deferredTasks.length > 0 ? `
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-          <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
+          <svg class="w-4 h-4 text-[var(--text-muted)]" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           <span class="text-sm font-semibold text-[var(--text-muted)]">Deferred</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${deferredTasks.length}</span>
         </div>
@@ -138,36 +138,36 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
     ${inboxTasks.length > 0 ? `
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-          <svg class="w-4 h-4" style="color: #147EFB" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h4.18c.26 1.7 1.74 3 3.57 3h2.5c1.83 0 3.31-1.3 3.57-3H21v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6zm0-2l3-7h12l3 7h-4.18c-.26-1.7-1.74-3-3.57-3h-2.5c-1.83 0-3.31 1.3-3.57 3H3z"/></svg>
+          <svg class="w-4 h-4" style="color: var(--inbox-color)" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Inbox</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${inboxTasks.length}</span>
         </div>
         <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
-        ${addBtn('anytime', 'Add Task...', '#147EFB')}
+        ${addBtn('anytime', 'Add Task...', 'var(--inbox-color)')}
       </div>
     ` : ''}
 
     ${anytimeTasks.length > 0 ? `
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-          <svg class="w-4 h-4" style="color: #5AC8FA" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="2"/><rect x="3" y="10" width="18" height="4" rx="2"/><rect x="3" y="16" width="18" height="4" rx="2"/></svg>
+          <svg class="w-4 h-4" style="color: var(--anytime-color)" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Anytime</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${anytimeTasks.length}</span>
         </div>
         <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
-        ${addBtn('anytime', 'Add to Anytime...', '#5AC8FA')}
+        ${addBtn('anytime', 'Add to Anytime...', 'var(--anytime-color)')}
       </div>
     ` : ''}
 
     ${somedayTasks.length > 0 ? `
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-          <svg class="w-4 h-4" style="color: #C69C6D" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h18v4H3V3zm1 5h16v13a1 1 0 01-1 1H5a1 1 0 01-1-1V8zm5 3v2h6v-2H9z"/></svg>
+          <svg class="w-4 h-4" style="color: var(--someday-color)" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Someday</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${somedayTasks.length}</span>
         </div>
         <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
-        ${addBtn('someday', 'Add to Someday...', '#C69C6D')}
+        ${addBtn('someday', 'Add to Someday...', 'var(--someday-color)')}
       </div>
     ` : ''}
   `;
@@ -181,13 +181,13 @@ function buildNotesSection(noteItems, filterArg, filterObj) {
     <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
       <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <svg class="w-4 h-4 text-[var(--accent)]" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>
+          <svg class="w-4 h-4 text-[var(--accent)]" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="4" cy="18" r="1.5"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Notes</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${noteItems.length}</span>
         </div>
         <button onclick="window.createRootNote(${filterArg})"
           class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
           Add Note
         </button>
       </div>
@@ -197,7 +197,7 @@ function buildNotesSection(noteItems, filterArg, filterObj) {
         <div class="px-4 py-2 border-t border-[var(--border-light)]">
           <button onclick="window.createRootNote(${filterArg})"
             class="flex items-center gap-2 px-3 py-2 w-full text-sm text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition text-left">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             Add another note...
           </button>
         </div>
@@ -206,7 +206,7 @@ function buildNotesSection(noteItems, filterArg, filterObj) {
           <p class="text-sm text-[var(--text-muted)] mb-3">No notes here yet</p>
           <button onclick="window.createRootNote(${filterArg})"
             class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent-light)] text-[var(--accent)] text-sm font-medium rounded-lg hover:bg-[var(--accent-light)] transition">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             Create your first note
           </button>
         </div>
@@ -223,13 +223,13 @@ function buildTriggersSection(triggerItems, filterArg, filterObj) {
     <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
       <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <span style="color: #FFCC00">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
+          <span style="color: var(--today-color)">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Triggers</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${triggerItems.length}</span>
         </div>
         <button onclick="window.createRootTrigger(${filterArg})"
-          class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[#FFCC00] hover:bg-[#FFCC0010] rounded-lg transition">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--trigger-color)] hover:bg-[color-mix(in_srgb,var(--trigger-color)_6%,transparent)] rounded-lg transition">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
           Add Trigger
         </button>
       </div>
@@ -238,8 +238,8 @@ function buildTriggersSection(triggerItems, filterArg, filterObj) {
         <div class="py-2">${renderTriggersOutliner(filterObj)}</div>
         <div class="px-4 py-2 border-t border-[var(--border-light)]">
           <button onclick="window.createRootTrigger(${filterArg})"
-            class="flex items-center gap-2 px-3 py-2 w-full text-sm text-[var(--text-muted)] hover:text-[#FFCC00] hover:bg-[#FFCC0010] rounded-lg transition text-left">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            class="flex items-center gap-2 px-3 py-2 w-full text-sm text-[var(--text-muted)] hover:text-[var(--trigger-color)] hover:bg-[color-mix(in_srgb,var(--trigger-color)_6%,transparent)] rounded-lg transition text-left">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             Add another trigger...
           </button>
         </div>
@@ -247,8 +247,8 @@ function buildTriggersSection(triggerItems, filterArg, filterObj) {
         <div class="px-4 py-8 text-center">
           <p class="text-sm text-[var(--text-muted)] mb-3">No triggers here yet</p>
           <button onclick="window.createRootTrigger(${filterArg})"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-[#FFCC0010] text-[#FFCC00] text-sm font-medium rounded-lg hover:bg-[#FFCC0020] transition">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            class="inline-flex items-center gap-2 px-4 py-2 bg-[color-mix(in_srgb,var(--trigger-color)_6%,transparent)] text-[var(--trigger-color)] text-sm font-medium rounded-lg hover:bg-[color-mix(in_srgb,var(--trigger-color)_12%,transparent)] transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             Add your first trigger
           </button>
         </div>
@@ -316,17 +316,17 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
             <button onclick="event.stopPropagation(); window.toggleTaskComplete('${task.id}')"
               aria-label="${task.completed ? 'Mark task as incomplete' : 'Mark task as complete'}: ${escapeHtml(task.title)}"
               class="task-checkbox w-[18px] h-[18px] rounded-full border-[1.5px] flex-shrink-0 flex items-center justify-center transition-all ${task.completed ? 'completed bg-[var(--accent)] border-[var(--accent)] text-white' : 'border-[var(--text-muted)] hover:border-[var(--accent)]'}">
-              ${task.completed ? '<svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>' : ''}
+              ${task.completed ? '<svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
             </button>
           `}
           <span class="flex-1 ml-2.5 text-[13px] leading-snug truncate ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">
-            ${task.flagged ? `<span class="inline-flex items-center mr-1" style="color: #FF9500">${getActiveIcons().flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
+            ${task.flagged ? `<span class="inline-flex items-center mr-1" style="color: var(--flagged-color)">${getActiveIcons().flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
             ${escapeHtml(task.title)}
           </span>
           <div class="flex items-center gap-1.5 ml-2 flex-shrink-0 text-[10px]">
             ${area ? `<span class="text-[var(--text-muted)] truncate max-w-[70px]">${escapeHtml(area.name)}${subcategory ? ' › ' + escapeHtml(subcategory.name) : ''}</span>` : ''}
-            ${task.dueDate ? `<span class="${isOverdue ? 'font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : isDueSoon ? 'font-medium' : 'text-[var(--text-muted)]'}" style="${isOverdue ? 'color: #FF3B30' : isDueSoon ? 'color: #FF9500' : ''}">${formatSmartDate(task.dueDate)}</span>` : ''}
-            ${task.repeat && task.repeat.type !== 'none' ? `<span class="text-[var(--text-muted)]" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8A5.87 5.87 0 0 1 6 12c0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></span>` : ''}
+            ${task.dueDate ? `<span class="${isOverdue ? 'font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : isDueSoon ? 'font-medium' : 'text-[var(--text-muted)]'}" style="${isOverdue ? 'color: var(--overdue-color)' : isDueSoon ? 'color: var(--flagged-color)' : ''}">${formatSmartDate(task.dueDate)}</span>` : ''}
+            ${task.repeat && task.repeat.type !== 'none' ? `<span class="text-[var(--text-muted)]" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></span>` : ''}
           </div>
         </div>
       </div>
@@ -349,7 +349,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
           <button onclick="event.stopPropagation(); window.toggleTaskComplete('${task.id}')"
             aria-label="${task.completed ? 'Mark task as incomplete' : 'Mark task as complete'}: ${escapeHtml(task.title)}"
             class="task-checkbox mt-0.5 w-[18px] h-[18px] rounded-full border-[1.5px] flex-shrink-0 flex items-center justify-center transition-all ${task.completed ? 'completed bg-[var(--accent)] border-[var(--accent)] text-white' : 'border-[var(--text-muted)] hover:border-[var(--accent)]'}">
-            ${task.completed ? '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>' : ''}
+            ${task.completed ? '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
           </button>
         `}
         <div class="flex-1 min-w-0">
@@ -361,7 +361,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
           ` : `
             <span ondblclick="event.stopPropagation(); window.startInlineEdit('${task.id}')"
               class="task-title text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug transition cursor-text">
-              ${task.flagged ? `<span class="inline-flex items-center mr-1.5" style="color: #FF9500">${getActiveIcons().flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
+              ${task.flagged ? `<span class="inline-flex items-center mr-1.5" style="color: var(--flagged-color)">${getActiveIcons().flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
               ${escapeHtml(task.title)}
             </span>
           `}
@@ -373,26 +373,26 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
           ${task.isNote && !task.completed ? `
             <button onclick="event.stopPropagation(); window.createChildNote('${task.id}')"
               class="p-1 text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-md transition" title="Add child note">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             </button>
             <button onclick="event.stopPropagation(); window.outdentNote('${task.id}')"
               class="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-md transition ${indentLevel === 0 ? 'opacity-30 cursor-not-allowed' : ''}" title="Outdent (Shift+Tab)">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M11 17h10v-2H11v2zm-8-5l4 4V8l-4 4zm0 9h18v-2H3v2zM3 3v2h18V3H3zm8 6h10V7H11v2zm0 4h10v-2H11v2z"/></svg>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="4" x2="21" y2="4"/><line x1="3" y1="20" x2="21" y2="20"/><line x1="11" y1="8" x2="21" y2="8"/><line x1="11" y1="12" x2="21" y2="12"/><line x1="11" y1="16" x2="21" y2="16"/><polyline points="7 8 3 12 7 16"/></svg>
             </button>
             <button onclick="event.stopPropagation(); window.indentNote('${task.id}')"
               class="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-md transition" title="Indent (Tab)">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21h18v-2H3v2zM3 8v8l4-4-4-4zm8 9h10v-2H11v2zM3 3v2h18V3H3zm8 6h10V7H11v2zm0 4h10v-2H11v2z"/></svg>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="4" x2="21" y2="4"/><line x1="3" y1="20" x2="21" y2="20"/><line x1="11" y1="8" x2="21" y2="8"/><line x1="11" y1="12" x2="21" y2="12"/><line x1="11" y1="16" x2="21" y2="16"/><polyline points="3 8 7 12 3 16"/></svg>
             </button>
           ` : ''}
           <button onclick="event.stopPropagation(); window.inlineEditingTaskId=null; window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render()"
             aria-label="Edit task: ${escapeHtml(task.title)}"
             class="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-md transition" title="Edit">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
           <button onclick="event.stopPropagation(); window.confirmDeleteTask('${task.id}')"
             aria-label="Delete task: ${escapeHtml(task.title)}"
-            class="p-1 text-[var(--text-muted)] hover:text-[#FF3B30] hover:bg-[#FF3B3010] rounded-md transition" title="Delete">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            class="p-1 text-[var(--text-muted)] hover:text-[var(--danger)] hover:bg-[color-mix(in_srgb,var(--danger)_6%,transparent)] rounded-md transition" title="Delete">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
           </button>
         </div>
       </div>
@@ -431,16 +431,16 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
   const filterExpr = `t.areaId === '${currentCategory.id}'`;
 
   const completionRate = activeTasks + completedTasks > 0 ? Math.round((completedTasks / (activeTasks + completedTasks)) * 100) : 0;
-  const categoryColor = currentCategory.color || '#6366F1';
+  const categoryColor = currentCategory.color || 'var(--accent)';
 
   return `
     <div class="flex-1 space-y-4">
       <!-- Area Hero Header -->
-      <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+      <div class="area-hero bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 text-2xl" style="background: ${categoryColor}20; color: ${categoryColor}">
-              ${currentCategory.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl" style="background: color-mix(in srgb, ${categoryColor} 12%, transparent); color: ${categoryColor}">
+              ${currentCategory.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'}
             </div>
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(currentCategory.name)}</h1>
@@ -466,14 +466,14 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
           </div>
           ${overdueCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FF3B30">
-              <span class="w-2 h-2 rounded-full" style="background: #FF3B30"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--overdue-color)">
+              <span class="w-2 h-2 rounded-full" style="background: var(--overdue-color)"></span>
               ${overdueCt} overdue
             </div>
           ` : ''}
           ${todayCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FFCC00">
-              <span class="w-2 h-2 rounded-full" style="background: #FFCC00"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--today-color)">
+              <span class="w-2 h-2 rounded-full" style="background: var(--today-color)"></span>
               ${todayCt} today
             </div>
           ` : ''}
@@ -481,12 +481,12 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div class="flex items-center gap-2">
             <button onclick="window.createRootNote('${currentCategory.id}')"
               class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] transition">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
               Note
             </button>
             <button onclick="window.openNewTaskModal()"
               class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-white text-[13px] font-medium hover:opacity-90 transition" style="background: ${categoryColor}">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
               Add Task
             </button>
           </div>
@@ -499,8 +499,8 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#5856D6]"></div>`
-              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${categoryColor}40"></div>`
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-color)]"></div>`
+              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: color-mix(in srgb, ${categoryColor} 25%, transparent)"></div>`
             }
           </div>
           <input type="text" id="quick-add-input"
@@ -509,7 +509,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] bg-transparent border-0 outline-none focus:ring-0">
           <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
             class="text-[var(--text-muted)] hover:opacity-70 transition p-1" style="color: ${categoryColor}">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2">
@@ -540,7 +540,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
             <button onclick="event.stopPropagation(); window.editingAreaId='${currentCategory.id}'; window.showAreaModal=true; window.render()"
               class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
-              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.001 1.001 0 000-1.41l-2.34-2.34a1.001 1.001 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               Edit
             </button>
           </div>
@@ -551,8 +551,8 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
               return `
               <button onclick="window.showCategoryTasks('${sc.id}')"
                 class="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-[var(--bg-secondary)] transition group">
-                <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style="background: ${scColor}20; color: ${scColor}">
-                  ${sc.emoji || '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style="background: color-mix(in srgb, ${scColor} 12%, transparent); color: ${scColor}">
+                  ${sc.emoji || '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'}
                 </span>
                 <span class="flex-1 text-[14px] text-[var(--text-primary)] truncate">${escapeHtml(sc.name)}</span>
                 <span class="text-[12px] text-[var(--text-muted)]">${scTaskCount || ''}</span>
@@ -563,7 +563,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div class="px-4 py-2 border-t border-[var(--border-light)]">
             <button onclick="event.stopPropagation(); window.editingCategoryId=null; window.showCategoryModal=true; window.modalSelectedArea='${currentCategory.id}'; window.render()"
               class="flex items-center gap-2 px-3 py-2 w-full text-sm text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition text-left">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
               Add Category
             </button>
           </div>
@@ -583,14 +583,14 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
         ${totalTasks === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
             <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
-              <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style="background: ${categoryColor}10">
-                <svg class="w-10 h-10" style="color: ${categoryColor}" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>
+              <div class="w-20 h-20 rounded-xl flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${categoryColor} 6%, transparent)">
+                <svg class="w-10 h-10" style="color: ${categoryColor}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
               </div>
               <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No items yet</p>
               <p class="text-sm text-[var(--text-muted)] mb-4">Add your first task or note to ${currentCategory.name}</p>
               <button onclick="window.openNewTaskModal()"
                 class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${categoryColor}">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
                 Add First Item
               </button>
             </div>
@@ -627,7 +627,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
     !(t.dueDate && t.dueDate < todayDate) && (t.today || t.dueDate === todayDate)).length;
 
   const completionRate = activeTasks + completedTasks > 0 ? Math.round((completedTasks / (activeTasks + completedTasks)) * 100) : 0;
-  const categoryColor = category.color || '#6366F1';
+  const categoryColor = category.color || 'var(--accent)';
 
   const createPropsExpr = `areaId: '${category.areaId}', categoryId: '${category.id}'`;
   const filterExpr = `t.categoryId === '${category.id}'`;
@@ -635,18 +635,18 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
   return `
     <div class="flex-1 space-y-4">
       <!-- Category Hero Header -->
-      <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+      <div class="area-hero bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 text-2xl" style="background: ${categoryColor}20; color: ${categoryColor}">
-              ${category.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl" style="background: color-mix(in srgb, ${categoryColor} 12%, transparent); color: ${categoryColor}">
+              ${category.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'}
             </div>
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(category.name)}</h1>
               <div class="flex items-center gap-2 mt-1">
                 ${parentArea ? `
                   <button onclick="window.showAreaTasks('${parentArea.id}')" class="inline-flex items-center gap-1.5 text-[13px] text-[var(--text-muted)] hover:text-[var(--accent)] transition">
-                    <span class="w-2 h-2 rounded-full" style="background:${parentArea.color || '#6366F1'}"></span>
+                    <span class="w-2 h-2 rounded-full" style="background:${parentArea.color || 'var(--accent)'}"></span>
                     ${escapeHtml(parentArea.name)}
                   </button>
                   <span class="text-[var(--text-muted)]">&middot;</span>
@@ -674,14 +674,14 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
             </div>
           </div>
           ${overdueCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FF3B30">
-              <span class="w-2 h-2 rounded-full" style="background: #FF3B30"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--overdue-color)">
+              <span class="w-2 h-2 rounded-full" style="background: var(--overdue-color)"></span>
               ${overdueCt} overdue
             </div>
           ` : ''}
           ${todayCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FFCC00">
-              <span class="w-2 h-2 rounded-full" style="background: #FFCC00"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--today-color)">
+              <span class="w-2 h-2 rounded-full" style="background: var(--today-color)"></span>
               ${todayCt} today
             </div>
           ` : ''}
@@ -689,12 +689,12 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
           <div class="flex items-center gap-2">
             <button onclick="window.createRootNote({areaId:'${category.areaId}',categoryId:'${category.id}'})"
               class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] transition">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
               Note
             </button>
             <button onclick="window.openNewTaskModal()"
               class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-white text-[13px] font-medium hover:opacity-90 transition" style="background: ${categoryColor}">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
               Add Task
             </button>
           </div>
@@ -707,8 +707,8 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? '<div class="w-[7px] h-[7px] rounded-full bg-[#5856D6]"></div>'
-              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${categoryColor}40"></div>`
+              ? '<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-color)]"></div>'
+              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: color-mix(in srgb, ${categoryColor} 25%, transparent)"></div>`
             }
           </div>
           <input type="text" id="quick-add-input"
@@ -717,7 +717,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
             class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] bg-transparent border-0 outline-none focus:ring-0">
           <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
             class="text-[var(--text-muted)] hover:opacity-70 transition p-1" style="color: ${categoryColor}">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2">
@@ -747,7 +747,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
         ${filteredTasks.length === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
             <div class="empty-state flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
-              <svg class="w-16 h-16 mb-4 opacity-30" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>
+              <svg class="w-16 h-16 mb-4 opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
               <p class="text-[15px] font-medium">No tasks in ${escapeHtml(category.name)}</p>
               <p class="text-[13px] mt-1">Add a task to get started</p>
             </div>
@@ -770,7 +770,7 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
   const showTasks = state.workspaceContentMode !== 'notes';
   const showNotes = state.workspaceContentMode !== 'tasks';
   const activeTasks = taskItems.length;
-  const labelColor = label.color || '#5856D6';
+  const labelColor = label.color || 'var(--notes-color)';
 
   const overdueCt = taskItems.filter(t => t.dueDate && t.dueDate < todayDate).length;
   const todayCt = taskItems.filter(t => t.today || t.dueDate === todayDate).length;
@@ -784,10 +784,10 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
   return `
     <div class="flex-1 space-y-4">
       <!-- Label Hero Header -->
-      <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+      <div class="area-hero bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0" style="background: ${labelColor}20">
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0" style="background: color-mix(in srgb, ${labelColor} 12%, transparent)">
               <span class="w-5 h-5 rounded-full" style="background: ${labelColor}"></span>
             </div>
             <div class="flex-1 min-w-0">
@@ -814,14 +814,14 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
             </div>
           </div>
           ${overdueCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FF3B30">
-              <span class="w-2 h-2 rounded-full" style="background: #FF3B30"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--overdue-color)">
+              <span class="w-2 h-2 rounded-full" style="background: var(--overdue-color)"></span>
               ${overdueCt} overdue
             </div>
           ` : ''}
           ${todayCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FFCC00">
-              <span class="w-2 h-2 rounded-full" style="background: #FFCC00"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--today-color)">
+              <span class="w-2 h-2 rounded-full" style="background: var(--today-color)"></span>
               ${todayCt} today
             </div>
           ` : ''}
@@ -829,12 +829,12 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
           <div class="flex items-center gap-2">
             <button onclick="window.createRootNote(${filterArg})"
               class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] transition">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
               Note
             </button>
             <button onclick="window.openNewTaskModal()"
               class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-white text-[13px] font-medium hover:opacity-90 transition" style="background: ${labelColor}">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
               Add Task
             </button>
           </div>
@@ -847,8 +847,8 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#5856D6]"></div>`
-              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${labelColor}40"></div>`
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-color)]"></div>`
+              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: color-mix(in srgb, ${labelColor} 25%, transparent)"></div>`
             }
           </div>
           <input type="text" id="quick-add-input"
@@ -857,7 +857,7 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
             class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] bg-transparent border-0 outline-none focus:ring-0">
           <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
             class="text-[var(--text-muted)] hover:opacity-70 transition p-1" style="color: ${labelColor}">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2">
@@ -882,14 +882,14 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
         ${filteredTasks.length === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
             <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
-              <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style="background: ${labelColor}10">
+              <div class="w-20 h-20 rounded-xl flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${labelColor} 6%, transparent)">
                 <span class="w-10 h-10 rounded-full" style="background: ${labelColor}"></span>
               </div>
               <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No items yet</p>
               <p class="text-sm text-[var(--text-muted)] mb-4">Add your first task or note to ${escapeHtml(label.name)}</p>
               <button onclick="window.openNewTaskModal()"
                 class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${labelColor}">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
                 Add First Item
               </button>
             </div>
@@ -912,7 +912,7 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
   const showTasks = state.workspaceContentMode !== 'notes';
   const showNotes = state.workspaceContentMode !== 'tasks';
   const activeTasks = taskItems.length;
-  const personColor = '#147EFB';
+  const personColor = 'var(--accent)';
 
   const overdueCt = taskItems.filter(t => t.dueDate && t.dueDate < todayDate).length;
   const todayCt = taskItems.filter(t => t.today || t.dueDate === todayDate).length;
@@ -926,10 +926,10 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
   return `
     <div class="flex-1 space-y-4">
       <!-- Person Hero Header -->
-      <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+      <div class="area-hero bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 text-2xl" style="background: ${personColor}20; color: ${personColor}">
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl" style="background: color-mix(in srgb, ${personColor} 12%, transparent); color: ${personColor}">
               <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             </div>
             <div class="flex-1 min-w-0">
@@ -959,14 +959,14 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
             </div>
           </div>
           ${overdueCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FF3B30">
-              <span class="w-2 h-2 rounded-full" style="background: #FF3B30"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--overdue-color)">
+              <span class="w-2 h-2 rounded-full" style="background: var(--overdue-color)"></span>
               ${overdueCt} overdue
             </div>
           ` : ''}
           ${todayCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FFCC00">
-              <span class="w-2 h-2 rounded-full" style="background: #FFCC00"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--today-color)">
+              <span class="w-2 h-2 rounded-full" style="background: var(--today-color)"></span>
               ${todayCt} today
             </div>
           ` : ''}
@@ -974,12 +974,12 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
           <div class="flex items-center gap-2">
             <button onclick="window.createRootNote(${filterArg})"
               class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] transition">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
               Note
             </button>
             <button onclick="window.openNewTaskModal()"
               class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-white text-[13px] font-medium hover:opacity-90 transition" style="background: ${personColor}">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
               Add Task
             </button>
           </div>
@@ -992,8 +992,8 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#5856D6]"></div>`
-              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${personColor}40"></div>`
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-color)]"></div>`
+              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: color-mix(in srgb, ${personColor} 25%, transparent)"></div>`
             }
           </div>
           <input type="text" id="quick-add-input"
@@ -1002,7 +1002,7 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
             class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] bg-transparent border-0 outline-none focus:ring-0">
           <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
             class="text-[var(--text-muted)] hover:opacity-70 transition p-1" style="color: ${personColor}">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2">
@@ -1027,14 +1027,14 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
         ${filteredTasks.length === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
             <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
-              <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style="background: ${personColor}10">
+              <div class="w-20 h-20 rounded-xl flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${personColor} 6%, transparent)">
                 <svg class="w-10 h-10" style="color: ${personColor}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
               </div>
               <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No items yet</p>
               <p class="text-sm text-[var(--text-muted)] mb-4">Add your first task or note for ${escapeHtml(person.name)}</p>
               <button onclick="window.openNewTaskModal()"
                 class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${personColor}">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
                 Add First Item
               </button>
             </div>
@@ -1059,11 +1059,11 @@ export function buildAllLabelsHtml() {
 
   return `
     <div class="flex-1 space-y-4">
-      <div class="bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+      <div class="bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 bg-[var(--bg-secondary)] text-[var(--text-muted)]">
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/></svg>
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-[var(--bg-secondary)] text-[var(--text-muted)]">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
             </div>
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">All Tags</h1>
@@ -1071,7 +1071,7 @@ export function buildAllLabelsHtml() {
             </div>
             <button onclick="window.editingLabelId=null; window.showLabelModal=true; window.render()"
               class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Tag">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             </button>
           </div>
         </div>
@@ -1084,7 +1084,7 @@ export function buildAllLabelsHtml() {
           </div>
         ` : labels.map(label => {
           const count = activeTasks.filter(t => (t.labels || []).includes(label.id)).length;
-          const color = label.color || '#5856D6';
+          const color = label.color || 'var(--notes-color)';
           return `
             <button onclick="showLabelTasks('${label.id}')"
               class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-4 text-left hover:border-[var(--border)] hover:shadow-sm transition group">
@@ -1113,11 +1113,11 @@ export function buildAllPeopleHtml() {
 
   return `
     <div class="flex-1 space-y-4">
-      <div class="bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+      <div class="bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 bg-[var(--bg-secondary)] text-[var(--text-muted)]">
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-[var(--bg-secondary)] text-[var(--text-muted)]">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
             </div>
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">All People</h1>
@@ -1125,7 +1125,7 @@ export function buildAllPeopleHtml() {
             </div>
             <button onclick="window.editingPersonId=null; window.showPersonModal=true; window.render()"
               class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Person">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             </button>
           </div>
         </div>
@@ -1143,7 +1143,7 @@ export function buildAllPeopleHtml() {
               class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-4 text-left hover:border-[var(--border)] hover:shadow-sm transition group">
               <div class="flex items-center gap-3 mb-2">
                 <div class="w-8 h-8 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-[var(--text-muted)] flex-shrink-0">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </div>
                 <div class="min-w-0">
                   <span class="block font-medium text-[var(--text-primary)] text-[14px] truncate">${escapeHtml(person.name)}</span>
@@ -1164,15 +1164,15 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
   if (!perspective) return '';
 
   const activeItems = filteredTasks.length;
-  const perspColor = perspective.color || '#6366F1';
+  const perspColor = perspective.color || 'var(--accent)';
 
   return `
     <div class="flex-1 space-y-4">
       <!-- Perspective Hero Header -->
-      <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+      <div class="area-hero bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 text-2xl" style="background: ${perspColor}20; color: ${perspColor}">
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl" style="background: color-mix(in srgb, ${perspColor} 12%, transparent); color: ${perspColor}">
               ${perspective.icon || '📌'}
             </div>
             <div class="flex-1 min-w-0">
@@ -1186,7 +1186,7 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
         <div class="px-6 py-3.5 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/40 flex items-center justify-end gap-2">
           <button onclick="window.openNewTaskModal()"
             class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-white text-[13px] font-medium hover:opacity-90 transition" style="background: ${perspColor}">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             Add Task
           </button>
         </div>
@@ -1198,8 +1198,8 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#5856D6]"></div>`
-              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${perspColor}40"></div>`
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-color)]"></div>`
+              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: color-mix(in srgb, ${perspColor} 25%, transparent)"></div>`
             }
           </div>
           <input type="text" id="quick-add-input"
@@ -1208,7 +1208,7 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
             class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] bg-transparent border-0 outline-none focus:ring-0">
           <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
             class="text-[var(--text-muted)] hover:opacity-70 transition p-1" style="color: ${perspColor}">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
         </div>
       </div>
@@ -1220,14 +1220,14 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
         ` : `
           <div class="py-16">
             <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
-              <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style="background: ${perspColor}10; color: ${perspColor}">
+              <div class="w-20 h-20 rounded-xl flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${perspColor} 6%, transparent); color: ${perspColor}">
                 <span class="text-4xl">${perspective.icon || '📌'}</span>
               </div>
               <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No tasks</p>
               <p class="text-sm text-[var(--text-muted)] mb-4">No tasks match this perspective's filters</p>
               <button onclick="window.openNewTaskModal()"
                 class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${perspColor}">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
                 Add Task
               </button>
             </div>
@@ -1392,7 +1392,7 @@ export function renderTasksTab() {
             <span class="workspace-area-name">All Areas</span>
           </button>
           ${state.taskAreas.map(area => `
-            <button onclick="window.showAreaTasks('${area.id}')" class="workspace-area-chip ${isAreaActive(area.id) || selectedAreaId === area.id ? 'active' : ''}" style="--area-color:${area.color || '#6366F1'}">
+            <button onclick="window.showAreaTasks('${area.id}')" class="workspace-area-chip ${isAreaActive(area.id) || selectedAreaId === area.id ? 'active' : ''}" style="--area-color:${area.color || 'var(--accent)'}">
               <span class="workspace-area-emoji">${area.emoji || '📁'}</span>
               <span class="workspace-area-name">${escapeHtml(area.name)}</span>
               <span class="workspace-area-count">${categoryCounts[area.id] || ''}</span>
@@ -1427,7 +1427,7 @@ export function renderTasksTab() {
               <div class="workspace-overflow-list">
                 ${state.taskLabels.map(label => `
                   <button onclick="window.showLabelTasks('${label.id}')" class="workspace-overflow-item ${isLabelActive(label.id) ? 'active' : ''}">
-                    <span class="workspace-dot" style="background:${label.color || '#6B7280'}"></span>
+                    <span class="workspace-dot" style="background:${label.color || 'var(--text-muted)'}"></span>
                     <span>${escapeHtml(label.name)}</span>
                     <span class="workspace-chip-count">${labelCounts[label.id] || ''}</span>
                   </button>
@@ -1492,7 +1492,7 @@ export function renderTasksTab() {
         <div class="py-2 px-2">
           <button onclick="window.startReview()"
             class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg transition-all ${state.reviewMode ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
-            <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="color: #34C759">${getActiveIcons().review}</span>
+            <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="color: var(--success)">${getActiveIcons().review}</span>
             <span class="flex-1 text-[14px] ${state.reviewMode ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">Review</span>
             ${staleTaskCount > 0 ? `<span class="count-badge min-w-[20px] text-right text-[12px] text-[var(--text-muted)]">${staleTaskCount}</span>` : ''}
           </button>
@@ -1504,7 +1504,7 @@ export function renderTasksTab() {
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
           <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">Custom Views</h3>
           <button onclick="window.showPerspectiveModal=true; window.render()" aria-label="Add new custom view" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition p-1.5 -mr-1 rounded-lg hover:bg-[var(--bg-secondary)]">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         </div>
         <div class="py-2 px-2">
@@ -1530,7 +1530,7 @@ export function renderTasksTab() {
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
           <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">Areas</h3>
           <button onclick="window.editingAreaId=null; window.showAreaModal=true; window.render()" aria-label="Add new area" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition p-1.5 -mr-1 rounded-lg hover:bg-[var(--bg-secondary)]">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         </div>
         <div class="py-2 px-2">
@@ -1552,11 +1552,11 @@ export function renderTasksTab() {
                 ${hasSubcats ? `
                   <span onclick="event.stopPropagation(); window.toggleSidebarAreaCollapse('${cat.id}')"
                     class="w-4 h-4 flex items-center justify-center flex-shrink-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded transition -ml-0.5">
-                    <svg class="w-3 h-3 transition-transform ${isCollapsed ? '' : 'rotate-90'}" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    <svg class="w-3 h-3 transition-transform ${isCollapsed ? '' : 'rotate-90'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                   </span>
                 ` : `<span class="w-4 h-4 flex-shrink-0 -ml-0.5"></span>`}
                 <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style="background: ${cat.color}20; color: ${cat.color}">
-                  ${areaEmoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
+                  ${areaEmoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'}
                 </span>
                 <span class="flex-1 text-[14px] truncate ${isAreaActive(cat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(cat.name)}</span>
                 <span class="min-w-[20px] text-right text-[12px] group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${categoryCounts[cat.id] || ''}</span>
@@ -1570,7 +1570,7 @@ export function renderTasksTab() {
                 <div onclick="window.showCategoryTasks('${subcat.id}')"
                   class="sidebar-item w-full pl-10 pr-3 py-1.5 flex items-center gap-2.5 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isSubcatActive(subcat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
                   <span class="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-xs" style="background: ${subcat.color}20; color: ${subcat.color}">
-                    ${subcatEmoji || '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
+                    ${subcatEmoji || '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'}
                   </span>
                   <span class="flex-1 text-[13px] truncate ${isSubcatActive(subcat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(subcat.name)}</span>
                   <span onclick="event.stopPropagation(); window.editingCategoryId='${subcat.id}'; window.showCategoryModal=true; window.render()"
@@ -1579,7 +1579,7 @@ export function renderTasksTab() {
               `}).join('')}
               <button onclick="event.stopPropagation(); window.editingCategoryId=null; window.showCategoryModal=true; window.modalSelectedArea='${cat.id}'; window.render()"
                 class="w-full pl-10 pr-3 py-1 flex items-center gap-2 text-[12px] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
-                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
                 Add Category
               </button>
             ` : ''}
@@ -1607,7 +1607,7 @@ export function renderTasksTab() {
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
           <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">Tags${labelsWithTasks.length > 0 ? ` (${labelsWithTasks.length})` : ''}</h3>
           <button onclick="window.editingLabelId=null; window.showLabelModal=true; window.render()" aria-label="Add new tag" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition p-1.5 -mr-1 rounded-lg hover:bg-[var(--bg-secondary)]">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         </div>
         <div class="py-2 px-2">
@@ -1657,7 +1657,7 @@ export function renderTasksTab() {
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
           <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">People${peopleWithTasks.length > 0 ? ` (${peopleWithTasks.length})` : ''}</h3>
           <button onclick="window.editingPersonId=null; window.showPersonModal=true; window.render()" aria-label="Add new person" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition p-1.5 -mr-1 rounded-lg hover:bg-[var(--bg-secondary)]">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         </div>
         <div class="py-2 px-2">
@@ -1672,7 +1672,7 @@ export function renderTasksTab() {
               data-id="${person.id}"
               data-type="person">
               <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-[var(--text-muted)]">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               </span>
               <span class="flex-1 min-w-0">
                 <span class="block text-[14px] truncate ${isPersonActive(person.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(person.name)}</span>
@@ -1737,7 +1737,7 @@ export function renderTasksTab() {
           </div>
           <button onclick="window.openNewTaskModal()"
             class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="${isNotesLikeView ? 'Add Note' : 'Add Task'}">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         </div>
 
@@ -1746,12 +1746,12 @@ export function renderTasksTab() {
         <div class="quick-add-section px-4 py-3 border-b border-[var(--border-light)]">
           <div class="flex items-center gap-3">
             ${isNotesLikeView ? `
-              <div class="w-2 h-2 rounded-full border-2 border-dashed border-[#5856D6]/40 flex-shrink-0 ml-1.5"></div>
+              <div class="w-2 h-2 rounded-full border-2 border-dashed border-[var(--notes-color)]/40 flex-shrink-0 ml-1.5"></div>
             ` : `
               <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
                 class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
                 ${state.quickAddIsNote
-                  ? `<div class="w-[7px] h-[7px] rounded-full bg-[#5856D6]"></div>`
+                  ? `<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-color)]"></div>`
                   : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed border-[var(--text-muted)]/30 flex-shrink-0"></div>`
                 }
               </div>
@@ -1762,7 +1762,7 @@ export function renderTasksTab() {
               class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)]/50 bg-transparent border-0 outline-none focus:ring-0">
             <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
               class="text-[var(--text-muted)] hover:text-[var(--accent)] transition p-1" title="${isNotesLikeView || state.quickAddIsNote ? 'Add Note' : 'Add to ' + viewInfo.name}">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
           </div>
         </div>
@@ -1853,17 +1853,17 @@ export function renderTasksTab() {
             return `
             <div class="task-list">
               ${renderSection(dueTasks,
-                '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.7 12.4a6.06 6.06 0 00-.86-3.16l4.56-3.56L20.16 2l-4.13 4.15A7.94 7.94 0 0012 5a8 8 0 00-8 8c0 4.42 3.58 8 8 8a7.98 7.98 0 007.43-5.1l4.15 1.83.57-3.66-6.45 1.33zM12 19a6 6 0 116-6 6 6 0 01-6 6z"/><path d="M12.5 8H11v6l4.75 2.85.75-1.23-4-2.37z"/></svg>',
-                'Due', '#EF4444')}
+                '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+                'Due', 'var(--overdue-color)')}
               ${todayStatusTasks.length > 0 ? `
                 <div class="${dueTasks.length > 0 ? 'mt-2' : ''}">
                   ${todayStatusTasks.map(task => renderTaskItem(task)).join('')}
                 </div>
               ` : ''}
               ${renderSection(startingTasks,
-                '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>',
-                'Starting', '#147EFB', dueTasks.length > 0 || todayStatusTasks.length > 0 ? 'mt-2' : '')}
-              ${renderSection(nextTasks, getActiveIcons().next, 'Next', '#5856D6',
+                '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+                'Starting', 'var(--accent)', dueTasks.length > 0 || todayStatusTasks.length > 0 ? 'mt-2' : '')}
+              ${renderSection(nextTasks, getActiveIcons().next, 'Next', 'var(--notes-color)',
                 allDated.length > 0 ? 'mt-4' : '')}
               ${totalTasks === 0 ? `
                 <div class="empty-state flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
@@ -1880,7 +1880,7 @@ export function renderTasksTab() {
                 <div class="flex items-center gap-2">
                   ${activeNotesCategory ? `
                     <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-[var(--accent-light)] text-[var(--accent)]">
-                      <span class="w-2 h-2 rounded-full" style="background:${activeNotesCategory.color || '#5856D6'}"></span>
+                      <span class="w-2 h-2 rounded-full" style="background:${activeNotesCategory.color || 'var(--notes-color)'}"></span>
                       ${escapeHtml(activeNotesCategory.name)}
                     </span>
                   ` : ''}
@@ -1888,7 +1888,7 @@ export function renderTasksTab() {
                 </div>
                 <button onclick="window.createRootNote(${state.activeAreaFilter ? `'${state.activeAreaFilter}'` : 'null'})"
                   class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
                   New note
                 </button>
               </div>
@@ -1917,7 +1917,7 @@ export function renderTasksTab() {
           <div class="flex items-center justify-between mb-3">
             <h2 class="text-lg font-bold text-[var(--text-primary)]">Workspace</h2>
             <button id="mobile-drawer-close" onclick="closeMobileDrawer()" class="w-11 h-11 flex items-center justify-center rounded-full text-[var(--text-muted)] active:bg-[var(--bg-secondary)] transition" aria-label="Close sidebar">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
           ${workspaceModeControlHtml}

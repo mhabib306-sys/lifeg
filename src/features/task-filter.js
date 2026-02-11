@@ -7,7 +7,7 @@ import { getTasksByPerson, getAreaById, getLabelById, getPersonById, getCategory
 export function applyWorkspaceContentMode(items, mode = 'both') {
   if (!Array.isArray(items)) return [];
   if (mode === 'tasks') return items.filter(item => !item?.isNote);
-  if (mode === 'notes') return items.filter(item => !!item?.isNote);
+  if (mode === 'notes') return items.filter(item => !!item?.isNote && item?.noteLifecycleState !== 'deleted');
   return items;
 }
 
@@ -50,7 +50,7 @@ export function getFilteredTasks(perspectiveId) {
 
   // Notes perspective shows tasks marked as notes
   if (perspectiveId === 'notes') {
-    return state.tasksData.filter(task => task.isNote && !task.completed)
+    return state.tasksData.filter(task => task.isNote && !task.completed && task.noteLifecycleState !== 'deleted')
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   }
 
@@ -62,6 +62,8 @@ export function getFilteredTasks(perspectiveId) {
   const isCustom = !perspective.builtin;
 
   return state.tasksData.filter(task => {
+    if (task.isNote && task.noteLifecycleState === 'deleted') return false;
+
     const availability = perspective.filter.availability || '';
     const wantsCompleted = availability === 'completed';
 

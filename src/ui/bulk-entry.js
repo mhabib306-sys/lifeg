@@ -146,8 +146,8 @@ export function renderBulkEntryTab() {
     // All whoop fields are auto-synced, show message
     if (categories.whoop.fields.length === 0) {
       autoSyncNote = `
-        <div class="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
-          <span class="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span>
+        <div class="flex items-center gap-2 px-4 py-3 bg-[color-mix(in_srgb,var(--success)_8%,transparent)] border border-[color-mix(in_srgb,var(--success)_30%,transparent)] rounded-lg text-sm text-[var(--success)]">
+          <span class="w-2 h-2 rounded-full bg-[var(--success)] flex-shrink-0"></span>
           All Whoop metrics are auto-synced. No manual entry needed.
         </div>
       `;
@@ -168,8 +168,8 @@ export function renderBulkEntryTab() {
     categories.glucose.headers = filteredHeaders;
     if (filteredFields.length > 0) {
       autoSyncNote = `
-        <div class="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
-          <span class="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span>
+        <div class="flex items-center gap-2 px-4 py-3 bg-[color-mix(in_srgb,var(--success)_8%,transparent)] border border-[color-mix(in_srgb,var(--success)_30%,transparent)] rounded-lg text-sm text-[var(--success)]">
+          <span class="w-2 h-2 rounded-full bg-[var(--success)] flex-shrink-0"></span>
           Avg & TIR are auto-synced by Libre. Only Insulin shown for manual entry.
         </div>
       `;
@@ -289,7 +289,7 @@ export function renderBulkEntryTab() {
     // Auto-sync note (if applicable)
     (autoSyncNote ? '<div class="mt-2">' + autoSyncNote + '</div>' : '') +
     // Info hint
-    '<div class="rounded-lg px-3 py-2 text-sm flex items-center gap-2" style="background-color: ' + catColor + '12; border-left: 3px solid ' + catColor + '">' +
+    '<div class="rounded-lg px-3 py-2 text-sm flex items-center gap-2" style="background-color: color-mix(in srgb, ' + catColor + ' 7%, transparent); border-left: 3px solid ' + catColor + '">' +
       '<strong class="text-[var(--text-primary)]">' + monthName + '</strong>' +
       '<span class="text-[var(--text-secondary)]">' + cat.label + '</span>' +
       prayerHint + familyHint +

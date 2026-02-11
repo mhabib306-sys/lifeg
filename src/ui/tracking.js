@@ -51,11 +51,11 @@ export function renderTrackingTab() {
   const whoopSynced = isWhoopConnected() && getWhoopLastSync();
 
   // Color coding for live glucose
-  let liveGlucoseColor = 'text-green-600';
+  let liveGlucoseColor = 'text-[var(--success)]';
   if (hasLiveGlucose) {
     const val = Number(libreData.currentGlucose);
-    if (val > 180 || val < 70) liveGlucoseColor = 'text-red-600';
-    else if (val > 140) liveGlucoseColor = 'text-amber-600';
+    if (val > 180 || val < 70) liveGlucoseColor = 'text-[var(--danger)]';
+    else if (val > 140) liveGlucoseColor = 'text-[var(--warning)]';
   }
 
   // Helper: read-only display value
@@ -63,7 +63,7 @@ export function renderTrackingTab() {
     <div class="px-3 py-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg text-sm font-medium text-[var(--text-secondary)] text-center">
       ${value} <span class="text-xs text-[var(--text-muted)]">${unit}</span>
     </div>
-    <div class="text-[10px] text-green-600 mt-1 text-center">Auto-synced</div>
+    <div class="text-[10px] text-[var(--success)] mt-1 text-center">Auto-synced</div>
   `;
 
   return `
@@ -122,8 +122,8 @@ export function renderTrackingTab() {
           <span class="text-base">💉</span>
           <h3 class="text-sm font-semibold text-[var(--text-secondary)]">Glucose</h3>
           ${libreSynced ? `
-            <span class="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full ml-auto">
-              <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Libre Connected
+            <span class="inline-flex items-center gap-1 text-xs text-[var(--success)] bg-[color-mix(in_srgb,var(--success)_8%,transparent)] px-2 py-0.5 rounded-full ml-auto">
+              <span class="w-1.5 h-1.5 rounded-full bg-[var(--success)]"></span>Libre Connected
             </span>
           ` : ''}
         </div>
@@ -173,8 +173,8 @@ export function renderTrackingTab() {
           <span class="text-base">⏱️</span>
           <h3 class="text-sm font-semibold text-[var(--text-secondary)]">Whoop</h3>
           ${whoopSynced ? `
-            <span class="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full ml-auto">
-              <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Auto-synced
+            <span class="inline-flex items-center gap-1 text-xs text-[var(--success)] bg-[color-mix(in_srgb,var(--success)_8%,transparent)] px-2 py-0.5 rounded-full ml-auto">
+              <span class="w-1.5 h-1.5 rounded-full bg-[var(--success)]"></span>Auto-synced
             </span>
           ` : ''}
         </div>

@@ -64,7 +64,7 @@ export function createPrayerInput(prayer, label, value) {
         onchange="updateData('prayers', '${prayer}', this.value)">
       <div class="text-xs font-medium text-charcoal/70">${label}</div>
       <div class="text-xs text-charcoal/50 mt-0.5">
-        <span class="text-green-600">${onTime}\u2713</span> <span class="text-amber-500">${late}\u25D0</span>
+        <span class="text-[var(--success)]">${onTime}\u2713</span> <span class="text-[var(--warning)]">${late}\u25D0</span>
       </div>
       <div class="text-xs font-semibold text-coral mt-0.5">${pts} pts</div>
     </div>

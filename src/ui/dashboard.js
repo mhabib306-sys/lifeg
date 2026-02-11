@@ -68,14 +68,14 @@ function renderAchievementsGallery() {
             const unlockedDate = isUnlocked ? new Date(unlocked[ach.id].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
             return `
               <div class="achievement-card rounded-lg p-3 border transition ${isUnlocked
-                ? 'bg-[var(--bg-card)] border-amber-300/50 shadow-sm'
+                ? 'bg-[var(--bg-card)] border-[color-mix(in_srgb,var(--warning)_50%,transparent)] shadow-sm'
                 : 'bg-[var(--bg-secondary)] border-[var(--border-light)] opacity-50'}">
                 <div class="flex items-start gap-2">
                   <span class="text-xl ${isUnlocked ? '' : 'grayscale'}">${ach.icon}</span>
                   <div class="min-w-0">
                     <div class="text-xs font-semibold text-[var(--text-primary)] truncate">${ach.name}</div>
                     <div class="text-[10px] text-[var(--text-muted)]">${ach.desc}</div>
-                    ${isUnlocked ? `<div class="text-[9px] text-amber-600 mt-0.5">${unlockedDate}</div>` : ''}
+                    ${isUnlocked ? `<div class="text-[9px] text-[var(--warning)] mt-0.5">${unlockedDate}</div>` : ''}
                   </div>
                 </div>
               </div>
@@ -247,7 +247,7 @@ export function renderDashboardTab() {
       <div class="sb-card rounded-xl p-5 bg-[var(--bg-card)] border border-[var(--border-light)]">
         <div class="flex items-center justify-between flex-wrap gap-4">
           <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-lg font-bold shadow-md">
+            <div class="w-14 h-14 rounded-full bg-[var(--warning)] flex items-center justify-center text-white text-lg font-bold">
               ${levelInfo.level}
             </div>
             <div>
@@ -257,13 +257,13 @@ export function renderDashboardTab() {
               </div>
               <div class="text-xs text-[var(--text-muted)] mt-0.5">${totalXP.toLocaleString()} / ${levelInfo.nextLevelXP.toLocaleString()} XP</div>
               <div class="h-2 bg-[var(--bg-secondary)] rounded-full mt-1.5 overflow-hidden w-48">
-                <div class="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500" style="width: ${Math.round(levelInfo.progress * 100)}%"></div>
+                <div class="h-full bg-[var(--warning)] rounded-full transition-all duration-500" style="width: ${Math.round(levelInfo.progress * 100)}%"></div>
               </div>
             </div>
           </div>
           <div class="flex items-center gap-6">
             <div class="text-center">
-              <div class="text-2xl font-bold ${streakCount > 0 ? 'text-amber-500' : 'text-[var(--text-muted)]'}">${streakCount > 0 ? '\uD83D\uDD25' : ''} ${streakCount}</div>
+              <div class="text-2xl font-bold ${streakCount > 0 ? 'text-[var(--warning)]' : 'text-[var(--text-muted)]'}">${streakCount > 0 ? '\uD83D\uDD25' : ''} ${streakCount}</div>
               <div class="text-[10px] text-[var(--text-muted)]">Day Streak</div>
             </div>
             <div class="text-center">
@@ -339,7 +339,7 @@ export function renderDashboardTab() {
       </div>
       ` : `
       <div class="sb-card rounded-xl p-8 bg-[var(--bg-card)] border border-[var(--border-light)] text-center">
-        <div class="mb-4 flex justify-center"><svg class="w-10 h-10 text-[var(--accent)] opacity-40" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3v-8zm4-4h2v12H7V9zm4-4h2v16h-2V5zm4 8h2v8h-2v-8zm4-4h2v12h-2V9z"/></svg></div>
+        <div class="mb-4 flex justify-center"><svg class="w-10 h-10 text-[var(--accent)] opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="9" y1="21" x2="9" y2="10"/><line x1="14" y1="21" x2="14" y2="6"/><line x1="19" y1="21" x2="19" y2="14"/></svg></div>
         <h3 class="font-semibold text-[var(--text-primary)] mb-2">Start Your Journey!</h3>
         <p class="text-[var(--text-muted)] text-sm">Log your first day to start tracking personal bests.</p>
       </div>

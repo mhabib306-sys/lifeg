@@ -12,7 +12,7 @@ import { createTask, updateTask, deleteTask } from '../features/tasks.js';
 import { createLabel, createPerson, getCategoriesByArea, getCategoryById } from '../features/areas.js';
 import { escapeHtml, formatSmartDate } from '../utils.js';
 import {
-  THINGS3_ICONS,
+  getActiveIcons,
   TASK_CATEGORIES_KEY,
   TASK_LABELS_KEY,
   TASK_PEOPLE_KEY
@@ -1102,6 +1102,7 @@ export function saveTaskFromModal() {
  * @returns {string} HTML string for the task modal (empty string if modal is closed)
  */
 export function renderTaskModalHtml() {
+  const icons = getActiveIcons();
   const editingTask = state.editingTaskId ? state.tasksData.find(t => t.id === state.editingTaskId) : null;
   if (state.showTaskModal && !state.modalStateInitialized) {
     initModalState(editingTask);
@@ -1169,19 +1170,19 @@ export function renderTaskModalHtml() {
             <label class="modal-section-label">When</label>
             <div class="status-pills">
               <div class="status-pill ${state.modalSelectedStatus === 'inbox' ? 'selected' : ''}" data-status="inbox" onclick="setModalStatus('inbox')">
-                <span class="status-icon">${THINGS3_ICONS.inbox.replace('w-5 h-5', 'w-4 h-4')}</span>Inbox
+                <span class="status-icon">${icons.inbox.replace('w-5 h-5', 'w-4 h-4')}</span>Inbox
               </div>
               <div class="status-pill ${state.modalSelectedToday ? 'selected' : ''}" data-status="today" onclick="setModalStatus('today')">
-                <span class="status-icon">${THINGS3_ICONS.today.replace('w-5 h-5', 'w-4 h-4')}</span>Today
+                <span class="status-icon">${icons.today.replace('w-5 h-5', 'w-4 h-4')}</span>Today
               </div>
               <div class="status-pill ${state.modalSelectedFlagged ? 'selected' : ''}" data-status="flagged" onclick="toggleModalFlagged()">
-                <span class="status-icon">${THINGS3_ICONS.flagged.replace('w-5 h-5', 'w-4 h-4')}</span>Flag
+                <span class="status-icon">${icons.flagged.replace('w-5 h-5', 'w-4 h-4')}</span>Flag
               </div>
               <div class="status-pill ${state.modalSelectedStatus === 'anytime' ? 'selected' : ''}" data-status="anytime" onclick="setModalStatus('anytime')">
-                <span class="status-icon">${THINGS3_ICONS.anytime.replace('w-5 h-5', 'w-4 h-4')}</span>Anytime
+                <span class="status-icon">${icons.anytime.replace('w-5 h-5', 'w-4 h-4')}</span>Anytime
               </div>
               <div class="status-pill ${state.modalSelectedStatus === 'someday' ? 'selected' : ''}" data-status="someday" onclick="setModalStatus('someday')">
-                <span class="status-icon">${THINGS3_ICONS.someday.replace('w-5 h-5', 'w-4 h-4')}</span>Someday
+                <span class="status-icon">${icons.someday.replace('w-5 h-5', 'w-4 h-4')}</span>Someday
               </div>
             </div>
           </div>

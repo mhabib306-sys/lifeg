@@ -548,7 +548,7 @@ export function renderSettingsTab() {
             <h3 class="font-semibold text-charcoal text-sm">Integrations</h3>
             <span class="text-xs text-charcoal/40">${integrationsCount}/3 connected</span>
           </div>
-          <svg class="w-4 h-4 text-charcoal/40 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          <svg class="w-4 h-4 text-charcoal/40 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
         </summary>
         <div class="px-5 pb-5 space-y-4 border-t border-[var(--border-light)] pt-4">
           ${renderWhoopSettingsCard()}
@@ -565,7 +565,7 @@ export function renderSettingsTab() {
             <h3 class="font-semibold text-charcoal text-sm">Scoring Configuration</h3>
             <span class="text-xs text-charcoal/40">Weights & targets</span>
           </div>
-          <svg class="w-4 h-4 text-charcoal/40 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          <svg class="w-4 h-4 text-charcoal/40 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
         </summary>
         <div class="px-5 pb-5 border-t border-[var(--border-light)] pt-4 space-y-6">
           <!-- Scoring Weights -->
@@ -664,7 +664,7 @@ export function renderSettingsTab() {
           <div class="flex items-center gap-2">
             <h3 class="font-semibold text-charcoal text-sm">Developer Tools</h3>
           </div>
-          <svg class="w-4 h-4 text-charcoal/40 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          <svg class="w-4 h-4 text-charcoal/40 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
         </summary>
         <div class="px-5 pb-5 space-y-4 border-t border-[var(--border-light)] pt-4">
           ${renderOfflineQueueCard()}
