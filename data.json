@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T15:00:01.961Z",
+  "lastUpdated": "2026-02-11T15:04:02.610Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3120,8 +3120,8 @@
       "status": "anytime",
       "today": false,
       "flagged": false,
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-11T15:03:59.036Z",
       "areaId": "family",
       "categoryId": null,
       "labels": [],
@@ -3137,8 +3137,8 @@
       "meetingEventKey": null,
       "order": 46000,
       "createdAt": "2026-02-10T21:13:12.681Z",
-      "updatedAt": "2026-02-10T21:13:13.081Z",
-      "gcalEventId": "dnfqv5d0de78ir3i9a7f23fus0"
+      "updatedAt": "2026-02-11T15:03:59.322Z",
+      "gcalEventId": null
     },
     {
       "id": "task_1770758044360_po041id1s",
@@ -3147,8 +3147,8 @@
       "status": "anytime",
       "today": false,
       "flagged": false,
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-11T15:03:59.612Z",
       "areaId": "family",
       "categoryId": null,
       "labels": [],
@@ -3162,8 +3162,8 @@
       "meetingEventKey": null,
       "order": 47000,
       "createdAt": "2026-02-10T21:14:04.360Z",
-      "updatedAt": "2026-02-10T21:14:11.474Z",
-      "gcalEventId": "hc7if8ipqe13bbra7e2a6htq3c"
+      "updatedAt": "2026-02-11T15:03:59.803Z",
+      "gcalEventId": null
     },
     {
       "id": "task_1770801074299_wqdfzm9a1",
