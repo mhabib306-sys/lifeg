@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T11:59:12.751Z",
+  "lastUpdated": "2026-02-11T11:59:19.412Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2468,29 +2468,6 @@
       "noteOrder": 1000
     },
     {
-      "id": "task_1770540844662_jfbkwax3v",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "createdAt": "2026-02-08T08:53:53.479Z",
-      "updatedAt": "2026-02-08T08:54:04.662Z",
-      "order": 9000,
-      "today": false,
-      "flagged": false,
-      "noteOrder": 8000
-    },
-    {
       "id": "task_1770550089075_aufzybsl8",
       "title": "Discuss with Nancy the Ramadan setup and inviting family to lunch",
       "notes": "",
@@ -2514,29 +2491,6 @@
       "today": false,
       "flagged": false,
       "gcalEventId": "csfc86bued8st610hm990scqvg"
-    },
-    {
-      "id": "task_1770550567385_p56inxou0",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": "task_1770407038478_0u5etf01p",
-      "indent": 1,
-      "createdAt": "2026-02-08T11:36:07.385Z",
-      "updatedAt": "2026-02-08T11:36:07.385Z",
-      "order": 3000,
-      "today": false,
-      "flagged": false,
-      "noteOrder": 1000
     },
     {
       "id": "task_1770563975208_w48quf1y9",
@@ -3374,7 +3328,9 @@
     "task_1769983575696_3yq56ixj0": "2026-02-11T10:34:40.620Z",
     "task_1770419503417_ps4ynftsw": "2026-02-11T10:34:41.402Z",
     "task_1770806832628_lbtki5az5": "2026-02-11T10:47:14.798Z",
-    "task_1770811146386_g707fyazk": "2026-02-11T11:59:10.211Z"
+    "task_1770811146386_g707fyazk": "2026-02-11T11:59:10.211Z",
+    "task_1770550567385_p56inxou0": "2026-02-11T11:59:16.912Z",
+    "task_1770540844662_jfbkwax3v": "2026-02-11T11:59:19.175Z"
   },
   "deletedEntityTombstones": {
     "taskPeople": {
