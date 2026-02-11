@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T15:38:16.155Z",
+  "lastUpdated": "2026-02-11T15:38:20.553Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3159,7 +3159,7 @@
     },
     {
       "id": "task_1770824292638_n242i9tab",
-      "title": "",
+      "title": "Mom",
       "notes": "",
       "status": "anytime",
       "completed": false,
@@ -3181,13 +3181,62 @@
           "details": {
             "source": "root"
           }
+        },
+        {
+          "id": "nh_1770824297078_cfzr8b",
+          "action": "updated",
+          "at": "2026-02-11T15:38:17.078Z",
+          "details": {
+            "field": "title"
+          }
         }
       ],
       "parentId": null,
       "indent": 0,
       "noteOrder": 18000,
       "createdAt": "2026-02-11T15:38:12.639Z",
-      "updatedAt": "2026-02-11T15:38:12.639Z"
+      "updatedAt": "2026-02-11T15:38:17.078Z"
+    },
+    {
+      "id": "task_1770824297080_yownm84vb",
+      "title": "",
+      "notes": "",
+      "status": "anytime",
+      "completed": true,
+      "completedAt": "2026-02-11T15:38:17.793Z",
+      "areaId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "noteLifecycleState": "deleted",
+      "noteHistory": [
+        {
+          "id": "nh_1770824297080_jz5d0g",
+          "action": "created",
+          "at": "2026-02-11T15:38:17.080Z",
+          "details": {
+            "source": "child",
+            "relatedTo": "task_1770824292638_n242i9tab"
+          }
+        },
+        {
+          "id": "nh_1770824297793_a28qxs",
+          "action": "deleted",
+          "at": "2026-02-11T15:38:17.793Z",
+          "details": {
+            "reason": "manual"
+          }
+        }
+      ],
+      "parentId": "task_1770824292638_n242i9tab",
+      "indent": 1,
+      "noteOrder": 1000,
+      "createdAt": "2026-02-11T15:38:17.080Z",
+      "updatedAt": "2026-02-11T15:38:17.793Z",
+      "deletedAt": "2026-02-11T15:38:17.793Z"
     }
   ],
   "deletedTaskTombstones": {
