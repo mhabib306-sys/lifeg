@@ -97,21 +97,21 @@ export function renderStatsWidget(today) {
 
   return `
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-      <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('inbox')">
-        <div class="text-xl sm:text-2xl font-bold ${inboxCount > 0 ? 'text-[var(--inbox-color)]' : 'text-charcoal'}">${inboxCount}</div>
-        <div class="text-xs text-charcoal/50 mt-1">In Inbox</div>
+      <button type="button" class="quick-stat-item bg-[var(--bg-secondary)] rounded-xl p-3 text-center active:bg-[var(--bg-tertiary)] transition-all" onclick="showPerspectiveTasks('inbox')">
+        <div class="text-xl sm:text-2xl font-bold ${inboxCount > 0 ? 'text-[var(--inbox-color)]' : 'text-[var(--text-primary)]'}">${inboxCount}</div>
+        <div class="text-xs text-[var(--text-muted)] mt-1">In Inbox</div>
       </button>
-      <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('today')">
-        <div class="text-xl sm:text-2xl font-bold text-charcoal">${todayTasksCount}</div>
-        <div class="text-xs text-charcoal/50 mt-1">Due Today</div>
+      <button type="button" class="quick-stat-item bg-[var(--bg-secondary)] rounded-xl p-3 text-center active:bg-[var(--bg-tertiary)] transition-all" onclick="showPerspectiveTasks('today')">
+        <div class="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">${todayTasksCount}</div>
+        <div class="text-xs text-[var(--text-muted)] mt-1">Due Today</div>
       </button>
-      <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="${nextLabel ? `showLabelTasks('${nextLabel.id}')` : 'void(0)'}">
+      <button type="button" class="quick-stat-item bg-[var(--bg-secondary)] rounded-xl p-3 text-center active:bg-[var(--bg-tertiary)] transition-all" onclick="${nextLabel ? `showLabelTasks('${nextLabel.id}')` : 'void(0)'}">
         <div class="text-xl sm:text-2xl font-bold text-[var(--notes-accent)]">${nextTasksCount}</div>
-        <div class="text-xs text-charcoal/50 mt-1">Tagged Next</div>
+        <div class="text-xs text-[var(--text-muted)] mt-1">Tagged Next</div>
       </button>
-      <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('logbook')">
+      <button type="button" class="quick-stat-item bg-[var(--bg-secondary)] rounded-xl p-3 text-center active:bg-[var(--bg-tertiary)] transition-all" onclick="showPerspectiveTasks('logbook')">
         <div class="text-xl sm:text-2xl font-bold text-[var(--success)]">${completedToday}</div>
-        <div class="text-xs text-charcoal/50 mt-1">Done Today</div>
+        <div class="text-xs text-[var(--text-muted)] mt-1">Done Today</div>
       </button>
     </div>
   `;
@@ -123,16 +123,16 @@ export function renderQuickAddWidget() {
       <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
         class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
         ${state.quickAddIsNote
-          ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
-          : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed border-charcoal/20 flex-shrink-0"></div>`
+          ? `<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-accent)]"></div>`
+          : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed border-[var(--text-muted)]/30 flex-shrink-0"></div>`
         }
       </div>
       <input type="text" id="home-quick-add-input"
         placeholder="${state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
         onkeydown="if(event._inlineAcHandled)return;if(event.key==='Enter'){event.preventDefault();homeQuickAddTask(this);}"
-        class="flex-1 text-[15px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none focus:ring-0">
+        class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)]/40 bg-transparent border-0 outline-none focus:ring-0">
       <button onclick="homeQuickAddTask(document.getElementById('home-quick-add-input'))"
-        class="text-charcoal/30 hover:text-coral transition p-1" title="${state.quickAddIsNote ? 'Add Note' : 'Add Task'}">
+        class="text-[var(--text-muted)]/40 hover:text-[var(--accent)] transition p-1" title="${state.quickAddIsNote ? 'Add Note' : 'Add Task'}">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </button>
     </div>
@@ -368,7 +368,7 @@ export function renderGlucoseWidget(today) {
     ${hasLiveGlucose ? `
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-baseline gap-1.5">
-          <span class="text-3xl font-bold ${glucoseColor}" style="line-height:1">${libreData.currentGlucose}</span>
+          <span class="text-3xl font-bold leading-none ${glucoseColor}">${libreData.currentGlucose}</span>
           <span class="text-xl ${glucoseColor}">${libreData.trend || '\u2192'}</span>
           <span class="text-[10px] text-[var(--text-muted)] ml-0.5">mg/dL</span>
         </div>
@@ -498,7 +498,7 @@ export function renderHabitsWidget(today) {
           '<span class="text-lg mb-1">' + h.icon + '</span>' +
           '<input type="checkbox" ' + (isChecked ? 'checked' : '') +
           ' onchange="toggleDailyField(\'habits\', \'' + h.field + '\')"' +
-          ' class="w-5 h-5 rounded border-2 border-purple-300 text-purple-500 focus:ring-purple-300 focus:ring-offset-0 cursor-pointer">' +
+          ' class="w-5 h-5 rounded border-2 border-[var(--notes-accent)]/40 text-[var(--notes-accent)] focus:ring-[var(--notes-accent)]/40 focus:ring-offset-0 cursor-pointer">' +
           '</label>';
       }).join('')}
     </div>
@@ -616,7 +616,7 @@ export function renderWeatherWidget() {
       </div>
       <div class="text-right flex-shrink-0">
         <div class="flex items-center justify-end gap-1.5">
-          <svg class="w-3 h-3 text-orange-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.09 8.26L21 9.27L16 13.97L17.18 20.02L12 17.77L6.82 20.02L8 13.97L3 9.27L9.91 8.26L12 2Z"/></svg>
+          <svg class="w-3 h-3 text-[var(--warning)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.09 8.26L21 9.27L16 13.97L17.18 20.02L12 17.77L6.82 20.02L8 13.97L3 9.27L9.91 8.26L12 2Z"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">${tempMax}\u00B0</span>
           <span class="text-[10px] text-[var(--text-muted)]">${maxHour}</span>
         </div>
@@ -630,19 +630,19 @@ export function renderWeatherWidget() {
     <div class="weather-widget-detail-grid grid grid-cols-2 gap-2 mt-4">
       <div class="bg-[var(--bg-secondary)] rounded-lg px-3 py-2">
         <div class="flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+          <svg class="w-3.5 h-3.5 text-[var(--accent)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
           <span class="text-[11px] text-[var(--text-muted)]">Humidity</span>
         </div>
         <div class="flex items-center gap-2 mt-1.5">
           <div class="flex-1 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
-            <div class="h-full bg-blue-400 rounded-full" style="width: ${humidityBar}%"></div>
+            <div class="h-full bg-[var(--accent)] rounded-full" style="width: ${humidityBar}%"></div>
           </div>
           <span class="text-xs font-semibold text-[var(--text-primary)]">${humidity}%</span>
         </div>
       </div>
       <div class="bg-[var(--bg-secondary)] rounded-lg px-3 py-2">
         <div class="flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5 text-teal-400" viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 17c0 1.65-1.35 3-3 3s-3-1.35-3-3c0-1.17.67-2.18 1.65-2.67L9.5 2h4l-.65 12.33c.98.49 1.65 1.5 1.65 2.67z"/></svg>
+          <svg class="w-3.5 h-3.5 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 17c0 1.65-1.35 3-3 3s-3-1.35-3-3c0-1.17.67-2.18 1.65-2.67L9.5 2h4l-.65 12.33c.98.49 1.65 1.5 1.65 2.67z"/></svg>
           <span class="text-[11px] text-[var(--text-muted)]">Wind</span>
         </div>
         <div class="mt-1.5">
@@ -798,6 +798,29 @@ export const WIDGET_ICONS = {
   'gsheet-yesterday': '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h5v-5h-5v5zm-6-5h5V7H6v5zm6-5v3h5V7h-5zM6 14h5v3H6v-3z"/></svg>'
 };
 
+// Widget accent colors — use CSS variable references so they adapt to the active theme.
+// getComputedStyle() is called at render-time by home.js, so these resolve correctly.
+export function getWidgetColor(widgetType) {
+  const style = getComputedStyle(document.documentElement);
+  const v = (name) => style.getPropertyValue(name).trim();
+  const map = {
+    'stats': v('--text-muted') || '#6B7280',
+    'quick-add': v('--accent') || '#147EFB',
+    'today-tasks': v('--today-color') || '#FFCA28',
+    'today-events': v('--success') || '#2F9B6A',
+    'next-tasks': v('--notes-accent') || '#8B5CF6',
+    'prayers': v('--success') || '#10B981',
+    'glucose': v('--danger') || '#EF4444',
+    'whoop': v('--accent') || '#3B82F6',
+    'habits': v('--notes-accent') || '#8B5CF6',
+    'weather': v('--warning') || '#F59E0B',
+    'score': v('--success') || '#22C55E',
+    'gsheet-yesterday': v('--success') || '#34A853'
+  };
+  return map[widgetType] || v('--text-muted') || '#6B7280';
+}
+
+// Legacy static map kept for callers that don't need theme-awareness
 export const WIDGET_COLORS = {
   'stats': '#6B7280',
   'quick-add': '#147EFB',

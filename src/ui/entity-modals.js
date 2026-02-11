@@ -516,11 +516,11 @@ export function renderPerspectiveModalHtml() {
         <div class="modal-footer-enhanced">
           ${editingPerspective ? `
             <button onclick="if(confirm('Delete this custom view?')){deletePerspective('${editingPerspective.id}'); showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render();}"
-              class="px-4 py-2 text-[13px] text-[var(--danger)] hover:opacity-80 mr-auto">Delete</button>
+              class="px-4 py-2.5 text-sm text-[var(--danger)] hover:bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] rounded-lg transition mr-auto">Delete</button>
           ` : ''}
           <button onclick="showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()"
-            class="px-4 py-2 text-[13px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">Cancel</button>
-          <button onclick="savePerspectiveFromModal()" class="px-5 py-2 rounded-lg text-[13px] font-medium text-white bg-[var(--accent)] hover:opacity-90 transition">
+            class="px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">Cancel</button>
+          <button onclick="savePerspectiveFromModal()" class="sb-btn px-5 py-2.5 rounded-lg text-sm font-medium">
             ${editingPerspective ? 'Save' : 'Create'}
           </button>
         </div>
@@ -653,35 +653,37 @@ export function renderLabelModalHtml() {
     ? (state.taskLabels || []).find(l => l.id === state.editingLabelId)
     : null;
   return `
-    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] flex items-center justify-center z-[300]" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="label-modal-title">
-      <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
-        <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
-          <h3 id="label-modal-title" class="font-semibold text-charcoal">${editingLabel ? 'Edit Tag' : 'New Tag'}</h3>
-          <button onclick="showLabelModal=false; editingLabelId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="label-modal-title">
+      <div class="modal-enhanced w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+        <div class="modal-header-enhanced">
+          <h3 id="label-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingLabel ? 'Edit Tag' : 'New Tag'}</h3>
+          <button onclick="showLabelModal=false; editingLabelId=null; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
         </div>
-        <div class="p-6 space-y-4">
+        <div class="modal-body-enhanced space-y-4">
           <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Name</label>
+            <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Name</label>
             <input type="text" id="label-name" value="${editingLabel?.name ? escapeHtml(editingLabel.name) : ''}"
               placeholder="e.g., Important" autofocus maxlength="50"
               onkeydown="if(event.key==='Enter'){event.preventDefault();saveLabelFromModal();}"
-              class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              class="modal-input-enhanced w-full">
           </div>
           <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Color</label>
+            <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Color</label>
             <input type="color" id="label-color" value="${editingLabel?.color || '#6B7280'}"
-              class="w-full h-10 rounded border border-softborder cursor-pointer">
+              class="w-full h-10 rounded-lg border border-[var(--border)] cursor-pointer">
           </div>
         </div>
-        <div class="px-6 py-4 border-t border-softborder flex justify-between">
+        <div class="modal-footer-enhanced">
           ${editingLabel ? `
             <button onclick="if(confirm('Delete this tag?')){deleteLabel('${editingLabel.id}'); showLabelModal=false; editingLabelId=null; render();}"
-              class="px-4 py-2 text-sm text-[var(--danger)] hover:opacity-80">Delete</button>
+              class="px-4 py-2.5 text-sm text-[var(--danger)] hover:bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] rounded-lg transition">Delete</button>
           ` : '<div></div>'}
-          <div class="flex gap-3">
+          <div class="flex gap-2">
             <button onclick="showLabelModal=false; editingLabelId=null; render()"
-              class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
-            <button onclick="saveLabelFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+              class="px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">Cancel</button>
+            <button onclick="saveLabelFromModal()" class="sb-btn px-5 py-2.5 rounded-lg text-sm font-medium">
               ${editingLabel ? 'Save' : 'Create'}
             </button>
           </div>
@@ -701,42 +703,44 @@ export function renderPersonModalHtml() {
     ? (state.taskPeople || []).find(p => p.id === state.editingPersonId)
     : null;
   return `
-    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] flex items-center justify-center z-[300]" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="person-modal-title">
-      <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
-        <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
-          <h3 id="person-modal-title" class="font-semibold text-charcoal">${editingPerson ? 'Edit Person' : 'New Person'}</h3>
-          <button onclick="showPersonModal=false; editingPersonId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="person-modal-title">
+      <div class="modal-enhanced w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+        <div class="modal-header-enhanced">
+          <h3 id="person-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingPerson ? 'Edit Person' : 'New Person'}</h3>
+          <button onclick="showPersonModal=false; editingPersonId=null; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
         </div>
-        <div class="p-6 space-y-4">
+        <div class="modal-body-enhanced space-y-4">
           ${editingPerson?.photoData ? `
             <div class="flex justify-center">
               ${renderPersonAvatar(editingPerson, 64)}
             </div>
           ` : ''}
           <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Name</label>
+            <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Name</label>
             <input type="text" id="person-name" value="${editingPerson?.name ? escapeHtml(editingPerson.name) : ''}"
               placeholder="e.g., John Doe" autofocus maxlength="100"
               onkeydown="if(event.key==='Enter'){event.preventDefault();savePersonFromModal();}"
-              class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              class="modal-input-enhanced w-full">
           </div>
           <div>
-            <label class="text-sm text-charcoal/70 block mb-1">Email</label>
+            <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Email</label>
             <input type="email" id="person-email" value="${editingPerson?.email ? escapeHtml(editingPerson.email) : ''}"
               placeholder="e.g., mostafa@company.com" maxlength="160"
               onkeydown="if(event.key==='Enter'){event.preventDefault();savePersonFromModal();}"
-              class="w-full px-3 py-2 border border-softborder rounded focus:border-coral focus:outline-none">
+              class="modal-input-enhanced w-full">
           </div>
         </div>
-        <div class="px-6 py-4 border-t border-softborder flex justify-between">
+        <div class="modal-footer-enhanced">
           ${editingPerson ? `
             <button onclick="if(confirm('Delete this person?')){deletePerson('${editingPerson.id}'); showPersonModal=false; editingPersonId=null; render();}"
-              class="px-4 py-2 text-sm text-[var(--danger)] hover:opacity-80">Delete</button>
+              class="px-4 py-2.5 text-sm text-[var(--danger)] hover:bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] rounded-lg transition">Delete</button>
           ` : '<div></div>'}
-          <div class="flex gap-3">
+          <div class="flex gap-2">
             <button onclick="showPersonModal=false; editingPersonId=null; render()"
-              class="px-4 py-2 text-sm text-charcoal/70 hover:text-charcoal">Cancel</button>
-            <button onclick="savePersonFromModal()" class="sb-btn px-4 py-2 rounded text-sm font-medium">
+              class="px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">Cancel</button>
+            <button onclick="savePersonFromModal()" class="sb-btn px-5 py-2.5 rounded-lg text-sm font-medium">
               ${editingPerson ? 'Save' : 'Create'}
             </button>
           </div>

@@ -62,11 +62,11 @@ export function createPrayerInput(prayer, label, value) {
       <input type="text" value="${value}" placeholder="X.Y"
         class="prayer-input w-full px-3 py-2 border border-[var(--border)] rounded text-center font-mono text-lg bg-[var(--bg-input)] mb-1"
         onchange="updateData('prayers', '${prayer}', this.value)">
-      <div class="text-xs font-medium text-charcoal/70">${label}</div>
-      <div class="text-xs text-charcoal/50 mt-0.5">
+      <div class="text-xs font-medium text-[var(--text-secondary)]">${label}</div>
+      <div class="text-xs text-[var(--text-muted)] mt-0.5">
         <span class="text-[var(--success)]">${onTime}\u2713</span> <span class="text-[var(--warning)]">${late}\u25D0</span>
       </div>
-      <div class="text-xs font-semibold text-coral mt-0.5">${pts} pts</div>
+      <div class="text-xs font-semibold text-[var(--accent)] mt-0.5">${pts} pts</div>
     </div>
   `;
 }
@@ -81,8 +81,8 @@ export function createPrayerInput(prayer, label, value) {
  */
 export function createToggle(label, checked, category, field) {
   return `
-    <label class="flex items-center justify-between cursor-pointer py-2 px-1 hover:bg-warmgray rounded transition">
-      <span class="text-sm text-charcoal">${label}</span>
+    <label class="flex items-center justify-between cursor-pointer py-2 px-1 hover:bg-[var(--bg-secondary)] rounded transition">
+      <span class="text-sm text-[var(--text-primary)]">${label}</span>
       <div class="relative toggle-switch" onclick="updateData('${category}', '${field}', !${checked})">
         <div class="w-10 h-5 rounded-full transition ${checked ? 'toggle-on' : 'toggle-off'}"></div>
         <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition" style="transform: translateX(${checked ? '20px' : '0'})"></div>
@@ -112,12 +112,12 @@ export function createNumberInput(label, value, category, field, placeholder, un
       <input type="number" step="any" value="${value}" placeholder="${placeholder}"
         class="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none mb-1"
         onchange="updateData('${category}', '${field}', this.value)">
-      <div class="text-xs font-medium text-charcoal/70 flex items-center justify-center gap-1">
+      <div class="text-xs font-medium text-[var(--text-secondary)] flex items-center justify-center gap-1">
         ${label}
-        ${tooltip ? `<span class="cursor-help text-charcoal/30 hover:text-coral">\u24D8</span>` : ''}
+        ${tooltip ? `<span class="cursor-help text-[var(--text-muted)] hover:text-[var(--accent)]">\u24D8</span>` : ''}
       </div>
-      <div class="text-xs text-charcoal/40">${unit}${hint ? ` \u00B7 ${hint}` : ''}</div>
-      ${tooltip ? `<div class="absolute ${posClass} top-full mt-1 z-50 hidden group-hover:block bg-charcoal text-white text-xs rounded p-3 w-48 shadow-lg text-left">${tooltip}</div>` : ''}
+      <div class="text-xs text-[var(--text-muted)]">${unit}${hint ? ` \u00B7 ${hint}` : ''}</div>
+      ${tooltip ? `<div class="absolute ${posClass} top-full mt-1 z-50 hidden group-hover:block bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs rounded p-3 w-48 shadow-lg text-left">${tooltip}</div>` : ''}
     </div>
   `;
 }
@@ -134,13 +134,13 @@ export function createNumberInput(label, value, category, field, placeholder, un
 export function createCounter(label, value, category, field, max = 10) {
   return `
     <div class="flex items-center justify-between py-2">
-      <span class="text-sm text-charcoal">${label}</span>
+      <span class="text-sm text-[var(--text-primary)]">${label}</span>
       <div class="flex items-center gap-2">
         <button onclick="updateData('${category}', '${field}', Math.max(0, ${value} - 1))"
-          class="w-7 h-7 rounded-full bg-warmgray hover:bg-softborder flex items-center justify-center font-bold text-charcoal/60 transition">\u2212</button>
-        <span class="w-8 text-center font-semibold text-lg text-charcoal">${value}</span>
+          class="w-7 h-7 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] flex items-center justify-center font-bold text-[var(--text-muted)] transition">\u2212</button>
+        <span class="w-8 text-center font-semibold text-lg text-[var(--text-primary)]">${value}</span>
         <button onclick="updateData('${category}', '${field}', Math.min(${max}, ${value} + 1))"
-          class="w-7 h-7 rounded-full bg-coral hover:bg-coralDark text-white flex items-center justify-center font-bold transition">+</button>
+          class="w-7 h-7 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-dark)] text-white flex items-center justify-center font-bold transition">+</button>
       </div>
     </div>
   `;
@@ -156,24 +156,26 @@ export function createCounter(label, value, category, field, max = 10) {
  */
 export function createScoreCard(label, score, max, colorClass) {
   const pct = max ? Math.min((score / max) * 100, 100) : 0;
-  // Map old color classes to muted category colors (work with both themes)
+  // Map old color classes to theme-aware CSS variable colors
+  const style = typeof document !== 'undefined' ? getComputedStyle(document.documentElement) : null;
+  const v = (name, fb) => (style?.getPropertyValue(name)?.trim()) || fb;
   const accentMap = {
-    'bg-blue-500': '#4A90A4',
-    'bg-green-500': '#6B8E5A',
-    'bg-purple-500': '#7C6B8E',
-    'bg-amber-500': '#C4943D',
-    'bg-slate-500': '#6B7280'
+    'bg-blue-500': v('--accent', '#4A90A4'),
+    'bg-green-500': v('--success', '#6B8E5A'),
+    'bg-purple-500': v('--notes-accent', '#7C6B8E'),
+    'bg-amber-500': v('--warning', '#C4943D'),
+    'bg-slate-500': v('--text-muted', '#6B7280')
   };
   const accent = accentMap[colorClass] || getAccentColor();
   const pctDisplay = Math.round(pct);
   return `
     <div class="sb-card rounded-lg p-4">
       <div class="flex justify-between items-center mb-1">
-        <span class="sb-section-title text-charcoal/60">${label}</span>
-        <span class="text-xs text-charcoal/40">${pctDisplay}%</span>
+        <span class="sb-section-title text-[var(--text-muted)]">${label}</span>
+        <span class="text-xs text-[var(--text-muted)]">${pctDisplay}%</span>
       </div>
-      <div class="font-bold text-2xl text-charcoal mb-2">${fmt(score)}</div>
-      <div class="h-1.5 bg-charcoal/10 rounded-full overflow-hidden">
+      <div class="font-bold text-2xl text-[var(--text-primary)] mb-2">${fmt(score)}</div>
+      <div class="h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
         <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background: ${accent}"></div>
       </div>
     </div>

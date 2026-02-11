@@ -12,7 +12,7 @@ import {
   renderNextTasksWidget, renderTodayEventsWidget, renderPrayersWidget,
   renderGlucoseWidget, renderWhoopWidget, renderHabitsWidget,
   renderScoreWidget, renderWeatherWidget, renderPerspectiveWidget,
-  renderGSheetWidget, WIDGET_ICONS, WIDGET_COLORS
+  renderGSheetWidget, WIDGET_ICONS, WIDGET_COLORS, getWidgetColor
 } from './home-widgets.js';
 
 // ---------------------------------------------------------------------------
@@ -92,11 +92,12 @@ export function renderHomeWidget(widget, isEditing) {
   };
 
   const renderer = widgetRenderers[widget.type];
-  const content = renderer ? renderer() : '<div class="py-4 text-center text-charcoal/30">Unknown widget type</div>';
+  const content = renderer ? renderer() : '<div class="py-4 text-center text-[var(--text-muted)]">Unknown widget type</div>';
 
   // Resolve icon and color for perspective widgets
   const widgetIcons = { ...WIDGET_ICONS };
-  const widgetColors = { ...WIDGET_COLORS };
+  const widgetColors = {};
+  for (const key of Object.keys(WIDGET_COLORS)) widgetColors[key] = getWidgetColor(key);
   if (widget.type === 'perspective') {
     const allPersp = [...BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, ...(state.customPerspectives || [])];
     const persp = allPersp.find(p => p.id === widget.perspectiveId);
@@ -341,14 +342,14 @@ export function renderHomeTab() {
 
       ${state.editingHomeWidgets && hiddenWidgets.length > 0 ? `
         <!-- Hidden Widgets -->
-        <div class="bg-warmgray/30 rounded-xl p-4">
+        <div class="bg-[var(--bg-secondary)] rounded-xl p-4">
           <div class="flex items-center gap-2 mb-3">
-            <svg class="w-4 h-4 text-charcoal/40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.8 11.8 0 0 0 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>
-            <span class="text-sm font-medium text-charcoal/50">Hidden Widgets</span>
+            <svg class="w-4 h-4 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.8 11.8 0 0 0 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>
+            <span class="text-sm font-medium text-[var(--text-muted)]">Hidden Widgets</span>
           </div>
           <div class="flex flex-wrap gap-2">
             ${hiddenWidgets.map(w => `
-              <button onclick="toggleWidgetVisibility('${w.id}')" class="text-sm px-3 py-1.5 rounded-lg border border-dashed border-charcoal/20 text-charcoal/60 hover:border-coral hover:text-coral transition flex items-center gap-2">
+              <button onclick="toggleWidgetVisibility('${w.id}')" class="text-sm px-3 py-1.5 rounded-lg border border-dashed border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition flex items-center gap-2">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
                 ${w.title}
               </button>

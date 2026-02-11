@@ -59,33 +59,33 @@ function renderWhoopSettingsCard() {
 
   return `
     <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-charcoal mb-4">WHOOP Integration <span class="text-coral">→</span></h3>
-      <p class="text-sm text-charcoal/50 mb-4">Auto-sync sleep performance, recovery, and strain from your WHOOP account.</p>
+      <h3 class="font-semibold text-[var(--text-primary)] mb-4">WHOOP Integration <span class="text-[var(--accent)]">→</span></h3>
+      <p class="text-sm text-[var(--text-muted)] mb-4">Auto-sync sleep performance, recovery, and strain from your WHOOP account.</p>
 
       <div class="space-y-3 mb-4">
         <div>
-          <label class="text-sm text-charcoal/70 block mb-1">Worker URL</label>
+          <label class="text-sm text-[var(--text-secondary)] block mb-1">Worker URL</label>
           <input type="url" value="${workerUrl}" placeholder="https://whoop-proxy.xxx.workers.dev"
             class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none"
             onchange="window.setWhoopWorkerUrl(this.value)">
         </div>
         <div>
-          <label class="text-sm text-charcoal/70 block mb-1">API Key</label>
+          <label class="text-sm text-[var(--text-secondary)] block mb-1">API Key</label>
           <input type="password" value="${apiKey}" placeholder="Shared secret from worker setup"
             class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none"
             onchange="window.setWhoopApiKey(this.value)">
         </div>
       </div>
 
-      <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
+      <div class="flex flex-wrap gap-3 pt-4 border-t border-[var(--border)]">
         ${connected ? `
           <button onclick="window.syncWhoopNow()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
             Sync Now
           </button>
-          <button onclick="window.disconnectWhoop(); window.render()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition">
+          <button onclick="window.disconnectWhoop(); window.render()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition">
             Disconnect
           </button>
-          <span class="flex items-center text-xs text-charcoal/50">
+          <span class="flex items-center text-xs text-[var(--text-muted)]">
             <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
             Connected · Last sync: ${lastSyncText}
           </span>
@@ -93,11 +93,11 @@ function renderWhoopSettingsCard() {
           <button onclick="window.connectWhoop()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
             Connect WHOOP
           </button>
-          <button onclick="window.checkWhoopStatus()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
+          <button onclick="window.checkWhoopStatus()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
             Check Status
           </button>
-          <span class="flex items-center text-xs text-charcoal/50">
-            <span class="w-2 h-2 rounded-full bg-charcoal/30 mr-2"></span> Not connected
+          <span class="flex items-center text-xs text-[var(--text-muted)]">
+            <span class="w-2 h-2 rounded-full bg-[var(--text-muted)]/40 mr-2"></span> Not connected
           </span>
         `}
       </div>
@@ -121,33 +121,33 @@ function renderLibreSettingsCard() {
 
   return `
     <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-charcoal mb-4">Freestyle Libre CGM <span class="text-coral">→</span></h3>
-      <p class="text-sm text-charcoal/50 mb-4">Auto-sync glucose readings from your Freestyle Libre sensor via LibreLinkUp. Auto-fills daily glucose average and TIR.</p>
+      <h3 class="font-semibold text-[var(--text-primary)] mb-4">Freestyle Libre CGM <span class="text-[var(--accent)]">→</span></h3>
+      <p class="text-sm text-[var(--text-muted)] mb-4">Auto-sync glucose readings from your Freestyle Libre sensor via LibreLinkUp. Auto-fills daily glucose average and TIR.</p>
 
       <div class="space-y-3 mb-4">
         <div>
-          <label class="text-sm text-charcoal/70 block mb-1">Worker URL</label>
+          <label class="text-sm text-[var(--text-secondary)] block mb-1">Worker URL</label>
           <input type="url" value="${workerUrl}" placeholder="https://libre-proxy.xxx.workers.dev"
             class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none"
             onchange="window.setLibreWorkerUrl(this.value)">
         </div>
         <div>
-          <label class="text-sm text-charcoal/70 block mb-1">API Key</label>
+          <label class="text-sm text-[var(--text-secondary)] block mb-1">API Key</label>
           <input type="password" value="${apiKey}" placeholder="Shared secret from worker setup"
             class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none"
             onchange="window.setLibreApiKey(this.value)">
         </div>
       </div>
 
-      <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
+      <div class="flex flex-wrap gap-3 pt-4 border-t border-[var(--border)]">
         ${connected ? `
           <button onclick="window.syncLibreNow()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
             Sync Now
           </button>
-          <button onclick="window.disconnectLibre(); window.render()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition">
+          <button onclick="window.disconnectLibre(); window.render()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition">
             Disconnect
           </button>
-          <span class="flex items-center text-xs text-charcoal/50">
+          <span class="flex items-center text-xs text-[var(--text-muted)]">
             <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
             Connected · Last sync: ${lastSyncText}
           </span>
@@ -155,11 +155,11 @@ function renderLibreSettingsCard() {
           <button onclick="window.connectLibre()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
             Connect Libre
           </button>
-          <button onclick="window.checkLibreStatus()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
+          <button onclick="window.checkLibreStatus()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
             Check Status
           </button>
-          <span class="flex items-center text-xs text-charcoal/50">
-            <span class="w-2 h-2 rounded-full bg-charcoal/30 mr-2"></span> Not connected
+          <span class="flex items-center text-xs text-[var(--text-muted)]">
+            <span class="w-2 h-2 rounded-full bg-[var(--text-muted)]/40 mr-2"></span> Not connected
           </span>
         `}
       </div>
@@ -195,14 +195,14 @@ function renderGCalSettingsCard() {
   if (!connected) {
     return `
       <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-        <h3 class="font-semibold text-charcoal mb-4">Google Calendar <span class="text-coral">→</span></h3>
-        <p class="text-sm text-charcoal/50 mb-4">See Google Calendar events in the Calendar view and push dated tasks to Google Calendar.</p>
-        <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
+        <h3 class="font-semibold text-[var(--text-primary)] mb-4">Google Calendar <span class="text-[var(--accent)]">→</span></h3>
+        <p class="text-sm text-[var(--text-muted)] mb-4">See Google Calendar events in the Calendar view and push dated tasks to Google Calendar.</p>
+        <div class="flex flex-wrap gap-3 pt-4 border-t border-[var(--border)]">
           <button onclick="window.connectGCal()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
             Connect Google Calendar
           </button>
-          <span class="flex items-center text-xs text-charcoal/50">
-            <span class="w-2 h-2 rounded-full bg-charcoal/30 mr-2"></span> Not connected
+          <span class="flex items-center text-xs text-[var(--text-muted)]">
+            <span class="w-2 h-2 rounded-full bg-[var(--text-muted)]/40 mr-2"></span> Not connected
           </span>
         </div>
       </div>
@@ -212,16 +212,16 @@ function renderGCalSettingsCard() {
   if (tokenExpired) {
     return `
       <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-        <h3 class="font-semibold text-charcoal mb-4">Google Calendar <span class="text-coral">→</span></h3>
-        <p class="text-sm text-charcoal/50 mb-4">Your Google Calendar session has expired. Reconnect to resume syncing.</p>
-        <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
+        <h3 class="font-semibold text-[var(--text-primary)] mb-4">Google Calendar <span class="text-[var(--accent)]">→</span></h3>
+        <p class="text-sm text-[var(--text-muted)] mb-4">Your Google Calendar session has expired. Reconnect to resume syncing.</p>
+        <div class="flex flex-wrap gap-3 pt-4 border-t border-[var(--border)]">
           <button onclick="window.reconnectGCal()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
             Reconnect
           </button>
-          <button onclick="window.disconnectGCal()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition">
+          <button onclick="window.disconnectGCal()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition">
             Disconnect
           </button>
-          <span class="flex items-center text-xs text-charcoal/50">
+          <span class="flex items-center text-xs text-[var(--text-muted)]">
             <span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span> Session expired
           </span>
         </div>
@@ -231,11 +231,11 @@ function renderGCalSettingsCard() {
 
   return `
     <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-charcoal mb-4">Google Calendar <span class="text-coral">→</span></h3>
-      <p class="text-sm text-charcoal/50 mb-4">Select calendars to show events from and choose which calendar to push tasks to.</p>
+      <h3 class="font-semibold text-[var(--text-primary)] mb-4">Google Calendar <span class="text-[var(--accent)]">→</span></h3>
+      <p class="text-sm text-[var(--text-muted)] mb-4">Select calendars to show events from and choose which calendar to push tasks to.</p>
 
       ${calendarsLoading ? `
-        <p class="text-sm text-charcoal/40 mb-4">Loading calendars...</p>
+        <p class="text-sm text-[var(--text-muted)] mb-4">Loading calendars...</p>
       ` : gcalError ? `
         <div class="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
           <p class="text-sm text-amber-800">${escapeHtml(gcalError)}</p>
@@ -248,22 +248,22 @@ function renderGCalSettingsCard() {
         </div>
       ` : calendars.length > 0 ? `
         <div class="mb-4">
-          <label class="text-sm text-charcoal/70 block mb-2">Show events from:</label>
+          <label class="text-sm text-[var(--text-secondary)] block mb-2">Show events from:</label>
           <div class="space-y-1.5 max-h-40 overflow-y-auto">
             ${calendars.map(c => `
-              <label class="flex items-center gap-2 px-2 py-1 rounded hover:bg-warmgray cursor-pointer">
+              <label class="flex items-center gap-2 px-2 py-1 rounded hover:bg-[var(--bg-secondary)] cursor-pointer">
                 <input type="checkbox" ${selected.includes(c.id) ? 'checked' : ''}
                   onchange="window.toggleCalendarSelection('${c.id.replace(/'/g, "\\'")}')"
-                  class="rounded text-coral focus:ring-coral">
+                  class="rounded text-[var(--accent)] focus:ring-coral">
                 <span class="w-3 h-3 rounded-full flex-shrink-0" style="background: ${c.backgroundColor}"></span>
-                <span class="text-sm text-charcoal truncate">${escapeHtml(c.summary)}</span>
+                <span class="text-sm text-[var(--text-primary)]truncate">${escapeHtml(c.summary)}</span>
               </label>
             `).join('')}
           </div>
         </div>
 
         <div class="mb-4">
-          <label class="text-sm text-charcoal/70 block mb-2">Push tasks to:</label>
+          <label class="text-sm text-[var(--text-secondary)] block mb-2">Push tasks to:</label>
           <select onchange="window.setTargetCalendar(this.value); window.render()"
             class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none">
             ${writableCalendars.map(c => `
@@ -271,15 +271,15 @@ function renderGCalSettingsCard() {
             `).join('')}
           </select>
         </div>
-      ` : '<p class="text-sm text-charcoal/40 mb-4">No calendars found for this account.</p>'}
+      ` : '<p class="text-sm text-[var(--text-muted)] mb-4">No calendars found for this account.</p>'}
 
-      <div class="mb-4 p-3 rounded-lg bg-warmgray/25 border border-softborder">
+      <div class="mb-4 p-3 rounded-lg bg-[var(--bg-secondary)]/25 border border-[var(--border)]">
         <div class="flex items-center justify-between gap-3">
           <div>
-            <p class="text-sm font-medium text-charcoal">People Sync From Google Contacts</p>
-            <p class="text-xs text-charcoal/50 mt-1">Auto sync runs in background. Last sync: ${contactsLastSyncText}</p>
+            <p class="text-sm font-medium text-[var(--text-primary)]">People Sync From Google Contacts</p>
+            <p class="text-xs text-[var(--text-muted)] mt-1">Auto sync runs in background. Last sync: ${contactsLastSyncText}</p>
           </div>
-          <button onclick="window.syncGoogleContactsNow()" class="px-3 py-1.5 bg-white border border-softborder rounded text-xs font-medium text-charcoal hover:bg-warmgray transition ${state.gcontactsSyncing ? 'opacity-60 cursor-not-allowed' : ''}" ${state.gcontactsSyncing ? 'disabled' : ''}>
+          <button onclick="window.syncGoogleContactsNow()" class="px-3 py-1.5 bg-white border border-[var(--border)] rounded text-xs font-medium text-[var(--text-primary)]hover:bg-[var(--bg-secondary)] transition ${state.gcontactsSyncing ? 'opacity-60 cursor-not-allowed' : ''}" ${state.gcontactsSyncing ? 'disabled' : ''}>
             ${state.gcontactsSyncing ? 'Syncing...' : 'Sync Contacts'}
           </button>
         </div>
@@ -288,14 +288,14 @@ function renderGCalSettingsCard() {
         ` : ''}
       </div>
 
-      <div class="flex flex-wrap gap-3 pt-4 border-t border-softborder">
+      <div class="flex flex-wrap gap-3 pt-4 border-t border-[var(--border)]">
         <button onclick="window.syncGCalNow()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
           Sync Now
         </button>
-        <button onclick="window.disconnectGCal()" class="px-4 py-2 bg-warmgray text-charcoal rounded-lg text-sm font-medium hover:bg-softborder transition">
+        <button onclick="window.disconnectGCal()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition">
           Disconnect
         </button>
-        <span class="flex items-center text-xs text-charcoal/50">
+        <span class="flex items-center text-xs text-[var(--text-muted)]">
           <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
           Connected · Last sync: ${lastSyncText}
         </span>
@@ -313,11 +313,11 @@ function renderAIClassificationCard() {
 
   return `
     <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-charcoal mb-4">AI Classification <span class="text-coral">→</span></h3>
-      <p class="text-sm text-charcoal/50 mb-4">Use Claude AI to split/classify Braindump text and power voice-mode processing with the same key. Without an API key, the heuristic classifier is used and voice mode may be limited by browser support.</p>
+      <h3 class="font-semibold text-[var(--text-primary)] mb-4">AI Classification <span class="text-[var(--accent)]">→</span></h3>
+      <p class="text-sm text-[var(--text-muted)] mb-4">Use Claude AI to split/classify Braindump text and power voice-mode processing with the same key. Without an API key, the heuristic classifier is used and voice mode may be limited by browser support.</p>
 
       <div class="mb-4">
-        <label class="text-sm text-charcoal/70 block mb-2">Anthropic API Key</label>
+        <label class="text-sm text-[var(--text-secondary)] block mb-2">Anthropic API Key</label>
         <div class="flex gap-2">
           <input type="password" id="anthropic-key-input" value="${apiKey}"
             placeholder="sk-ant-..."
@@ -327,16 +327,16 @@ function renderAIClassificationCard() {
             Save Key
           </button>
         </div>
-        <p class="text-xs text-charcoal/40 mt-2">
+        <p class="text-xs text-[var(--text-muted)] mt-2">
           Create an API key at
           <a href="https://console.anthropic.com/settings/keys" target="_blank" class="sb-link">console.anthropic.com</a>.
           Uses Claude Haiku 4.5 for fast, low-cost classification.
         </p>
       </div>
 
-      <div class="flex items-center gap-2 pt-3 border-t border-softborder">
-        <span class="w-2 h-2 rounded-full ${hasKey ? 'bg-green-500' : 'bg-charcoal/30'}"></span>
-        <span class="text-xs text-charcoal/50">${hasKey ? 'Configured — AI classification active' : 'Not configured — using heuristic classifier'}</span>
+      <div class="flex items-center gap-2 pt-3 border-t border-[var(--border)]">
+        <span class="w-2 h-2 rounded-full ${hasKey ? 'bg-green-500' : 'bg-[var(--text-muted)]/40'}"></span>
+        <span class="text-xs text-[var(--text-muted)]">${hasKey ? 'Configured — AI classification active' : 'Not configured — using heuristic classifier'}</span>
       </div>
     </div>
   `;
@@ -351,10 +351,10 @@ function renderNoteSafetyCard() {
   return `
     <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
       <div class="flex items-center justify-between mb-3">
-        <h3 class="font-semibold text-charcoal text-sm">Note Safety</h3>
-        <span class="text-xs text-charcoal/50">${activeCount} active · ${deletedCount} deleted · ${completedCount} completed</span>
+        <h3 class="font-semibold text-[var(--text-primary)]text-sm">Note Safety</h3>
+        <span class="text-xs text-[var(--text-muted)]">${activeCount} active · ${deletedCount} deleted · ${completedCount} completed</span>
       </div>
-      <p class="text-xs text-charcoal/50 mb-3">Use this to find missing notes, inspect recent changes, and create a local backup before/after updates.</p>
+      <p class="text-xs text-[var(--text-muted)] mb-3">Use this to find missing notes, inspect recent changes, and create a local backup before/after updates.</p>
       <div class="flex flex-wrap gap-2 mb-2">
         <input id="note-safety-search" type="text" placeholder="Search notes (e.g. mom)"
           class="flex-1 min-w-[180px] px-3 py-1.5 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none">
@@ -363,11 +363,11 @@ function renderNoteSafetyCard() {
       </div>
       <div class="flex flex-wrap gap-2">
         <button onclick="(() => { const rows = window.getRecentNoteChanges(20); alert(rows.length ? rows.map(r => (r.title + ' [' + r.state + '] · ' + r.lastAction + ' · ' + new Date(r.updatedAt).toLocaleString())).join('\\n') : 'No recent note changes found.'); })()"
-          class="px-3 py-1.5 bg-warmgray text-charcoal rounded-lg text-xs font-medium hover:bg-softborder transition">Recent Changes</button>
+          class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Recent Changes</button>
         <button onclick="(() => { const rows = window.getDeletedNotes(20); alert(rows.length ? rows.map(r => (r.title + ' · deleted ' + new Date(r.deletedAt).toLocaleString() + ' · id=' + r.id)).join('\\n') : 'Trash is empty.'); })()"
-          class="px-3 py-1.5 bg-warmgray text-charcoal rounded-lg text-xs font-medium hover:bg-softborder transition">Show Deleted</button>
+          class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Show Deleted</button>
         <button onclick="(() => { const latest = window.getDeletedNotes(1)[0]; if (!latest) { alert('No deleted note to restore.'); return; } const ok = window.restoreDeletedNote(latest.id, true); alert(ok ? ('Restored: ' + latest.title) : 'Could not restore note.'); })()"
-          class="px-3 py-1.5 bg-coral/10 text-coral rounded-lg text-xs font-medium hover:bg-coral/20 transition">Restore Latest</button>
+          class="px-3 py-1.5 bg-coral/10 text-[var(--accent)] rounded-lg text-xs font-medium hover:bg-coral/20 transition">Restore Latest</button>
         <button onclick="(() => { const info = window.createNoteLocalBackup(); alert('Backup saved locally: ' + info.noteCount + ' notes at ' + new Date(info.createdAt).toLocaleString()); })()"
           class="px-3 py-1.5 bg-coral text-white rounded-lg text-xs font-medium hover:bg-coralDark transition">Create Local Backup</button>
       </div>
@@ -379,24 +379,24 @@ function renderOfflineQueueCard() {
   const queue = window.getGCalOfflineQueue?.() || [];
   return `
     <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-charcoal mb-4">Offline Queue <span class="text-coral">→</span></h3>
-      <p class="text-sm text-charcoal/50 mb-4">Google Calendar write actions queued while offline or failing token/network checks.</p>
+      <h3 class="font-semibold text-[var(--text-primary)] mb-4">Offline Queue <span class="text-[var(--accent)]">→</span></h3>
+      <p class="text-sm text-[var(--text-muted)] mb-4">Google Calendar write actions queued while offline or failing token/network checks.</p>
       <div class="flex flex-wrap gap-2 mb-3">
         <button onclick="window.retryGCalOfflineQueue()" class="px-3 py-1.5 bg-coral text-white rounded-lg text-xs font-semibold hover:bg-coralDark transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Retry All</button>
-        <button onclick="window.clearGCalOfflineQueue()" class="px-3 py-1.5 bg-warmgray text-charcoal rounded-lg text-xs font-semibold hover:bg-softborder transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Clear</button>
-        <span class="text-xs text-charcoal/50 flex items-center">${queue.length} queued</span>
+        <button onclick="window.clearGCalOfflineQueue()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-xs font-semibold hover:bg-[var(--bg-tertiary)] transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Clear</button>
+        <span class="text-xs text-[var(--text-muted)] flex items-center">${queue.length} queued</span>
       </div>
       <div class="space-y-2 max-h-56 overflow-auto">
         ${queue.length ? queue.map(item => `
-          <div class="px-3 py-2 rounded-lg bg-warmgray border border-softborder flex items-start justify-between gap-2">
+          <div class="px-3 py-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] flex items-start justify-between gap-2">
             <div class="min-w-0">
-              <p class="text-xs font-semibold text-charcoal">${item.type}</p>
-              <p class="text-[11px] text-charcoal/50">${new Date(item.createdAt).toLocaleString()}</p>
+              <p class="text-xs font-semibold text-[var(--text-primary)]">${item.type}</p>
+              <p class="text-[11px] text-[var(--text-muted)]">${new Date(item.createdAt).toLocaleString()}</p>
               ${item.lastError ? `<p class="text-[11px] text-amber-700 mt-0.5">${item.lastError}</p>` : ''}
             </div>
-            <button onclick="window.removeGCalOfflineQueueItem('${item.id}')" class="text-xs px-2 py-1 rounded bg-white border border-softborder text-charcoal/70 hover:text-charcoal">Remove</button>
+            <button onclick="window.removeGCalOfflineQueueItem('${item.id}')" class="text-xs px-2 py-1 rounded bg-white border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Remove</button>
           </div>
-        `).join('') : '<p class="text-sm text-charcoal/40">Queue is empty.</p>'}
+        `).join('') : '<p class="text-sm text-[var(--text-muted)]">Queue is empty.</p>'}
       </div>
     </div>
   `;
@@ -406,11 +406,11 @@ function renderConflictCenterCard() {
   const conflicts = state.conflictNotifications || [];
   return `
     <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-charcoal mb-4">Conflict Center <span class="text-coral">→</span></h3>
-      <p class="text-sm text-charcoal/50 mb-4">Notifications created when cloud/local payloads require conflict policy decisions.</p>
+      <h3 class="font-semibold text-[var(--text-primary)] mb-4">Conflict Center <span class="text-[var(--accent)]">→</span></h3>
+      <p class="text-sm text-[var(--text-muted)] mb-4">Notifications created when cloud/local payloads require conflict policy decisions.</p>
       <div class="flex items-center gap-2 mb-3">
-        <button onclick="window.clearConflictNotifications()" class="px-3 py-1.5 bg-warmgray text-charcoal rounded-lg text-xs font-semibold hover:bg-softborder transition ${conflicts.length ? '' : 'opacity-50 cursor-not-allowed'}" ${conflicts.length ? '' : 'disabled'}>Clear All</button>
-        <span class="text-xs text-charcoal/50">${conflicts.length} items</span>
+        <button onclick="window.clearConflictNotifications()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-xs font-semibold hover:bg-[var(--bg-tertiary)] transition ${conflicts.length ? '' : 'opacity-50 cursor-not-allowed'}" ${conflicts.length ? '' : 'disabled'}>Clear All</button>
+        <span class="text-xs text-[var(--text-muted)]">${conflicts.length} items</span>
       </div>
       <div class="space-y-2 max-h-56 overflow-auto">
         ${conflicts.length ? conflicts.map(item => `
@@ -422,7 +422,7 @@ function renderConflictCenterCard() {
             </div>
             <button onclick="window.dismissConflictNotification('${item.id}')" class="text-xs px-2 py-1 rounded bg-white border border-amber-300 text-amber-900 hover:bg-amber-100">Dismiss</button>
           </div>
-        `).join('') : '<p class="text-sm text-charcoal/40">No conflicts logged.</p>'}
+        `).join('') : '<p class="text-sm text-[var(--text-muted)]">No conflicts logged.</p>'}
       </div>
     </div>
   `;
@@ -432,24 +432,24 @@ function renderPerformanceCard() {
   const perf = state.renderPerf || { lastMs: 0, avgMs: 0, maxMs: 0, count: 0 };
   return `
     <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-charcoal mb-4">Client Profiling <span class="text-coral">→</span></h3>
-      <p class="text-sm text-charcoal/50 mb-4">Lightweight render metrics sampled in-browser.</p>
+      <h3 class="font-semibold text-[var(--text-primary)] mb-4">Client Profiling <span class="text-[var(--accent)]">→</span></h3>
+      <p class="text-sm text-[var(--text-muted)] mb-4">Lightweight render metrics sampled in-browser.</p>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-        <div class="p-3 rounded-lg bg-warmgray border border-softborder">
-          <div class="text-xs text-charcoal/50">Last Render</div>
-          <div class="text-lg font-semibold text-charcoal">${perf.lastMs} ms</div>
+        <div class="p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
+          <div class="text-xs text-[var(--text-muted)]">Last Render</div>
+          <div class="text-lg font-semibold text-[var(--text-primary)]">${perf.lastMs} ms</div>
         </div>
-        <div class="p-3 rounded-lg bg-warmgray border border-softborder">
-          <div class="text-xs text-charcoal/50">Average</div>
-          <div class="text-lg font-semibold text-charcoal">${perf.avgMs} ms</div>
+        <div class="p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
+          <div class="text-xs text-[var(--text-muted)]">Average</div>
+          <div class="text-lg font-semibold text-[var(--text-primary)]">${perf.avgMs} ms</div>
         </div>
-        <div class="p-3 rounded-lg bg-warmgray border border-softborder">
-          <div class="text-xs text-charcoal/50">Max</div>
-          <div class="text-lg font-semibold text-charcoal">${perf.maxMs} ms</div>
+        <div class="p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
+          <div class="text-xs text-[var(--text-muted)]">Max</div>
+          <div class="text-lg font-semibold text-[var(--text-primary)]">${perf.maxMs} ms</div>
         </div>
-        <div class="p-3 rounded-lg bg-warmgray border border-softborder">
-          <div class="text-xs text-charcoal/50">Samples</div>
-          <div class="text-lg font-semibold text-charcoal">${perf.count}</div>
+        <div class="p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
+          <div class="text-xs text-[var(--text-muted)]">Samples</div>
+          <div class="text-lg font-semibold text-[var(--text-primary)]">${perf.count}</div>
         </div>
       </div>
     </div>
@@ -483,7 +483,7 @@ export function renderSettingsTab() {
             <p class="font-medium text-[var(--text-primary)] truncate">${escapeHtml(user.displayName || 'User')}</p>
             <p class="text-xs text-[var(--text-muted)] truncate">${escapeHtml(user.email || '')}</p>
           </div>
-          <button onclick="signOutUser()" class="px-3 py-1.5 bg-warmgray text-charcoal rounded-lg text-xs font-medium hover:bg-softborder transition">
+          <button onclick="signOutUser()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">
             Sign Out
           </button>
         </div>
@@ -492,13 +492,13 @@ export function renderSettingsTab() {
 
       <!-- Theme (compact inline) -->
       <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
-        <h3 class="font-semibold text-charcoal text-sm mb-3">Theme</h3>
+        <h3 class="font-semibold text-[var(--text-primary)]text-sm mb-3">Theme</h3>
         <div class="flex gap-3">
           ${Object.entries(THEMES).map(([key, theme]) => `
             <button onclick="window.setTheme('${key}')"
-              class="flex-1 p-3 rounded-lg border-2 text-left transition-all ${getTheme() === key ? 'border-coral bg-coral/5' : 'border-softborder hover:border-coral/50'}">
+              class="flex-1 p-3 rounded-lg border-2 text-left transition-all ${getTheme() === key ? 'border-coral bg-coral/5' : 'border-[var(--border)] hover:border-coral/50'}">
               <div class="flex items-center gap-2 mb-1.5">
-                <span class="text-sm font-semibold text-charcoal">${theme.name}</span>
+                <span class="text-sm font-semibold text-[var(--text-primary)]">${theme.name}</span>
                 ${getTheme() === key ? '<span class="text-[10px] bg-coral text-white px-1.5 py-0.5 rounded-full">Active</span>' : ''}
               </div>
               <div class="flex gap-1.5">
@@ -524,9 +524,9 @@ export function renderSettingsTab() {
       <!-- Cloud Sync (compact) -->
       <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="font-semibold text-charcoal text-sm">Cloud Sync</h3>
-          <span class="flex items-center text-xs text-charcoal/50">
-            ${getGithubToken() ? '<span class="w-2 h-2 rounded-full bg-green-500 mr-1.5"></span> Connected' : '<span class="w-2 h-2 rounded-full bg-charcoal/30 mr-1.5"></span> Not connected'}
+          <h3 class="font-semibold text-[var(--text-primary)]text-sm">Cloud Sync</h3>
+          <span class="flex items-center text-xs text-[var(--text-muted)]">
+            ${getGithubToken() ? '<span class="w-2 h-2 rounded-full bg-green-500 mr-1.5"></span> Connected' : '<span class="w-2 h-2 rounded-full bg-[var(--text-muted)]/40 mr-1.5"></span> Not connected'}
           </span>
         </div>
         <div class="flex gap-2 mb-3">
@@ -538,7 +538,7 @@ export function renderSettingsTab() {
         </div>
         <div class="flex flex-wrap gap-2">
           <button onclick="window.saveToGithub()" class="px-3 py-1.5 bg-coral text-white rounded-lg text-xs font-medium hover:bg-coralDark transition ${getGithubToken() ? '' : 'opacity-50 cursor-not-allowed'}" ${getGithubToken() ? '' : 'disabled'}>Sync Now</button>
-          <button onclick="window.loadCloudData().then(() => window.render())" class="px-3 py-1.5 bg-warmgray text-charcoal rounded-lg text-xs font-medium hover:bg-softborder transition">Pull from Cloud</button>
+          <button onclick="window.loadCloudData().then(() => window.render())" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Pull from Cloud</button>
         </div>
       </div>
 
@@ -546,10 +546,10 @@ export function renderSettingsTab() {
       <details class="sb-card rounded-lg bg-[var(--bg-card)] group">
         <summary class="px-5 py-4 cursor-pointer select-none list-none flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <h3 class="font-semibold text-charcoal text-sm">Integrations</h3>
-            <span class="text-xs text-charcoal/40">${integrationsCount}/3 connected</span>
+            <h3 class="font-semibold text-[var(--text-primary)]text-sm">Integrations</h3>
+            <span class="text-xs text-[var(--text-muted)]">${integrationsCount}/3 connected</span>
           </div>
-          <svg class="w-4 h-4 text-charcoal/40 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+          <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
         </summary>
         <div class="px-5 pb-5 space-y-4 border-t border-[var(--border-light)] pt-4">
           ${renderWhoopSettingsCard()}
@@ -563,35 +563,35 @@ export function renderSettingsTab() {
       <details class="sb-card rounded-lg bg-[var(--bg-card)] group">
         <summary class="px-5 py-4 cursor-pointer select-none list-none flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <h3 class="font-semibold text-charcoal text-sm">Scoring Configuration</h3>
-            <span class="text-xs text-charcoal/40">Weights & targets</span>
+            <h3 class="font-semibold text-[var(--text-primary)]text-sm">Scoring Configuration</h3>
+            <span class="text-xs text-[var(--text-muted)]">Weights & targets</span>
           </div>
-          <svg class="w-4 h-4 text-charcoal/40 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+          <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
         </summary>
         <div class="px-5 pb-5 border-t border-[var(--border-light)] pt-4 space-y-6">
           <!-- Scoring Weights -->
           <div>
             <div class="flex justify-between items-center mb-3">
-              <h4 class="text-sm font-medium text-charcoal">Scoring Weights</h4>
-              <button onclick="window.resetWeights()" class="px-3 py-1 bg-coral/10 text-coral rounded text-xs font-medium hover:bg-coral/20 transition">Reset</button>
+              <h4 class="text-sm font-medium text-[var(--text-primary)]">Scoring Weights</h4>
+              <button onclick="window.resetWeights()" class="px-3 py-1 bg-coral/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-coral/20 transition">Reset</button>
             </div>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div class="bg-warmgray rounded-lg p-3 border border-softborder">
-                <h4 class="sb-section-title text-charcoal/70 mb-2 text-xs">Prayer</h4>
+              <div class="bg-[var(--bg-secondary)] rounded-lg p-3 border border-[var(--border)]">
+                <h4 class="sb-section-title text-[var(--text-secondary)] mb-2 text-xs">Prayer</h4>
                 ${createWeightInput('On-time prayer', state.WEIGHTS.prayer.onTime, 'prayer', 'onTime')}
                 ${createWeightInput('Late prayer', state.WEIGHTS.prayer.late, 'prayer', 'late')}
                 ${createWeightInput('Quran (per page)', state.WEIGHTS.prayer.quran, 'prayer', 'quran')}
               </div>
-              <div class="bg-warmgray rounded-lg p-3 border border-softborder">
-                <h4 class="sb-section-title text-charcoal/70 mb-2 text-xs">Glucose</h4>
+              <div class="bg-[var(--bg-secondary)] rounded-lg p-3 border border-[var(--border)]">
+                <h4 class="sb-section-title text-[var(--text-secondary)] mb-2 text-xs">Glucose</h4>
                 ${createWeightInput('Avg Glucose max pts', state.WEIGHTS.glucose.avgMax, 'glucose', 'avgMax')}
                 ${createWeightInput('TIR pts per %', state.WEIGHTS.glucose.tirPerPoint, 'glucose', 'tirPerPoint')}
                 ${createWeightInput('Insulin threshold', state.WEIGHTS.glucose.insulinThreshold, 'glucose', 'insulinThreshold')}
                 ${createWeightInput('Insulin bonus', state.WEIGHTS.glucose.insulinBase, 'glucose', 'insulinBase')}
                 ${createWeightInput('Insulin penalty', state.WEIGHTS.glucose.insulinPenalty, 'glucose', 'insulinPenalty')}
               </div>
-              <div class="bg-warmgray rounded-lg p-3 border border-softborder">
-                <h4 class="sb-section-title text-charcoal/70 mb-2 text-xs">Whoop</h4>
+              <div class="bg-[var(--bg-secondary)] rounded-lg p-3 border border-[var(--border)]">
+                <h4 class="sb-section-title text-[var(--text-secondary)] mb-2 text-xs">Whoop</h4>
                 ${createWeightInput('Sleep >=90%', state.WEIGHTS.whoop.sleepPerfHigh, 'whoop', 'sleepPerfHigh')}
                 ${createWeightInput('Sleep 70-90%', state.WEIGHTS.whoop.sleepPerfMid, 'whoop', 'sleepPerfMid')}
                 ${createWeightInput('Sleep 50-70%', state.WEIGHTS.whoop.sleepPerfLow, 'whoop', 'sleepPerfLow')}
@@ -601,8 +601,8 @@ export function renderSettingsTab() {
                 ${createWeightInput('Strain match', state.WEIGHTS.whoop.strainMatch, 'whoop', 'strainMatch')}
                 ${createWeightInput('High strain green', state.WEIGHTS.whoop.strainHigh, 'whoop', 'strainHigh')}
               </div>
-              <div class="bg-warmgray rounded-lg p-3 border border-softborder">
-                <h4 class="sb-section-title text-charcoal/70 mb-2 text-xs">Family</h4>
+              <div class="bg-[var(--bg-secondary)] rounded-lg p-3 border border-[var(--border)]">
+                <h4 class="sb-section-title text-[var(--text-secondary)] mb-2 text-xs">Family</h4>
                 ${createWeightInput('Mom', state.WEIGHTS.family.mom, 'family', 'mom')}
                 ${createWeightInput('Dad', state.WEIGHTS.family.dad, 'family', 'dad')}
                 ${createWeightInput('Jana', state.WEIGHTS.family.jana, 'family', 'jana')}
@@ -610,8 +610,8 @@ export function renderSettingsTab() {
                 ${createWeightInput('Ahmed', state.WEIGHTS.family.ahmed, 'family', 'ahmed')}
                 ${createWeightInput('Eman', state.WEIGHTS.family.eman, 'family', 'eman')}
               </div>
-              <div class="bg-warmgray rounded-lg p-3 border border-softborder">
-                <h4 class="sb-section-title text-charcoal/70 mb-2 text-xs">Habits</h4>
+              <div class="bg-[var(--bg-secondary)] rounded-lg p-3 border border-[var(--border)]">
+                <h4 class="sb-section-title text-[var(--text-secondary)] mb-2 text-xs">Habits</h4>
                 ${createWeightInput('Exercise', state.WEIGHTS.habits.exercise, 'habits', 'exercise')}
                 ${createWeightInput('Reading', state.WEIGHTS.habits.reading, 'habits', 'reading')}
                 ${createWeightInput('Meditation', state.WEIGHTS.habits.meditation, 'habits', 'meditation')}
@@ -627,8 +627,8 @@ export function renderSettingsTab() {
           <!-- Perfect Day Targets -->
           <div>
             <div class="flex justify-between items-center mb-3">
-              <h4 class="text-sm font-medium text-charcoal">Perfect Day Targets</h4>
-              <button onclick="window.resetMaxScores()" class="px-3 py-1 bg-coral/10 text-coral rounded text-xs font-medium hover:bg-coral/20 transition">Reset</button>
+              <h4 class="text-sm font-medium text-[var(--text-primary)]">Perfect Day Targets</h4>
+              <button onclick="window.resetMaxScores()" class="px-3 py-1 bg-coral/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-coral/20 transition">Reset</button>
             </div>
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
               ${['prayer', 'diabetes', 'whoop', 'family', 'habits', 'total'].map(key => `
@@ -636,7 +636,7 @@ export function renderSettingsTab() {
                   <input type="number" value="${state.MAX_SCORES[key]}"
                     class="w-full px-2 py-1.5 border border-[var(--border)] rounded text-center text-sm bg-[var(--bg-input)] ${key === 'total' ? 'border-coral' : ''}"
                     onchange="window.updateMaxScore('${key}', this.value)">
-                  <div class="text-[11px] font-medium ${key === 'total' ? 'text-coral' : 'text-charcoal/70'} mt-1">${key.charAt(0).toUpperCase() + key.slice(1)}</div>
+                  <div class="text-[11px] font-medium ${key === 'total' ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)]'} mt-1">${key.charAt(0).toUpperCase() + key.slice(1)}</div>
                 </div>
               `).join('')}
             </div>
@@ -646,14 +646,14 @@ export function renderSettingsTab() {
 
       <!-- Data Management (compact) -->
       <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
-        <h3 class="font-semibold text-charcoal text-sm mb-3">Data Management</h3>
+        <h3 class="font-semibold text-[var(--text-primary)]text-sm mb-3">Data Management</h3>
         <div class="flex flex-wrap gap-2">
           <button onclick="window.exportData()" class="sb-btn px-3 py-1.5 rounded text-xs font-medium">Export</button>
           <label class="sb-btn px-3 py-1.5 rounded text-xs font-medium cursor-pointer">
             Import
             <input type="file" accept=".json" class="hidden" onchange="window.importData(event)">
           </label>
-          <button onclick="window.forceHardRefresh()" class="px-3 py-1.5 bg-coral/10 text-coral rounded-lg text-xs font-medium hover:bg-coral/20 transition">Force Refresh</button>
+          <button onclick="window.forceHardRefresh()" class="px-3 py-1.5 bg-coral/10 text-[var(--accent)] rounded-lg text-xs font-medium hover:bg-coral/20 transition">Force Refresh</button>
         </div>
       </div>
 
@@ -663,9 +663,9 @@ export function renderSettingsTab() {
       <details class="sb-card rounded-lg bg-[var(--bg-card)] group">
         <summary class="px-5 py-4 cursor-pointer select-none list-none flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <h3 class="font-semibold text-charcoal text-sm">Developer Tools</h3>
+            <h3 class="font-semibold text-[var(--text-primary)]text-sm">Developer Tools</h3>
           </div>
-          <svg class="w-4 h-4 text-charcoal/40 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+          <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
         </summary>
         <div class="px-5 pb-5 space-y-4 border-t border-[var(--border-light)] pt-4">
           ${renderOfflineQueueCard()}
