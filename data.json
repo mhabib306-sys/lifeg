@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T18:02:04.025Z",
+  "lastUpdated": "2026-02-11T18:06:43.368Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1939,7 +1939,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:12:26.598Z",
       "updatedAt": "2026-02-06T14:53:30.380Z",
-      "order": 17000,
+      "order": 19000,
       "today": false,
       "flagged": false
     },
@@ -1998,7 +1998,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:28:41.177Z",
       "updatedAt": "2026-02-10T01:48:34.446Z",
-      "order": 9000,
+      "order": 10000,
       "today": false,
       "flagged": false
     },
@@ -2059,7 +2059,7 @@
       "repeat": null,
       "createdAt": "2026-02-02T08:09:36.918Z",
       "updatedAt": "2026-02-02T08:09:52.631Z",
-      "order": 19000,
+      "order": 21000,
       "today": false,
       "flagged": false
     },
@@ -2141,12 +2141,10 @@
       "isNote": true,
       "createdAt": "2026-02-07T07:55:58.071Z",
       "updatedAt": "2026-02-07T07:55:58.071Z",
-      "order": 16000,
+      "order": 18000,
       "today": false,
       "flagged": false,
-      "noteOrder": 5000,
-      "noteLifecycleState": "active",
-      "noteHistory": []
+      "noteOrder": 5000
     },
     {
       "id": "task_1770456058835_o9bav1rjn",
@@ -2166,7 +2164,7 @@
       "indent": 0,
       "createdAt": "2026-02-07T09:20:58.835Z",
       "updatedAt": "2026-02-10T02:05:40.700Z",
-      "order": 3000,
+      "order": 2000,
       "today": false,
       "flagged": false
     },
@@ -2210,12 +2208,10 @@
       "indent": 0,
       "createdAt": "2026-02-07T10:01:53.599Z",
       "updatedAt": "2026-02-07T10:02:19.548Z",
-      "order": 20000,
+      "order": 22000,
       "today": false,
       "flagged": false,
-      "noteOrder": 6000,
-      "noteLifecycleState": "active",
-      "noteHistory": []
+      "noteOrder": 6000
     },
     {
       "id": "task_1770490285825_vgowyp7kn",
@@ -2263,7 +2259,7 @@
       "indent": 0,
       "createdAt": "2026-02-08T00:27:07.575Z",
       "updatedAt": "2026-02-08T00:27:07.575Z",
-      "order": 13000,
+      "order": 15000,
       "today": false,
       "flagged": false
     },
@@ -2388,7 +2384,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 14000,
+      "order": 16000,
       "createdAt": "2026-02-08T18:51:44.364Z",
       "updatedAt": "2026-02-10T13:41:24.905Z",
       "meetingEventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260211T083000Z"
@@ -2435,7 +2431,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 15000,
+      "order": 17000,
       "createdAt": "2026-02-08T22:20:39.003Z",
       "updatedAt": "2026-02-08T23:03:23.038Z"
     },
@@ -2457,7 +2453,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 28000,
+      "order": 30000,
       "createdAt": "2026-02-08T23:00:08.748Z",
       "updatedAt": "2026-02-10T13:40:41.002Z"
     },
@@ -2481,7 +2477,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 29000,
+      "order": 31000,
       "createdAt": "2026-02-09T00:25:56.539Z",
       "updatedAt": "2026-02-09T00:25:56.539Z"
     },
@@ -2527,12 +2523,10 @@
       "isNote": true,
       "parentId": null,
       "indent": 0,
-      "order": 31000,
+      "order": 34000,
       "createdAt": "2026-02-09T18:13:38.521Z",
       "updatedAt": "2026-02-09T18:13:38.521Z",
-      "noteOrder": 11000,
-      "noteLifecycleState": "active",
-      "noteHistory": []
+      "noteOrder": 11000
     },
     {
       "id": "task_1770662098228_jajroyt6s",
@@ -2676,12 +2670,10 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::8qa8p4v0rfbdrkuhh16ng1ugn0_20260205T083000Z",
-      "order": 30000,
+      "order": 33000,
       "createdAt": "2026-02-09T19:22:23.054Z",
       "updatedAt": "2026-02-09T19:22:23.054Z",
-      "noteOrder": 12000,
-      "noteLifecycleState": "active",
-      "noteHistory": []
+      "noteOrder": 12000
     },
     {
       "id": "task_1770665317331_0ufby0muz",
@@ -2702,12 +2694,10 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260209T083000Z",
-      "order": 32000,
+      "order": 35000,
       "createdAt": "2026-02-09T19:28:37.331Z",
       "updatedAt": "2026-02-09T19:29:36.574Z",
-      "noteOrder": 13000,
-      "noteLifecycleState": "active",
-      "noteHistory": []
+      "noteOrder": 13000
     },
     {
       "id": "task_1770419495459_db8m1al68",
@@ -2725,7 +2715,7 @@
       "isNote": false,
       "createdAt": "2026-02-06T23:11:35.459Z",
       "updatedAt": "2026-02-08T00:16:12.198Z",
-      "order": 23000,
+      "order": 25000,
       "today": false,
       "flagged": false
     },
@@ -2750,7 +2740,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": null,
-      "order": 33000,
+      "order": 36000,
       "createdAt": "2026-02-10T01:29:01.852Z",
       "updatedAt": "2026-02-10T03:57:43.454Z"
     },
@@ -2773,12 +2763,10 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260209T083000Z",
-      "order": 34000,
+      "order": 41000,
       "createdAt": "2026-02-10T02:15:44.419Z",
       "updatedAt": "2026-02-10T02:15:44.419Z",
-      "noteOrder": 14000,
-      "noteLifecycleState": "active",
-      "noteHistory": []
+      "noteOrder": 14000
     },
     {
       "id": "task_1770689755718_212nsscro",
@@ -2799,7 +2787,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260209T083000Z",
-      "order": 35000,
+      "order": 42000,
       "createdAt": "2026-02-10T02:15:55.718Z",
       "updatedAt": "2026-02-10T02:15:55.718Z"
     },
@@ -2822,12 +2810,10 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::series::8qa8p4v0rfbdrkuhh16ng1ugn0_R20260125T083000",
-      "order": 36000,
+      "order": 43000,
       "createdAt": "2026-02-10T03:23:25.552Z",
       "updatedAt": "2026-02-10T03:23:25.552Z",
-      "noteOrder": 15000,
-      "noteLifecycleState": "active",
-      "noteHistory": []
+      "noteOrder": 15000
     },
     {
       "id": "task_1770693814605_1rroaqkiv",
@@ -2848,7 +2834,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::series::8qa8p4v0rfbdrkuhh16ng1ugn0_R20260125T083000",
-      "order": 37000,
+      "order": 44000,
       "createdAt": "2026-02-10T03:23:34.605Z",
       "updatedAt": "2026-02-10T03:23:34.605Z"
     },
@@ -2896,12 +2882,10 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": null,
-      "order": 38000,
+      "order": 45000,
       "createdAt": "2026-02-10T20:55:25.894Z",
       "updatedAt": "2026-02-10T20:55:25.894Z",
-      "noteOrder": 16000,
-      "noteLifecycleState": "active",
-      "noteHistory": []
+      "noteOrder": 16000
     },
     {
       "id": "task_1770757912678_tf46h9h2v",
@@ -3341,26 +3325,22 @@
     {
       "id": "personal",
       "name": "Self",
-      "color": "#4a90a4",
-      "emoji": "🧍"
+      "color": "#4a90a4"
     },
     {
       "id": "work",
       "name": "Breadfast",
-      "color": "#ea34b0",
-      "emoji": ""
+      "color": "#ea39b2"
     },
     {
       "id": "family",
       "name": "Family",
-      "color": "#5AC8FA",
-      "emoji": ""
+      "color": "#C4943D"
     },
     {
       "id": "cat_1769983795940",
       "name": "Nancy",
-      "color": "#FF2D55",
-      "emoji": ""
+      "color": "#6b7280"
     },
     {
       "id": "cat_1769987564631",
@@ -3451,18 +3431,14 @@
       "id": "person_1769977441169",
       "name": "Seif Ghallab",
       "color": "#6b7280",
-      "email": "seifag@outlook.com",
-      "googleContactId": "people/c2352969596018857057",
-      "updatedAt": "2026-02-10T14:44:29.343Z",
-      "jobTitle": "Head of Fresh and Private Label"
+      "email": "",
+      "jobTitle": ""
     },
     {
       "id": "person_1769988307264",
       "name": "Mostafa Amin",
-      "email": "m@breadfast.com",
-      "googleContactId": "people/c3811983489892675898",
-      "updatedAt": "2026-02-10T14:44:29.341Z",
-      "jobTitle": "Chief Executive Officer"
+      "email": "",
+      "jobTitle": ""
     },
     {
       "id": "person_1769988593103",
@@ -3491,18 +3467,14 @@
     {
       "id": "person-1770490296950",
       "name": "Nancy",
-      "email": "nancyfawzy_91@hotmail.com",
-      "googleContactId": "people/c2369068443619026976",
-      "updatedAt": "2026-02-10T13:26:31.351Z",
+      "email": "",
       "jobTitle": ""
     },
     {
       "id": "person-1770510421604",
       "name": "Ali Refaai",
-      "email": "ali.refaai@breadfast.com",
-      "googleContactId": "people/c8003857861184180042",
-      "updatedAt": "2026-02-10T14:44:29.343Z",
-      "jobTitle": "Commercial Director"
+      "email": "",
+      "jobTitle": ""
     },
     {
       "id": "person_1770576686684",
@@ -3513,9 +3485,9 @@
     },
     {
       "id": "person_1770591589441",
-      "name": "Nadine Khaled",
+      "name": "Nadine",
       "color": "#4A90A4",
-      "email": "nadine.khaled@breadfast.com",
+      "email": "",
       "jobTitle": ""
     },
     {
@@ -9261,9 +9233,9 @@
       "visible": true
     },
     {
-      "id": "quick-stats",
-      "type": "stats",
-      "title": "Quick Stats",
+      "id": "today-tasks",
+      "type": "today-tasks",
+      "title": "Today",
       "size": "half",
       "order": 1,
       "visible": true
@@ -9277,51 +9249,11 @@
       "visible": true
     },
     {
-      "id": "today-tasks",
-      "type": "today-tasks",
-      "title": "Today",
+      "id": "quick-stats",
+      "type": "stats",
+      "title": "Quick Stats",
       "size": "half",
       "order": 3,
-      "visible": true
-    },
-    {
-      "id": "glucose",
-      "type": "glucose",
-      "title": "Glucose",
-      "size": "half",
-      "order": 4,
-      "visible": true
-    },
-    {
-      "id": "next-tasks",
-      "type": "next-tasks",
-      "title": "Next",
-      "size": "half",
-      "order": 5,
-      "visible": true
-    },
-    {
-      "id": "whoop",
-      "type": "whoop",
-      "title": "Whoop",
-      "size": "half",
-      "order": 6,
-      "visible": true
-    },
-    {
-      "id": "today-events",
-      "type": "today-events",
-      "title": "Today's Events",
-      "size": "half",
-      "order": 7,
-      "visible": true
-    },
-    {
-      "id": "gsheet-yesterday",
-      "type": "gsheet-yesterday",
-      "title": "Yesterday",
-      "size": "half",
-      "order": 8,
       "visible": true
     },
     {
@@ -9329,7 +9261,23 @@
       "type": "score",
       "title": "Today's Score",
       "size": "half",
-      "order": 9,
+      "order": 4,
+      "visible": true
+    },
+    {
+      "id": "today-events",
+      "type": "today-events",
+      "title": "Today's Events",
+      "size": "half",
+      "order": 5,
+      "visible": true
+    },
+    {
+      "id": "next-tasks",
+      "type": "next-tasks",
+      "title": "Next",
+      "size": "half",
+      "order": 6,
       "visible": true
     },
     {
@@ -9337,13 +9285,37 @@
       "type": "prayers",
       "title": "Prayers",
       "size": "half",
-      "order": 10,
+      "order": 7,
+      "visible": true
+    },
+    {
+      "id": "glucose",
+      "type": "glucose",
+      "title": "Glucose",
+      "size": "half",
+      "order": 8,
+      "visible": true
+    },
+    {
+      "id": "whoop",
+      "type": "whoop",
+      "title": "Whoop",
+      "size": "half",
+      "order": 9,
       "visible": true
     },
     {
       "id": "habits",
       "type": "habits",
       "title": "Habits",
+      "size": "half",
+      "order": 10,
+      "visible": true
+    },
+    {
+      "id": "gsheet-yesterday",
+      "type": "gsheet-yesterday",
+      "title": "Yesterday",
       "size": "half",
       "order": 11,
       "visible": true
@@ -9477,41 +9449,6 @@
       "updatedAt": "2026-02-11T14:18:23.239Z"
     }
   },
-  "triggers": [
-    {
-      "id": "trigger_1770820792942_9k7wr",
-      "title": "Do I have a self-love activity scheduled in my calendar for the next 7 days?",
-      "areaId": "personal",
-      "categoryId": null,
-      "parentId": null,
-      "indent": 0,
-      "triggerOrder": 1000,
-      "createdAt": "2026-02-11T14:39:52.942Z",
-      "updatedAt": "2026-02-11T14:40:12.135Z"
-    },
-    {
-      "id": "trigger_1770827621954_d1d8p",
-      "title": "How is Ahmed progressing in his work?",
-      "areaId": "family",
-      "categoryId": null,
-      "parentId": null,
-      "indent": 0,
-      "triggerOrder": 1000,
-      "createdAt": "2026-02-11T16:33:41.954Z",
-      "updatedAt": "2026-02-11T16:33:48.251Z"
-    },
-    {
-      "id": "trigger_1770827711787_55c51",
-      "title": "Did I plan for a time to visit mom this week?",
-      "areaId": "family",
-      "categoryId": null,
-      "parentId": null,
-      "indent": 0,
-      "triggerOrder": 2000,
-      "createdAt": "2026-02-11T16:35:11.787Z",
-      "updatedAt": "2026-02-11T16:35:16.056Z"
-    }
-  ],
   "xp": {
     "total": 1892,
     "history": [
