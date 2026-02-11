@@ -254,7 +254,7 @@ function noteAcRenderPopup(items, query, el) {
     if (isDate) {
       icon = `<span class="ac-icon" style="background:#8b5cf620;color:#8b5cf6"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg></span>`;
     } else if (noteAcTriggerChar === '#') {
-      icon = `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">${item.icon || '\uD83D\uDCC1'}</span>`;
+      icon = `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">${item.emoji || '<svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}</span>`;
     } else if (noteAcTriggerChar === '@') {
       icon = `<span class="w-3 h-3 rounded-full inline-block flex-shrink-0" style="background:${item.color}"></span>`;
     } else {

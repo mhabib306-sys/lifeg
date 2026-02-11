@@ -557,7 +557,7 @@ export function renderAreaModalHtml() {
               <button type="button" onclick="event.stopPropagation(); areaEmojiPickerOpen=!areaEmojiPickerOpen; emojiSearchQuery=''; render()"
                 id="area-folder-preview"
                 class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl cursor-pointer hover:ring-2 hover:ring-[var(--accent)]/40 transition" style="background: ${areaColor}20; color: ${areaColor}">
-                ${areaEmoji || '<svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
+                ${areaEmoji || '<svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}
               </button>
               ${state.areaEmojiPickerOpen ? renderEmojiPicker('selectAreaEmoji') : ''}
             </div>
@@ -617,7 +617,7 @@ export function renderCategoryModalHtml() {
               <button type="button" onclick="event.stopPropagation(); categoryEmojiPickerOpen=!categoryEmojiPickerOpen; emojiSearchQuery=''; render()"
                 id="cat-folder-preview"
                 class="w-14 h-14 rounded-xl flex items-center justify-center text-xl cursor-pointer hover:ring-2 hover:ring-[var(--accent)]/40 transition" style="background: ${defaultColor}20; color: ${defaultColor}">
-                ${catEmoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
+                ${catEmoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}
               </button>
               ${state.categoryEmojiPickerOpen ? renderEmojiPicker('selectCategoryEmoji') : ''}
             </div>

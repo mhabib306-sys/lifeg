@@ -440,7 +440,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl" style="background: color-mix(in srgb, ${categoryColor} 12%, transparent); color: ${categoryColor}">
-              ${currentCategory.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'}
+              ${currentCategory.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V5a2 2 0 012-2h4.586a1 1 0 01.707.293L12 5h7a2 2 0 012 2v2"/><rect x="2" y="9" width="20" height="12" rx="2"/></svg>'}
             </div>
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(currentCategory.name)}</h1>
@@ -552,7 +552,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
               <button onclick="window.showCategoryTasks('${sc.id}')"
                 class="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-[var(--bg-secondary)] transition group">
                 <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style="background: color-mix(in srgb, ${scColor} 12%, transparent); color: ${scColor}">
-                  ${sc.emoji || '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'}
+                  ${sc.emoji || '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V5a2 2 0 012-2h4.586a1 1 0 01.707.293L12 5h7a2 2 0 012 2v2"/><rect x="2" y="9" width="20" height="12" rx="2"/></svg>'}
                 </span>
                 <span class="flex-1 text-[14px] text-[var(--text-primary)] truncate">${escapeHtml(sc.name)}</span>
                 <span class="text-[12px] text-[var(--text-muted)]">${scTaskCount || ''}</span>
@@ -639,7 +639,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl" style="background: color-mix(in srgb, ${categoryColor} 12%, transparent); color: ${categoryColor}">
-              ${category.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'}
+              ${category.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V5a2 2 0 012-2h4.586a1 1 0 01.707.293L12 5h7a2 2 0 012 2v2"/><rect x="2" y="9" width="20" height="12" rx="2"/></svg>'}
             </div>
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(category.name)}</h1>
@@ -1393,7 +1393,7 @@ export function renderTasksTab() {
           </button>
           ${state.taskAreas.map(area => `
             <button onclick="window.showAreaTasks('${area.id}')" class="workspace-area-chip ${isAreaActive(area.id) || selectedAreaId === area.id ? 'active' : ''}" style="--area-color:${area.color || 'var(--accent)'}">
-              <span class="workspace-area-emoji">${area.emoji || '📁'}</span>
+              <span class="workspace-area-emoji">${area.emoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}</span>
               <span class="workspace-area-name">${escapeHtml(area.name)}</span>
               <span class="workspace-area-count">${categoryCounts[area.id] || ''}</span>
             </button>
@@ -1410,7 +1410,7 @@ export function renderTasksTab() {
           </button>
           ${getCategoriesByArea(selectedAreaId).map(subcat => `
             <button onclick="window.showCategoryTasks('${subcat.id}')" class="workspace-chip ${isSubcatActive(subcat.id) ? 'active' : ''}">
-              <span class="workspace-chip-icon">${subcat.emoji || '📂'}</span>
+              <span class="workspace-chip-icon">${subcat.emoji || '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}</span>
               <span>${escapeHtml(subcat.name)}</span>
             </button>
           `).join('')}

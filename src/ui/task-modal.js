@@ -701,7 +701,7 @@ export function selectArea(area) {
   if (display) {
     display.innerHTML = area
       ? `<span class="tag-pill" style="background: ${area.color}20; color: ${area.color}">
-           ${area.icon || '\uD83D\uDCC1'} ${escapeHtml(area.name)}
+           ${area.emoji || '<svg style="display:inline-block;vertical-align:middle;width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'} ${escapeHtml(area.name)}
            <span class="tag-pill-remove" onclick="event.stopPropagation(); selectArea(null); renderAreaInput();">
              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
            </span>
@@ -726,7 +726,7 @@ export function renderAreaInput() {
     <div id="area-display" class="modal-token-shell area-display-shell" onclick="document.getElementById('area-search').focus()">
       ${area
         ? `<span class="tag-pill" style="background: ${area.color}20; color: ${area.color}">
-             ${area.icon || '\uD83D\uDCC1'} ${escapeHtml(area.name)}
+             ${area.emoji || '<svg style="display:inline-block;vertical-align:middle;width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'} ${escapeHtml(area.name)}
              <span class="tag-pill-remove" onclick="event.stopPropagation(); selectArea(null); renderAreaInput();">
                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
              </span>
@@ -746,7 +746,7 @@ export function renderAreaInput() {
     state.taskAreas,
     (item) => { selectArea(item); renderAreaInput(); },
     (item) => item.name,
-    (item) => `<div class="autocomplete-option-icon" style="background: ${item.color}20; color: ${item.color}">${item.icon || '\uD83D\uDCC1'}</div>`,
+    (item) => `<div class="autocomplete-option-icon" style="background: ${item.color}20; color: ${item.color}">${item.emoji || '<svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}</div>`,
     true,
     (name) => {
       const newCat = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '\uD83D\uDCC1' };
