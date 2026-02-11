@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T09:27:28.388Z",
+  "lastUpdated": "2026-02-11T09:27:47.540Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3320,6 +3320,27 @@
       "createdAt": "2026-02-11T08:34:03.221Z",
       "updatedAt": "2026-02-11T08:34:03.571Z",
       "gcalEventId": "un6n044njtktf94jal6a81dlnk"
+    },
+    {
+      "id": "task_1770802064673_rub2354ie",
+      "title": "",
+      "notes": "",
+      "status": "anytime",
+      "completed": false,
+      "completedAt": null,
+      "areaId": "work",
+      "categoryId": "subcat_1770756905510",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": null,
+      "indent": 0,
+      "noteOrder": 17000,
+      "createdAt": "2026-02-11T09:27:44.673Z",
+      "updatedAt": "2026-02-11T09:27:44.673Z"
     }
   ],
   "deletedTaskTombstones": {
