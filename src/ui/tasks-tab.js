@@ -371,25 +371,12 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
   const activeTasks = areaTasks.filter(t => !t.isNote).length;
   const noteItems = areaTasks.filter(t => t.isNote);
   const taskItems = areaTasks.filter(t => !t.isNote);
-  const overdueTasks = taskItems.filter(t => t.dueDate && t.dueDate < todayDate);
-  const todayTasks = taskItems.filter(t =>
-    !overdueTasks.includes(t) && (t.today || t.dueDate === todayDate));
-  const upcomingTasks = taskItems.filter(t =>
-    t.dueDate && t.dueDate > todayDate && !todayTasks.includes(t));
-  const deferredTasks = taskItems.filter(t =>
-    t.deferDate && t.deferDate > todayDate &&
-    !overdueTasks.includes(t) && !upcomingTasks.includes(t));
-  const anytimeTasks = taskItems.filter(t =>
-    t.status === 'anytime' && !overdueTasks.includes(t) &&
-    !todayTasks.includes(t) && !upcomingTasks.includes(t) &&
-    !deferredTasks.includes(t));
-  const somedayTasks = taskItems.filter(t => t.status === 'someday');
-  const inboxTasks = taskItems.filter(t => t.status === 'inbox');
-  const dueSoonCount = taskItems.filter(t => {
-    if (!t.dueDate || t.dueDate <= todayDate) return false;
-    const diff = (new Date(t.dueDate + 'T00:00:00') - new Date(todayDate + 'T00:00:00')) / 86400000;
-    return diff <= 3;
-  }).length;
+  const overdueCt = taskItems.filter(t => t.dueDate && t.dueDate < todayDate).length;
+  const todayCt = taskItems.filter(t =>
+    !(t.dueDate && t.dueDate < todayDate) && (t.today || t.dueDate === todayDate)).length;
+
+  const createPropsExpr = `areaId: '${currentCategory.id}'`;
+  const filterExpr = `t.areaId === '${currentCategory.id}'`;
 
   const completionRate = activeTasks + completedTasks > 0 ? Math.round((completedTasks / (activeTasks + completedTasks)) * 100) : 0;
   const categoryColor = currentCategory.color || '#6366F1';
@@ -426,16 +413,16 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
               <div class="text-[11px] text-[var(--text-muted)]">${completedTasks} of ${activeTasks + completedTasks}</div>
             </div>
           </div>
-          ${overdueTasks.length > 0 ? `
+          ${overdueCt > 0 ? `
             <div class="flex items-center gap-1.5 text-[12px] font-medium text-red-500">
               <span class="w-2 h-2 rounded-full bg-red-500"></span>
-              ${overdueTasks.length} overdue
+              ${overdueCt} overdue
             </div>
           ` : ''}
-          ${todayTasks.length > 0 ? `
+          ${todayCt > 0 ? `
             <div class="flex items-center gap-1.5 text-[12px] font-medium text-amber-500">
               <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-              ${todayTasks.length} today
+              ${todayCt} today
             </div>
           ` : ''}
           <div class="flex-1"></div>
@@ -533,146 +520,8 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
 
       <!-- Task Sections -->
       <div class="space-y-4">
-        ${overdueTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-red-100 overflow-hidden">
-            <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-center gap-2">
-              <svg class="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-              <span class="text-sm font-semibold text-red-700">Overdue</span>
-              <span class="text-xs text-red-400 ml-1">${overdueTasks.length}</span>
-            </div>
-            <div class="task-list">${overdueTasks.map(task => renderTaskItem(task)).join('')}</div>
-          </div>
-        ` : ''}
-
-        ${todayTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 bg-amber-50/50 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Today</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${todayTasks.length}</span>
-            </div>
-            <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
-            <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
-                class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-500 hover:text-amber-600 hover:bg-amber-50/50 rounded-lg transition text-left">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Add to Today...
-              </button>
-            </div>
-          </div>
-        ` : ''}
-
-        ${upcomingTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Upcoming</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${upcomingTasks.length}</span>
-            </div>
-            <div class="task-list">${upcomingTasks.map(task => renderTaskItem(task)).join('')}</div>
-          </div>
-        ` : ''}
-
-        ${deferredTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-muted)]">Deferred</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${deferredTasks.length}</span>
-            </div>
-            <div class="task-list">${deferredTasks.map(task => renderTaskItem(task)).join('')}</div>
-          </div>
-        ` : ''}
-
-        ${inboxTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h4.18c.26 1.7 1.74 3 3.57 3h2.5c1.83 0 3.31-1.3 3.57-3H21v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6zm0-2l3-7h12l3 7h-4.18c-.26-1.7-1.74-3-3.57-3h-2.5c-1.83 0-3.31 1.3-3.57 3H3z"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Inbox</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${inboxTasks.length}</span>
-            </div>
-            <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
-            <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
-                class="flex items-center gap-2 px-3 py-2 w-full text-sm text-blue-500 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition text-left">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Add Task...
-              </button>
-            </div>
-          </div>
-        ` : ''}
-
-        ${anytimeTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-teal-500" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="2"/><rect x="3" y="10" width="18" height="4" rx="2"/><rect x="3" y="16" width="18" height="4" rx="2"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Anytime</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${anytimeTasks.length}</span>
-            </div>
-            <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
-            <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
-                class="flex items-center gap-2 px-3 py-2 w-full text-sm text-teal-500 hover:text-teal-600 hover:bg-teal-50/50 rounded-lg transition text-left">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Add to Anytime...
-              </button>
-            </div>
-          </div>
-        ` : ''}
-
-        ${somedayTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h18v4H3V3zm1 5h16v13a1 1 0 01-1 1H5a1 1 0 01-1-1V8zm5 3v2h6v-2H9z"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Someday</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${somedayTasks.length}</span>
-            </div>
-            <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
-            <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'someday', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
-                class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-600 hover:text-amber-700 hover:bg-amber-50/50 rounded-lg transition text-left">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Add to Someday...
-              </button>
-            </div>
-          </div>
-        ` : ''}
-
-        <!-- Notes Section (always show) -->
-        <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-          <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-[var(--accent)]" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Notes</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${noteItems.length}</span>
-            </div>
-            <button onclick="window.createRootNote('${currentCategory.id}')"
-              class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-              Add Note
-            </button>
-          </div>
-          ${noteItems.length > 0 ? `
-            ${renderNotesBreadcrumb()}
-            <div class="py-2">${renderNotesOutliner(currentCategory.id)}</div>
-            <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createRootNote('${currentCategory.id}')"
-                class="flex items-center gap-2 px-3 py-2 w-full text-sm text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition text-left">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Add another note...
-              </button>
-            </div>
-          ` : `
-            <div class="px-4 py-8 text-center">
-              <p class="text-sm text-[var(--text-muted)] mb-3">No notes in this area yet</p>
-              <button onclick="window.createRootNote('${currentCategory.id}')"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent-light)] text-[var(--accent)] text-sm font-medium rounded-lg hover:bg-[var(--accent-light)] transition">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Create your first note
-              </button>
-            </div>
-          `}
-        </div>
+        ${buildTaskSections(taskItems, todayDate, categoryColor, createPropsExpr, filterExpr)}
+        ${buildNotesSection(noteItems, `'${currentCategory.id}'`, currentCategory.id)}
 
         ${totalTasks === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
@@ -714,23 +563,15 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
   const activeTasks = catTasks.filter(t => !t.isNote).length;
   const noteItems = catTasks.filter(t => t.isNote);
   const taskItems = catTasks.filter(t => !t.isNote);
-  const overdueTasks = taskItems.filter(t => t.dueDate && t.dueDate < todayDate);
-  const todayTasks = taskItems.filter(t =>
-    !overdueTasks.includes(t) && (t.today || t.dueDate === todayDate));
-  const upcomingTasks = taskItems.filter(t =>
-    t.dueDate && t.dueDate > todayDate && !todayTasks.includes(t));
-  const deferredTasks = taskItems.filter(t =>
-    t.deferDate && t.deferDate > todayDate &&
-    !overdueTasks.includes(t) && !upcomingTasks.includes(t));
-  const anytimeTasks = taskItems.filter(t =>
-    t.status === 'anytime' && !overdueTasks.includes(t) &&
-    !todayTasks.includes(t) && !upcomingTasks.includes(t) &&
-    !deferredTasks.includes(t));
-  const somedayTasks = taskItems.filter(t => t.status === 'someday');
-  const inboxTasks = taskItems.filter(t => t.status === 'inbox');
+  const overdueCt = taskItems.filter(t => t.dueDate && t.dueDate < todayDate).length;
+  const todayCt = taskItems.filter(t =>
+    !(t.dueDate && t.dueDate < todayDate) && (t.today || t.dueDate === todayDate)).length;
 
   const completionRate = activeTasks + completedTasks > 0 ? Math.round((completedTasks / (activeTasks + completedTasks)) * 100) : 0;
   const categoryColor = category.color || '#6366F1';
+
+  const createPropsExpr = `areaId: '${category.areaId}', categoryId: '${category.id}'`;
+  const filterExpr = `t.categoryId === '${category.id}'`;
 
   return `
     <div class="flex-1 space-y-4">
@@ -773,16 +614,16 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
               <div class="text-[11px] text-[var(--text-muted)]">${completedTasks} of ${activeTasks + completedTasks}</div>
             </div>
           </div>
-          ${overdueTasks.length > 0 ? `
+          ${overdueCt > 0 ? `
             <div class="flex items-center gap-1.5 text-[12px] font-medium text-red-500">
               <span class="w-2 h-2 rounded-full bg-red-500"></span>
-              ${overdueTasks.length} overdue
+              ${overdueCt} overdue
             </div>
           ` : ''}
-          ${todayTasks.length > 0 ? `
+          ${todayCt > 0 ? `
             <div class="flex items-center gap-1.5 text-[12px] font-medium text-amber-500">
               <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-              ${todayTasks.length} today
+              ${todayCt} today
             </div>
           ` : ''}
           <div class="flex-1"></div>
@@ -836,118 +677,8 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
 
       <!-- Task Sections -->
       <div class="space-y-4">
-        ${overdueTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-red-100 overflow-hidden">
-            <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-center gap-2">
-              <svg class="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-              <span class="text-sm font-semibold text-red-700">Overdue</span>
-              <span class="text-xs text-red-400 ml-1">${overdueTasks.length}</span>
-            </div>
-            <div class="task-list">${overdueTasks.map(task => renderTaskItem(task)).join('')}</div>
-          </div>
-        ` : ''}
-
-        ${todayTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 bg-amber-50/50 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Today</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${todayTasks.length}</span>
-            </div>
-            <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
-          </div>
-        ` : ''}
-
-        ${upcomingTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Upcoming</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${upcomingTasks.length}</span>
-            </div>
-            <div class="task-list">${upcomingTasks.map(task => renderTaskItem(task)).join('')}</div>
-          </div>
-        ` : ''}
-
-        ${deferredTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-muted)]">Deferred</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${deferredTasks.length}</span>
-            </div>
-            <div class="task-list">${deferredTasks.map(task => renderTaskItem(task)).join('')}</div>
-          </div>
-        ` : ''}
-
-        ${inboxTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h4.18c.26 1.7 1.74 3 3.57 3h2.5c1.83 0 3.31-1.3 3.57-3H21v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6zm0-2l3-7h12l3 7h-4.18c-.26-1.7-1.74-3-3.57-3h-2.5c-1.83 0-3.31 1.3-3.57 3H3z"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Inbox</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${inboxTasks.length}</span>
-            </div>
-            <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
-          </div>
-        ` : ''}
-
-        ${anytimeTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-14h2v6h-2zm0 8h2v2h-2z"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Anytime</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${anytimeTasks.length}</span>
-            </div>
-            <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
-          </div>
-        ` : ''}
-
-        ${somedayTasks.length > 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-              <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-muted)]">Someday</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${somedayTasks.length}</span>
-            </div>
-            <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
-          </div>
-        ` : ''}
-
-        <!-- Notes Section (always show) -->
-        <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-          <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-[var(--accent)]" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Notes</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${noteItems.length}</span>
-            </div>
-            <button onclick="window.createRootNote({areaId:'${category.areaId}',categoryId:'${category.id}'})"
-              class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-              Add Note
-            </button>
-          </div>
-          ${noteItems.length > 0 ? `
-            ${renderNotesBreadcrumb()}
-            <div class="py-2">${renderNotesOutliner({categoryId: category.id})}</div>
-            <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createRootNote({areaId:'${category.areaId}',categoryId:'${category.id}'})"
-                class="flex items-center gap-2 px-3 py-2 w-full text-sm text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition text-left">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Add another note...
-              </button>
-            </div>
-          ` : `
-            <div class="px-4 py-8 text-center">
-              <p class="text-sm text-[var(--text-muted)] mb-3">No notes in this category yet</p>
-              <button onclick="window.createRootNote({areaId:'${category.areaId}',categoryId:'${category.id}'})"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent-light)] text-[var(--accent)] text-sm font-medium rounded-lg hover:bg-[var(--accent-light)] transition">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Create your first note
-              </button>
-            </div>
-          `}
-        </div>
+        ${buildTaskSections(taskItems, todayDate, categoryColor, createPropsExpr, filterExpr)}
+        ${buildNotesSection(noteItems, `{areaId:'${category.areaId}',categoryId:'${category.id}'}`, {categoryId: category.id})}
 
         ${filteredTasks.length === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
@@ -1066,8 +797,12 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
         <div class="mt-3 flex flex-wrap items-center gap-2">
           <button onclick="window.createTask('', { status: 'anytime', labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Task</button>
+          <button onclick="window.createTask('', { status: 'anytime', labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-anytime">+ Anytime</button>
           <button onclick="window.createTask('', { status: 'someday', labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-someday">+ Someday</button>
+          <button onclick="window.createTask('', { status: 'anytime', today: true, labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-today">+ Today</button>
           <button onclick="window.createRootNote(${filterArg})"
             class="area-chip area-chip-action area-chip-note">+ Note</button>
         </div>
@@ -1205,8 +940,12 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
         <div class="mt-3 flex flex-wrap items-center gap-2">
           <button onclick="window.createTask('', { status: 'anytime', people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Task</button>
+          <button onclick="window.createTask('', { status: 'anytime', people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-anytime">+ Anytime</button>
           <button onclick="window.createTask('', { status: 'someday', people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-someday">+ Someday</button>
+          <button onclick="window.createTask('', { status: 'anytime', today: true, people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-today">+ Today</button>
           <button onclick="window.createRootNote(${filterArg})"
             class="area-chip area-chip-action area-chip-note">+ Note</button>
         </div>
