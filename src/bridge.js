@@ -210,6 +210,7 @@ import {
   saveAreaFromModal, saveLabelFromModal, savePersonFromModal,
   saveCategoryFromModal,
   savePerspectiveFromModal, selectPerspectiveEmoji, selectAreaEmoji, selectCategoryEmoji,
+  updateEmojiGrid,
   renderPerspectiveModalHtml, renderAreaModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml
 } from './ui/entity-modals.js';
 
@@ -410,7 +411,7 @@ Object.assign(window, {
   addTag, removeTag, renderTagsInput,
   addPersonModal, removePersonModal, renderPeopleInput,
   toggleRepeat, initModalAutocomplete,
-  closeTaskModal, saveTaskFromModal, savePerspectiveFromModal, selectPerspectiveEmoji, selectAreaEmoji, selectCategoryEmoji,
+  closeTaskModal, saveTaskFromModal, savePerspectiveFromModal, selectPerspectiveEmoji, selectAreaEmoji, selectCategoryEmoji, updateEmojiGrid,
   renderTaskModalHtml,
   renderPerspectiveModalHtml, renderAreaModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml,
   parseDateQuery, setupInlineAutocomplete, renderInlineChips,

@@ -565,9 +565,10 @@ export function renderTriggerItem(trigger) {
         <button onclick="event.stopPropagation(); ${hasChildren ? `toggleTriggerCollapse('${trigger.id}')` : `createChildTrigger('${trigger.id}')`}"
           class="trigger-bullet ${hasChildren ? 'has-children' : ''} ${isCollapsed ? 'collapsed' : ''}"
           title="${hasChildren ? (isCollapsed ? 'Expand' : 'Collapse') : 'Add child'}">
-          ${hasChildren ? `
-            <svg class="trigger-bullet-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6.23 4.21a.75.75 0 011.06.02l5.25 5.5a.75.75 0 010 1.04l-5.25 5.5a.75.75 0 01-1.08-1.04L11 10.25 6.21 5.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-          ` : `<span class="trigger-bullet-dot"></span>`}
+          ${hasChildren ? (isCollapsed
+            ? '<span class="trigger-bullet-dot trigger-collapsed-ring"></span>'
+            : '<svg class="trigger-bullet-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6.23 4.21a.75.75 0 011.06.02l5.25 5.5a.75.75 0 010 1.04l-5.25 5.5a.75.75 0 01-1.08-1.04L11 10.25 6.21 5.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>'
+          ) : '<span class="trigger-bullet-dot"></span>'}
         </button>
 
         <div class="trigger-content-col">

@@ -125,16 +125,10 @@ function writeWhoopToDate(dateKey, data) {
     state.allData[dateKey].whoop.recovery = data.recovery;
   }
 
-  // Strain: only write if the cycle belongs to this date.
-  // Between midnight and wake-up, the latest cycle is still yesterday's —
-  // writing that strain to today would be wrong.
-  const cycleDate = data.cycleStartDate; // YYYY-MM-DD from worker
+  // Strain: write the latest value regardless of cycle start date.
+  // The worker returns today's most-recent cycle strain which is always relevant.
   if (data.strain !== null && data.strain !== undefined) {
-    if (!cycleDate || cycleDate === dateKey) {
-      state.allData[dateKey].whoop.strain = data.strain;
-    } else {
-      console.log(`WHOOP: skipping strain (cycle from ${cycleDate}, target ${dateKey})`);
-    }
+    state.allData[dateKey].whoop.strain = data.strain;
   }
 }
 

@@ -386,8 +386,8 @@ export function render() {
       initModalAutocomplete();
     }
 
-    // Restore focus to emoji search input if picker is open
-    if (state.perspectiveEmojiPickerOpen) {
+    // Restore focus to emoji search input if any emoji picker is open
+    if (state.perspectiveEmojiPickerOpen || state.areaEmojiPickerOpen || state.categoryEmojiPickerOpen) {
       const emojiInput = document.getElementById('emoji-search-input');
       if (emojiInput) {
         emojiInput.focus();

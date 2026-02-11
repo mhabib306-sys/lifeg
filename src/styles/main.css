@@ -896,10 +896,14 @@ img.twemoji {
   height: 6px;
   border-radius: 50%;
   background: var(--notes-accent, #8B5CF6);
-  transition: transform 0.12s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 .note-bullet:hover .note-bullet-dot {
   transform: scale(1.3);
+}
+/* Tana-style collapsed ring — dot with subtle border indicating hidden children */
+.note-collapsed-ring {
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
 }
 
 /* Contenteditable input */
@@ -4420,10 +4424,14 @@ body.mobile-keyboard-open .main-content {
   height: 6px;
   border-radius: 50%;
   background: #FFCC00;
-  transition: transform 0.12s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 .trigger-bullet:hover .trigger-bullet-dot {
   transform: scale(1.3);
+}
+/* Tana-style collapsed ring for triggers */
+.trigger-collapsed-ring {
+  box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.22);
 }
 .trigger-content-col {
   flex: 1;

@@ -237,36 +237,68 @@ const EMOJI_CATEGORIES = {
 };
 
 /**
- * Render the reusable emoji picker grid.
- * @param {string} selectFnName - Window function name to call on selection (e.g., 'selectAreaEmoji')
- * @returns {string} HTML for the emoji picker dropdown
+ * Build the emoji grid HTML for a given search query and select function.
+ * Shared by both renderEmojiPicker (initial render) and updateEmojiGrid (live filter).
  */
-function renderEmojiPicker(selectFnName = 'selectPerspectiveEmoji') {
-  const searchQuery = state.emojiSearchQuery || '';
-  let emojiGridHtml = '';
-
+function buildEmojiGridHtml(searchQuery, selectFnName) {
+  let html = '';
   for (const [category, emojiStr] of Object.entries(EMOJI_CATEGORIES)) {
     const emojis = [...new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(emojiStr)].map(s => s.segment).filter(e => e.trim());
     const filtered = searchQuery
       ? emojis.filter(() => category.toLowerCase().includes(searchQuery.toLowerCase()))
       : emojis;
     if (filtered.length === 0) continue;
-    emojiGridHtml += `
+    html += `
       <div class="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider px-1 pt-2 pb-1">${category}</div>
       <div class="grid grid-cols-8 gap-0.5">
         ${filtered.map(e => `<button type="button" class="w-8 h-8 flex items-center justify-center text-lg rounded-md hover:bg-[var(--accent-light)] transition cursor-pointer" onclick="event.stopPropagation(); ${selectFnName}('${e.replace(/'/g, "\\'")}')">${e}</button>`).join('')}
       </div>
     `;
   }
+  return html;
+}
+
+/**
+ * Determine which emoji select function to use based on which picker is open.
+ */
+function getActiveEmojiSelectFn() {
+  if (state.perspectiveEmojiPickerOpen) return 'selectPerspectiveEmoji';
+  if (state.areaEmojiPickerOpen) return 'selectAreaEmoji';
+  if (state.categoryEmojiPickerOpen) return 'selectCategoryEmoji';
+  return 'selectPerspectiveEmoji';
+}
+
+/**
+ * Live-filter the emoji grid without a full render().
+ * Updates only the grid container innerHTML, preserving input focus.
+ */
+export function updateEmojiGrid(query) {
+  state.emojiSearchQuery = query;
+  const selectFn = getActiveEmojiSelectFn();
+  const gridHtml = buildEmojiGridHtml(query, selectFn);
+  const gridContainer = document.getElementById('emoji-grid-content');
+  if (gridContainer) {
+    gridContainer.innerHTML = gridHtml || '<p class="text-center text-[13px] text-[var(--text-muted)] py-4">No matches</p>';
+  }
+}
+
+/**
+ * Render the reusable emoji picker grid.
+ * @param {string} selectFnName - Window function name to call on selection (e.g., 'selectAreaEmoji')
+ * @returns {string} HTML for the emoji picker dropdown
+ */
+function renderEmojiPicker(selectFnName = 'selectPerspectiveEmoji') {
+  const searchQuery = state.emojiSearchQuery || '';
+  const emojiGridHtml = buildEmojiGridHtml(searchQuery, selectFnName);
 
   return `
     <div class="absolute top-full left-0 mt-1 z-[400] w-72 bg-[var(--modal-bg)] rounded-xl border border-[var(--border-light)] shadow-xl overflow-hidden" onclick="event.stopPropagation()">
       <div class="p-2 border-b border-[var(--border-light)]">
         <input type="text" id="emoji-search-input" placeholder="Search emojis..." value="${escapeHtml(searchQuery)}"
-          oninput="emojiSearchQuery=this.value; render()"
+          oninput="updateEmojiGrid(this.value)"
           class="w-full px-3 py-1.5 text-[13px] border border-[var(--border)] rounded-lg bg-[var(--bg-secondary)] focus:outline-none focus:border-[var(--accent)]">
       </div>
-      <div class="p-2 max-h-52 overflow-y-auto">
+      <div id="emoji-grid-content" class="p-2 max-h-52 overflow-y-auto">
         ${emojiGridHtml || '<p class="text-center text-[13px] text-[var(--text-muted)] py-4">No matches</p>'}
       </div>
     </div>
