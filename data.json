@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T10:34:41.383Z",
+  "lastUpdated": "2026-02-11T10:34:44.004Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2967,26 +2967,6 @@
       "flagged": false
     },
     {
-      "id": "task_1770419503417_ps4ynftsw",
-      "title": "Breadfast note",
-      "notes": "",
-      "status": "inbox",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "work",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "createdAt": "2026-02-06T23:11:43.417Z",
-      "updatedAt": "2026-02-09T20:28:47.356Z",
-      "order": 4000,
-      "today": false,
-      "flagged": false
-    },
-    {
       "id": "task_1770686941852_7lalsktet",
       "title": "Do a PL salad with recipe by Fayroud Eid? In principle, products by influencers.",
       "notes": "",
@@ -3391,7 +3371,8 @@
     "task_1770802524314_ojsjq0wxu": "2026-02-11T09:36:15.366Z",
     "task_1770802526660_gntrnylhs": "2026-02-11T09:36:15.881Z",
     "task_1770485272782_1l1ycs1mk": "2026-02-11T10:34:40.170Z",
-    "task_1769983575696_3yq56ixj0": "2026-02-11T10:34:40.620Z"
+    "task_1769983575696_3yq56ixj0": "2026-02-11T10:34:40.620Z",
+    "task_1770419503417_ps4ynftsw": "2026-02-11T10:34:41.402Z"
   },
   "deletedEntityTombstones": {
     "taskPeople": {
