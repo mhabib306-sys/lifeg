@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T15:21:37.721Z",
+  "lastUpdated": "2026-02-11T15:21:46.949Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2313,52 +2313,6 @@
       "flagged": false
     },
     {
-      "id": "task_1770540828612_b3q4ssdag",
-      "title": "Get it",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "createdAt": "2026-02-08T08:53:45.454Z",
-      "updatedAt": "2026-02-08T08:53:51.423Z",
-      "order": 5000,
-      "today": false,
-      "flagged": false,
-      "noteOrder": 1000
-    },
-    {
-      "id": "task_1770540831423_c87emukre",
-      "title": "Also",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": "task_1770540828612_b3q4ssdag",
-      "indent": 1,
-      "createdAt": "2026-02-08T08:53:48.938Z",
-      "updatedAt": "2026-02-08T08:53:54.279Z",
-      "order": 8000,
-      "today": false,
-      "flagged": false,
-      "noteOrder": 1000
-    },
-    {
       "id": "task_1770550089075_aufzybsl8",
       "title": "Discuss with Nancy the Ramadan setup and inviting family to lunch",
       "notes": "",
@@ -3231,7 +3185,9 @@
     "task_1770407118912_dg79goye3": "2026-02-11T15:21:32.045Z",
     "task_1770407048879_4e86e0ajn": "2026-02-11T15:21:32.376Z",
     "task_1770450641886_r0ykcmc6m": "2026-02-11T15:21:32.751Z",
-    "task_1770540821297_5qvw166rw": "2026-02-11T15:21:34.989Z"
+    "task_1770540821297_5qvw166rw": "2026-02-11T15:21:34.989Z",
+    "task_1770540828612_b3q4ssdag": "2026-02-11T15:21:42.543Z",
+    "task_1770540831423_c87emukre": "2026-02-11T15:21:44.309Z"
   },
   "deletedEntityTombstones": {
     "taskPeople": {
