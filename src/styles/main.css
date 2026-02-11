@@ -4298,6 +4298,297 @@ body.mobile-keyboard-open .main-content {
 }
 
 /* ============================================================================
+   GLOBAL SEARCH OVERLAY — Cmd+K spotlight
+   ============================================================================ */
+.global-search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 350;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  animation: globalSearchFadeIn 0.15s ease;
+}
+@keyframes globalSearchFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.global-search-modal {
+  width: 100%;
+  max-width: 580px;
+  max-height: 70vh;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: globalSearchSlideDown 0.2s ease;
+}
+@keyframes globalSearchSlideDown {
+  from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.global-search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+.global-search-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+.global-search-input-wrapper input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  line-height: 1.4;
+}
+.global-search-input-wrapper input::placeholder {
+  color: var(--text-muted);
+}
+.global-search-esc {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 6px;
+  cursor: pointer;
+  line-height: 1.3;
+  font-family: var(--font-family);
+}
+.global-search-esc:hover {
+  background: var(--bg-input);
+}
+
+.global-search-type-filters {
+  display: flex;
+  gap: 6px;
+  padding: 8px 16px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border-light);
+  scrollbar-width: none;
+}
+.global-search-type-filters::-webkit-scrollbar { display: none; }
+
+.global-search-type-chip {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  line-height: 1.4;
+  font-family: var(--font-family);
+}
+.global-search-type-chip:hover {
+  background: var(--bg-input);
+  color: var(--text-primary);
+}
+.global-search-type-chip.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.global-search-results {
+  overflow-y: auto;
+  max-height: 50vh;
+  padding: 4px 0;
+}
+
+.global-search-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  z-index: 1;
+}
+.global-search-group-count {
+  font-weight: 500;
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.global-search-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s ease;
+  font-family: var(--font-family);
+}
+.global-search-result:hover,
+.global-search-result.active {
+  background: var(--bg-secondary);
+}
+.global-search-result.active {
+  background: var(--accent-light, var(--bg-secondary));
+}
+
+.global-search-result-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: var(--bg-secondary);
+}
+
+.global-search-result-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.global-search-result-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.global-search-result-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.global-search-result-badge {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+mark.global-search-highlight {
+  background: var(--accent-light, rgba(245, 158, 11, 0.25));
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.global-search-footer {
+  display: flex;
+  gap: 16px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border-light);
+  font-size: 11px;
+  color: var(--text-muted);
+  justify-content: center;
+}
+.global-search-footer kbd {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-right: 3px;
+  font-family: var(--font-family);
+  line-height: 1.3;
+}
+
+.global-search-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.global-search-empty-icon {
+  margin-bottom: 8px;
+}
+.global-search-empty-hint {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+.global-search-empty-hint kbd {
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0px 4px;
+  font-family: var(--font-family);
+}
+
+/* Mobile: full-screen search */
+@media (max-width: 768px) {
+  .global-search-overlay {
+    padding-top: 0;
+    align-items: stretch;
+  }
+  .global-search-modal {
+    max-width: 100%;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: none;
+    height: 100dvh;
+  }
+  .global-search-input-wrapper input {
+    font-size: 17px; /* Prevent iOS zoom */
+  }
+  .global-search-results {
+    max-height: none;
+    flex: 1;
+  }
+  .global-search-footer {
+    display: none;
+  }
+}
+
+/* ============================================================================
    GAMIFICATION STYLES — Ring charts, heatmap, achievements
    ============================================================================ */
 

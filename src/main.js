@@ -140,6 +140,11 @@ function initApp() {
 
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
+    // Cmd/Ctrl + K = global search
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      state.showGlobalSearch ? window.closeGlobalSearch() : window.openGlobalSearch();
+    }
     // Cmd/Ctrl + N = new task
     if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
       e.preventDefault();
@@ -150,9 +155,11 @@ function initApp() {
       e.preventDefault();
       window.openBraindump();
     }
-    // Escape = close modal / braindump
+    // Escape = close overlays
     if (e.key === 'Escape') {
-      if (state.showBraindump) {
+      if (state.showGlobalSearch) {
+        window.closeGlobalSearch();
+      } else if (state.showBraindump) {
         window.closeBraindump();
       } else if (state.showTaskModal) {
         window.closeTaskModal();

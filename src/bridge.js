@@ -223,6 +223,13 @@ import {
   removeInlineMeta, cleanupInlineAutocomplete
 } from './features/inline-autocomplete.js';
 
+// -- Global Search --
+import {
+  openGlobalSearch, closeGlobalSearch, handleGlobalSearchInput,
+  handleGlobalSearchKeydown, selectGlobalSearchResult, setSearchTypeFilter,
+  renderGlobalSearchHtml
+} from './ui/search.js';
+
 // -- Braindump UI --
 import {
   openBraindump, closeBraindump, processBraindump, backToInput,
@@ -377,6 +384,11 @@ Object.assign(window, {
   // Undo Toast
   startUndoCountdown, executeUndo, dismissUndo, renderUndoToastHtml,
 
+  // Global Search
+  openGlobalSearch, closeGlobalSearch, handleGlobalSearchInput,
+  handleGlobalSearchKeydown, selectGlobalSearchResult, setSearchTypeFilter,
+  renderGlobalSearchHtml,
+
   // Braindump
   parseBraindump, parseBraindumpHeuristic, submitBraindumpItems,
   getAnthropicKey, setAnthropicKey,
@@ -465,6 +477,7 @@ const stateProxies = [
   'gsheetData', 'gsheetSyncing', 'gsheetError', 'gsheetPrompt', 'gsheetResponse', 'gsheetAsking', 'gsheetEditingPrompt',
   'triggers', 'editingTriggerId', 'collapsedTriggers', 'zoomedTriggerId', 'triggersBreadcrumb',
   'reviewMode', 'reviewAreaIndex', 'reviewCompletedAreas',
+  'showGlobalSearch', 'globalSearchQuery', 'globalSearchResults', 'globalSearchActiveIndex', 'globalSearchTypeFilter',
 ];
 
 stateProxies.forEach(prop => {

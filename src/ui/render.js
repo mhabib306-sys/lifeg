@@ -107,6 +107,11 @@ function renderUndoToast() {
   return '';
 }
 
+function renderGlobalSearchOverlay() {
+  if (typeof window.renderGlobalSearchHtml === 'function') return window.renderGlobalSearchHtml();
+  return '';
+}
+
 function renderBraindumpOverlay() {
   if (typeof window.renderBraindumpOverlay === 'function') return window.renderBraindumpOverlay();
   return '';
@@ -365,6 +370,7 @@ export function render() {
       ${renderPersonModalHtml()}
       ${renderCategoryModalWrapper()}
       ${renderBraindumpFAB()}
+      ${renderGlobalSearchOverlay()}
       ${renderBraindumpOverlay()}
       ${renderUndoToast()}
     `;
@@ -414,6 +420,7 @@ export function render() {
       state.showPersonModal ||
       state.showCategoryModal ||
       state.showBraindump ||
+      state.showGlobalSearch ||
       state.calendarEventModalOpen
     );
     document.body.classList.toggle('body-modal-open', anyModalOpen);

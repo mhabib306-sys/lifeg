@@ -427,6 +427,13 @@ export const state = {
   gsheetAsking: false,
   gsheetEditingPrompt: false,
 
+  // ---- Global Search ----
+  showGlobalSearch: false,
+  globalSearchQuery: '',
+  globalSearchResults: [],
+  globalSearchActiveIndex: -1,
+  globalSearchTypeFilter: null,   // null=all, or 'task'|'note'|'area'|'category'|'label'|'person'|'perspective'|'trigger'
+
   // ---- Responsive ----
   _lastRenderWasMobile: false,
 };
