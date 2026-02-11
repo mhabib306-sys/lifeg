@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T10:47:17.568Z",
+  "lastUpdated": "2026-02-11T10:47:42.440Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3241,12 +3241,12 @@
       "id": "task_1770798843221_1g1e3i6t8",
       "title": "Send Agha to proceed with the delivery fees change",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "today": false,
       "flagged": false,
       "completed": false,
       "completedAt": null,
-      "areaId": null,
+      "areaId": "work",
       "categoryId": null,
       "labels": [],
       "people": [],
@@ -3259,7 +3259,7 @@
       "meetingEventKey": null,
       "order": 48000,
       "createdAt": "2026-02-11T08:34:03.221Z",
-      "updatedAt": "2026-02-11T08:34:03.571Z",
+      "updatedAt": "2026-02-11T10:47:39.599Z",
       "gcalEventId": "un6n044njtktf94jal6a81dlnk"
     },
     {
