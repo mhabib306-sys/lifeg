@@ -570,7 +570,7 @@ export function renderMeetingNotesPage() {
                 `).join('')}
               </div>
             ` : `
-              <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-2 mb-3">No People emails matched this meeting's attendees yet.</p>
+              <p class="text-xs rounded-lg px-2.5 py-2 mb-3" style="color: var(--warning); background: color-mix(in srgb, var(--warning) 8%, transparent); border: 1px solid color-mix(in srgb, var(--warning) 25%, transparent)">No People emails matched this meeting's attendees yet.</p>
             `}
 
             ${discussionPool.matchingItems.length > 0 ? `
@@ -661,7 +661,7 @@ export function renderEventActionsModal(event) {
   const meetingSubLabel = event.meetingLink ? 'Open call link' : 'No call link found';
 
   return `
-    <div class="modal-overlay calendar-event-modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[320]" onclick="if(event.target===this) closeCalendarEventActions()">
+    <div class="modal-overlay calendar-event-modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[320]" onclick="if(event.target===this) closeCalendarEventActions()">
       <div class="modal-enhanced calendar-event-modal w-full max-w-md mx-4" onclick="event.stopPropagation()">
         <div class="modal-header-enhanced">
           <div class="flex items-center gap-3 min-w-0">
@@ -674,7 +674,7 @@ export function renderEventActionsModal(event) {
             </div>
           </div>
           <div class="flex items-center gap-2">
-            ${event.meetingProvider ? `<span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-emerald-100 text-emerald-800">${escapeHtml(event.meetingProvider)}</span>` : ''}
+            ${event.meetingProvider ? `<span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-[color-mix(in_srgb,var(--success)_15%,transparent)] text-[var(--success)]">${escapeHtml(event.meetingProvider)}</span>` : ''}
             <button onclick="closeCalendarEventActions()" class="w-8 h-8 rounded-lg hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]" aria-label="Close">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
             </button>

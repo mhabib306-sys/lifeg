@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.26.0 - Homebase';
+export const APP_VERSION = '4.27.0 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -270,13 +270,13 @@ export function getActiveIcons() {
 export function getBuiltinPerspectives() {
   const icons = getActiveIcons();
   return [
-    { id: 'inbox', name: 'Inbox', icon: icons.inbox, color: '#147EFB', filter: { status: 'inbox' }, builtin: true },
-    { id: 'today', name: 'Today', icon: icons.today, color: '#FFCC00', filter: { today: true }, builtin: true },
-    { id: 'flagged', name: 'Flagged', icon: icons.flagged, color: '#FF9500', filter: { flagged: true }, builtin: true },
-    { id: 'upcoming', name: 'Upcoming', icon: icons.upcoming, color: '#FF3B30', filter: { upcoming: true }, builtin: true },
-    { id: 'anytime', name: 'Anytime', icon: icons.anytime, color: '#5AC8FA', filter: { status: 'anytime' }, builtin: true },
-    { id: 'someday', name: 'Someday', icon: icons.someday, color: '#C69C6D', filter: { status: 'someday' }, builtin: true },
-    { id: 'logbook', name: 'Logbook', icon: icons.logbook, color: '#34C759', filter: { completed: true }, builtin: true }
+    { id: 'inbox', name: 'Inbox', icon: icons.inbox, color: _css('--inbox-color') || '#147EFB', filter: { status: 'inbox' }, builtin: true },
+    { id: 'today', name: 'Today', icon: icons.today, color: _css('--today-color') || '#FFCC00', filter: { today: true }, builtin: true },
+    { id: 'flagged', name: 'Flagged', icon: icons.flagged, color: _css('--flagged-color') || '#FF9500', filter: { flagged: true }, builtin: true },
+    { id: 'upcoming', name: 'Upcoming', icon: icons.upcoming, color: _css('--upcoming-color') || '#FF3B30', filter: { upcoming: true }, builtin: true },
+    { id: 'anytime', name: 'Anytime', icon: icons.anytime, color: _css('--anytime-color') || '#5AC8FA', filter: { status: 'anytime' }, builtin: true },
+    { id: 'someday', name: 'Someday', icon: icons.someday, color: _css('--someday-color') || '#C69C6D', filter: { status: 'someday' }, builtin: true },
+    { id: 'logbook', name: 'Logbook', icon: icons.logbook, color: _css('--logbook-color') || '#34C759', filter: { completed: true }, builtin: true }
   ];
 }
 // Backwards-compat: modules that read BUILTIN_PERSPECTIVES as a constant get
@@ -291,7 +291,7 @@ export const BUILTIN_PERSPECTIVES = new Proxy([], {
 
 export function getNotesPerspective() {
   const icons = getActiveIcons();
-  return { id: 'notes', name: 'Notes', icon: icons.notes, color: '#5856D6', filter: { notes: true }, builtin: true };
+  return { id: 'notes', name: 'Notes', icon: icons.notes, color: _css('--notes-color') || '#5856D6', filter: { notes: true }, builtin: true };
 }
 // Backwards-compat: constant reads resolve at access time via Proxy.
 export const NOTES_PERSPECTIVE = new Proxy({}, {
@@ -404,14 +404,32 @@ export const STREAK_MULTIPLIERS = [
 // Minimum score percentage to count as a "logged day" for streaks
 export const STREAK_MIN_THRESHOLD = 0.20;
 
-// Score color tiers
-export const SCORE_TIERS = [
-  { min: 0, max: 0.39, color: '#EF4444', label: 'Needs Work', bg: 'bg-red-500' },
-  { min: 0.40, max: 0.59, color: '#F97316', label: 'Getting There', bg: 'bg-orange-500' },
-  { min: 0.60, max: 0.79, color: '#EAB308', label: 'Solid', bg: 'bg-yellow-500' },
-  { min: 0.80, max: 0.89, color: '#22C55E', label: 'Great', bg: 'bg-green-500' },
-  { min: 0.90, max: 1.0, color: '#10B981', label: 'Outstanding', bg: 'bg-emerald-500' }
-];
+// Helper: read a CSS custom property value at render time (theme-aware)
+export function _css(varName) {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+}
+
+// Score color tiers — reads CSS variables at render time so they follow the active theme
+export function getScoreTiers() {
+  const danger  = _css('--danger')  || '#EF4444';
+  const warning = _css('--warning') || '#F59E0B';
+  const success = _css('--success') || '#22C55E';
+  return [
+    { min: 0,    max: 0.39, color: danger,  label: 'Needs Work',    bg: 'bg-[var(--danger)]' },
+    { min: 0.40, max: 0.59, color: warning, label: 'Getting There', bg: 'bg-[var(--warning)]' },
+    { min: 0.60, max: 0.79, color: warning, label: 'Solid',         bg: 'bg-[var(--warning)]' },
+    { min: 0.80, max: 0.89, color: success, label: 'Great',         bg: 'bg-[var(--success)]' },
+    { min: 0.90, max: 1.0,  color: success, label: 'Outstanding',   bg: 'bg-[var(--success)]' }
+  ];
+}
+// Backwards-compat: existing code that reads SCORE_TIERS as a constant gets a live Proxy
+export const SCORE_TIERS = new Proxy([], {
+  get(_, prop) {
+    const arr = getScoreTiers();
+    const val = arr[prop];
+    return typeof val === 'function' ? val.bind(arr) : val;
+  }
+});
 
 // Achievement definitions
 export const ACHIEVEMENTS = [

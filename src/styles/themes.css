@@ -4,6 +4,8 @@
   --bg-secondary: #EFEDE8;
   --bg-card: #EFEDE8;
   --bg-input: #FFFFFF;
+  --bg-hover: #EFEDE8;
+  --bg-tertiary: #E5E3DE;
   --text-primary: #1a1a1a;
   --text-secondary: #666666;
   --text-muted: #999999;
@@ -56,6 +58,7 @@
   --bg-card: #FFFFFF;
   --bg-input: #FFFFFF;
   --bg-hover: #F5F5F7;
+  --bg-tertiary: #ECEEF2;
 
   /* Typography */
   --text-primary: #1D1D1F;

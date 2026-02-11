@@ -346,7 +346,7 @@ export function renderPerspectiveModalHtml() {
     : null;
   const currentIcon = editingPerspective?.icon || '\uD83D\uDCCC';
   return `
-    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="perspective-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="perspective-modal-title">
       <div class="modal-enhanced w-full max-w-lg mx-4" onclick="event.stopPropagation()">
         <!-- Mobile drag handle -->
         <div class="flex justify-center pt-3 pb-1 md:hidden">
@@ -516,7 +516,7 @@ export function renderPerspectiveModalHtml() {
         <div class="modal-footer-enhanced">
           ${editingPerspective ? `
             <button onclick="if(confirm('Delete this custom view?')){deletePerspective('${editingPerspective.id}'); showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render();}"
-              class="px-4 py-2 text-[13px] text-red-500 hover:text-red-700 mr-auto">Delete</button>
+              class="px-4 py-2 text-[13px] text-[var(--danger)] hover:opacity-80 mr-auto">Delete</button>
           ` : ''}
           <button onclick="showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()"
             class="px-4 py-2 text-[13px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">Cancel</button>
@@ -541,7 +541,7 @@ export function renderAreaModalHtml() {
   const areaColor = editingArea?.color || '#6366F1';
   const areaEmoji = editingArea?.emoji || '';
   return `
-    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
       <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
         <div class="modal-header-enhanced">
           <h3 id="area-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingArea ? 'Edit Area' : 'New Area'}</h3>
@@ -573,7 +573,7 @@ export function renderAreaModalHtml() {
         <div class="modal-footer-enhanced">
           ${editingArea ? `
             <button onclick="if(confirm('Delete this area?')){deleteArea('${editingArea.id}'); showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render();}"
-              class="px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-lg transition">Delete</button>
+              class="px-4 py-2.5 text-sm text-[var(--danger)] hover:bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] rounded-lg transition">Delete</button>
           ` : '<div></div>'}
           <div class="flex gap-2">
             <button onclick="showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()"
@@ -601,7 +601,7 @@ export function renderCategoryModalHtml() {
   const catEmoji = editing?.emoji || '';
 
   return `
-    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
       <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
         <div class="modal-header-enhanced">
           <h3 id="category-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editing ? 'Edit' : 'New'} Category</h3>
@@ -632,7 +632,7 @@ export function renderCategoryModalHtml() {
           </div>
         </div>
         <div class="modal-footer-enhanced">
-          ${editing ? `<button onclick="window.deleteCategory('${editing.id}'); showCategoryModal=false; editingCategoryId=null; render()" class="px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-lg transition">Delete</button>` : '<div></div>'}
+          ${editing ? `<button onclick="window.deleteCategory('${editing.id}'); showCategoryModal=false; editingCategoryId=null; render()" class="px-4 py-2.5 text-sm text-[var(--danger)] hover:bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] rounded-lg transition">Delete</button>` : '<div></div>'}
           <div class="flex gap-2">
             <button onclick="showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()" class="px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">Cancel</button>
             <button onclick="saveCategoryFromModal()" class="sb-btn px-5 py-2.5 rounded-lg text-sm font-medium">Save</button>
@@ -653,7 +653,7 @@ export function renderLabelModalHtml() {
     ? (state.taskLabels || []).find(l => l.id === state.editingLabelId)
     : null;
   return `
-    <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="label-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] flex items-center justify-center z-[300]" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="label-modal-title">
       <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
         <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
           <h3 id="label-modal-title" class="font-semibold text-charcoal">${editingLabel ? 'Edit Tag' : 'New Tag'}</h3>
@@ -676,7 +676,7 @@ export function renderLabelModalHtml() {
         <div class="px-6 py-4 border-t border-softborder flex justify-between">
           ${editingLabel ? `
             <button onclick="if(confirm('Delete this tag?')){deleteLabel('${editingLabel.id}'); showLabelModal=false; editingLabelId=null; render();}"
-              class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
+              class="px-4 py-2 text-sm text-[var(--danger)] hover:opacity-80">Delete</button>
           ` : '<div></div>'}
           <div class="flex gap-3">
             <button onclick="showLabelModal=false; editingLabelId=null; render()"
@@ -701,7 +701,7 @@ export function renderPersonModalHtml() {
     ? (state.taskPeople || []).find(p => p.id === state.editingPersonId)
     : null;
   return `
-    <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-[300]" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="person-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] flex items-center justify-center z-[300]" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="person-modal-title">
       <div class="modal-content bg-[var(--modal-bg)] rounded-xl shadow-xl w-full max-w-sm mx-4" onclick="event.stopPropagation()">
         <div class="px-6 py-4 border-b border-softborder flex items-center justify-between">
           <h3 id="person-modal-title" class="font-semibold text-charcoal">${editingPerson ? 'Edit Person' : 'New Person'}</h3>
@@ -726,7 +726,7 @@ export function renderPersonModalHtml() {
         <div class="px-6 py-4 border-t border-softborder flex justify-between">
           ${editingPerson ? `
             <button onclick="if(confirm('Delete this person?')){deletePerson('${editingPerson.id}'); showPersonModal=false; editingPersonId=null; render();}"
-              class="px-4 py-2 text-sm text-red-500 hover:text-red-700">Delete</button>
+              class="px-4 py-2 text-sm text-[var(--danger)] hover:opacity-80">Delete</button>
           ` : '<div></div>'}
           <div class="flex gap-3">
             <button onclick="showPersonModal=false; editingPersonId=null; render()"

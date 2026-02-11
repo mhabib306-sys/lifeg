@@ -98,7 +98,7 @@ export function renderStatsWidget(today) {
   return `
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
       <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('inbox')">
-        <div class="text-xl sm:text-2xl font-bold ${inboxCount > 0 ? 'text-blue-500' : 'text-charcoal'}">${inboxCount}</div>
+        <div class="text-xl sm:text-2xl font-bold ${inboxCount > 0 ? 'text-[var(--inbox-color)]' : 'text-charcoal'}">${inboxCount}</div>
         <div class="text-xs text-charcoal/50 mt-1">In Inbox</div>
       </button>
       <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('today')">
@@ -106,11 +106,11 @@ export function renderStatsWidget(today) {
         <div class="text-xs text-charcoal/50 mt-1">Due Today</div>
       </button>
       <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="${nextLabel ? `showLabelTasks('${nextLabel.id}')` : 'void(0)'}">
-        <div class="text-xl sm:text-2xl font-bold text-[#8B5CF6]">${nextTasksCount}</div>
+        <div class="text-xl sm:text-2xl font-bold text-[var(--notes-accent)]">${nextTasksCount}</div>
         <div class="text-xs text-charcoal/50 mt-1">Tagged Next</div>
       </button>
       <button type="button" class="quick-stat-item bg-warmgray/30 rounded-xl p-3 text-center active:bg-warmgray/60 transition-all" onclick="showPerspectiveTasks('logbook')">
-        <div class="text-xl sm:text-2xl font-bold text-green-600">${completedToday}</div>
+        <div class="text-xl sm:text-2xl font-bold text-[var(--success)]">${completedToday}</div>
         <div class="text-xs text-charcoal/50 mt-1">Done Today</div>
       </button>
     </div>
@@ -164,9 +164,9 @@ export function renderTodayTasksWidget(today) {
       ${dueTasks.length > 0 ? `
         <div class="px-2 pt-1 pb-0.5">
           <div class="flex items-center gap-1.5">
-            <svg class="w-3 h-3 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M18.7 12.4a6.06 6.06 0 00-.86-3.16l4.56-3.56L20.16 2l-4.13 4.15A7.94 7.94 0 0012 5a8 8 0 00-8 8c0 4.42 3.58 8 8 8a7.98 7.98 0 007.43-5.1l4.15 1.83.57-3.66-6.45 1.33zM12 19a6 6 0 116-6 6 6 0 01-6 6z"/><path d="M12.5 8H11v6l4.75 2.85.75-1.23-4-2.37z"/></svg>
-            <span class="text-[10px] font-semibold text-red-500 uppercase tracking-wider">Due</span>
-            <span class="text-[10px] text-red-400">${dueTasks.length}</span>
+            <svg class="w-3 h-3 text-[var(--danger)]" viewBox="0 0 24 24" fill="currentColor"><path d="M18.7 12.4a6.06 6.06 0 00-.86-3.16l4.56-3.56L20.16 2l-4.13 4.15A7.94 7.94 0 0012 5a8 8 0 00-8 8c0 4.42 3.58 8 8 8a7.98 7.98 0 007.43-5.1l4.15 1.83.57-3.66-6.45 1.33zM12 19a6 6 0 116-6 6 6 0 01-6 6z"/><path d="M12.5 8H11v6l4.75 2.85.75-1.23-4-2.37z"/></svg>
+            <span class="text-[10px] font-semibold text-[var(--danger)] uppercase tracking-wider">Due</span>
+            <span class="text-[10px] text-[var(--danger)]">${dueTasks.length}</span>
           </div>
         </div>
         <div>${dueTasks.map(task => renderTaskItem(task, false, true)).join('')}</div>
@@ -177,9 +177,9 @@ export function renderTodayTasksWidget(today) {
       ${startingTasks.length > 0 ? `
         <div class="px-2 pt-1 pb-0.5 ${dueTasks.length > 0 || otherTodayTasks.length > 0 ? 'mt-0.5 border-t border-[var(--border-light)]' : ''}">
           <div class="flex items-center gap-1.5">
-            <svg class="w-3 h-3 text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-            <span class="text-[10px] font-semibold text-blue-500 uppercase tracking-wider">Starting</span>
-            <span class="text-[10px] text-blue-400">${startingTasks.length}</span>
+            <svg class="w-3 h-3 text-[var(--accent)]" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            <span class="text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider">Starting</span>
+            <span class="text-[10px] text-[var(--accent)]">${startingTasks.length}</span>
           </div>
         </div>
         <div>${startingTasks.map(task => renderTaskItem(task, false, true)).join('')}</div>
@@ -227,7 +227,7 @@ export function renderTodayEventsWidget(today) {
   if (expired) {
     return `
       <div class="py-6 text-center">
-        <p class="text-sm text-amber-700 mb-2">Calendar session expired</p>
+        <p class="text-sm mb-2" style="color: var(--warning)">Calendar session expired</p>
         <button onclick="switchTab('settings')" class="text-xs text-[var(--accent)] hover:underline font-medium">Reconnect Calendar &rarr;</button>
       </div>
     `;
@@ -243,7 +243,7 @@ export function renderTodayEventsWidget(today) {
           onclick="${event.htmlLink ? `window.open(decodeURIComponent('${encodeURIComponent(event.htmlLink)}'),'_blank')` : `switchTab('calendar'); calendarSelectDate('${today}')`}"
           class="w-full text-left rounded-lg px-2.5 py-2 hover:bg-[var(--bg-secondary)] transition border border-transparent hover:border-[var(--border-light)]">
           <div class="flex items-start gap-2.5">
-            <span class="mt-1 w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
+            <span class="mt-1 w-2 h-2 rounded-full flex-shrink-0" style="background: var(--success)"></span>
             <div class="min-w-0 flex-1">
               <p class="text-[13px] font-medium text-[var(--text-primary)] truncate">${event.summary ? event.summary.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '(No title)'}</p>
               <p class="text-[11px] text-[var(--text-muted)] mt-0.5">${formatHomeEventTime(event)}</p>
@@ -299,12 +299,12 @@ export function renderGlucoseWidget(today) {
   const libreConnected = typeof window.isLibreConnected === 'function' && window.isLibreConnected();
   const hasLiveGlucose = libreConnected && libreData.currentGlucose;
 
-  let glucoseColor = 'text-green-600';
-  let glucoseBg = 'bg-green-50';
+  let glucoseColor = 'text-[var(--success)]';
+  let glucoseBg = 'bg-[color-mix(in_srgb,var(--success)_8%,transparent)]';
   if (hasLiveGlucose) {
     const val = Number(libreData.currentGlucose);
-    if (val > 180 || val < 70) { glucoseColor = 'text-red-600'; glucoseBg = 'bg-red-50'; }
-    else if (val > 140) { glucoseColor = 'text-amber-600'; glucoseBg = 'bg-amber-50'; }
+    if (val > 180 || val < 70) { glucoseColor = 'text-[var(--danger)]'; glucoseBg = 'bg-[color-mix(in_srgb,var(--danger)_8%,transparent)]'; }
+    else if (val > 140) { glucoseColor = 'text-[var(--warning)]'; glucoseBg = 'bg-[color-mix(in_srgb,var(--warning)_8%,transparent)]'; }
   }
 
   // 7-day glucose history for sparkline + stats
@@ -345,14 +345,14 @@ export function renderGlucoseWidget(today) {
 
     sparklineSvg = `
       <svg viewBox="0 0 ${W} ${H}" class="w-full" style="height: 40px;" preserveAspectRatio="none">
-        <rect x="0" y="${y180}" width="${W}" height="${y140 - y180}" fill="#fef3c7" opacity="0.5" rx="1"/>
-        <rect x="0" y="${y140}" width="${W}" height="${y70 - y140}" fill="#d1fae5" opacity="0.5" rx="1"/>
-        <polyline points="${points.join(' ')}" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="0" y="${y180}" width="${W}" height="${y140 - y180}" fill="var(--warning)" opacity="0.12" rx="1"/>
+        <rect x="0" y="${y140}" width="${W}" height="${y70 - y140}" fill="var(--success)" opacity="0.15" rx="1"/>
+        <polyline points="${points.join(' ')}" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         ${vals.map((v, i) => {
           if (v <= 0) return '';
           const x = pad + (i / (vals.length - 1)) * (W - pad * 2);
           const y = pad + (1 - (v - min) / range) * (H - pad * 2);
-          const dotColor = v > 180 || v < 70 ? '#EF4444' : v > 140 ? '#F59E0B' : '#10B981';
+          const dotColor = v > 180 || v < 70 ? 'var(--danger)' : v > 140 ? 'var(--warning)' : 'var(--success)';
           return `<circle cx="${x}" cy="${y}" r="2.5" fill="${dotColor}"/>`;
         }).join('')}
       </svg>
@@ -372,7 +372,7 @@ export function renderGlucoseWidget(today) {
           <span class="text-xl ${glucoseColor}">${libreData.trend || '\u2192'}</span>
           <span class="text-[10px] text-[var(--text-muted)] ml-0.5">mg/dL</span>
         </div>
-        <button onclick="window.syncLibreNow()" class="inline-flex items-center gap-1 text-[10px] text-green-600 ${glucoseBg} px-1.5 py-0.5 rounded-full hover:bg-green-100 transition" title="Sync now">
+        <button onclick="window.syncLibreNow()" class="inline-flex items-center gap-1 text-[10px] text-[var(--success)] ${glucoseBg} px-1.5 py-0.5 rounded-full transition" title="Sync now">
           <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
           Sync
         </button>
@@ -404,7 +404,7 @@ export function renderGlucoseWidget(today) {
       <div class="text-center">
         <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">TIR</label>
         ${libreConnected && glucoseData.tir
-          ? `<div class="text-sm font-semibold ${Number(glucoseData.tir) >= 70 ? 'text-green-600' : Number(glucoseData.tir) >= 50 ? 'text-amber-600' : 'text-red-600'}">${glucoseData.tir}%</div>`
+          ? `<div class="text-sm font-semibold ${Number(glucoseData.tir) >= 70 ? 'text-[var(--success)]' : Number(glucoseData.tir) >= 50 ? 'text-[var(--warning)]' : 'text-[var(--danger)]'}">${glucoseData.tir}%</div>`
           : `<input type="number" value="${glucoseData.tir || ''}" placeholder="--" autocomplete="off"
               onchange="updateDailyField('glucose', 'tir', this.value)"
               class="w-full px-2 py-1.5 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">`}
@@ -418,7 +418,7 @@ export function renderGlucoseWidget(today) {
       ${eA1C ? `
         <div class="text-center">
           <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">eA1C</label>
-          <div class="text-sm font-semibold ${Number(eA1C) <= 5.7 ? 'text-green-600' : Number(eA1C) <= 6.4 ? 'text-amber-600' : 'text-red-600'}">${eA1C}%</div>
+          <div class="text-sm font-semibold ${Number(eA1C) <= 5.7 ? 'text-[var(--success)]' : Number(eA1C) <= 6.4 ? 'text-[var(--warning)]' : 'text-[var(--danger)]'}">${eA1C}%</div>
         </div>
       ` : ''}
     </div>
@@ -561,8 +561,8 @@ export function renderScoreWidget(today) {
         </div>
         ${streakCount > 0 ? `
           <div class="flex items-center gap-1.5 mb-1">
-            <span class="text-xs font-semibold text-amber-500">\uD83D\uDD25 ${streakCount}-day streak</span>
-            ${streakMultiplier > 1 ? `<span class="text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full font-medium">${streakMultiplier}x</span>` : ''}
+            <span class="text-xs font-semibold text-[var(--warning)]">\uD83D\uDD25 ${streakCount}-day streak</span>
+            ${streakMultiplier > 1 ? `<span class="text-[10px] text-[var(--success)] bg-[color-mix(in_srgb,var(--success)_10%,transparent)] px-1.5 py-0.5 rounded-full font-medium">${streakMultiplier}x</span>` : ''}
           </div>
         ` : `<div class="text-xs text-[var(--text-muted)] mb-1">No active streak</div>`}
         <div class="text-xs text-[var(--text-muted)]">+${todayXP} XP today \u00B7 ${(state.xp?.total || 0).toLocaleString()} total</div>
@@ -621,7 +621,7 @@ export function renderWeatherWidget() {
           <span class="text-[10px] text-[var(--text-muted)]">${maxHour}</span>
         </div>
         <div class="flex items-center justify-end gap-1.5 mt-1">
-          <svg class="w-3 h-3 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22q-2.075 0-3.537-1.462Q7 19.075 7 17q0-1.3.612-2.4T9 12.55V5q0-1.25.875-2.125T12 2q1.25 0 2.125.875T15 5v7.55q.775.95 1.388 2.05T17 17q0 2.075-1.463 3.538Q14.075 22 12 22Z"/></svg>
+          <svg class="w-3 h-3 text-[var(--accent)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22q-2.075 0-3.537-1.462Q7 19.075 7 17q0-1.3.612-2.4T9 12.55V5q0-1.25.875-2.125T12 2q1.25 0 2.125.875T15 5v7.55q.775.95 1.388 2.05T17 17q0 2.075-1.463 3.538Q14.075 22 12 22Z"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">${tempMin}\u00B0</span>
           <span class="text-[10px] text-[var(--text-muted)]">${minHour}</span>
         </div>

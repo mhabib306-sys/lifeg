@@ -13,6 +13,7 @@ import { createLabel, createPerson, getCategoriesByArea, getCategoryById } from 
 import { escapeHtml, formatSmartDate } from '../utils.js';
 import {
   getActiveIcons,
+  _css,
   TASK_CATEGORIES_KEY,
   TASK_LABELS_KEY,
   TASK_PEOPLE_KEY
@@ -895,7 +896,7 @@ export function renderTagsInput() {
     (item) => `<div class="w-3 h-3 rounded-full" style="background: ${item.color}"></div>`,
     true,
     (name) => {
-      const colors = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
+      const colors = [_css('--danger') || '#ef4444', _css('--warning') || '#f59e0b', _css('--success') || '#22c55e', _css('--accent') || '#3b82f6', _css('--notes-accent') || '#8b5cf6', '#ec4899'];
       const newTag = { id: 'label_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
       state.taskLabels.push(newTag);
       localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
@@ -1118,7 +1119,7 @@ export function renderTaskModalHtml() {
   if (!state.showTaskModal) return '';
 
   return `
-    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){closeTaskModal()}" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){closeTaskModal()}" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
       <div class="modal-enhanced w-full max-w-xl mx-4" onclick="event.stopPropagation()">
         <!-- Mobile drag handle -->
         <div class="flex justify-center pt-3 pb-1 md:hidden">

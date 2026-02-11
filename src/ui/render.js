@@ -165,10 +165,10 @@ export function render() {
       app.innerHTML = `
         <div class="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-primary)]">
           <svg class="w-16 h-16 mb-6 animate-pulse" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="authGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/></linearGradient></defs>
+            <defs><linearGradient id="authGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--warning)"/><stop offset="100%" stop-color="var(--accent-dark, var(--warning))"/></linearGradient></defs>
             <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#authGrad)"/>
             <path d="M50 26 L72 44 V74 H28 V44 Z" fill="white"/>
-            <rect x="43" y="55" width="14" height="19" rx="2" fill="#D97706"/>
+            <rect x="43" y="55" width="14" height="19" rx="2" fill="var(--accent-dark, var(--warning))"/>
           </svg>
           <p class="text-[var(--text-muted)] text-sm">Loading...</p>
         </div>`;
@@ -181,16 +181,16 @@ export function render() {
       app.innerHTML = `
         <div class="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-primary)] px-6">
           <svg class="w-20 h-20 mb-4" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="loginGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/></linearGradient></defs>
+            <defs><linearGradient id="loginGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--warning)"/><stop offset="100%" stop-color="var(--accent-dark, var(--warning))"/></linearGradient></defs>
             <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#loginGrad)"/>
             <path d="M50 26 L72 44 V74 H28 V44 Z" fill="white"/>
-            <rect x="43" y="55" width="14" height="19" rx="2" fill="#D97706"/>
+            <rect x="43" y="55" width="14" height="19" rx="2" fill="var(--accent-dark, var(--warning))"/>
           </svg>
           <h1 class="text-2xl font-bold text-[var(--text-primary)] mb-1">Homebase</h1>
           <p class="text-sm text-[var(--text-muted)] mb-8">Your life, all in one place</p>
-          ${state.authError ? `<p class="text-sm text-red-500 mb-4">${escapeHtml(state.authError)}</p>` : ''}
+          ${state.authError ? `<p class="text-sm text-[var(--danger)] mb-4">${escapeHtml(state.authError)}</p>` : ''}
           <button type="button" onclick="signInWithGoogle()"
-            class="flex items-center gap-3 px-6 py-3 bg-white border border-[var(--border)] rounded-xl shadow-sm hover:shadow-md transition text-sm font-medium text-[var(--text-primary)]">
+            class="flex items-center gap-3 px-6 py-3 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-sm hover:shadow-md transition text-sm font-medium text-[var(--text-primary)]">
             <svg class="w-5 h-5" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -207,14 +207,14 @@ export function render() {
     // ---- Authenticated: render full app ----
     const cachePromptHtml = state.showCacheRefreshPrompt ? `
       <div class="max-w-6xl mx-auto px-6 pt-4">
-        <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex items-center justify-between gap-3">
+        <div class="rounded-xl border px-4 py-3 flex items-center justify-between gap-3" style="border-color: color-mix(in srgb, var(--warning) 25%, transparent); background: color-mix(in srgb, var(--warning) 8%, transparent)">
           <div>
-            <p class="text-sm font-semibold text-amber-900">New app update available</p>
-            <p class="text-xs text-amber-800">${escapeHtml(state.cacheRefreshPromptMessage || `Version ${APP_VERSION} is available. Refresh recommended to avoid stale cache.`)}</p>
+            <p class="text-sm font-semibold" style="color: var(--warning)">New app update available</p>
+            <p class="text-xs" style="color: var(--warning)">${escapeHtml(state.cacheRefreshPromptMessage || `Version ${APP_VERSION} is available. Refresh recommended to avoid stale cache.`)}</p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="forceHardRefresh()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-600 text-white hover:bg-amber-700">Refresh Now</button>
-            <button onclick="dismissCacheRefreshPrompt()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white border border-amber-300 text-amber-800 hover:bg-amber-100">Later</button>
+            <button onclick="forceHardRefresh()" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-white" style="background: var(--warning)">Refresh Now</button>
+            <button onclick="dismissCacheRefreshPrompt()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--bg-card)] border" style="border-color: color-mix(in srgb, var(--warning) 30%, transparent); color: var(--warning)">Later</button>
           </div>
         </div>
       </div>
@@ -231,10 +231,10 @@ export function render() {
           ` : `
             <a href="javascript:void(0)" onclick="switchTab('home')" class="flex items-center">
               <svg class="w-8 h-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <defs><linearGradient id="mobileGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/></linearGradient></defs>
+                <defs><linearGradient id="mobileGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--warning)"/><stop offset="100%" stop-color="var(--accent-dark, var(--warning))"/></linearGradient></defs>
                 <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#mobileGrad)"/>
                 <path d="M50 26 L72 44 V74 H28 V44 Z" fill="white"/>
-                <rect x="43" y="55" width="14" height="19" rx="2" fill="#D97706"/>
+                <rect x="43" y="55" width="14" height="19" rx="2" fill="var(--accent-dark, var(--warning))"/>
               </svg>
             </a>
           `}
@@ -268,13 +268,13 @@ export function render() {
               <svg class="w-12 h-12 app-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="homebaseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#F59E0B"/>
-                    <stop offset="100%" stop-color="#D97706"/>
+                    <stop offset="0%" stop-color="var(--warning)"/>
+                    <stop offset="100%" stop-color="var(--accent-dark, var(--warning))"/>
                   </linearGradient>
                 </defs>
                 <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#homebaseGrad)"/>
                 <path d="M50 26 L72 44 V74 H28 V44 Z" fill="white"/>
-                <rect x="43" y="55" width="14" height="19" rx="2" fill="#D97706"/>
+                <rect x="43" y="55" width="14" height="19" rx="2" fill="var(--accent-dark, var(--warning))"/>
               </svg>
               <div>
                 <div class="flex items-center gap-2">
@@ -286,7 +286,7 @@ export function render() {
             </a>
             <div class="flex items-center gap-4">
               <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-warmgray border border-softborder" title="Cloud sync status">
-                <div id="sync-indicator" class="w-2 h-2 rounded-full ${getGithubToken() ? 'bg-green-500' : 'bg-charcoal/30'}"></div>
+                <div id="sync-indicator" class="w-2 h-2 rounded-full" style="background: ${getGithubToken() ? 'var(--success)' : 'var(--text-muted)'}"></div>
                 <span class="text-xs text-charcoal/50">${getGithubToken() ? 'Synced' : 'Local'}</span>
               </div>
               <input type="date" id="dateInput" value="${state.currentDate}"

@@ -337,7 +337,7 @@ img.twemoji {
 .workspace-mode-btn.active {
   color: var(--text-primary);
   background: var(--bg-card);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .workspace-mode-btn:disabled {
@@ -715,7 +715,7 @@ img.twemoji {
   content: 'Drop here';
   position: absolute;
   inset: 0;
-  background: rgba(229, 83, 61, 0.15);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
   border: 3px dashed var(--accent);
   border-radius: 12px;
   display: flex;
@@ -728,8 +728,8 @@ img.twemoji {
   animation: dropZonePulse 0.8s ease infinite alternate;
 }
 @keyframes dropZonePulse {
-  from { background: rgba(229, 83, 61, 0.1); }
-  to { background: rgba(229, 83, 61, 0.2); }
+  from { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  to { background: color-mix(in srgb, var(--accent) 20%, transparent); }
 }
 .widget-grid {
   display: grid;
@@ -789,9 +789,9 @@ img.twemoji {
   border-radius: 999px;
 }
 .area-chip-warn {
-  background: #fff7ed;
-  border-color: #fed7aa;
-  color: #c2410c;
+  background: color-mix(in srgb, var(--warning) 8%, transparent);
+  border-color: color-mix(in srgb, var(--warning) 30%, transparent);
+  color: var(--warning);
 }
 .area-chip-action {
   cursor: pointer;
@@ -799,32 +799,32 @@ img.twemoji {
 }
 .area-chip-action:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
 }
 .area-chip-inbox:hover {
-  background: #147EFB10;
-  border-color: #147EFB30;
-  color: #147EFB;
+  background: color-mix(in srgb, var(--inbox-color) 6%, transparent);
+  border-color: color-mix(in srgb, var(--inbox-color) 19%, transparent);
+  color: var(--inbox-color);
 }
 .area-chip-anytime:hover {
-  background: #5AC8FA10;
-  border-color: #5AC8FA30;
-  color: #0891B2;
+  background: color-mix(in srgb, var(--anytime-color) 6%, transparent);
+  border-color: color-mix(in srgb, var(--anytime-color) 19%, transparent);
+  color: var(--anytime-color);
 }
 .area-chip-someday:hover {
-  background: #C69C6D10;
-  border-color: #C69C6D30;
-  color: #92702C;
+  background: color-mix(in srgb, var(--someday-color) 6%, transparent);
+  border-color: color-mix(in srgb, var(--someday-color) 19%, transparent);
+  color: var(--someday-color);
 }
 .area-chip-today:hover {
-  background: #FFCC0010;
-  border-color: #FFCC0030;
-  color: #A16207;
+  background: color-mix(in srgb, var(--today-color) 6%, transparent);
+  border-color: color-mix(in srgb, var(--today-color) 19%, transparent);
+  color: var(--today-color);
 }
 .area-chip-note:hover {
-  background: #5856D610;
-  border-color: #5856D630;
-  color: #5856D6;
+  background: color-mix(in srgb, var(--notes-accent) 6%, transparent);
+  border-color: color-mix(in srgb, var(--notes-accent) 19%, transparent);
+  color: var(--notes-accent);
 }
 
 /* ========== Tana-Inspired Outliner Notes Styles ========== */
@@ -835,10 +835,10 @@ img.twemoji {
   border-radius: 6px;
 }
 .note-item:hover {
-  background: rgba(139, 92, 246, 0.04);
+  background: color-mix(in srgb, var(--notes-accent) 4%, transparent);
 }
 .note-item.editing {
-  background: rgba(139, 92, 246, 0.06);
+  background: color-mix(in srgb, var(--notes-accent) 6%, transparent);
 }
 
 /* Vertical connector lines from parent through children */
@@ -852,7 +852,7 @@ img.twemoji {
   left: calc(26px + (var(--note-depth) * 24px));
   width: 1.5px;
   bottom: 0;
-  background: rgba(139, 92, 246, 0.15);
+  background: color-mix(in srgb, var(--notes-accent) 15%, transparent);
   pointer-events: none;
   z-index: 0;
 }
@@ -879,11 +879,11 @@ img.twemoji {
   flex-shrink: 0;
   cursor: pointer;
   transition: all 0.12s ease;
-  color: rgba(139, 92, 246, 0.55);
+  color: color-mix(in srgb, var(--notes-accent) 55%, transparent);
   margin-top: 3px;
 }
 .note-bullet:hover {
-  background: rgba(139, 92, 246, 0.1);
+  background: color-mix(in srgb, var(--notes-accent) 10%, transparent);
   color: var(--notes-accent, #8B5CF6);
 }
 
@@ -900,7 +900,7 @@ img.twemoji {
 }
 /* Tana-style collapsed ring — dot with subtle border indicating hidden children */
 .note-collapsed-ring {
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--notes-accent) 18%, transparent);
 }
 
 /* Contenteditable input */
@@ -958,8 +958,8 @@ img.twemoji {
   height: 18px;
   padding: 0 5px;
   border-radius: 9px;
-  background: rgba(139, 92, 246, 0.1);
-  color: rgba(139, 92, 246, 0.7);
+  background: color-mix(in srgb, var(--notes-accent) 10%, transparent);
+  color: color-mix(in srgb, var(--notes-accent) 70%, transparent);
   font-size: 11px;
   font-weight: 600;
   flex-shrink: 0;
@@ -991,8 +991,8 @@ img.twemoji {
   color: var(--text-primary);
 }
 .note-action-btn-delete:hover {
-  color: #ef4444;
-  background: #fef2f2;
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 6%, transparent);
 }
 
 /* Breadcrumb bar */
@@ -1094,7 +1094,7 @@ img.twemoji {
   z-index: 10;
 }
 .note-drag-over-child {
-  outline: 2px dashed rgba(139, 92, 246, 0.4);
+  outline: 2px dashed color-mix(in srgb, var(--notes-accent) 40%, transparent);
   outline-offset: -2px;
   border-radius: 6px;
 }
@@ -1296,7 +1296,7 @@ img.twemoji {
   z-index: 100;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .mobile-bottom-nav-inner {
@@ -1478,7 +1478,7 @@ img.twemoji {
     -webkit-overflow-scrolling: touch;
     padding-top: max(12px, env(safe-area-inset-top));
     padding-bottom: max(12px, env(safe-area-inset-bottom));
-    box-shadow: 10px 0 24px rgba(15, 23, 42, 0.16);
+    box-shadow: 10px 0 24px rgba(0, 0, 0, 0.16);
   }
 
   .mobile-sidebar-overlay.show .mobile-sidebar-drawer {
@@ -1624,7 +1624,7 @@ img.twemoji {
   .widget {
     border-radius: 16px;
     margin: 0;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   }
 
   /* Modal - fullscreen on mobile */
@@ -3310,7 +3310,7 @@ body.mobile-keyboard-open .main-content {
 .modal-enhanced {
   background: var(--modal-bg);
   border-radius: 18px;
-  box-shadow: 0 18px 40px -16px rgba(15, 23, 42, 0.34);
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.34);
   border: 1px solid var(--border-light);
   overflow: hidden;
   max-height: calc(100vh - 32px);
@@ -3732,7 +3732,7 @@ body.mobile-keyboard-open .main-content {
 .undo-toast-btn {
   font-size: 13px;
   font-weight: 700;
-  color: #60A5FA;
+  color: var(--accent);
   background: none;
   border: none;
   padding: 4px 8px;
@@ -3740,7 +3740,7 @@ body.mobile-keyboard-open .main-content {
   transition: background 0.15s;
 }
 .undo-toast-btn:hover {
-  background: rgba(96, 165, 250, 0.15);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
 }
 .undo-toast-dismiss {
   color: rgba(255,255,255,0.4);
@@ -3971,9 +3971,9 @@ body.mobile-keyboard-open .main-content {
   font-weight: 600;
 }
 .braindump-voice-btn.is-recording {
-  border-color: #EF4444;
-  color: #EF4444;
-  background: #FEF2F2;
+  border-color: var(--danger);
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 6%, transparent);
 }
 .braindump-voice-btn:disabled {
   opacity: 0.6;
@@ -3981,9 +3981,9 @@ body.mobile-keyboard-open .main-content {
 }
 .braindump-voice-error {
   font-size: 12px;
-  color: #B45309;
-  background: #FFFBEB;
-  border: 1px solid #FDE68A;
+  color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warning) 25%, transparent);
   border-radius: 8px;
   padding: 8px 10px;
 }
@@ -4190,7 +4190,7 @@ body.mobile-keyboard-open .main-content {
   white-space: nowrap;
 }
 .braindump-pill-date {
-  --pill-color: #8B5CF6;
+  --pill-color: var(--notes-accent);
 }
 .braindump-pill-remove {
   background: none;
@@ -4254,9 +4254,9 @@ body.mobile-keyboard-open .main-content {
   padding: 8px 12px;
   margin: 0 0 -4px;
   border-radius: 8px;
-  background: #FEF2F2;
-  color: #DC2626;
-  border: 1px solid #FECACA;
+  background: color-mix(in srgb, var(--danger) 6%, transparent);
+  color: var(--danger);
+  border: 1px solid color-mix(in srgb, var(--danger) 20%, transparent);
 }
 
 /* Braindump processing state */
@@ -4650,8 +4650,8 @@ mark.global-search-highlight {
 
 /* Level-up toast glow */
 @keyframes levelUpGlow {
-  0%, 100% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
-  50% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
+  0%, 100% { box-shadow: 0 0 10px color-mix(in srgb, var(--warning) 30%, transparent); }
+  50% { box-shadow: 0 0 20px color-mix(in srgb, var(--warning) 60%, transparent); }
 }
 
 /* Mobile responsive adjustments */
@@ -4679,7 +4679,7 @@ mark.global-search-highlight {
   border-radius: 6px;
 }
 .trigger-item:hover {
-  background: rgba(255, 204, 0, 0.04);
+  background: color-mix(in srgb, var(--trigger-color) 4%, transparent);
 }
 .trigger-item.has-children:not(.trigger-collapsed) {
   position: relative;
@@ -4691,7 +4691,7 @@ mark.global-search-highlight {
   left: calc(26px + (var(--trigger-depth) * 24px));
   width: 1.5px;
   bottom: 0;
-  background: rgba(255, 204, 0, 0.2);
+  background: color-mix(in srgb, var(--trigger-color) 20%, transparent);
   pointer-events: none;
   z-index: 0;
 }
@@ -4715,12 +4715,12 @@ mark.global-search-highlight {
   flex-shrink: 0;
   cursor: pointer;
   transition: all 0.12s ease;
-  color: rgba(255, 204, 0, 0.7);
+  color: color-mix(in srgb, var(--trigger-color) 70%, transparent);
   margin-top: 3px;
 }
 .trigger-bullet:hover {
-  background: rgba(255, 204, 0, 0.12);
-  color: #FFCC00;
+  background: color-mix(in srgb, var(--trigger-color) 12%, transparent);
+  color: var(--trigger-color);
 }
 .trigger-bullet-chevron {
   width: 14px;
@@ -4735,7 +4735,7 @@ mark.global-search-highlight {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #FFCC00;
+  background: var(--trigger-color);
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 .trigger-bullet:hover .trigger-bullet-dot {
@@ -4743,7 +4743,7 @@ mark.global-search-highlight {
 }
 /* Tana-style collapsed ring for triggers */
 .trigger-collapsed-ring {
-  box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.22);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--trigger-color) 22%, transparent);
 }
 .trigger-content-col {
   flex: 1;
@@ -4805,8 +4805,8 @@ mark.global-search-highlight {
   color: var(--text-primary);
 }
 .trigger-action-btn-delete:hover {
-  background: rgba(255, 59, 48, 0.1);
-  color: #FF3B30;
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  color: var(--danger);
 }
 .trigger-item[draggable="true"] {
   cursor: grab;
@@ -4818,13 +4818,13 @@ mark.global-search-highlight {
   opacity: 0.4;
 }
 .trigger-item.drag-over-top {
-  border-top: 2px solid #FFCC00;
+  border-top: 2px solid var(--trigger-color);
 }
 .trigger-item.drag-over-bottom {
-  border-bottom: 2px solid #FFCC00;
+  border-bottom: 2px solid var(--trigger-color);
 }
 .trigger-item.drag-over-child {
-  background: rgba(255, 204, 0, 0.08);
+  background: color-mix(in srgb, var(--trigger-color) 8%, transparent);
   border-radius: 6px;
 }
 
