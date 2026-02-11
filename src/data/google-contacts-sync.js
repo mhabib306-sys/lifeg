@@ -260,6 +260,7 @@ export async function syncGoogleContactsNow() {
     let fullResyncAttempted = false;
 
     let scopeRecoveryAttempted = false;
+    let authRefreshAttempted = false;
     while (true) {
       const data = await fetchConnectionsPage({
         pageToken,
@@ -272,6 +273,15 @@ export async function syncGoogleContactsNow() {
         return false;
       }
       if (data.authExpired) {
+        // Attempt silent token refresh before giving up
+        if (!authRefreshAttempted) {
+          authRefreshAttempted = true;
+          const refreshed = await window.signInWithGoogleCalendar?.({ mode: 'silent' });
+          if (refreshed) {
+            pageToken = '';
+            continue;
+          }
+        }
         state.gcontactsError = 'Google Contacts authorization expired. Reconnect Google Calendar to refresh permissions.';
         return false;
       }

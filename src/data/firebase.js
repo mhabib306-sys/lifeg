@@ -27,6 +27,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 let gisScriptLoadPromise = null;
+let _lastGisErrorType = '';
 
 function generateNonce() {
   const array = new Uint8Array(32);
@@ -85,6 +86,9 @@ export function getCurrentUser() {
   return auth.currentUser;
 }
 
+/** Return the last GIS error type (e.g. 'popup_closed', 'popup_failed_to_open'). */
+export function getLastGisErrorType() { return _lastGisErrorType; }
+
 export async function signInWithGoogleCalendar(options = {}) {
   const { mode = 'interactive' } = options;
   // Prefer Google Identity Services token flow because it supports reliable
@@ -93,6 +97,9 @@ export async function signInWithGoogleCalendar(options = {}) {
   if (gisToken) {
     localStorage.setItem(GCAL_ACCESS_TOKEN_KEY, gisToken);
     localStorage.setItem(GCAL_TOKEN_TIMESTAMP_KEY, String(Date.now()));
+    // Persist login hint for reliable silent refresh
+    const email = auth.currentUser?.email || '';
+    if (email) localStorage.setItem('nucleusGCalLoginHint', email);
     return gisToken;
   }
 
@@ -144,6 +151,11 @@ function loadGoogleIdentityServicesScript() {
   return gisScriptLoadPromise;
 }
 
+/** Eagerly start loading the GIS script so it's ready for the first token refresh. */
+export function preloadGoogleIdentityServices() {
+  loadGoogleIdentityServicesScript().catch(() => {});
+}
+
 async function requestCalendarTokenWithGIS(mode = 'interactive') {
   const gisReady = await loadGoogleIdentityServicesScript();
   if (!gisReady || !window.google?.accounts?.oauth2) return null;
@@ -166,6 +178,7 @@ async function requestCalendarTokenWithGIS(mode = 'interactive') {
         scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly https://www.googleapis.com/auth/spreadsheets.readonly',
         callback: (resp) => {
           clearTimeout(timeoutId);
+          _lastGisErrorType = '';
           if (resp?.access_token) {
             // Store actual expires_in from Google (typically 3600 seconds)
             if (resp.expires_in) {
@@ -174,16 +187,19 @@ async function requestCalendarTokenWithGIS(mode = 'interactive') {
             finalize(resp.access_token);
           } else finalize(null);
         },
-        error_callback: () => {
+        error_callback: (err) => {
           clearTimeout(timeoutId);
+          _lastGisErrorType = err?.type || 'unknown';
+          console.warn('[GIS] Token request error:', _lastGisErrorType);
           finalize(null);
         },
       });
 
+      const hint = localStorage.getItem('nucleusGCalLoginHint') || auth.currentUser?.email || '';
       const request = mode === 'silent'
         ? {
             prompt: '',
-            ...(auth.currentUser?.email ? { login_hint: auth.currentUser.email } : {}),
+            ...(hint ? { login_hint: hint } : {}),
           }
         : {
             prompt: 'consent',
@@ -221,6 +237,11 @@ function handleOAuthCallback() {
     localStorage.setItem(GCAL_ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(GCAL_TOKEN_TIMESTAMP_KEY, String(Date.now()));
     localStorage.setItem(GCAL_CONNECTED_KEY, 'true');
+    // Extract email from id_token for persistent login_hint
+    try {
+      const payload = JSON.parse(atob(idToken.split('.')[1]));
+      if (payload?.email) localStorage.setItem('nucleusGCalLoginHint', payload.email);
+    } catch { /* ignore malformed JWT */ }
   }
 
   return { idToken, accessToken };

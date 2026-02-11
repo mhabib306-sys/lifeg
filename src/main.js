@@ -25,7 +25,7 @@ import { initGCalSync } from './data/google-calendar-sync.js';
 import { initGoogleContactsSync } from './data/google-contacts-sync.js';
 import { initGSheetSync } from './data/google-sheets-sync.js';
 import { applyStoredTheme, loadCloudData, debouncedSaveToGithub } from './data/github-sync.js';
-import { initAuth } from './data/firebase.js';
+import { initAuth, preloadGoogleIdentityServices } from './data/firebase.js';
 import { render } from './ui/render.js';
 import { migrateTodayFlag } from './features/tasks.js';
 import { ensureHomeWidgets } from './features/home-widgets.js';
@@ -231,6 +231,8 @@ function bootstrap() {
   // Apply theme immediately so login screen is styled
   applyStoredTheme();
   setupTwemojiObserver();
+  // Eagerly load GIS script so it's ready by the time any token refresh is needed
+  preloadGoogleIdentityServices();
 
   const lastSeenVersion = localStorage.getItem(APP_VERSION_SEEN_KEY) || '';
   if (lastSeenVersion && lastSeenVersion !== APP_VERSION) {

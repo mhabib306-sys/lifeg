@@ -135,6 +135,18 @@ export async function syncGSheetNow() {
     const data = await fetchSheetData();
 
     if (data.authExpired) {
+      // Attempt silent token refresh and retry once before giving up
+      const refreshed = await window.signInWithGoogleCalendar?.({ mode: 'silent' });
+      if (refreshed) {
+        const retryData = await fetchSheetData();
+        if (retryData && !retryData.authExpired && !retryData.error) {
+          state.gsheetData = retryData;
+          localStorage.setItem(GSHEET_CACHE_KEY, JSON.stringify(retryData));
+          localStorage.setItem(GSHEET_LAST_SYNC_KEY, String(Date.now()));
+          state.gsheetError = null;
+          return true;
+        }
+      }
       state.gsheetError = 'Google Sheets authorization expired. Reconnect Google Calendar to refresh.';
       return false;
     }

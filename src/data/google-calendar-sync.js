@@ -37,8 +37,38 @@ let syncIntervalId = null;
 let tokenRefreshIntervalId = null;
 let tokenRefreshPromise = null;
 let silentRefreshFailedAt = 0; // Timestamp of last failed silent refresh
+let silentRefreshFailCount = 0; // Consecutive failure count for escalating backoff
+let scheduledRetryTimerId = null; // setTimeout ID for auto-retry after failure
 let visibilityChangeHandler = null;
-const SILENT_REFRESH_COOLDOWN_MS = 30 * 60 * 1000; // Don't retry silent refresh for 30 min after failure
+
+function getSilentRefreshCooldownMs() {
+  if (silentRefreshFailCount <= 1) return 1 * 60 * 1000;  // 1 min
+  if (silentRefreshFailCount <= 2) return 3 * 60 * 1000;  // 3 min
+  return 5 * 60 * 1000;                                    // 5 min
+}
+
+function clearScheduledRetry() {
+  if (scheduledRetryTimerId) {
+    clearTimeout(scheduledRetryTimerId);
+    scheduledRetryTimerId = null;
+  }
+}
+
+function scheduleRefreshRetry() {
+  clearScheduledRetry();
+  if (!isGCalConnected()) return;
+  const delay = getSilentRefreshCooldownMs();
+  console.log(`[GCal] Scheduling silent refresh retry in ${Math.round(delay / 1000)}s (attempt ${silentRefreshFailCount})`);
+  scheduledRetryTimerId = setTimeout(async () => {
+    scheduledRetryTimerId = null;
+    if (!isGCalConnected()) return;
+    const refreshed = await refreshAccessTokenSilent();
+    if (refreshed) {
+      console.log('[GCal] Scheduled retry succeeded');
+      window.render();
+    }
+  }, delay);
+}
 
 function persistOfflineQueue() {
   localStorage.setItem(GCAL_OFFLINE_QUEUE_KEY, JSON.stringify(state.gcalOfflineQueue || []));
@@ -195,9 +225,9 @@ function handleTokenExpired() {
   window.render();
 }
 
-async function refreshAccessTokenSilent() {
-  // If a recent silent refresh already failed, don't retry (avoids repeated popups)
-  if (silentRefreshFailedAt && (Date.now() - silentRefreshFailedAt) < SILENT_REFRESH_COOLDOWN_MS) {
+async function refreshAccessTokenSilent({ bypassCooldown = false } = {}) {
+  // Escalating cooldown: skip if a recent failure occurred (unless bypassed)
+  if (!bypassCooldown && silentRefreshFailedAt && (Date.now() - silentRefreshFailedAt) < getSilentRefreshCooldownMs()) {
     return false;
   }
   if (tokenRefreshPromise) return tokenRefreshPromise;
@@ -206,16 +236,22 @@ async function refreshAccessTokenSilent() {
     try {
       const token = await window.signInWithGoogleCalendar?.({ mode: 'silent' });
       if (token) {
-        silentRefreshFailedAt = 0; // Reset cooldown on success
+        silentRefreshFailedAt = 0;
+        silentRefreshFailCount = 0;
+        clearScheduledRetry();
         state.gcalTokenExpired = false;
         state.gcalError = null;
         return true;
       }
-      silentRefreshFailedAt = Date.now(); // Start cooldown
+      silentRefreshFailCount++;
+      silentRefreshFailedAt = Date.now();
+      scheduleRefreshRetry();
       return false;
     } catch (err) {
       console.warn('Silent token refresh error:', err);
-      silentRefreshFailedAt = Date.now(); // Start cooldown
+      silentRefreshFailCount++;
+      silentRefreshFailedAt = Date.now();
+      scheduleRefreshRetry();
       return false;
     } finally {
       tokenRefreshPromise = null;
@@ -263,9 +299,16 @@ async function gcalFetch(endpoint, options = {}) {
     });
 
     if (res.status === 401) {
-      const refreshed = options._retry401 ? false : await refreshAccessTokenSilent();
-      if (refreshed) {
-        return gcalFetch(endpoint, { ...options, _retry401: true });
+      if (!options._retry401) {
+        let refreshed = await refreshAccessTokenSilent();
+        if (!refreshed) {
+          // Brief delay retry — handles race where GIS script just finished loading
+          await new Promise(r => setTimeout(r, 1000));
+          refreshed = await refreshAccessTokenSilent({ bypassCooldown: true });
+        }
+        if (refreshed) {
+          return gcalFetch(endpoint, { ...options, _retry401: true });
+        }
       }
       handleTokenExpired();
       return null;
@@ -606,7 +649,9 @@ export async function retryGCalOfflineQueue() {
 // ---- Lifecycle ----
 
 export async function connectGCal() {
-  silentRefreshFailedAt = 0; // Reset cooldown on explicit connect
+  silentRefreshFailedAt = 0;
+  silentRefreshFailCount = 0;
+  clearScheduledRetry();
   const token = await window.signInWithGoogleCalendar();
   if (!token) return;
   localStorage.setItem(GCAL_CONNECTED_KEY, 'true');
@@ -639,11 +684,15 @@ export function disconnectGCal() {
   state.gcontactsError = null;
   if (syncIntervalId) { clearInterval(syncIntervalId); syncIntervalId = null; }
   if (tokenRefreshIntervalId) { clearInterval(tokenRefreshIntervalId); tokenRefreshIntervalId = null; }
+  clearScheduledRetry();
+  silentRefreshFailCount = 0;
   window.render();
 }
 
 export async function reconnectGCal() {
-  silentRefreshFailedAt = 0; // Reset cooldown on explicit reconnect
+  silentRefreshFailedAt = 0;
+  silentRefreshFailCount = 0;
+  clearScheduledRetry();
   const token = await window.signInWithGoogleCalendar();
   if (!token) return;
   state.gcalTokenExpired = false;
@@ -731,6 +780,8 @@ export function initGCalSync() {
     if (document.visibilityState !== 'visible') return;
     if (!isGCalConnected()) return;
     if (!isTokenValid()) {
+      // Always attempt refresh on tab focus — bypass cooldown since user is actively returning
+      silentRefreshFailedAt = 0;
       const refreshed = await refreshAccessTokenSilent();
       if (refreshed) {
         console.log('[GCal] Token refreshed on tab focus');
