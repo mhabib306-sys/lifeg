@@ -80,6 +80,7 @@ export function saveInlineEdit(taskId) {
         if (inlineMeta.labels) updates.labels = inlineMeta.labels;
         if (inlineMeta.people) updates.people = inlineMeta.people;
         if (inlineMeta.deferDate) updates.deferDate = inlineMeta.deferDate;
+        if (inlineMeta.dueDate) updates.dueDate = inlineMeta.dueDate;
       }
       updateTask(taskId, updates);
     }
@@ -251,6 +252,7 @@ export function quickAddTask(inputElement) {
     if (inlineMeta.labels && inlineMeta.labels.length) options.labels = [...(options.labels || []), ...inlineMeta.labels.filter(l => !(options.labels || []).includes(l))];
     if (inlineMeta.people && inlineMeta.people.length) options.people = [...(options.people || []), ...inlineMeta.people.filter(p => !(options.people || []).includes(p))];
     if (inlineMeta.deferDate) options.deferDate = inlineMeta.deferDate;
+    if (inlineMeta.dueDate) options.dueDate = inlineMeta.dueDate;
   }
 
   createTask(title, options);

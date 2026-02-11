@@ -219,16 +219,24 @@ export function homeQuickAddTask(inputElement) {
   const title = inputElement.value.trim();
   if (!title) return;
   const options = { status: 'inbox' };
+  // If quick-add toggle is set to note mode
+  if (state.quickAddIsNote) {
+    options.isNote = true;
+    options.status = 'anytime';
+  }
   // Merge inline autocomplete metadata
   const inlineMeta = state.inlineAutocompleteMeta.get('home-quick-add-input');
   if (inlineMeta) {
+    if (inlineMeta.areaId) options.areaId = inlineMeta.areaId;
     if (inlineMeta.categoryId) options.categoryId = inlineMeta.categoryId;
     if (inlineMeta.labels && inlineMeta.labels.length) options.labels = inlineMeta.labels;
     if (inlineMeta.people && inlineMeta.people.length) options.people = inlineMeta.people;
     if (inlineMeta.deferDate) options.deferDate = inlineMeta.deferDate;
+    if (inlineMeta.dueDate) options.dueDate = inlineMeta.dueDate;
   }
   createTask(title, options);
   inputElement.value = '';
+  state.quickAddIsNote = false;
   cleanupInlineAutocomplete('home-quick-add-input');
   render();
   setTimeout(() => {

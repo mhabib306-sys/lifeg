@@ -119,13 +119,19 @@ export function renderStatsWidget(today) {
 export function renderQuickAddWidget() {
   return `
     <div class="flex items-center gap-3">
-      <div class="w-5 h-5 rounded-full border-2 border-dashed border-charcoal/20 flex-shrink-0"></div>
+      <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
+        class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
+        ${state.quickAddIsNote
+          ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
+          : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed border-charcoal/20 flex-shrink-0"></div>`
+        }
+      </div>
       <input type="text" id="home-quick-add-input"
-        placeholder="Quick add task... (press Enter)"
+        placeholder="${state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
         onkeydown="if(event._inlineAcHandled)return;if(event.key==='Enter'){event.preventDefault();homeQuickAddTask(this);}"
         class="flex-1 text-[15px] text-charcoal placeholder-charcoal/30 bg-transparent border-0 outline-none focus:ring-0">
       <button onclick="homeQuickAddTask(document.getElementById('home-quick-add-input'))"
-        class="text-charcoal/30 hover:text-coral transition p-1" title="Add task">
+        class="text-charcoal/30 hover:text-coral transition p-1" title="${state.quickAddIsNote ? 'Add Note' : 'Add Task'}">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </button>
     </div>

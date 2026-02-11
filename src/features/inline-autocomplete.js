@@ -1,7 +1,7 @@
 // ============================================================================
 // INLINE AUTOCOMPLETE MODULE
 // ============================================================================
-// Todoist-style inline autocomplete (# areas, @ tags, & people, ! dates)
+// Todoist-style inline autocomplete (# areas, @ tags, & people, ! defer dates, !! due dates)
 // and related chips/metadata management for non-modal inputs.
 //
 // Extracted from ui/task-modal.js for maintainability. When in modal mode,
@@ -165,7 +165,8 @@ export function setupInlineAutocomplete(inputId, config = {}) {
       areaId: config.initialMeta?.areaId || null,
       labels: config.initialMeta?.labels ? [...config.initialMeta.labels] : [],
       people: config.initialMeta?.people ? [...config.initialMeta.people] : [],
-      deferDate: config.initialMeta?.deferDate || null
+      deferDate: config.initialMeta?.deferDate || null,
+      dueDate: config.initialMeta?.dueDate || null
     });
   }
 
@@ -175,8 +176,8 @@ export function setupInlineAutocomplete(inputId, config = {}) {
   let triggerPos = -1;
 
   function getMeta() {
-    if (isModal) return { areaId: state.modalSelectedArea, labels: state.modalSelectedTags, people: state.modalSelectedPeople, deferDate: document.getElementById('task-defer')?.value || null };
-    return state.inlineAutocompleteMeta.get(inputId) || { areaId: null, labels: [], people: [], deferDate: null };
+    if (isModal) return { areaId: state.modalSelectedArea, labels: state.modalSelectedTags, people: state.modalSelectedPeople, deferDate: document.getElementById('task-defer')?.value || null, dueDate: document.getElementById('task-due')?.value || null };
+    return state.inlineAutocompleteMeta.get(inputId) || { areaId: null, labels: [], people: [], deferDate: null, dueDate: null };
   }
 
   function setMeta(key, value) {
@@ -188,6 +189,9 @@ export function setupInlineAutocomplete(inputId, config = {}) {
       else if (key === 'deferDate') {
         const deferInput = document.getElementById('task-defer');
         if (deferInput) { deferInput.value = value || ''; window.updateDateDisplay('defer'); }
+      } else if (key === 'dueDate') {
+        const dueInput = document.getElementById('task-due');
+        if (dueInput) { dueInput.value = value || ''; window.updateDateDisplay('due'); }
       }
     } else {
       const meta = getMeta();
@@ -203,7 +207,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
     if (triggerChar === '#') return state.taskAreas;
     if (triggerChar === '@') return state.taskLabels.filter(l => !(meta.labels || []).includes(l.id));
     if (triggerChar === '&') return state.taskPeople.filter(p => !(meta.people || []).includes(p.id));
-    if (triggerChar === '!') return parseDateQuery(query || '');
+    if (triggerChar === '!' || triggerChar === '!!') return parseDateQuery(query || '');
     return [];
   }
 
@@ -257,6 +261,8 @@ export function setupInlineAutocomplete(inputId, config = {}) {
       const people = [...(meta.people || [])];
       if (!people.includes(item.id)) people.push(item.id);
       setMeta('people', people);
+    } else if (triggerChar === '!!') {
+      setMeta('dueDate', item.date);
     } else if (triggerChar === '!') {
       setMeta('deferDate', item.date);
     }
@@ -293,7 +299,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
       popup.style.top = 'auto';
     }
 
-    const isDate = triggerChar === '!';
+    const isDate = triggerChar === '!' || triggerChar === '!!';
     const filtered = isDate ? items : items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));
     const hasExactMatch = isDate ? true : items.some(i => i.name.toLowerCase() === query.toLowerCase());
     const showCreate = !isDate && query.length > 0 && !hasExactMatch;
@@ -303,13 +309,14 @@ export function setupInlineAutocomplete(inputId, config = {}) {
     if (activeIndex >= totalItems) activeIndex = totalItems - 1;
     if (activeIndex < 0) activeIndex = 0;
 
-    const typeLabel = triggerChar === '#' ? 'Area' : triggerChar === '@' ? 'Tag' : triggerChar === '!' ? 'Date' : 'Person';
+    const typeLabel = triggerChar === '#' ? 'Area' : triggerChar === '@' ? 'Tag' : triggerChar === '!!' ? 'Due Date' : triggerChar === '!' ? 'Defer Date' : 'Person';
     let html = '';
     filtered.forEach((item, idx) => {
       const isActive = idx === activeIndex ? ' active' : '';
       let icon;
       if (isDate) {
-        icon = `<span class="ac-icon" style="background:#8b5cf620;color:#8b5cf6"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg></span>`;
+        const dateColor = triggerChar === '!!' ? '#ef4444' : '#8b5cf6';
+        icon = `<span class="ac-icon" style="background:${dateColor}20;color:${dateColor}"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg></span>`;
       } else if (triggerChar === '#') {
         icon = `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">${item.icon || '\uD83D\uDCC1'}</span>`;
       } else if (triggerChar === '@') {
@@ -347,23 +354,38 @@ export function setupInlineAutocomplete(inputId, config = {}) {
     const val = input.value;
     const caret = input.selectionStart;
 
+    // Helper: detect ! or !! trigger at position i (i points to first !)
+    function detectBangTrigger(i) {
+      // Check for !! (due date) vs ! (defer date)
+      if (i + 1 < val.length && val[i + 1] === '!') {
+        triggerChar = '!!';
+        triggerPos = i;
+        const query = val.substring(i + 2, caret);
+        const items = getItems(query);
+        activeIndex = 0;
+        renderPopup(items, query);
+      } else {
+        triggerChar = '!';
+        triggerPos = i;
+        const query = val.substring(i + 1, caret);
+        const items = getItems(query);
+        activeIndex = 0;
+        renderPopup(items, query);
+      }
+    }
+
     // Scan backwards from caret for trigger char
     for (let i = caret - 1; i >= 0; i--) {
       const ch = val[i];
       if (ch === '\n') { dismissPopup(); return; }
       if (ch === ' ') {
-        // For ! trigger, allow spaces (multi-word queries like "!next monday")
+        // For ! / !! trigger, allow spaces (multi-word queries like "!next monday")
         // Continue scanning backwards to find a ! trigger
         for (let j = i - 1; j >= 0; j--) {
           const ch2 = val[j];
           if (ch2 === '\n' || ch2 === '#' || ch2 === '@' || ch2 === '&') break;
           if (ch2 === '!' && (j === 0 || val[j-1] === ' ')) {
-            triggerChar = '!';
-            triggerPos = j;
-            const query = val.substring(j + 1, caret);
-            const items = getItems(query);
-            activeIndex = 0;
-            renderPopup(items, query);
+            detectBangTrigger(j);
             return;
           }
         }
@@ -379,12 +401,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
         return;
       }
       if (ch === '!' && (i === 0 || val[i-1] === ' ')) {
-        triggerChar = '!';
-        triggerPos = i;
-        const query = val.substring(i + 1, caret);
-        const items = getItems(query);
-        activeIndex = 0;
-        renderPopup(items, query);
+        detectBangTrigger(i);
         return;
       }
     }
@@ -399,7 +416,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
     const val = input.value;
     const caret = input.selectionStart;
     const query = val.substring(triggerPos + 1, caret);
-    const isDate = triggerChar === '!';
+    const isDate = triggerChar === '!' || triggerChar === '!!';
     const items = getItems(query);
     const filtered = isDate ? items : items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));
     const hasExactMatch = isDate ? true : items.some(i => i.name.toLowerCase() === query.toLowerCase());
@@ -513,8 +530,18 @@ export function renderInlineChips(inputId) {
   if (meta.deferDate) {
     html += `<span class="inline-meta-chip" style="background:#8b5cf620;color:#8b5cf6">
       <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
-      ${formatSmartDate(meta.deferDate)}
+      Defer ${formatSmartDate(meta.deferDate)}
       <span class="inline-meta-chip-remove" onclick="removeInlineMeta('${inputId}','deferDate','')">
+        <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </span>
+    </span>`;
+  }
+  // Due date chip
+  if (meta.dueDate) {
+    html += `<span class="inline-meta-chip" style="background:#ef444420;color:#ef4444">
+      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+      Due ${formatSmartDate(meta.dueDate)}
+      <span class="inline-meta-chip-remove" onclick="removeInlineMeta('${inputId}','dueDate','')">
         <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
       </span>
     </span>`;
@@ -525,8 +552,8 @@ export function renderInlineChips(inputId) {
 /**
  * Remove a piece of inline autocomplete metadata from a non-modal input.
  * @param {string} inputId - DOM id of the input
- * @param {string} type - 'category' | 'label' | 'person' | 'deferDate'
- * @param {string} id - Entity ID to remove (unused for deferDate)
+ * @param {string} type - 'category' | 'label' | 'person' | 'deferDate' | 'dueDate'
+ * @param {string} id - Entity ID to remove (unused for date types)
  */
 export function removeInlineMeta(inputId, type, id) {
   const meta = state.inlineAutocompleteMeta.get(inputId);
@@ -535,6 +562,7 @@ export function removeInlineMeta(inputId, type, id) {
   else if (type === 'label') meta.labels = (meta.labels || []).filter(l => l !== id);
   else if (type === 'person') meta.people = (meta.people || []).filter(p => p !== id);
   else if (type === 'deferDate') meta.deferDate = null;
+  else if (type === 'dueDate') meta.dueDate = null;
   state.inlineAutocompleteMeta.set(inputId, meta);
   renderInlineChips(inputId);
 }
