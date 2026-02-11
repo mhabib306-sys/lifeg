@@ -13,7 +13,7 @@ import {
 } from '../features/areas.js';
 import { createPerspective, deletePerspective } from '../features/perspectives.js';
 import { saveTasksData } from '../data/storage.js';
-import { escapeHtml } from '../utils.js';
+import { escapeHtml, renderPersonAvatar } from '../utils.js';
 import { THINGS3_AREA_COLORS } from '../constants.js';
 
 // ============================================================================
@@ -708,6 +708,11 @@ export function renderPersonModalHtml() {
           <button onclick="showPersonModal=false; editingPersonId=null; render()" aria-label="Close dialog" class="text-charcoal/50 hover:text-charcoal text-xl">&times;</button>
         </div>
         <div class="p-6 space-y-4">
+          ${editingPerson?.photoData ? `
+            <div class="flex justify-center">
+              ${renderPersonAvatar(editingPerson, 64)}
+            </div>
+          ` : ''}
           <div>
             <label class="text-sm text-charcoal/70 block mb-1">Name</label>
             <input type="text" id="person-name" value="${editingPerson?.name ? escapeHtml(editingPerson.name) : ''}"

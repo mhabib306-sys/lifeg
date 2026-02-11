@@ -193,6 +193,8 @@ const initialTaskPeople = (safeJsonParse(TASK_PEOPLE_KEY, null) || DEFAULT_TASK_
     ...item,
     email: typeof item?.email === 'string' ? item.email : '',
     jobTitle: typeof item?.jobTitle === 'string' ? item.jobTitle : '',
+    photoUrl: typeof item?.photoUrl === 'string' ? item.photoUrl : '',
+    photoData: typeof item?.photoData === 'string' ? item.photoData : '',
   }));
 const initialCustomPerspectives = (safeJsonParse(PERSPECTIVES_KEY, []) || [])
   .filter(item => !isEntityDeleted('customPerspectives', item?.id));

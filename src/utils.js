@@ -115,6 +115,29 @@ export function normalizeEmail(email) {
 }
 
 /**
+ * Render a person avatar — photo if available, else colored initials circle.
+ * Uses inline style for dimensions (Tailwind can't generate dynamic arbitrary values at build time).
+ * @param {Object} person - Person entity with optional photoData, name, color
+ * @param {number} [size=32] - Pixel width/height
+ * @param {string} [extraClasses=''] - Additional CSS classes
+ * @returns {string} HTML string
+ */
+export function renderPersonAvatar(person, size = 32, extraClasses = '') {
+  if (!person) return '';
+  if (person.photoData) {
+    return `<img src="${person.photoData}" alt="" style="width:${size}px;height:${size}px" class="rounded-full object-cover flex-shrink-0 ${extraClasses}" referrerpolicy="no-referrer">`;
+  }
+  // Initials fallback: first letter of first + last word, max 2 chars
+  const words = String(person.name || '').trim().split(/\s+/).filter(Boolean);
+  const initials = words.length >= 2
+    ? (words[0][0] + words[words.length - 1][0]).toUpperCase()
+    : (words[0]?.[0] || '?').toUpperCase();
+  const bg = person.color || 'var(--accent)';
+  const fontSize = Math.max(Math.round(size * 0.4), 10);
+  return `<span style="width:${size}px;height:${size}px;background:${bg};font-size:${fontSize}px" class="rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold leading-none ${extraClasses}">${initials}</span>`;
+}
+
+/**
  * Format a Google Calendar event's time range for display
  * @param {Object} event - GCal event object with start/end dateTime
  * @returns {string} Formatted time string (e.g. "9:00 AM - 10:00 AM")

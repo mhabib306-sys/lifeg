@@ -6,7 +6,7 @@
 
 import { state } from '../state.js';
 import { THINGS3_ICONS, getActiveIcons, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
-import { escapeHtml, formatSmartDate, getLocalDateString } from '../utils.js';
+import { escapeHtml, formatSmartDate, getLocalDateString, renderPersonAvatar } from '../utils.js';
 import { getAreaById, getLabelById, getPersonById, getTasksByPerson, getCategoriesByArea, getCategoryById } from '../features/areas.js';
 import { saveViewState } from '../data/storage.js';
 
@@ -929,9 +929,11 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
       <div class="area-hero bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl" style="background: color-mix(in srgb, ${personColor} 12%, transparent); color: ${personColor}">
+            ${person.photoData
+              ? `<img src="${person.photoData}" alt="" class="w-12 h-12 rounded-lg object-cover flex-shrink-0" referrerpolicy="no-referrer">`
+              : `<div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl" style="background: color-mix(in srgb, ${personColor} 12%, transparent); color: ${personColor}">
               <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            </div>
+            </div>`}
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(person.name)}</h1>
               ${person.jobTitle || person.email ? `
@@ -1142,9 +1144,7 @@ export function buildAllPeopleHtml() {
             <button onclick="showPersonTasks('${person.id}')"
               class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-4 text-left hover:border-[var(--border)] hover:shadow-sm transition group">
               <div class="flex items-center gap-3 mb-2">
-                <div class="w-8 h-8 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-[var(--text-muted)] flex-shrink-0">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                </div>
+                ${renderPersonAvatar(person, 32)}
                 <div class="min-w-0">
                   <span class="block font-medium text-[var(--text-primary)] text-[14px] truncate">${escapeHtml(person.name)}</span>
                   ${person.jobTitle ? `<span class="block text-[11px] text-[var(--text-muted)] truncate">${escapeHtml(person.jobTitle)}</span>` : ''}
@@ -1671,9 +1671,7 @@ export function renderTasksTab() {
               draggable="true"
               data-id="${person.id}"
               data-type="person">
-              <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-[var(--text-muted)]">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </span>
+              ${renderPersonAvatar(person, 24)}
               <span class="flex-1 min-w-0">
                 <span class="block text-[14px] truncate ${isPersonActive(person.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(person.name)}</span>
                 ${person.jobTitle ? `<span class="block text-[11px] truncate text-[var(--text-muted)]">${escapeHtml(person.jobTitle)}</span>` : ''}

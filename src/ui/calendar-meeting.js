@@ -6,7 +6,7 @@
 
 import { state } from '../state.js';
 import { MEETING_NOTES_KEY } from '../constants.js';
-import { escapeHtml, getLocalDateString, normalizeEmail, formatEventTime, formatEventDateLabel } from '../utils.js';
+import { escapeHtml, getLocalDateString, normalizeEmail, formatEventTime, formatEventDateLabel, renderPersonAvatar } from '../utils.js';
 
 function getEventKeyForScope(event, scope = 'instance') {
   if (!event) return '';
@@ -563,7 +563,8 @@ export function renderMeetingNotesPage() {
             ${discussionPool.attendeePeople.length > 0 ? `
               <div class="discussion-pool-people mb-3">
                 ${discussionPool.attendeePeople.map(person => `
-                  <span class="discussion-pool-person-pill">
+                  <span class="discussion-pool-person-pill" style="display:inline-flex;align-items:center;gap:6px">
+                    ${renderPersonAvatar(person, 20)}
                     ${escapeHtml(person.name)}
                     ${person.email ? `<span class="discussion-pool-person-email">${escapeHtml(person.email)}</span>` : ''}
                   </span>
@@ -626,7 +627,8 @@ export function renderMeetingNotesPage() {
                   const matchedPerson = normEmail ? state.taskPeople.find(p => normalizeEmail(p.email) === normEmail) : null;
                   const label = matchedPerson?.name || a.displayName || a.email || 'Guest';
                   return `
-                  <span class="text-xs px-2 py-1 rounded-full bg-[var(--bg-secondary)] text-[var(--text-primary)]">
+                  <span class="text-xs px-2 py-1 rounded-full bg-[var(--bg-secondary)] text-[var(--text-primary)] inline-flex items-center gap-1.5">
+                    ${matchedPerson ? renderPersonAvatar(matchedPerson, 16) : ''}
                     ${escapeHtml(label)}
                   </span>`;
                 }).join('')}

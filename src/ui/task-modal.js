@@ -10,7 +10,7 @@
 import { state } from '../state.js';
 import { createTask, updateTask, deleteTask } from '../features/tasks.js';
 import { createLabel, createPerson, getCategoriesByArea, getCategoryById } from '../features/areas.js';
-import { escapeHtml, formatSmartDate } from '../utils.js';
+import { escapeHtml, formatSmartDate, renderPersonAvatar } from '../utils.js';
 import {
   getActiveIcons,
   _css,
@@ -940,7 +940,9 @@ export function renderPeopleInput() {
       <div class="tag-input-container" onclick="document.getElementById('people-search').focus()">
         ${selectedPeopleObjects.map(person => `
           <span class="tag-pill" style="background: var(--accent-light); color: var(--accent)">
-            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            ${person.photoData
+              ? `<img src="${person.photoData}" alt="" style="width:16px;height:16px" class="rounded-full object-cover" referrerpolicy="no-referrer">`
+              : `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`}
             ${escapeHtml(person.name)}
             <span class="tag-pill-remove" onclick="event.stopPropagation(); removePersonModal('${person.id}');">
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -959,7 +961,9 @@ export function renderPeopleInput() {
     state.taskPeople.filter(p => !state.modalSelectedPeople.includes(p.id)),
     (item) => addPerson(item),
     (item) => item.name,
-    () => `<div class="autocomplete-option-icon bg-[var(--bg-secondary)]"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`,
+    (item) => item?.photoData
+      ? `<div class="autocomplete-option-icon"><img src="${item.photoData}" alt="" style="width:20px;height:20px" class="rounded-full object-cover" referrerpolicy="no-referrer"></div>`
+      : `<div class="autocomplete-option-icon bg-[var(--bg-secondary)]"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`,
     true,
     (name) => {
       const newPerson = { id: 'person_' + Date.now(), name, email: '' };

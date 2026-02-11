@@ -168,7 +168,9 @@ export function createPerson(name, email = '', jobTitle = '') {
     id: 'person_' + Date.now(),
     name: name,
     email: String(email || '').trim(),
-    jobTitle: String(jobTitle || '').trim()
+    jobTitle: String(jobTitle || '').trim(),
+    photoUrl: '',
+    photoData: '',
   };
   clearEntityDeleted('taskPeople', person.id);
   state.taskPeople.push(person);

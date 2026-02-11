@@ -59,6 +59,38 @@ function pickPrimaryJobTitle(person) {
   return String(primary?.title || orgs[0]?.title || '').trim();
 }
 
+function pickPrimaryPhotoUrl(person) {
+  const photos = Array.isArray(person?.photos) ? person.photos : [];
+  // Filter out default placeholder images
+  const real = photos.filter(p => !p?.default);
+  if (real.length === 0) return '';
+  const primary = real.find(p => p?.metadata?.primary);
+  return String(primary?.url || real[0]?.url || '').trim();
+}
+
+async function fetchAndResizePhoto(photoUrl) {
+  try {
+    const token = getAccessToken();
+    if (!token || !photoUrl) return '';
+    const res = await fetch(photoUrl, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return '';
+    const blob = await res.blob();
+    const bitmap = await createImageBitmap(blob);
+    const size = 64;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(bitmap, 0, 0, size, size);
+    bitmap.close();
+    return canvas.toDataURL('image/jpeg', 0.8);
+  } catch {
+    return '';
+  }
+}
+
 function randomPersonColor() {
   const palette = ['#4A90A4', '#6B8E5A', '#E5533D', '#C4943D', '#7C6B8E', '#6366F1', '#0EA5E9'];
   return palette[Math.floor(Math.random() * palette.length)];
@@ -69,8 +101,9 @@ function ensurePersonId() {
 }
 
 function mergeGoogleContactsIntoPeople(contacts) {
-  if (!Array.isArray(contacts) || contacts.length === 0) return 0;
+  if (!Array.isArray(contacts) || contacts.length === 0) return { changed: 0, peopleNeedingPhotos: [] };
   let changed = 0;
+  const peopleNeedingPhotos = [];
 
   for (const contact of contacts) {
     const deleted = !!contact?.metadata?.deleted;
@@ -78,6 +111,7 @@ function mergeGoogleContactsIntoPeople(contacts) {
     const name = pickPrimaryName(contact);
     const email = pickPrimaryEmail(contact);
     const jobTitle = pickPrimaryJobTitle(contact);
+    const photoUrl = pickPrimaryPhotoUrl(contact);
     const emailNorm = normalizeEmail(email);
     const nameNorm = normalizeName(name);
 
@@ -121,26 +155,35 @@ function mergeGoogleContactsIntoPeople(contacts) {
         existing.updatedAt = new Date().toISOString();
         changed++;
       }
+      // Track photo update if source URL changed
+      if (photoUrl && String(existing.photoUrl || '') !== photoUrl) {
+        existing.photoUrl = photoUrl;
+        peopleNeedingPhotos.push(existing);
+      }
       continue;
     }
 
     // Skip nameless and emailless entries.
     if (!name && !email) continue;
 
-    state.taskPeople.push({
+    const newPerson = {
       id: ensurePersonId(),
       name: name || email,
       email: String(email || '').trim(),
       jobTitle: String(jobTitle || '').trim(),
       color: randomPersonColor(),
       googleContactId: resourceName,
+      photoUrl: photoUrl,
+      photoData: '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    });
+    };
+    state.taskPeople.push(newPerson);
+    if (photoUrl) peopleNeedingPhotos.push(newPerson);
     changed++;
   }
 
-  return changed;
+  return { changed, peopleNeedingPhotos };
 }
 
 async function fetchConnectionsPage({ pageToken = '', syncToken = '', requestSyncToken = false } = {}) {
@@ -148,7 +191,7 @@ async function fetchConnectionsPage({ pageToken = '', syncToken = '', requestSyn
   if (!token) return null;
 
   const params = new URLSearchParams({
-    personFields: 'names,emailAddresses,organizations,metadata',
+    personFields: 'names,emailAddresses,organizations,metadata,photos',
     pageSize: '500',
   });
   if (pageToken) params.set('pageToken', pageToken);
@@ -180,6 +223,24 @@ async function fetchConnectionsPage({ pageToken = '', syncToken = '', requestSyn
   }
 
   return res.json();
+}
+
+async function fetchPhotosForPeople(people) {
+  let fetched = 0;
+  for (const person of people) {
+    if (!person.photoUrl) continue;
+    const data = await fetchAndResizePhoto(person.photoUrl);
+    if (data) {
+      person.photoData = data;
+      person.updatedAt = new Date().toISOString();
+      fetched++;
+    }
+  }
+  if (fetched > 0) {
+    saveTasksData();
+    window.render();
+    window.debouncedSaveToGithub?.();
+  }
 }
 
 export async function syncGoogleContactsNow() {
@@ -248,13 +309,19 @@ export async function syncGoogleContactsNow() {
       if (!pageToken) break;
     }
 
-    const changed = mergeGoogleContactsIntoPeople(allConnections);
+    const { changed, peopleNeedingPhotos } = mergeGoogleContactsIntoPeople(allConnections);
     if (changed > 0) {
       saveTasksData();
     }
     if (nextSyncToken) setContactsSyncToken(nextSyncToken);
     setContactsLastSync(Date.now());
     state.gcontactsError = null;
+
+    // Kick off async photo fetching (non-blocking)
+    if (peopleNeedingPhotos.length > 0) {
+      fetchPhotosForPeople(peopleNeedingPhotos);
+    }
+
     return true;
   } catch (err) {
     state.gcontactsError = err?.message || 'Google Contacts sync failed.';

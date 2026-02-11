@@ -433,6 +433,8 @@ function mergeTaskCollectionsFromCloud(cloudData = {}) {
     ...person,
     email: typeof person?.email === 'string' ? person.email : '',
     jobTitle: typeof person?.jobTitle === 'string' ? person.jobTitle : '',
+    photoUrl: typeof person?.photoUrl === 'string' ? person.photoUrl : '',
+    photoData: typeof person?.photoData === 'string' ? person.photoData : '',
   }));
   localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
 
