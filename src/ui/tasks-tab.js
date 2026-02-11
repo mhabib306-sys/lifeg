@@ -83,11 +83,11 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
 
   return `
     ${overdueTasks.length > 0 ? `
-      <div class="bg-[var(--bg-card)] rounded-xl border border-red-100 overflow-hidden">
-        <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-center gap-2">
-          <svg class="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-          <span class="text-sm font-semibold text-red-700">Overdue</span>
-          <span class="text-xs text-red-400 ml-1">${overdueTasks.length}</span>
+      <div class="bg-[var(--bg-card)] rounded-xl overflow-hidden" style="border: 1px solid #FF3B3020">
+        <div class="px-4 py-3 flex items-center gap-2" style="background: #FF3B3008; border-bottom: 1px solid #FF3B3020">
+          <svg class="w-4 h-4" style="color: #FF3B30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <span class="text-sm font-semibold" style="color: #FF3B30">Overdue</span>
+          <span class="text-xs ml-1" style="color: #FF3B30; opacity: 0.6">${overdueTasks.length}</span>
         </div>
         <div class="task-list">${overdueTasks.map(task => renderTaskItem(task)).join('')}</div>
       </div>
@@ -95,20 +95,20 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
 
     ${todayTasks.length > 0 ? `
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-        <div class="px-4 py-3 bg-amber-50/50 border-b border-[var(--border-light)] flex items-center gap-2">
-          <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
+        <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2" style="background: #FFCC0008">
+          <svg class="w-4 h-4" style="color: #FFCC00" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Today</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${todayTasks.length}</span>
         </div>
         <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
-        ${addBtn('anytime', 'Add to Today...', '#F59E0B')}
+        ${addBtn('anytime', 'Add to Today...', '#FFCC00')}
       </div>
     ` : ''}
 
     ${upcomingTasks.length > 0 ? `
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-          <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+          <svg class="w-4 h-4" style="color: #FF3B30" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Upcoming</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${upcomingTasks.length}</span>
         </div>
@@ -130,36 +130,36 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
     ${inboxTasks.length > 0 ? `
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-          <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h4.18c.26 1.7 1.74 3 3.57 3h2.5c1.83 0 3.31-1.3 3.57-3H21v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6zm0-2l3-7h12l3 7h-4.18c-.26-1.7-1.74-3-3.57-3h-2.5c-1.83 0-3.31 1.3-3.57 3H3z"/></svg>
+          <svg class="w-4 h-4" style="color: #147EFB" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h4.18c.26 1.7 1.74 3 3.57 3h2.5c1.83 0 3.31-1.3 3.57-3H21v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6zm0-2l3-7h12l3 7h-4.18c-.26-1.7-1.74-3-3.57-3h-2.5c-1.83 0-3.31 1.3-3.57 3H3z"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Inbox</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${inboxTasks.length}</span>
         </div>
         <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
-        ${addBtn('anytime', 'Add Task...', '#3B82F6')}
+        ${addBtn('anytime', 'Add Task...', '#147EFB')}
       </div>
     ` : ''}
 
     ${anytimeTasks.length > 0 ? `
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-          <svg class="w-4 h-4 text-teal-500" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="2"/><rect x="3" y="10" width="18" height="4" rx="2"/><rect x="3" y="16" width="18" height="4" rx="2"/></svg>
+          <svg class="w-4 h-4" style="color: #5AC8FA" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="2"/><rect x="3" y="10" width="18" height="4" rx="2"/><rect x="3" y="16" width="18" height="4" rx="2"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Anytime</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${anytimeTasks.length}</span>
         </div>
         <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
-        ${addBtn('anytime', 'Add to Anytime...', '#14B8A6')}
+        ${addBtn('anytime', 'Add to Anytime...', '#5AC8FA')}
       </div>
     ` : ''}
 
     ${somedayTasks.length > 0 ? `
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-          <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h18v4H3V3zm1 5h16v13a1 1 0 01-1 1H5a1 1 0 01-1-1V8zm5 3v2h6v-2H9z"/></svg>
+          <svg class="w-4 h-4" style="color: #C69C6D" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h18v4H3V3zm1 5h16v13a1 1 0 01-1 1H5a1 1 0 01-1-1V8zm5 3v2h6v-2H9z"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Someday</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${somedayTasks.length}</span>
         </div>
         <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
-        ${addBtn('someday', 'Add to Someday...', '#D97706')}
+        ${addBtn('someday', 'Add to Someday...', '#C69C6D')}
       </div>
     ` : ''}
   `;
@@ -270,12 +270,12 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
             </button>
           `}
           <span class="flex-1 ml-2.5 text-[13px] leading-snug truncate ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">
-            ${task.flagged ? `<span class="inline-flex items-center text-amber-500 mr-1">${THINGS3_ICONS.flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
+            ${task.flagged ? `<span class="inline-flex items-center mr-1" style="color: #FF9500">${THINGS3_ICONS.flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
             ${escapeHtml(task.title)}
           </span>
           <div class="flex items-center gap-1.5 ml-2 flex-shrink-0 text-[10px]">
             ${area ? `<span class="text-[var(--text-muted)] truncate max-w-[70px]">${escapeHtml(area.name)}${subcategory ? ' › ' + escapeHtml(subcategory.name) : ''}</span>` : ''}
-            ${task.dueDate ? `<span class="${isOverdue ? 'text-red-500 font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : isDueSoon ? 'text-amber-500 font-medium' : 'text-[var(--text-muted)]'}">${formatSmartDate(task.dueDate)}</span>` : ''}
+            ${task.dueDate ? `<span class="${isOverdue ? 'font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : isDueSoon ? 'font-medium' : 'text-[var(--text-muted)]'}" style="${isOverdue ? 'color: #FF3B30' : isDueSoon ? 'color: #FF9500' : ''}">${formatSmartDate(task.dueDate)}</span>` : ''}
             ${task.repeat && task.repeat.type !== 'none' ? `<span class="text-[var(--text-muted)]" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8A5.87 5.87 0 0 1 6 12c0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></span>` : ''}
           </div>
         </div>
@@ -311,7 +311,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
           ` : `
             <span ondblclick="event.stopPropagation(); window.startInlineEdit('${task.id}')"
               class="task-title text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug transition cursor-text">
-              ${task.flagged ? `<span class="inline-flex items-center text-amber-500 mr-1.5">${THINGS3_ICONS.flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
+              ${task.flagged ? `<span class="inline-flex items-center mr-1.5" style="color: #FF9500">${THINGS3_ICONS.flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
               ${escapeHtml(task.title)}
             </span>
           `}
@@ -341,7 +341,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
           </button>
           <button onclick="event.stopPropagation(); window.confirmDeleteTask('${task.id}')"
             aria-label="Delete task: ${escapeHtml(task.title)}"
-            class="p-1 text-[var(--text-muted)] hover:text-red-500 hover:bg-red-50 rounded-md transition" title="Delete">
+            class="p-1 text-[var(--text-muted)] hover:text-[#FF3B30] hover:bg-[#FF3B3010] rounded-md transition" title="Delete">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
           </button>
         </div>
@@ -414,14 +414,14 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
           </div>
           ${overdueCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium text-red-500">
-              <span class="w-2 h-2 rounded-full bg-red-500"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FF3B30">
+              <span class="w-2 h-2 rounded-full" style="background: #FF3B30"></span>
               ${overdueCt} overdue
             </div>
           ` : ''}
           ${todayCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium text-amber-500">
-              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FFCC00">
+              <span class="w-2 h-2 rounded-full" style="background: #FFCC00"></span>
               ${todayCt} today
             </div>
           ` : ''}
@@ -447,7 +447,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#5856D6]"></div>`
               : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${categoryColor}40"></div>`
             }
           </div>
@@ -615,14 +615,14 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
             </div>
           </div>
           ${overdueCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium text-red-500">
-              <span class="w-2 h-2 rounded-full bg-red-500"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FF3B30">
+              <span class="w-2 h-2 rounded-full" style="background: #FF3B30"></span>
               ${overdueCt} overdue
             </div>
           ` : ''}
           ${todayCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium text-amber-500">
-              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FFCC00">
+              <span class="w-2 h-2 rounded-full" style="background: #FFCC00"></span>
               ${todayCt} today
             </div>
           ` : ''}
@@ -648,7 +648,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? '<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>'
+              ? '<div class="w-[7px] h-[7px] rounded-full bg-[#5856D6]"></div>'
               : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${categoryColor}40"></div>`
             }
           </div>
@@ -704,7 +704,7 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
   const taskItems = filteredTasks.filter(t => !t.isNote);
   const noteItems = filteredTasks.filter(t => t.isNote);
   const activeTasks = taskItems.length;
-  const labelColor = label.color || '#8B5CF6';
+  const labelColor = label.color || '#5856D6';
 
   const overdueCt = taskItems.filter(t => t.dueDate && t.dueDate < todayDate).length;
   const todayCt = taskItems.filter(t => t.today || t.dueDate === todayDate).length;
@@ -748,14 +748,14 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
             </div>
           </div>
           ${overdueCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium text-red-500">
-              <span class="w-2 h-2 rounded-full bg-red-500"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FF3B30">
+              <span class="w-2 h-2 rounded-full" style="background: #FF3B30"></span>
               ${overdueCt} overdue
             </div>
           ` : ''}
           ${todayCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium text-amber-500">
-              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FFCC00">
+              <span class="w-2 h-2 rounded-full" style="background: #FFCC00"></span>
               ${todayCt} today
             </div>
           ` : ''}
@@ -781,7 +781,7 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#5856D6]"></div>`
               : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${labelColor}40"></div>`
             }
           </div>
@@ -844,7 +844,7 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
   const taskItems = filteredTasks.filter(t => !t.isNote);
   const noteItems = filteredTasks.filter(t => t.isNote);
   const activeTasks = taskItems.length;
-  const personColor = '#3B82F6';
+  const personColor = '#147EFB';
 
   const overdueCt = taskItems.filter(t => t.dueDate && t.dueDate < todayDate).length;
   const todayCt = taskItems.filter(t => t.today || t.dueDate === todayDate).length;
@@ -891,14 +891,14 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
             </div>
           </div>
           ${overdueCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium text-red-500">
-              <span class="w-2 h-2 rounded-full bg-red-500"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FF3B30">
+              <span class="w-2 h-2 rounded-full" style="background: #FF3B30"></span>
               ${overdueCt} overdue
             </div>
           ` : ''}
           ${todayCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium text-amber-500">
-              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: #FFCC00">
+              <span class="w-2 h-2 rounded-full" style="background: #FFCC00"></span>
               ${todayCt} today
             </div>
           ` : ''}
@@ -924,7 +924,7 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#5856D6]"></div>`
               : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${personColor}40"></div>`
             }
           </div>
@@ -1019,7 +1019,7 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#5856D6]"></div>`
               : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${perspColor}40"></div>`
             }
           </div>
@@ -1406,12 +1406,12 @@ export function renderTasksTab() {
         <div class="quick-add-section px-4 py-3 border-b border-[var(--border-light)]">
           <div class="flex items-center gap-3">
             ${state.activePerspective === 'notes' ? `
-              <div class="w-2 h-2 rounded-full border-2 border-dashed border-[#8B5CF6]/40 flex-shrink-0 ml-1.5"></div>
+              <div class="w-2 h-2 rounded-full border-2 border-dashed border-[#5856D6]/40 flex-shrink-0 ml-1.5"></div>
             ` : `
               <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
                 class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
                 ${state.quickAddIsNote
-                  ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
+                  ? `<div class="w-[7px] h-[7px] rounded-full bg-[#5856D6]"></div>`
                   : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed border-[var(--text-muted)]/30 flex-shrink-0"></div>`
                 }
               </div>
@@ -1522,8 +1522,8 @@ export function renderTasksTab() {
               ` : ''}
               ${renderSection(startingTasks,
                 '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>',
-                'Starting', '#3B82F6', dueTasks.length > 0 || todayStatusTasks.length > 0 ? 'mt-2' : '')}
-              ${renderSection(nextTasks, THINGS3_ICONS.next, 'Next', '#8B5CF6',
+                'Starting', '#147EFB', dueTasks.length > 0 || todayStatusTasks.length > 0 ? 'mt-2' : '')}
+              ${renderSection(nextTasks, THINGS3_ICONS.next, 'Next', '#5856D6',
                 allDated.length > 0 ? 'mt-4' : '')}
               ${totalTasks === 0 ? `
                 <div class="empty-state flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
@@ -1540,7 +1540,7 @@ export function renderTasksTab() {
                 <div class="flex items-center gap-2">
                   ${activeNotesCategory ? `
                     <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-[var(--accent-light)] text-[var(--accent)]">
-                      <span class="w-2 h-2 rounded-full" style="background:${activeNotesCategory.color || '#8B5CF6'}"></span>
+                      <span class="w-2 h-2 rounded-full" style="background:${activeNotesCategory.color || '#5856D6'}"></span>
                       ${escapeHtml(activeNotesCategory.name)}
                     </span>
                   ` : ''}
