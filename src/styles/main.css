@@ -2623,26 +2623,24 @@ body.mobile-keyboard-open .main-content {
   padding: 2px 5px;
   border-radius: 4px;
   border: 1px solid transparent;
+  border-left: 2px solid transparent;
 }
 .calendar-task-line.due {
   color: color-mix(in srgb, var(--warning) 80%, #000);
-  background: color-mix(in srgb, var(--warning) 8%, var(--bg-card));
-  border-color: color-mix(in srgb, var(--warning) 20%, transparent);
+  border-left-color: color-mix(in srgb, var(--warning) 60%, transparent);
 }
 .calendar-task-line.defer {
   color: color-mix(in srgb, var(--accent) 75%, #000);
-  background: color-mix(in srgb, var(--accent) 6%, var(--bg-card));
-  border-color: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-left-color: color-mix(in srgb, var(--accent) 50%, transparent);
 }
 .calendar-task-line.overdue {
   color: color-mix(in srgb, var(--danger, #E5484D) 80%, #000);
-  background: color-mix(in srgb, var(--danger, #E5484D) 6%, var(--bg-card));
-  border-color: color-mix(in srgb, var(--danger, #E5484D) 18%, transparent);
+  border-left-color: color-mix(in srgb, var(--danger, #E5484D) 60%, transparent);
 }
 .calendar-task-line.event {
   color: color-mix(in srgb, var(--success) 80%, #000);
   background: color-mix(in srgb, var(--success) 8%, var(--bg-card));
-  border-color: color-mix(in srgb, var(--success) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
 }
 .calendar-task-line.event.with-notes {
   color: color-mix(in srgb, var(--flagged-color) 80%, #000);

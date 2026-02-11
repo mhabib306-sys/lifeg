@@ -264,7 +264,7 @@ export function renderCalendarView() {
     const hours = Array.from({ length: 18 }, (_, i) => i + 6);
     return `
       <div class="overflow-auto border border-[var(--border-light)] rounded-xl">
-        <div class="grid ${dayDates.length === 1 ? 'grid-cols-[56px_1fr]' : 'grid-cols-[56px_repeat(7,minmax(160px,1fr))]'} min-w-[840px]">
+        <div class="grid ${dayDates.length === 1 ? 'grid-cols-[56px_1fr]' : 'grid-cols-[56px_repeat(7,minmax(160px,1fr))] min-w-[840px]'}">
           <div class="sticky top-0 z-10 bg-[var(--bg-card)] border-b border-r border-[var(--border-light)]"></div>
           ${dayDates.map(d => {
             const ds = dateToStr(d);
