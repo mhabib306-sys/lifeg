@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T10:35:07.820Z",
+  "lastUpdated": "2026-02-11T10:35:22.851Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3215,12 +3215,12 @@
       "id": "task_1770801074299_wqdfzm9a1",
       "title": "Discuss Cheese payments issues given the impact on revenue and edge against competition",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "today": false,
       "flagged": false,
       "completed": false,
       "completedAt": null,
-      "areaId": null,
+      "areaId": "work",
       "categoryId": null,
       "labels": [],
       "people": [
@@ -3235,7 +3235,7 @@
       "meetingEventKey": null,
       "order": 48000,
       "createdAt": "2026-02-11T09:11:14.299Z",
-      "updatedAt": "2026-02-11T09:11:14.299Z"
+      "updatedAt": "2026-02-11T10:35:20.205Z"
     },
     {
       "id": "task_1770798843221_1g1e3i6t8",
