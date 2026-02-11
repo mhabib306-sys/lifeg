@@ -274,6 +274,44 @@ export function showCategoryTasks(categoryId) {
 }
 
 /**
+ * Navigate to the All Tags overview page.
+ */
+export function showAllLabelsPage() {
+  state.reviewMode = false;
+  state.activeFilterType = 'all-labels';
+  state.activeLabelFilter = null;
+  state.activeAreaFilter = null;
+  state.activePersonFilter = null;
+  state.activePerspective = null;
+  closeMobileDrawer();
+  if (state.activeTab !== 'tasks') {
+    state.activeTab = 'tasks';
+  }
+  saveViewState();
+  window.render();
+  scrollToContent();
+}
+
+/**
+ * Navigate to the All People overview page.
+ */
+export function showAllPeoplePage() {
+  state.reviewMode = false;
+  state.activeFilterType = 'all-people';
+  state.activePersonFilter = null;
+  state.activeAreaFilter = null;
+  state.activeLabelFilter = null;
+  state.activePerspective = null;
+  closeMobileDrawer();
+  if (state.activeTab !== 'tasks') {
+    state.activeTab = 'tasks';
+  }
+  saveViewState();
+  window.render();
+  scrollToContent();
+}
+
+/**
  * Toggle collapse/expand of an area's categories in the sidebar.
  * @param {string} areaId - The area ID to toggle
  */

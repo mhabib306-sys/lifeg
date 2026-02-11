@@ -188,6 +188,7 @@ import { createPrayerInput, createToggle, createNumberInput, createCounter, crea
 import {
   openMobileDrawer, closeMobileDrawer, renderMobileDrawer, renderBottomNav,
   showAreaTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, showCategoryTasks, scrollToContent,
+  showAllLabelsPage, showAllPeoplePage,
   toggleSidebarAreaCollapse, toggleWorkspaceSidebar
 } from './ui/mobile.js';
 
@@ -401,6 +402,7 @@ Object.assign(window, {
   // Mobile
   openMobileDrawer, closeMobileDrawer, renderMobileDrawer, renderBottomNav,
   showAreaTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, showCategoryTasks, scrollToContent,
+  showAllLabelsPage, showAllPeoplePage,
   toggleSidebarAreaCollapse, toggleWorkspaceSidebar,
 
   // Task Modal

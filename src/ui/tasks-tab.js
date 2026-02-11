@@ -1046,6 +1046,118 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
 }
 
 // ============================================================================
+// buildAllLabelsHtml — Overview page listing all tags
+// ============================================================================
+export function buildAllLabelsHtml() {
+  const icons = getActiveIcons();
+  const activeTasks = state.tasksData.filter(t => !t.completed && !t.isNote);
+  const labels = [...state.taskLabels].sort((a, b) => {
+    const ac = activeTasks.filter(t => (t.labels || []).includes(a.id)).length;
+    const bc = activeTasks.filter(t => (t.labels || []).includes(b.id)).length;
+    return bc - ac || a.name.localeCompare(b.name);
+  });
+
+  return `
+    <div class="flex-1 space-y-4">
+      <div class="bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+        <div class="px-6 pt-6 pb-5">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 bg-[var(--bg-secondary)] text-[var(--text-muted)]">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">All Tags</h1>
+              <p class="text-[var(--text-muted)] text-[13px] mt-1">${labels.length} tag${labels.length !== 1 ? 's' : ''}</p>
+            </div>
+            <button onclick="window.editingLabelId=null; window.showLabelModal=true; window.render()"
+              class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Tag">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        ${labels.length === 0 ? `
+          <div class="col-span-full py-12 text-center text-[var(--text-muted)]">
+            <p class="text-sm font-medium mb-1">No tags yet</p>
+            <p class="text-xs opacity-60">Create your first tag to organize tasks</p>
+          </div>
+        ` : labels.map(label => {
+          const count = activeTasks.filter(t => (t.labels || []).includes(label.id)).length;
+          const color = label.color || '#5856D6';
+          return `
+            <button onclick="showLabelTasks('${label.id}')"
+              class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-4 text-left hover:border-[var(--border)] hover:shadow-sm transition group">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="w-4 h-4 rounded-full flex-shrink-0" style="background: ${color}"></span>
+                <span class="font-medium text-[var(--text-primary)] text-[14px] truncate">${escapeHtml(label.name)}</span>
+              </div>
+              <p class="text-[12px] text-[var(--text-muted)]">${count} active task${count !== 1 ? 's' : ''}</p>
+            </button>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+// ============================================================================
+// buildAllPeopleHtml — Overview page listing all people
+// ============================================================================
+export function buildAllPeopleHtml() {
+  const icons = getActiveIcons();
+  const activeTasks = state.tasksData.filter(t => !t.completed && !t.isNote);
+  const people = [...state.taskPeople].sort((a, b) => {
+    const ac = activeTasks.filter(t => (t.people || []).includes(a.id)).length;
+    const bc = activeTasks.filter(t => (t.people || []).includes(b.id)).length;
+    return bc - ac || a.name.localeCompare(b.name);
+  });
+
+  return `
+    <div class="flex-1 space-y-4">
+      <div class="bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+        <div class="px-6 pt-6 pb-5">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 bg-[var(--bg-secondary)] text-[var(--text-muted)]">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">All People</h1>
+              <p class="text-[var(--text-muted)] text-[13px] mt-1">${people.length} ${people.length !== 1 ? 'people' : 'person'}</p>
+            </div>
+            <button onclick="window.editingPersonId=null; window.showPersonModal=true; window.render()"
+              class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Person">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        ${people.length === 0 ? `
+          <div class="col-span-full py-12 text-center text-[var(--text-muted)]">
+            <p class="text-sm font-medium mb-1">No people yet</p>
+            <p class="text-xs opacity-60">Add people to track delegated tasks</p>
+          </div>
+        ` : people.map(person => {
+          const count = activeTasks.filter(t => (t.people || []).includes(person.id)).length;
+          return `
+            <button onclick="showPersonTasks('${person.id}')"
+              class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-4 text-left hover:border-[var(--border)] hover:shadow-sm transition group">
+              <div class="flex items-center gap-3 mb-2">
+                <div class="w-8 h-8 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-[var(--text-muted)] flex-shrink-0">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+                <div class="min-w-0">
+                  <span class="block font-medium text-[var(--text-primary)] text-[14px] truncate">${escapeHtml(person.name)}</span>
+                  ${person.jobTitle ? `<span class="block text-[11px] text-[var(--text-muted)] truncate">${escapeHtml(person.jobTitle)}</span>` : ''}
+                </div>
+              </div>
+              <p class="text-[12px] text-[var(--text-muted)]">${count} active task${count !== 1 ? 's' : ''}</p>
+            </button>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+// ============================================================================
 // buildCustomPerspectiveTaskListHtml — Custom perspective landing page
 // ============================================================================
 export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, todayDate) {
@@ -1518,15 +1630,10 @@ export function renderTasksTab() {
                 class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
             </div>
           `).join('')}
-          ${!showAllLabels && hiddenCount > 0 ? `
-          <button onclick="window.showAllSidebarLabels=true; window.render()"
+          ${hiddenCount > 0 ? `
+          <button onclick="window.showAllLabelsPage()"
             class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
             View all ${state.taskLabels.length} tags
-          </button>` : ''}
-          ${showAllLabels && hiddenCount > 0 ? `
-          <button onclick="window.showAllSidebarLabels=false; window.render()"
-            class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
-            Show less
           </button>` : ''}
         </div>
       </div>`;
@@ -1576,15 +1683,10 @@ export function renderTasksTab() {
                 class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
             </div>
           `).join('')}
-          ${!showAll && hiddenCount > 0 ? `
-          <button onclick="window.showAllSidebarPeople=true; window.render()"
+          ${hiddenCount > 0 ? `
+          <button onclick="window.showAllPeoplePage()"
             class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
             View all ${state.taskPeople.length} people
-          </button>` : ''}
-          ${showAll && hiddenCount > 0 ? `
-          <button onclick="window.showAllSidebarPeople=false; window.render()"
-            class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
-            Show less
           </button>` : ''}
         </div>
       </div>`;
@@ -1597,6 +1699,8 @@ export function renderTasksTab() {
   const isCategoryView = state.activeFilterType === 'subcategory' && state.activeCategoryFilter;
   const isLabelView = state.activeFilterType === 'label' && state.activeLabelFilter;
   const isPersonView = state.activeFilterType === 'person' && state.activePersonFilter;
+  const isAllLabelsView = state.activeFilterType === 'all-labels';
+  const isAllPeopleView = state.activeFilterType === 'all-people';
   const isCustomPerspective = state.activeFilterType === 'perspective' && state.customPerspectives.find(p => p.id === state.activePerspective);
   const currentArea = isAreaView ? getAreaById(state.activeAreaFilter) : null;
   const currentSubcategory = isCategoryView ? getCategoryById(state.activeCategoryFilter) : null;
@@ -1605,6 +1709,10 @@ export function renderTasksTab() {
   let taskListHtml;
   if (state.reviewMode) {
     taskListHtml = typeof window.renderReviewMode === 'function' ? window.renderReviewMode() : '<div class="p-8 text-center text-[var(--text-muted)]">Loading review mode...</div>';
+  } else if (isAllLabelsView) {
+    taskListHtml = buildAllLabelsHtml();
+  } else if (isAllPeopleView) {
+    taskListHtml = buildAllPeopleHtml();
   } else if (isAreaView) {
     taskListHtml = buildAreaTaskListHtml(currentArea, filteredTasks, todayDate);
   } else if (isCategoryView) {
