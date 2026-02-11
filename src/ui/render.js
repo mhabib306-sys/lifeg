@@ -430,6 +430,7 @@ export function render() {
       maxMs: Number(Math.max(perf.maxMs || 0, renderMs).toFixed(2)),
       count,
     };
+    state._lastRenderWasMobile = window.innerWidth <= 768;
   } catch (err) {
     console.error('Render error:', err);
     document.getElementById('app').innerHTML = '<div style="padding:20px;color:red;font-family:monospace;">Render error: ' + escapeHtml(err.message) + '<br><br>Stack: ' + escapeHtml(err.stack || '') + '</div>';

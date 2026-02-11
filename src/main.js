@@ -192,6 +192,21 @@ function initApp() {
     updateKeyboardClass();
   }
 
+  // Re-render on orientation change for responsive layout updates
+  let resizeRenderTimeout = null;
+  const handleOrientationChange = () => {
+    clearTimeout(resizeRenderTimeout);
+    resizeRenderTimeout = setTimeout(() => render(), 150);
+  };
+  window.addEventListener('orientationchange', handleOrientationChange);
+  window.addEventListener('resize', () => {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile !== state._lastRenderWasMobile) {
+      handleOrientationChange();
+    }
+  });
+  state._lastRenderWasMobile = window.innerWidth <= 768;
+
   console.log('Homebase initialized');
 }
 

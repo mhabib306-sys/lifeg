@@ -426,4 +426,7 @@ export const state = {
   gsheetResponse: null,
   gsheetAsking: false,
   gsheetEditingPrompt: false,
+
+  // ---- Responsive ----
+  _lastRenderWasMobile: false,
 };
