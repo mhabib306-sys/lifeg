@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T09:36:47.537Z",
+  "lastUpdated": "2026-02-11T10:31:50.294Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1710,7 +1710,7 @@
         "quran": 0
       },
       "glucose": {
-        "avg": "202",
+        "avg": "201",
         "tir": "38",
         "insulin": ""
       },
@@ -1721,10 +1721,10 @@
         "whoopAge": ""
       },
       "libre": {
-        "currentGlucose": 206,
-        "trend": "↘",
-        "readingsCount": 48,
-        "lastReading": "2/11/2026 11:24:40 AM"
+        "currentGlucose": 115,
+        "trend": "↓",
+        "readingsCount": 47,
+        "lastReading": "2/11/2026 12:26:01 PM"
       },
       "family": {
         "mom": false,
@@ -3393,6 +3393,30 @@
       "order": 52000,
       "createdAt": "2026-02-11T09:30:21.329Z",
       "updatedAt": "2026-02-11T09:30:21.329Z"
+    },
+    {
+      "id": "task_1770805905339_8r7y4lm22",
+      "title": "Review what should be the primary CRO metrics",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "areaId": "work",
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": null,
+      "order": 53000,
+      "createdAt": "2026-02-11T10:31:45.339Z",
+      "updatedAt": "2026-02-11T10:31:45.339Z"
     }
   ],
   "deletedTaskTombstones": {
