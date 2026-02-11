@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T11:56:20.193Z",
+  "lastUpdated": "2026-02-11T11:56:27.830Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3143,7 +3143,7 @@
       "flagged": false,
       "completed": false,
       "completedAt": null,
-      "areaId": "health",
+      "areaId": "personal",
       "categoryId": null,
       "labels": [],
       "people": [],
@@ -3156,7 +3156,7 @@
       "meetingEventKey": null,
       "order": 46000,
       "createdAt": "2026-02-10T21:11:52.678Z",
-      "updatedAt": "2026-02-11T10:34:37.907Z",
+      "updatedAt": "2026-02-11T11:56:25.044Z",
       "gcalEventId": "ducvgs9jpbi8khrumd99anvk9s"
     },
     {
