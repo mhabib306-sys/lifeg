@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T14:59:55.143Z",
+  "lastUpdated": "2026-02-11T15:00:01.961Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3312,31 +3312,6 @@
       "order": 53000,
       "createdAt": "2026-02-11T10:31:45.339Z",
       "updatedAt": "2026-02-11T10:31:45.339Z"
-    },
-    {
-      "id": "task_1770821992541_uoe6q5xz4",
-      "title": "",
-      "notes": "",
-      "status": "anytime",
-      "today": false,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "areaId": "personal",
-      "categoryId": null,
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "meetingEventKey": null,
-      "lastReviewedAt": null,
-      "order": 49000,
-      "createdAt": "2026-02-11T14:59:52.541Z",
-      "updatedAt": "2026-02-11T14:59:52.541Z"
     }
   ],
   "deletedTaskTombstones": {
@@ -3355,7 +3330,9 @@
     "task_1770806832628_lbtki5az5": "2026-02-11T10:47:14.798Z",
     "task_1770811146386_g707fyazk": "2026-02-11T11:59:10.211Z",
     "task_1770550567385_p56inxou0": "2026-02-11T11:59:16.912Z",
-    "task_1770540844662_jfbkwax3v": "2026-02-11T11:59:19.175Z"
+    "task_1770540844662_jfbkwax3v": "2026-02-11T11:59:19.175Z",
+    "task_1770821992541_uoe6q5xz4": "2026-02-11T14:59:57.074Z",
+    "task_1770821998319_4vwuvoqgr": "2026-02-11T14:59:59.233Z"
   },
   "deletedEntityTombstones": {
     "taskPeople": {
