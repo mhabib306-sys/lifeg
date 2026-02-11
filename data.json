@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T19:35:35.470Z",
+  "lastUpdated": "2026-02-11T20:15:15.958Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2569,8 +2569,8 @@
       "status": "anytime",
       "today": false,
       "flagged": false,
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-02-11T20:15:12.999Z",
       "categoryId": "personal",
       "labels": [],
       "people": [],
@@ -2586,8 +2586,9 @@
       "indent": 0,
       "order": 39000,
       "createdAt": "2026-02-09T18:35:03.019Z",
-      "updatedAt": "2026-02-11T15:06:29.045Z",
-      "gcalEventId": "pcdcl7ljakd4l0vs182q3ollq4"
+      "updatedAt": "2026-02-11T20:15:13.231Z",
+      "gcalEventId": null,
+      "_spawnedRepeatId": "task_1770840912999_90is5wg91"
     },
     {
       "id": "task_1770565930160_cs8oj7kcs",
@@ -3293,6 +3294,65 @@
       "order": 41000,
       "createdAt": "2026-02-11T16:19:42.007Z",
       "updatedAt": "2026-02-11T16:22:34.853Z"
+    },
+    {
+      "id": "task_1770840912999_90is5wg91",
+      "title": "Take B12",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": true,
+      "completedAt": "2026-02-11T20:15:15.600Z",
+      "areaId": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": "2026-02-11",
+      "dueDate": null,
+      "repeat": {
+        "type": "daily",
+        "interval": 1,
+        "from": "due"
+      },
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": null,
+      "lastReviewedAt": null,
+      "order": 41000,
+      "createdAt": "2026-02-11T20:15:12.999Z",
+      "updatedAt": "2026-02-11T20:15:15.600Z",
+      "_spawnedRepeatId": "task_1770840915600_lsb1sqgo9"
+    },
+    {
+      "id": "task_1770840915600_lsb1sqgo9",
+      "title": "Take B12",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "areaId": null,
+      "categoryId": "personal",
+      "labels": [],
+      "people": [],
+      "deferDate": "2026-02-12",
+      "dueDate": null,
+      "repeat": {
+        "type": "daily",
+        "interval": 1,
+        "from": "due"
+      },
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": null,
+      "lastReviewedAt": null,
+      "order": 41000,
+      "createdAt": "2026-02-11T20:15:15.600Z",
+      "updatedAt": "2026-02-11T20:15:15.600Z"
     }
   ],
   "deletedTaskTombstones": {
