@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T10:47:42.440Z",
+  "lastUpdated": "2026-02-11T11:42:39.522Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1710,8 +1710,8 @@
         "quran": 0
       },
       "glucose": {
-        "avg": "201",
-        "tir": "38",
+        "avg": "195",
+        "tir": "40",
         "insulin": ""
       },
       "whoop": {
@@ -1721,10 +1721,10 @@
         "whoopAge": ""
       },
       "libre": {
-        "currentGlucose": 115,
-        "trend": "↓",
-        "readingsCount": 47,
-        "lastReading": "2/11/2026 12:26:01 PM"
+        "currentGlucose": 75,
+        "trend": "↘",
+        "readingsCount": 48,
+        "lastReading": "2/11/2026 1:42:31 PM"
       },
       "family": {
         "mom": false,
