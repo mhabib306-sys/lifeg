@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T10:34:29.237Z",
+  "lastUpdated": "2026-02-11T10:34:33.010Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1882,9 +1882,9 @@
     },
     {
       "id": "task_1769983213352_9h03aplwq",
-      "title": "Hifz gift for Nancy as she finishes Hud (so she memorized until Yusuf) ahead of Ramadan N",
+      "title": "Hifz gift for Nancy as she finishes Hud (so she memorized until Yusuf) ahead of Ramadan",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "completed": false,
       "completedAt": null,
       "categoryId": "family",
@@ -1894,11 +1894,11 @@
       "dueDate": "2026-02-14",
       "repeat": null,
       "createdAt": "2026-02-01T22:00:13.352Z",
-      "updatedAt": "2026-02-11T10:34:26.221Z",
+      "updatedAt": "2026-02-11T10:34:30.305Z",
       "order": 2000,
       "today": false,
       "flagged": false,
-      "areaId": null,
+      "areaId": "cat_1769983795940",
       "gcalEventId": "gmtdhvbpnh2amf7mq3rhsjd89o"
     },
     {
