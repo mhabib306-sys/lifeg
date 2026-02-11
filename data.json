@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T15:30:17.211Z",
+  "lastUpdated": "2026-02-11T15:32:36.350Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3130,7 +3130,10 @@
       "indent": 1,
       "noteOrder": 1000,
       "createdAt": "2026-02-11T15:29:15.868Z",
-      "updatedAt": "2026-02-11T15:29:18.443Z"
+      "updatedAt": "2026-02-11T15:29:18.443Z",
+      "today": false,
+      "flagged": false,
+      "order": 58000
     }
   ],
   "deletedTaskTombstones": {
