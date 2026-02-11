@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T11:56:12.277Z",
+  "lastUpdated": "2026-02-11T11:56:20.193Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3378,6 +3378,9 @@
   "deletedEntityTombstones": {
     "taskPeople": {
       "self": "2026-02-10T02:15:08.973Z"
+    },
+    "taskCategories": {
+      "learning": "2026-02-11T11:56:17.459Z"
     }
   },
   "taskCategories": [
@@ -3409,11 +3412,6 @@
       "name": "Nancy",
       "color": "#FF2D55",
       "emoji": ""
-    },
-    {
-      "id": "learning",
-      "name": "Learning",
-      "color": "#7C6B8E"
     },
     {
       "id": "cat_1769987564631",
