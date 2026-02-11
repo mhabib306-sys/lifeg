@@ -361,13 +361,13 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           </button>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2">
-          <button onclick="window.createTask('', { status: 'inbox', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
-            class="area-chip area-chip-action area-chip-inbox">+ Inbox</button>
-          <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-anytime">+ Task</button>
+          <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Anytime</button>
-          <button onclick="window.createTask('', { status: 'someday', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'someday' && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'someday', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-someday">+ Someday</button>
-          <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.today && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-today">+ Today</button>
           <button onclick="window.createRootNote('${currentCategory.id}')"
             class="area-chip area-chip-action area-chip-note">+ Note</button>
@@ -396,7 +396,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
             <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.today && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+              <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                 class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-500 hover:text-amber-600 hover:bg-amber-50/50 rounded-lg transition text-left">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Add to Today...
@@ -436,10 +436,10 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
             <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'inbox', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+              <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                 class="flex items-center gap-2 px-3 py-2 w-full text-sm text-blue-500 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition text-left">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Add to Inbox...
+                Add Task...
               </button>
             </div>
           </div>
@@ -454,7 +454,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
             <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+              <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                 class="flex items-center gap-2 px-3 py-2 w-full text-sm text-teal-500 hover:text-teal-600 hover:bg-teal-50/50 rounded-lg transition text-left">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Add to Anytime...
@@ -472,7 +472,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
             <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
             <div class="px-4 py-2 border-t border-[var(--border-light)]">
-              <button onclick="window.createTask('', { status: 'someday', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'someday' && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+              <button onclick="window.createTask('', { status: 'someday', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
                 class="flex items-center gap-2 px-3 py-2 w-full text-sm text-amber-600 hover:text-amber-700 hover:bg-amber-50/50 rounded-lg transition text-left">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Add to Someday...
@@ -664,13 +664,13 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
           </button>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2">
-          <button onclick="window.createTask('', { status: 'inbox', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'inbox' && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
-            class="area-chip area-chip-action area-chip-inbox">+ Inbox</button>
-          <button onclick="window.createTask('', { status: 'anytime', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'anytime' && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-anytime">+ Task</button>
+          <button onclick="window.createTask('', { status: 'anytime', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Anytime</button>
-          <button onclick="window.createTask('', { status: 'someday', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.status === 'someday' && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'someday', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-someday">+ Someday</button>
-          <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && t.today && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-today">+ Today</button>
           <button onclick="window.createRootNote({areaId:'${category.areaId}',categoryId:'${category.id}'})"
             class="area-chip area-chip-action area-chip-note">+ Note</button>
@@ -945,47 +945,45 @@ export function renderTasksTab() {
             const hasSubcats = subcats.length > 0;
             const areaEmoji = cat.emoji || '';
             return `
-            <div class="flex items-center gap-0">
-              ${hasSubcats ? `
-                <button onclick="event.stopPropagation(); window.toggleSidebarAreaCollapse('${cat.id}')"
-                  class="w-5 h-5 flex items-center justify-center flex-shrink-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded transition ml-1">
-                  <svg class="w-3 h-3 transition-transform ${isCollapsed ? '' : 'rotate-90'}" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                </button>
-              ` : '<div class="w-5 ml-1"></div>'}
               <div onclick="window.showAreaTasks('${cat.id}')"
                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.showAreaTasks('${cat.id}');}"
                 tabindex="0"
                 role="button"
                 aria-label="View ${escapeHtml(cat.name)} area"
-                class="sidebar-item draggable-item flex-1 px-2 py-2 flex items-center gap-3 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isAreaActive(cat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}"
+                class="sidebar-item draggable-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isAreaActive(cat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}"
                 draggable="true"
                 data-id="${cat.id}"
                 data-type="area">
+                ${hasSubcats ? `
+                  <span onclick="event.stopPropagation(); window.toggleSidebarAreaCollapse('${cat.id}')"
+                    class="w-4 h-4 flex items-center justify-center flex-shrink-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded transition -ml-0.5">
+                    <svg class="w-3 h-3 transition-transform ${isCollapsed ? '' : 'rotate-90'}" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                  </span>
+                ` : ''}
                 <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style="background: ${cat.color}20; color: ${cat.color}">
                   ${areaEmoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>'}
                 </span>
-                <span class="flex-1 text-[14px] ${isAreaActive(cat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(cat.name)}</span>
+                <span class="flex-1 text-[14px] truncate ${isAreaActive(cat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(cat.name)}</span>
                 <span class="min-w-[20px] text-right text-[12px] group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${categoryCounts[cat.id] || ''}</span>
                 <span onclick="event.stopPropagation(); window.editingAreaId='${cat.id}'; window.showAreaModal=true; window.render()"
                   class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
               </div>
-            </div>
-            ${!isCollapsed ? `
+            ${hasSubcats && !isCollapsed ? `
               ${subcats.map(subcat => {
                 const subcatEmoji = subcat.emoji || '';
                 return `
                 <div onclick="window.showCategoryTasks('${subcat.id}')"
-                  class="sidebar-item w-full pl-12 pr-3 py-1.5 flex items-center gap-2.5 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isSubcatActive(subcat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
+                  class="sidebar-item w-full pl-10 pr-3 py-1.5 flex items-center gap-2.5 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isSubcatActive(subcat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
                   <span class="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-xs" style="background: ${subcat.color}20; color: ${subcat.color}">
                     ${subcatEmoji || '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>'}
                   </span>
-                  <span class="flex-1 text-[13px] ${isSubcatActive(subcat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(subcat.name)}</span>
+                  <span class="flex-1 text-[13px] truncate ${isSubcatActive(subcat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(subcat.name)}</span>
                   <span onclick="event.stopPropagation(); window.editingCategoryId='${subcat.id}'; window.showCategoryModal=true; window.render()"
                     class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
                 </div>
               `}).join('')}
               <button onclick="event.stopPropagation(); window.editingCategoryId=null; window.showCategoryModal=true; window.modalSelectedArea='${cat.id}'; window.render()"
-                class="w-full pl-12 pr-3 py-1 flex items-center gap-2 text-[12px] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
+                class="w-full pl-10 pr-3 py-1 flex items-center gap-2 text-[12px] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
                 <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Add Category
               </button>

@@ -192,7 +192,7 @@ import {
 import {
   saveAreaFromModal, saveLabelFromModal, savePersonFromModal,
   saveCategoryFromModal,
-  savePerspectiveFromModal, selectPerspectiveEmoji,
+  savePerspectiveFromModal, selectPerspectiveEmoji, selectAreaEmoji, selectCategoryEmoji,
   renderPerspectiveModalHtml, renderAreaModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml
 } from './ui/entity-modals.js';
 
@@ -378,7 +378,7 @@ Object.assign(window, {
   addTag, removeTag, renderTagsInput,
   addPersonModal, removePersonModal, renderPeopleInput,
   toggleRepeat, initModalAutocomplete,
-  closeTaskModal, saveTaskFromModal, savePerspectiveFromModal, selectPerspectiveEmoji,
+  closeTaskModal, saveTaskFromModal, savePerspectiveFromModal, selectPerspectiveEmoji, selectAreaEmoji, selectCategoryEmoji,
   renderTaskModalHtml,
   renderPerspectiveModalHtml, renderAreaModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml,
   parseDateQuery, setupInlineAutocomplete, renderInlineChips,
@@ -395,7 +395,7 @@ const stateProxies = [
   'showInlineTagInput', 'showInlinePersonInput',
   'activePerspective', 'activeFilterType', 'activeAreaFilter', 'activeLabelFilter', 'activePersonFilter',
   'editingHomeWidgets', 'showAddWidgetPicker', 'draggingWidgetId',
-  'perspectiveEmojiPickerOpen', 'emojiSearchQuery',
+  'perspectiveEmojiPickerOpen', 'areaEmojiPickerOpen', 'categoryEmojiPickerOpen', 'emojiSearchQuery',
   'editingNoteId', 'inlineEditingTaskId', 'quickAddIsNote', 'showAllSidebarPeople', 'showAllSidebarLabels',
   'mobileDrawerOpen', 'activeTab', 'activeSubTab',
   'modalSelectedArea', 'modalSelectedStatus', 'modalSelectedToday', 'modalSelectedFlagged', 'modalSelectedTags', 'modalSelectedPeople',

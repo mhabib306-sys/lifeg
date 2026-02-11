@@ -314,12 +314,9 @@ export function getTasksByCategory(categoryId) {
 
 // Get tasks by label
 export function getTasksByLabel(labelId) {
-  const today = getLocalDateString();
   return state.tasksData.filter(task => {
     if (!(task.labels || []).includes(labelId)) return false;
     if (task.completed) return false;
-    // Hide deferred tasks (deferDate in the future)
-    if (task.deferDate && task.deferDate > today) return false;
     return true;
   }).sort((a, b) => {
       if (a.dueDate && !b.dueDate) return -1;

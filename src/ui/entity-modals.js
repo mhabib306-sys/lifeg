@@ -198,16 +198,49 @@ export function selectPerspectiveEmoji(emoji) {
   window.render();
 }
 
-// Emoji picker data and renderer for perspective icon selection
+/**
+ * Select an emoji for the area and close the picker.
+ */
+export function selectAreaEmoji(emoji) {
+  const input = document.getElementById('area-emoji');
+  const preview = document.getElementById('area-folder-preview');
+  if (input) input.value = emoji;
+  if (preview) preview.innerHTML = emoji;
+  state.areaEmojiPickerOpen = false;
+  state.emojiSearchQuery = '';
+  window.render();
+}
+
+/**
+ * Select an emoji for the category and close the picker.
+ */
+export function selectCategoryEmoji(emoji) {
+  const input = document.getElementById('category-emoji');
+  const preview = document.getElementById('cat-folder-preview');
+  if (input) input.value = emoji;
+  if (preview) preview.innerHTML = emoji;
+  state.categoryEmojiPickerOpen = false;
+  state.emojiSearchQuery = '';
+  window.render();
+}
+
+// Emoji picker data — shared across all entity modals
 const EMOJI_CATEGORIES = {
   'Smileys': '\uD83D\uDE00\uD83D\uDE03\uD83D\uDE04\uD83D\uDE01\uD83D\uDE06\uD83D\uDE05\uD83E\uDD23\uD83D\uDE02\uD83D\uDE42\uD83D\uDE09\uD83D\uDE0A\uD83D\uDE07\uD83E\uDD70\uD83D\uDE0D\uD83E\uDD29\uD83D\uDE18\uD83D\uDE1A\uD83E\uDD14\uD83E\uDD28\uD83D\uDE10\uD83D\uDE11\uD83D\uDE36\uD83D\uDE44\uD83D\uDE0F\uD83D\uDE12\uD83D\uDE1E\uD83D\uDE22\uD83D\uDE2D\uD83D\uDE24\uD83E\uDD2F\uD83D\uDE31\uD83D\uDE28\uD83E\uDD75\uD83E\uDD76',
   'Objects': '\uD83D\uDCCC\uD83D\uDCCB\uD83D\uDCC5\uD83D\uDCCA\uD83D\uDD0D\uD83D\uDCA1\uD83D\uDD14\u2B50\uD83C\uDF1F\uD83D\uDD25\u2764\uFE0F\uD83D\uDC8E\uD83C\uDFC6\uD83C\uDF96\uFE0F\uD83C\uDFAF\uD83D\uDE80\u2708\uFE0F\uD83D\uDCE6\uD83D\uDCE7\u2709\uFE0F\uD83D\uDCDD\uD83D\uDCD3\uD83D\uDCD6\uD83D\uDCDA\uD83D\uDCBB\uD83D\uDCF1\u2328\uFE0F\uD83D\uDDA5\uFE0F\uD83C\uDFA8\uD83C\uDFB5\uD83C\uDFAC\uD83D\uDCF7\uD83C\uDFAE\u26BD\uD83C\uDFC0',
   'Nature': '\uD83C\uDF33\uD83C\uDF32\uD83C\uDF3F\u2618\uFE0F\uD83C\uDF40\uD83C\uDF3A\uD83C\uDF39\uD83C\uDF3B\uD83C\uDF3C\uD83C\uDF37\uD83C\uDF1E\uD83C\uDF19\u2B50\u26A1\uD83C\uDF08\u2744\uFE0F\uD83D\uDCA7\uD83C\uDF0A\uD83D\uDD25\uD83C\uDF3E\uD83C\uDF43\uD83C\uDF42\uD83C\uDF41\uD83D\uDC1D\uD83E\uDD8B',
+  'Food': '\uD83C\uDF4E\uD83C\uDF4A\uD83C\uDF4B\uD83C\uDF4C\uD83C\uDF49\uD83C\uDF47\uD83C\uDF53\uD83E\uDED0\uD83C\uDF51\uD83C\uDF52\uD83E\uDD5D\uD83C\uDF45\uD83E\uDD51\uD83C\uDF55\uD83C\uDF54\uD83C\uDF2E\uD83C\uDF5C\uD83C\uDF63\uD83C\uDF70\u2615\uD83C\uDF7A\uD83E\uDD64\uD83C\uDF77',
   'People': '\uD83D\uDC64\uD83D\uDC65\uD83D\uDC68\u200D\uD83D\uDCBB\uD83D\uDC69\u200D\uD83D\uDCBB\uD83D\uDC68\u200D\uD83D\uDD2C\uD83D\uDC69\u200D\uD83D\uDD2C\uD83D\uDC68\u200D\uD83C\uDFEB\uD83D\uDC69\u200D\uD83C\uDFEB\uD83E\uDDD1\u200D\uD83D\uDCBC\uD83E\uDDD1\u200D\uD83D\uDD27\uD83E\uDDD1\u200D\uD83C\uDFA8\uD83D\uDC77\uD83E\uDDB8\uD83E\uDDB9\uD83E\uDDD9',
+  'Places': '\uD83C\uDFE0\uD83C\uDFE2\uD83C\uDFED\uD83C\uDFEB\uD83C\uDFE5\uD83C\uDFEA\uD83C\uDFE8\u26EA\uD83D\uDD4C\uD83D\uDD4D\uD83C\uDFDF\uFE0F\uD83C\uDFD4\uFE0F\uD83C\uDFD6\uFE0F\uD83C\uDF05\uD83C\uDF04\uD83C\uDF03\u2708\uFE0F\uD83D\uDE80\uD83D\uDE82\uD83D\uDE97',
   'Symbols': '\u2705\u274C\u2757\u2753\u26A0\uFE0F\u267B\uFE0F\uD83D\uDD04\u2195\uFE0F\u2194\uFE0F\u25B6\uFE0F\u23F8\uFE0F\u23F9\uFE0F\uD83D\uDD00\uD83D\uDD01\uD83D\uDD02\u2795\u2796\u2716\uFE0F\u2797\uD83D\uDFF0\uD83D\uDFF1\uD83D\uDFE2\uD83D\uDFE1\uD83D\uDFE0\uD83D\uDD34\uD83D\uDFE3\uD83D\uDFE4\u26AB\u26AA\uD83D\uDD35\uD83D\uDFE6'
 };
 
-function renderEmojiPicker() {
+/**
+ * Render the reusable emoji picker grid.
+ * @param {string} selectFnName - Window function name to call on selection (e.g., 'selectAreaEmoji')
+ * @returns {string} HTML for the emoji picker dropdown
+ */
+function renderEmojiPicker(selectFnName = 'selectPerspectiveEmoji') {
   const searchQuery = state.emojiSearchQuery || '';
   let emojiGridHtml = '';
 
@@ -220,13 +253,13 @@ function renderEmojiPicker() {
     emojiGridHtml += `
       <div class="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider px-1 pt-2 pb-1">${category}</div>
       <div class="grid grid-cols-8 gap-0.5">
-        ${filtered.map(e => `<button type="button" class="w-8 h-8 flex items-center justify-center text-lg rounded-md hover:bg-[var(--accent-light)] transition cursor-pointer" onclick="event.stopPropagation(); selectPerspectiveEmoji('${e.replace(/'/g, "\\'")}')">${e}</button>`).join('')}
+        ${filtered.map(e => `<button type="button" class="w-8 h-8 flex items-center justify-center text-lg rounded-md hover:bg-[var(--accent-light)] transition cursor-pointer" onclick="event.stopPropagation(); ${selectFnName}('${e.replace(/'/g, "\\'")}')">${e}</button>`).join('')}
       </div>
     `;
   }
 
   return `
-    <div class="absolute top-14 left-0 z-[400] w-72 bg-[var(--modal-bg)] rounded-xl border border-[var(--border-light)] shadow-xl overflow-hidden" onclick="event.stopPropagation()">
+    <div class="absolute top-full left-0 mt-1 z-[400] w-72 bg-[var(--modal-bg)] rounded-xl border border-[var(--border-light)] shadow-xl overflow-hidden" onclick="event.stopPropagation()">
       <div class="p-2 border-b border-[var(--border-light)]">
         <input type="text" id="emoji-search-input" placeholder="Search emojis..." value="${escapeHtml(searchQuery)}"
           oninput="emojiSearchQuery=this.value; render()"
@@ -449,50 +482,46 @@ export function renderAreaModalHtml() {
   const areaColor = editingArea?.color || '#6366F1';
   const areaEmoji = editingArea?.emoji || '';
   return `
-    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showAreaModal=false; editingAreaId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
       <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
         <div class="modal-header-enhanced">
           <h3 id="area-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingArea ? 'Edit Area' : 'New Area'}</h3>
-          <button onclick="showAreaModal=false; editingAreaId=null; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
+          <button onclick="showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>
         <div class="modal-body-enhanced space-y-4">
-          <!-- Preview folder icon -->
-          <div class="flex justify-center py-2">
-            <div id="area-folder-preview" class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl" style="background: ${areaColor}20; color: ${areaColor}">
-              ${areaEmoji || '<svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>'}
+          <!-- Icon + Name row -->
+          <div class="flex items-start gap-4">
+            <div class="relative flex-shrink-0">
+              <input type="hidden" id="area-emoji" value="${areaEmoji}">
+              <button type="button" onclick="event.stopPropagation(); areaEmojiPickerOpen=!areaEmojiPickerOpen; emojiSearchQuery=''; render()"
+                id="area-folder-preview"
+                class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl cursor-pointer hover:ring-2 hover:ring-[var(--accent)]/40 transition" style="background: ${areaColor}20; color: ${areaColor}">
+                ${areaEmoji || '<svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>'}
+              </button>
+              ${state.areaEmojiPickerOpen ? renderEmojiPicker('selectAreaEmoji') : ''}
             </div>
-          </div>
-          <div>
-            <label class="modal-section-label">Name</label>
-            <input type="text" id="area-name" value="${editingArea?.name ? escapeHtml(editingArea.name) : ''}"
-              placeholder="e.g., Work, Personal, Health" autofocus maxlength="100"
-              onkeydown="if(event.key==='Enter'){event.preventDefault();saveAreaFromModal();}"
-              class="modal-input-enhanced w-full">
-          </div>
-          <div>
-            <label class="modal-section-label">Emoji</label>
-            <input type="text" id="area-emoji" value="${areaEmoji}" placeholder="Pick an emoji (e.g. \uD83D\uDCBC, \uD83C\uDFE0, \uD83D\uDCAA)"
-              maxlength="4" oninput="const preview=document.getElementById('area-folder-preview');if(preview){const v=this.value.trim();preview.innerHTML=v||'<svg class=\\'w-8 h-8\\' viewBox=\\'0 0 24 24\\' fill=\\'currentColor\\'><path d=\\'M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z\\'/></svg>';}"
-              class="modal-input-enhanced w-full">
-          </div>
-          <div>
-            <label class="modal-section-label">Color</label>
-            <div class="flex items-center gap-3">
-              <input type="color" id="area-color" value="${areaColor}" class="w-10 h-10 rounded cursor-pointer border-0"
-                oninput="const preview=document.getElementById('area-folder-preview');if(preview){preview.style.background=this.value+'20';preview.style.color=this.value;}">
-              <span class="text-sm text-[var(--text-muted)]">Folder color</span>
+            <div class="flex-1 space-y-3 pt-1">
+              <input type="text" id="area-name" value="${editingArea?.name ? escapeHtml(editingArea.name) : ''}"
+                placeholder="Area name" autofocus maxlength="100"
+                onkeydown="if(event.key==='Enter'){event.preventDefault();saveAreaFromModal();}"
+                class="modal-input-enhanced w-full text-lg font-medium">
+              <div class="flex items-center gap-3">
+                <input type="color" id="area-color" value="${areaColor}" class="w-8 h-8 rounded cursor-pointer border-0"
+                  oninput="const preview=document.getElementById('area-folder-preview');if(preview){preview.style.background=this.value+'20';preview.style.color=this.value;}">
+                <span class="text-[13px] text-[var(--text-muted)]">Folder color</span>
+              </div>
             </div>
           </div>
         </div>
         <div class="modal-footer-enhanced">
           ${editingArea ? `
-            <button onclick="if(confirm('Delete this area?')){deleteArea('${editingArea.id}'); showAreaModal=false; editingAreaId=null; render();}"
+            <button onclick="if(confirm('Delete this area?')){deleteArea('${editingArea.id}'); showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render();}"
               class="px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-lg transition">Delete</button>
           ` : '<div></div>'}
           <div class="flex gap-2">
-            <button onclick="showAreaModal=false; editingAreaId=null; render()"
+            <button onclick="showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()"
               class="px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">Cancel</button>
             <button onclick="saveAreaFromModal()" class="sb-btn px-5 py-2.5 rounded-lg text-sm font-medium">
               ${editingArea ? 'Save' : 'Create'}
@@ -517,51 +546,44 @@ export function renderCategoryModalHtml() {
   const catEmoji = editing?.emoji || '';
 
   return `
-    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showCategoryModal=false;editingCategoryId=null;render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
       <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
         <div class="modal-header-enhanced">
           <h3 id="category-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editing ? 'Edit' : 'New'} Category</h3>
-          <button onclick="showCategoryModal=false;editingCategoryId=null;render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
+          <button onclick="showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>
         <div class="modal-body-enhanced space-y-4">
-          <!-- Preview folder icon -->
-          <div class="flex justify-center py-2">
-            <div id="cat-folder-preview" class="w-14 h-14 rounded-xl flex items-center justify-center text-xl" style="background: ${defaultColor}20; color: ${defaultColor}">
-              ${catEmoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 6h-2v2h-2v-2h-2v-2h2v-2h2v2h2v2z"/></svg>'}
+          <!-- Icon + Name row -->
+          <div class="flex items-start gap-4">
+            <div class="relative flex-shrink-0">
+              <input type="hidden" id="category-emoji" value="${catEmoji}">
+              <button type="button" onclick="event.stopPropagation(); categoryEmojiPickerOpen=!categoryEmojiPickerOpen; emojiSearchQuery=''; render()"
+                id="cat-folder-preview"
+                class="w-14 h-14 rounded-xl flex items-center justify-center text-xl cursor-pointer hover:ring-2 hover:ring-[var(--accent)]/40 transition" style="background: ${defaultColor}20; color: ${defaultColor}">
+                ${catEmoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 6h-2v2h-2v-2h-2v-2h2v-2h2v2h2v2z"/></svg>'}
+              </button>
+              ${state.categoryEmojiPickerOpen ? renderEmojiPicker('selectCategoryEmoji') : ''}
             </div>
-          </div>
-          <div>
-            <label class="modal-section-label">Name</label>
-            <input type="text" id="category-name" value="${editing ? escapeHtml(editing.name) : ''}" placeholder="Category name"
-              class="modal-input-enhanced w-full" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();saveCategoryFromModal();}">
-          </div>
-          <div>
-            <label class="modal-section-label">Emoji</label>
-            <input type="text" id="category-emoji" value="${catEmoji}" placeholder="Pick an emoji" maxlength="4"
-              oninput="const p=document.getElementById('cat-folder-preview');if(p){const v=this.value.trim();p.innerHTML=v||'<svg class=\\'w-6 h-6\\' viewBox=\\'0 0 24 24\\' fill=\\'currentColor\\'><path d=\\'M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 6h-2v2h-2v-2h-2v-2h2v-2h2v2h2v2z\\'/></svg>';}"
-              class="modal-input-enhanced w-full">
-          </div>
-          <div>
-            <label class="modal-section-label">Area</label>
-            <select id="category-area" class="modal-input-enhanced w-full">
-              ${(state.taskAreas || []).map(a => `<option value="${a.id}" ${a.id === defaultAreaId ? 'selected' : ''}>${escapeHtml(a.name)}</option>`).join('')}
-            </select>
-          </div>
-          <div>
-            <label class="modal-section-label">Color</label>
-            <div class="flex items-center gap-3">
-              <input type="color" id="category-color" value="${defaultColor}" class="w-10 h-10 rounded cursor-pointer border-0"
-                oninput="const p=document.getElementById('cat-folder-preview');if(p){p.style.background=this.value+'20';p.style.color=this.value;}">
-              <span class="text-sm text-[var(--text-muted)]">Folder color</span>
+            <div class="flex-1 space-y-3 pt-1">
+              <input type="text" id="category-name" value="${editing ? escapeHtml(editing.name) : ''}" placeholder="Category name"
+                class="modal-input-enhanced w-full text-lg font-medium" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();saveCategoryFromModal();}">
+              <select id="category-area" class="modal-input-enhanced w-full text-sm">
+                ${(state.taskAreas || []).map(a => `<option value="${a.id}" ${a.id === defaultAreaId ? 'selected' : ''}>${escapeHtml(a.name)}</option>`).join('')}
+              </select>
+              <div class="flex items-center gap-3">
+                <input type="color" id="category-color" value="${defaultColor}" class="w-8 h-8 rounded cursor-pointer border-0"
+                  oninput="const p=document.getElementById('cat-folder-preview');if(p){p.style.background=this.value+'20';p.style.color=this.value;}">
+                <span class="text-[13px] text-[var(--text-muted)]">Folder color</span>
+              </div>
             </div>
           </div>
         </div>
         <div class="modal-footer-enhanced">
           ${editing ? `<button onclick="window.deleteCategory('${editing.id}'); showCategoryModal=false; editingCategoryId=null; render()" class="px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-lg transition">Delete</button>` : '<div></div>'}
           <div class="flex gap-2">
-            <button onclick="showCategoryModal=false;editingCategoryId=null;render()" class="px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">Cancel</button>
+            <button onclick="showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()" class="px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">Cancel</button>
             <button onclick="saveCategoryFromModal()" class="sb-btn px-5 py-2.5 rounded-lg text-sm font-medium">Save</button>
           </div>
         </div>

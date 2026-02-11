@@ -296,6 +296,8 @@ export const state = {
   editingPersonId: null,
   editingPerspectiveId: null,
   perspectiveEmojiPickerOpen: false,
+  areaEmojiPickerOpen: false,
+  categoryEmojiPickerOpen: false,
   emojiSearchQuery: '',
 
   // ---- Sidebar collapse/expand ----

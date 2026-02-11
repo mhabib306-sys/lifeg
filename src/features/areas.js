@@ -196,12 +196,9 @@ export function getPersonById(personId) {
 // ============ PERSON FILTER ============
 
 export function getTasksByPerson(personId) {
-  const today = getLocalDateString();
   return state.tasksData.filter(task => {
     if (!task.people || !task.people.includes(personId)) return false;
     if (task.completed) return false;
-    // Hide deferred tasks (deferDate in the future)
-    if (task.deferDate && task.deferDate > today) return false;
     return true;
   });
 }
