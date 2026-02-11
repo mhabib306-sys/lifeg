@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T09:28:08.288Z",
+  "lastUpdated": "2026-02-11T09:30:24.615Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3361,6 +3361,32 @@
       "noteOrder": 1000,
       "createdAt": "2026-02-11T09:28:05.603Z",
       "updatedAt": "2026-02-11T09:28:05.603Z"
+    },
+    {
+      "id": "task_1770802221329_93j3sj43b",
+      "title": "Talk to Omar Badr about the main pain of the burn. What do we have beside discounts?",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "areaId": "work",
+      "categoryId": null,
+      "labels": [],
+      "people": [
+        "person_1770729991342_4fciz"
+      ],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": null,
+      "order": 52000,
+      "createdAt": "2026-02-11T09:30:21.329Z",
+      "updatedAt": "2026-02-11T09:30:21.329Z"
     }
   ],
   "deletedTaskTombstones": {
