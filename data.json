@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T15:32:57.148Z",
+  "lastUpdated": "2026-02-11T15:36:19.266Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2144,7 +2144,9 @@
       "order": 16000,
       "today": false,
       "flagged": false,
-      "noteOrder": 5000
+      "noteOrder": 5000,
+      "noteLifecycleState": "active",
+      "noteHistory": []
     },
     {
       "id": "task_1770456058835_o9bav1rjn",
@@ -2211,7 +2213,9 @@
       "order": 20000,
       "today": false,
       "flagged": false,
-      "noteOrder": 6000
+      "noteOrder": 6000,
+      "noteLifecycleState": "active",
+      "noteHistory": []
     },
     {
       "id": "task_1770490285825_vgowyp7kn",
@@ -2526,7 +2530,9 @@
       "order": 31000,
       "createdAt": "2026-02-09T18:13:38.521Z",
       "updatedAt": "2026-02-09T18:13:38.521Z",
-      "noteOrder": 11000
+      "noteOrder": 11000,
+      "noteLifecycleState": "active",
+      "noteHistory": []
     },
     {
       "id": "task_1770662098228_jajroyt6s",
@@ -2673,7 +2679,9 @@
       "order": 30000,
       "createdAt": "2026-02-09T19:22:23.054Z",
       "updatedAt": "2026-02-09T19:22:23.054Z",
-      "noteOrder": 12000
+      "noteOrder": 12000,
+      "noteLifecycleState": "active",
+      "noteHistory": []
     },
     {
       "id": "task_1770665317331_0ufby0muz",
@@ -2697,7 +2705,9 @@
       "order": 32000,
       "createdAt": "2026-02-09T19:28:37.331Z",
       "updatedAt": "2026-02-09T19:29:36.574Z",
-      "noteOrder": 13000
+      "noteOrder": 13000,
+      "noteLifecycleState": "active",
+      "noteHistory": []
     },
     {
       "id": "task_1770419495459_db8m1al68",
@@ -2766,7 +2776,9 @@
       "order": 34000,
       "createdAt": "2026-02-10T02:15:44.419Z",
       "updatedAt": "2026-02-10T02:15:44.419Z",
-      "noteOrder": 14000
+      "noteOrder": 14000,
+      "noteLifecycleState": "active",
+      "noteHistory": []
     },
     {
       "id": "task_1770689755718_212nsscro",
@@ -2813,7 +2825,9 @@
       "order": 36000,
       "createdAt": "2026-02-10T03:23:25.552Z",
       "updatedAt": "2026-02-10T03:23:25.552Z",
-      "noteOrder": 15000
+      "noteOrder": 15000,
+      "noteLifecycleState": "active",
+      "noteHistory": []
     },
     {
       "id": "task_1770693814605_1rroaqkiv",
@@ -2885,7 +2899,9 @@
       "order": 38000,
       "createdAt": "2026-02-10T20:55:25.894Z",
       "updatedAt": "2026-02-10T20:55:25.894Z",
-      "noteOrder": 16000
+      "noteOrder": 16000,
+      "noteLifecycleState": "active",
+      "noteHistory": []
     },
     {
       "id": "task_1770757912678_tf46h9h2v",
@@ -3038,7 +3054,9 @@
       "updatedAt": "2026-02-11T09:28:05.602Z",
       "today": false,
       "flagged": false,
-      "order": 45000
+      "order": 45000,
+      "noteLifecycleState": "active",
+      "noteHistory": []
     },
     {
       "id": "task_1770802085603_b6eh98u02",
@@ -3061,7 +3079,9 @@
       "updatedAt": "2026-02-11T09:28:05.603Z",
       "today": false,
       "flagged": false,
-      "order": 46000
+      "order": 46000,
+      "noteLifecycleState": "active",
+      "noteHistory": []
     },
     {
       "id": "task_1770802221329_93j3sj43b",
@@ -3133,7 +3153,9 @@
       "updatedAt": "2026-02-11T15:29:18.443Z",
       "today": false,
       "flagged": false,
-      "order": 58000
+      "order": 58000,
+      "noteLifecycleState": "active",
+      "noteHistory": []
     }
   ],
   "deletedTaskTombstones": {
