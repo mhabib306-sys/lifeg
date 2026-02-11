@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T08:38:53.857Z",
+  "lastUpdated": "2026-02-11T08:39:32.167Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1721,10 +1721,10 @@
         "whoopAge": ""
       },
       "libre": {
-        "currentGlucose": 184,
+        "currentGlucose": 187,
         "trend": "↘",
-        "readingsCount": 47,
-        "lastReading": "2/11/2026 10:33:23 AM"
+        "readingsCount": 48,
+        "lastReading": "2/11/2026 10:39:24 AM"
       },
       "family": {
         "mom": false,
