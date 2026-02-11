@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T16:21:54.222Z",
+  "lastUpdated": "2026-02-11T16:22:37.788Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3273,16 +3273,16 @@
       "id": "task_1770826782007_w1vtjdjv8",
       "title": "Review Ayman's email on G&A Budget: 2026 Other G&A Budget",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "today": false,
       "flagged": false,
       "completed": false,
       "completedAt": null,
-      "areaId": null,
+      "areaId": "work",
       "categoryId": null,
       "labels": [],
       "people": [],
-      "deferDate": null,
+      "deferDate": "2026-02-11",
       "dueDate": null,
       "repeat": null,
       "isNote": false,
@@ -3292,7 +3292,7 @@
       "lastReviewedAt": null,
       "order": 41000,
       "createdAt": "2026-02-11T16:19:42.007Z",
-      "updatedAt": "2026-02-11T16:19:51.575Z"
+      "updatedAt": "2026-02-11T16:22:34.853Z"
     }
   ],
   "deletedTaskTombstones": {
