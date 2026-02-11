@@ -291,7 +291,7 @@ export function renderCalendarView() {
                       ondragstart="startCalendarEventDrag('${q(e.calendarId)}','${q(e.id)}')"
                       ondragend="clearCalendarEventDrag()"
                       onclick="openCalendarEventActions('${q(e.calendarId)}','${q(e.id)}')"
-                      class="text-[11px] rounded-md px-2 py-1 mb-1 bg-emerald-100 text-emerald-900 cursor-move truncate">
+                      class="text-[11px] rounded-md px-2 py-1 mb-1 calendar-time-event cursor-move truncate">
                       ${escapeHtml(e.summary)}
                     </div>
                   `).join('')}
@@ -310,9 +310,9 @@ export function renderCalendarView() {
   else calendarHtml = buildTimeGrid();
 
   const tokenBanner = state.gcalTokenExpired ? `
-    <div class="mx-5 my-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between">
-      <span class="text-sm text-amber-700">Google Calendar session expired</span>
-      <button onclick="reconnectGCal()" class="text-sm font-medium text-amber-700 hover:text-amber-900 underline">Reconnect</button>
+    <div class="calendar-token-banner mx-5 my-2 px-4 py-2 rounded-lg flex items-center justify-between">
+      <span class="text-sm">Google Calendar session expired</span>
+      <button onclick="reconnectGCal()" class="text-sm font-medium hover:opacity-80 underline">Reconnect</button>
     </div>
   ` : '';
 
@@ -329,7 +329,7 @@ export function renderCalendarView() {
       const withNotes = hasMeetingNotes(e);
       return `
         <button onclick="openCalendarEventActions('${q(e.calendarId)}','${q(e.id)}')" class="calendar-side-event-row w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-[var(--bg-secondary)] transition rounded-lg ${withNotes ? 'calendar-side-event-with-notes' : ''}">
-          <span class="w-2.5 h-2.5 rounded-full ${withNotes ? 'bg-coral' : 'bg-[#2F9B6A]'} flex-shrink-0"></span>
+          <span class="w-2.5 h-2.5 rounded-full ${withNotes ? 'bg-[var(--flagged-color)]' : 'bg-[var(--success)]'} flex-shrink-0"></span>
           <span class="text-sm text-[var(--text-primary)] flex-1 truncate">${title}</span>
           ${withNotes ? '<span class="calendar-notes-chip">Notes</span>' : ''}
           <span class="text-xs text-[var(--text-muted)] flex-shrink-0">${escapeHtml(timeStr)}</span>
@@ -350,7 +350,7 @@ export function renderCalendarView() {
               <h2 class="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
             </div>
             <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Task">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             </button>
           </div>
 
@@ -358,11 +358,11 @@ export function renderCalendarView() {
             <div class="calendar-period-row">
               <div class="calendar-period-nav">
                 <button onclick="calendarPrevMonth()" class="calendar-period-btn" aria-label="Previous period">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
                 </button>
                 <h3 class="calendar-period-title">${viewLabelMap[state.calendarViewMode] || viewLabelMap.month}</h3>
                 <button onclick="calendarNextMonth()" class="calendar-period-btn" aria-label="Next period">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
               </div>
               <div class="calendar-period-actions">
@@ -394,7 +394,7 @@ export function renderCalendarView() {
               <h4 class="text-sm font-semibold text-[var(--text-primary)]">Today</h4>
               <span class="flex items-center gap-2">
                 <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--bg-secondary)] text-[var(--text-muted)] font-medium">${todayTasks.length}</span>
-                <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform ${state.calendarMobileShowToday ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform ${state.calendarMobileShowToday ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
               </span>
             </button>
             <div class="calendar-side-list ${isMobile && !state.calendarMobileShowToday ? 'calendar-panel-collapsed' : ''}">${todayListHtml}</div>
@@ -405,7 +405,7 @@ export function renderCalendarView() {
               <h4 class="text-sm font-semibold text-[var(--text-primary)]">Events</h4>
               <span class="flex items-center gap-2">
                 <span class="text-xs text-[var(--text-muted)]">${selectedLabel}</span>
-                <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform ${state.calendarMobileShowEvents ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform ${state.calendarMobileShowEvents ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
               </span>
             </button>
             <div class="calendar-side-list ${isMobile && !state.calendarMobileShowEvents ? 'calendar-panel-collapsed' : ''}">${eventsListHtml}</div>
@@ -417,16 +417,16 @@ export function renderCalendarView() {
                 <h4 class="text-sm font-semibold text-[var(--text-primary)]">Scheduled</h4>
                 <span class="flex items-center gap-2">
                   <span class="text-xs text-[var(--text-muted)]">${selectedDateLabel}</span>
-                  <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform ${state.calendarMobileShowScheduled ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                  <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform ${state.calendarMobileShowScheduled ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
                 </span>
               </button>
               <div class="calendar-side-list ${isMobile && !state.calendarMobileShowScheduled ? 'calendar-panel-collapsed' : ''}">
                 ${dueTasks.length > 0 ? `
-                  <div class="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[#B55322]">Due</div>
+                  <div class="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--warning)]">Due</div>
                   ${dueTasks.map(task => renderCalendarSidebarTaskItem(task)).join('')}
                 ` : ''}
                 ${deferTasks.length > 0 ? `
-                  <div class="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[#2B6CB0]">Starting</div>
+                  <div class="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--accent)]">Starting</div>
                   ${deferTasks.map(task => renderCalendarSidebarTaskItem(task)).join('')}
                 ` : ''}
               </div>

@@ -2337,11 +2337,11 @@ body.mobile-keyboard-open .main-content {
 }
 
 .calendar-legend-dot-due {
-  background: #B55322;
+  background: var(--warning);
 }
 
 .calendar-legend-dot-start {
-  background: #2B6CB0;
+  background: var(--accent);
 }
 .inline-ac-option {
   padding: 8px 12px;
@@ -2410,6 +2410,16 @@ body.mobile-keyboard-open .main-content {
   opacity: 1;
 }
 
+.calendar-time-event {
+  background: color-mix(in srgb, var(--success) 10%, var(--bg-card));
+  color: color-mix(in srgb, var(--success) 80%, #000);
+}
+.calendar-token-banner {
+  background: color-mix(in srgb, var(--warning) 10%, var(--bg-card));
+  border: 1px solid color-mix(in srgb, var(--warning) 25%, transparent);
+  color: var(--warning);
+}
+
 /* Calendar View */
 .calendar-page-grid {
   display: grid;
@@ -2469,7 +2479,7 @@ body.mobile-keyboard-open .main-content {
 .calendar-range-day {
   min-height: 200px;
   border: 1px solid var(--border-light);
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--bg-card);
   display: flex;
   flex-direction: column;
@@ -2518,7 +2528,7 @@ body.mobile-keyboard-open .main-content {
   height: auto;
   gap: 0;
   background: var(--bg-card, var(--bg-primary));
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   align-items: stretch;
 }
@@ -2612,29 +2622,29 @@ body.mobile-keyboard-open .main-content {
   border: 1px solid transparent;
 }
 .calendar-task-line.due {
-  color: #7a4623;
-  background: #fef7f2;
-  border-color: #f0ddd1;
+  color: color-mix(in srgb, var(--warning) 80%, #000);
+  background: color-mix(in srgb, var(--warning) 8%, var(--bg-card));
+  border-color: color-mix(in srgb, var(--warning) 20%, transparent);
 }
 .calendar-task-line.defer {
-  color: #2f5375;
-  background: #f2f7fc;
-  border-color: #d5e2f0;
+  color: color-mix(in srgb, var(--accent) 75%, #000);
+  background: color-mix(in srgb, var(--accent) 6%, var(--bg-card));
+  border-color: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .calendar-task-line.overdue {
-  color: #7a2f2f;
-  background: #fdf3f3;
-  border-color: #efd6d6;
+  color: color-mix(in srgb, var(--danger, #E5484D) 80%, #000);
+  background: color-mix(in srgb, var(--danger, #E5484D) 6%, var(--bg-card));
+  border-color: color-mix(in srgb, var(--danger, #E5484D) 18%, transparent);
 }
 .calendar-task-line.event {
-  color: #285b46;
-  background: #f1f8f4;
-  border-color: #d5e6dc;
+  color: color-mix(in srgb, var(--success) 80%, #000);
+  background: color-mix(in srgb, var(--success) 8%, var(--bg-card));
+  border-color: color-mix(in srgb, var(--success) 18%, transparent);
 }
 .calendar-task-line.event.with-notes {
-  color: #7b451f;
-  background: #fef6ef;
-  border-color: #edd8c7;
+  color: color-mix(in srgb, var(--flagged-color) 80%, #000);
+  background: color-mix(in srgb, var(--flagged-color) 8%, var(--bg-card));
+  border-color: color-mix(in srgb, var(--flagged-color) 20%, transparent);
   font-weight: 600;
 }
 .calendar-line-note-indicator {
@@ -2642,13 +2652,13 @@ body.mobile-keyboard-open .main-content {
   width: 5px;
   height: 5px;
   border-radius: 9999px;
-  background: #d36b2f;
+  background: var(--flagged-color);
   margin-right: 5px;
   vertical-align: middle;
 }
 .calendar-side-event-with-notes {
-  background: #fdf8f4;
-  border: 1px solid #eedfd2;
+  background: color-mix(in srgb, var(--flagged-color) 6%, var(--bg-card));
+  border: 1px solid color-mix(in srgb, var(--flagged-color) 18%, transparent);
 }
 .calendar-side-event-row {
   min-height: 44px;
@@ -2658,9 +2668,9 @@ body.mobile-keyboard-open .main-content {
   line-height: 1;
   padding: 3px 6px;
   border-radius: 9999px;
-  background: #fef6f0;
-  color: #7c4925;
-  border: 1px solid #ecd8c9;
+  background: color-mix(in srgb, var(--flagged-color) 8%, var(--bg-card));
+  color: color-mix(in srgb, var(--flagged-color) 80%, #000);
+  border: 1px solid color-mix(in srgb, var(--flagged-color) 22%, transparent);
   font-weight: 600;
   flex-shrink: 0;
 }
@@ -2668,8 +2678,8 @@ body.mobile-keyboard-open .main-content {
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: #f3f4f6;
-  color: #4b5563;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2683,7 +2693,7 @@ body.mobile-keyboard-open .main-content {
   text-align: left;
   padding: 12px 14px;
   min-height: 58px;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--bg-input);
   transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
@@ -2695,7 +2705,7 @@ body.mobile-keyboard-open .main-content {
 }
 .calendar-icon-action {
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 8px;
   min-height: 88px;
   background: var(--bg-input);
   color: var(--text-primary);
@@ -2710,12 +2720,11 @@ body.mobile-keyboard-open .main-content {
 .calendar-icon-action:hover {
   background: var(--bg-secondary);
   border-color: var(--accent-light);
-  transform: translateY(-1px);
 }
 .calendar-icon-action-glyph {
   width: 28px;
   height: 28px;
-  border-radius: 9px;
+  border-radius: 6px;
   background: color-mix(in srgb, var(--accent) 10%, var(--bg-card));
   color: var(--accent);
   display: inline-flex;
@@ -2736,20 +2745,19 @@ body.mobile-keyboard-open .main-content {
 .calendar-event-action:hover {
   background: var(--bg-secondary);
   border-color: var(--accent-light);
-  transform: translateY(-1px);
 }
 .calendar-event-action:disabled {
   transform: none;
 }
 .calendar-event-action:focus-visible,
 .calendar-view-toggle-btn:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--geist-glow, 0 0 0 2px rgba(0, 112, 243, 0.25));
 }
 .calendar-event-action-icon {
   width: 30px;
   height: 30px;
-  border-radius: 9px;
+  border-radius: 6px;
   background: color-mix(in srgb, var(--accent) 10%, var(--bg-card));
   color: var(--accent);
   display: inline-flex;
@@ -2779,7 +2787,7 @@ body.mobile-keyboard-open .main-content {
 .calendar-event-modal {
   padding-bottom: env(safe-area-inset-bottom, 0px);
   border: 1px solid var(--border-light);
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18);
+  box-shadow: var(--shadow-modal, 0 16px 48px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05));
 }
 .calendar-event-modal-overlay {
   align-items: center !important;
@@ -2805,14 +2813,14 @@ body.mobile-keyboard-open .main-content {
   color: color-mix(in srgb, var(--accent) 82%, #0f172a);
 }
 .calendar-meeting-btn-success {
-  background: color-mix(in srgb, #22c55e 14%, var(--bg-card));
-  color: #12633c;
+  background: color-mix(in srgb, var(--success) 14%, var(--bg-card));
+  color: color-mix(in srgb, var(--success) 80%, #000);
 }
 .calendar-meeting-notes-textarea {
   overscroll-behavior: contain;
 }
 .discussion-pool-card {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 88%, #EEF4FF) 0%, var(--bg-card) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 88%, color-mix(in srgb, var(--accent) 15%, white)) 0%, var(--bg-card) 100%);
 }
 .discussion-pool-people {
   display: flex;
@@ -2843,7 +2851,7 @@ body.mobile-keyboard-open .main-content {
 }
 .discussion-pool-section {
   border: 1px solid var(--border-light);
-  border-radius: 10px;
+  border-radius: 8px;
   background: color-mix(in srgb, var(--bg-secondary) 35%, transparent);
   overflow: hidden;
 }
@@ -2894,14 +2902,14 @@ body.mobile-keyboard-open .main-content {
   line-height: 1;
   padding: 4px 6px;
   border-radius: 999px;
-  color: #9A3412;
-  background: #FFF7ED;
-  border: 1px solid #FDBA74;
+  color: color-mix(in srgb, var(--warning) 80%, #000);
+  background: color-mix(in srgb, var(--warning) 8%, var(--bg-card));
+  border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent);
 }
 .discussion-pool-item-badge.linked {
-  color: #065F46;
-  background: #ECFDF5;
-  border-color: #A7F3D0;
+  color: color-mix(in srgb, var(--success) 80%, #000);
+  background: color-mix(in srgb, var(--success) 8%, var(--bg-card));
+  border-color: color-mix(in srgb, var(--success) 25%, transparent);
 }
 .discussion-pool-link-btn {
   min-width: 64px;
@@ -4733,4 +4741,63 @@ body.mobile-keyboard-open .main-content {
   font-family: var(--font-mono);
   background: var(--geist-bg-code);
   border-radius: var(--border-radius-sm);
+}
+
+/* --- Utility normalization for legacy class names still used in templates --- */
+[data-theme="geist"] .text-charcoal,
+[data-theme="geist"] .text-charcoal\/70,
+[data-theme="geist"] .text-charcoal\/60,
+[data-theme="geist"] .text-charcoal\/50,
+[data-theme="geist"] .text-charcoal\/40 {
+  color: var(--text-primary) !important;
+}
+[data-theme="geist"] .text-coral {
+  color: var(--accent) !important;
+}
+[data-theme="geist"] .bg-coral {
+  background: var(--accent) !important;
+}
+[data-theme="geist"] .bg-coral\/10,
+[data-theme="geist"] .bg-coral\/5 {
+  background: color-mix(in srgb, var(--accent) 10%, transparent) !important;
+}
+[data-theme="geist"] .hover\:bg-coralDark:hover {
+  background: var(--accent-dark) !important;
+}
+[data-theme="geist"] .hover\:bg-coral\/20:hover,
+[data-theme="geist"] .hover\:bg-coral\/10:hover {
+  background: color-mix(in srgb, var(--accent) 20%, transparent) !important;
+}
+[data-theme="geist"] .bg-warmgray,
+[data-theme="geist"] .bg-warmgray\/30,
+[data-theme="geist"] .bg-warmgray\/25 {
+  background: var(--bg-secondary) !important;
+}
+[data-theme="geist"] .border-softborder {
+  border-color: var(--border) !important;
+}
+[data-theme="geist"] .focus\:border-coral:focus,
+[data-theme="geist"] .focus\:ring-coral:focus {
+  border-color: var(--accent) !important;
+  box-shadow: var(--geist-glow) !important;
+}
+
+/* --- Radius/spacing strictness (tight Geist geometry) --- */
+[data-theme="geist"] .rounded-2xl,
+[data-theme="geist"] .rounded-xl {
+  border-radius: var(--border-radius-lg) !important;
+}
+[data-theme="geist"] .rounded-lg {
+  border-radius: var(--border-radius) !important;
+}
+
+/* --- Reduce non-Geist motion/shadow intensity --- */
+[data-theme="geist"] .task-checkbox:hover,
+[data-theme="geist"] .tag-pill:hover,
+[data-theme="geist"] .action-btn:hover {
+  transform: none !important;
+}
+[data-theme="geist"] .tag-pill:hover,
+[data-theme="geist"] .workspace-area-chip:hover {
+  box-shadow: none !important;
 }
