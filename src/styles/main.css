@@ -879,18 +879,7 @@ img.twemoji {
   color: var(--notes-accent, #8B5CF6);
 }
 
-/* Chevron for parent nodes */
-.note-bullet-chevron {
-  width: 14px;
-  height: 14px;
-  transition: transform 0.15s ease;
-  transform: rotate(90deg);
-}
-.note-bullet.collapsed .note-bullet-chevron {
-  transform: rotate(0deg);
-}
-
-/* Dot for leaf nodes */
+/* Dot for all nodes (leaf + parent) */
 .note-bullet-dot {
   width: 6px;
   height: 6px;

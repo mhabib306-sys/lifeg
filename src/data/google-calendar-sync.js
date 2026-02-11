@@ -36,6 +36,8 @@ const GCAL_FETCH_TIMEOUT_MS = 15000; // Prevent indefinite loading on hung reque
 let syncIntervalId = null;
 let tokenRefreshIntervalId = null;
 let tokenRefreshPromise = null;
+let silentRefreshFailedAt = 0; // Timestamp of last failed silent refresh
+const SILENT_REFRESH_COOLDOWN_MS = 30 * 60 * 1000; // Don't retry silent refresh for 30 min after failure
 
 function persistOfflineQueue() {
   localStorage.setItem(GCAL_OFFLINE_QUEUE_KEY, JSON.stringify(state.gcalOfflineQueue || []));
@@ -193,19 +195,26 @@ function handleTokenExpired() {
 }
 
 async function refreshAccessTokenSilent() {
+  // If a recent silent refresh already failed, don't retry (avoids repeated popups)
+  if (silentRefreshFailedAt && (Date.now() - silentRefreshFailedAt) < SILENT_REFRESH_COOLDOWN_MS) {
+    return false;
+  }
   if (tokenRefreshPromise) return tokenRefreshPromise;
 
   tokenRefreshPromise = (async () => {
     try {
       const token = await window.signInWithGoogleCalendar?.({ mode: 'silent' });
       if (token) {
+        silentRefreshFailedAt = 0; // Reset cooldown on success
         state.gcalTokenExpired = false;
         state.gcalError = null;
         return true;
       }
+      silentRefreshFailedAt = Date.now(); // Start cooldown
       return false;
     } catch (err) {
       console.warn('Silent token refresh error:', err);
+      silentRefreshFailedAt = Date.now(); // Start cooldown
       return false;
     } finally {
       tokenRefreshPromise = null;
@@ -596,6 +605,7 @@ export async function retryGCalOfflineQueue() {
 // ---- Lifecycle ----
 
 export async function connectGCal() {
+  silentRefreshFailedAt = 0; // Reset cooldown on explicit connect
   const token = await window.signInWithGoogleCalendar();
   if (!token) return;
   localStorage.setItem(GCAL_CONNECTED_KEY, 'true');
@@ -632,6 +642,7 @@ export function disconnectGCal() {
 }
 
 export async function reconnectGCal() {
+  silentRefreshFailedAt = 0; // Reset cooldown on explicit reconnect
   const token = await window.signInWithGoogleCalendar();
   if (!token) return;
   state.gcalTokenExpired = false;
