@@ -122,6 +122,8 @@ export const GSHEET_SAVED_PROMPT_KEY = 'nucleusGSheetSavedPrompt';
 export const GSHEET_RESPONSE_CACHE_KEY = 'nucleusGSheetResponseCache';
 export const CONFLICT_NOTIFICATIONS_KEY = 'nucleusConflictNotifications';
 export const APP_VERSION_SEEN_KEY = 'nucleusAppVersionSeen';
+export const NOTE_INTEGRITY_SNAPSHOT_KEY = 'nucleusNoteIntegritySnapshot';
+export const NOTE_LOCAL_BACKUP_KEY = 'nucleusNoteLocalBackup';
 
 // Shared keys
 export const LAST_UPDATED_KEY = 'lastUpdated';

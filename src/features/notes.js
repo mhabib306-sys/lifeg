@@ -1,9 +1,11 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
 import { generateTaskId, escapeHtml, formatSmartDate } from '../utils.js';
-import { TASK_CATEGORIES_KEY, TASK_LABELS_KEY, TASK_PEOPLE_KEY, COLLAPSED_NOTES_KEY } from '../constants.js';
+import {
+  TASK_CATEGORIES_KEY, TASK_LABELS_KEY, TASK_PEOPLE_KEY, COLLAPSED_NOTES_KEY,
+  NOTE_INTEGRITY_SNAPSHOT_KEY, NOTE_LOCAL_BACKUP_KEY
+} from '../constants.js';
 import { startUndoCountdown } from './undo.js';
-import { recordTaskDeletionTombstone, clearTaskDeletionTombstone } from './tasks.js';
 
 // ============================================================================
 // Note Inline Autocomplete (contenteditable-compatible)
@@ -16,6 +18,61 @@ let noteAcActiveIndex = 0;
 let noteAcTriggerChar = null;
 let noteAcTriggerPos = -1;
 let noteAcNoteId = null;
+const NOTE_HISTORY_LIMIT = 60;
+
+function isNoteItem(item) {
+  return !!item?.isNote;
+}
+
+function isDeletedNote(item) {
+  return item?.noteLifecycleState === 'deleted';
+}
+
+function isActiveNote(item) {
+  return isNoteItem(item) && !item.completed && !isDeletedNote(item);
+}
+
+function getAnyNoteById(noteId) {
+  return state.tasksData.find(t => t.id === noteId && isNoteItem(t));
+}
+
+function getActiveNoteById(noteId) {
+  return state.tasksData.find(t => t.id === noteId && isActiveNote(t));
+}
+
+function addNoteHistoryEntry(note, action, details = {}) {
+  if (!isNoteItem(note)) return;
+  if (!Array.isArray(note.noteHistory)) note.noteHistory = [];
+  note.noteHistory.push({
+    id: `nh_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    action,
+    at: new Date().toISOString(),
+    details
+  });
+  if (note.noteHistory.length > NOTE_HISTORY_LIMIT) {
+    note.noteHistory = note.noteHistory.slice(-NOTE_HISTORY_LIMIT);
+  }
+}
+
+function ensureNoteMetadata(note) {
+  if (!isNoteItem(note)) return false;
+  let changed = false;
+  if (note.noteLifecycleState !== 'active' && note.noteLifecycleState !== 'deleted') {
+    note.noteLifecycleState = 'active';
+    changed = true;
+  }
+  if (!Array.isArray(note.noteHistory)) {
+    note.noteHistory = [];
+    changed = true;
+  }
+  return changed;
+}
+
+function recordNoteChange(note, action, details = {}) {
+  ensureNoteMetadata(note);
+  addNoteHistoryEntry(note, action, details);
+  note.updatedAt = new Date().toISOString();
+}
 
 function debouncedSaveToGithubSafe() {
   if (typeof window.debouncedSaveToGithub === 'function') {
@@ -64,7 +121,7 @@ function setCaretOffset(el, offset) {
 }
 
 function noteAcGetItems(query) {
-  const note = noteAcNoteId ? state.tasksData.find(t => t.id === noteAcNoteId && t.isNote) : null;
+  const note = noteAcNoteId ? state.tasksData.find(t => t.id === noteAcNoteId && isActiveNote(t)) : null;
   if (noteAcTriggerChar === '#') return state.taskAreas;
   if (noteAcTriggerChar === '@') {
     const existing = note?.labels || [];
@@ -109,7 +166,7 @@ function noteAcGetCreateFn() {
 }
 
 function noteAcSelectItem(item) {
-  const note = state.tasksData.find(t => t.id === noteAcNoteId && t.isNote);
+  const note = state.tasksData.find(t => t.id === noteAcNoteId && isActiveNote(t));
   if (!note) { noteAcDismissPopup(); return; }
 
   const el = document.querySelector(`[data-note-id="${noteAcNoteId}"] .note-input`);
@@ -140,7 +197,7 @@ function noteAcSelectItem(item) {
     note.deferDate = item.date;
   }
 
-  note.updatedAt = new Date().toISOString();
+  recordNoteChange(note, 'updated', { field: 'metadata' });
   saveTasksData();
   debouncedSaveToGithubSafe();
 
@@ -315,13 +372,13 @@ function buildNoteMetaChipsHtml(note) {
 
 /** Remove a piece of metadata from a note. */
 export function removeNoteInlineMeta(noteId, type, id) {
-  const note = state.tasksData.find(t => t.id === noteId && t.isNote);
+  const note = state.tasksData.find(t => t.id === noteId && isActiveNote(t));
   if (!note) return;
   if (type === 'category') note.areaId = null;
   else if (type === 'label') note.labels = (note.labels || []).filter(l => l !== id);
   else if (type === 'person') note.people = (note.people || []).filter(p => p !== id);
   else if (type === 'deferDate') note.deferDate = null;
-  note.updatedAt = new Date().toISOString();
+  recordNoteChange(note, 'updated', { field: 'metadata' });
   saveTasksData();
   debouncedSaveToGithubSafe();
   window.render();
@@ -356,7 +413,8 @@ function compareNotes(a, b) {
  * Called from main.js on init.
  */
 export function initializeNoteOrders() {
-  const notes = state.tasksData.filter(t => t.isNote && !t.completed);
+  ensureNoteSafetyMetadata();
+  const notes = state.tasksData.filter(t => isActiveNote(t));
   const needsOrder = notes.some(n => n.noteOrder == null);
   if (!needsOrder) return;
 
@@ -409,7 +467,7 @@ function parseFilter(filter) {
 
 function getFilteredNotes(filter = null) {
   const { areaId, labelId, personId, categoryId } = parseFilter(filter);
-  const all = state.tasksData.filter(t => t.isNote && !t.completed);
+  const all = state.tasksData.filter(t => isActiveNote(t));
   if (categoryId) return all.filter(n => n.categoryId === categoryId);
   if (areaId) return all.filter(n => n.areaId === areaId);
   if (labelId) return all.filter(n => (n.labels || []).includes(labelId));
@@ -515,6 +573,149 @@ function persistAndRender(focusId = null) {
   }
 }
 
+function computeNoteIdSignature(items) {
+  const ids = items.map(item => String(item.id)).sort();
+  let hash = 0;
+  for (const id of ids) {
+    for (let i = 0; i < id.length; i++) {
+      hash = ((hash << 5) - hash + id.charCodeAt(i)) | 0;
+    }
+  }
+  return `${ids.length}:${Math.abs(hash)}`;
+}
+
+function readIntegritySnapshot() {
+  try {
+    return JSON.parse(localStorage.getItem(NOTE_INTEGRITY_SNAPSHOT_KEY) || 'null');
+  } catch {
+    return null;
+  }
+}
+
+function writeIntegritySnapshot(snapshot) {
+  localStorage.setItem(NOTE_INTEGRITY_SNAPSHOT_KEY, JSON.stringify(snapshot));
+}
+
+export function ensureNoteSafetyMetadata() {
+  let changed = false;
+  state.tasksData.forEach(item => {
+    if (!isNoteItem(item)) return;
+    if (ensureNoteMetadata(item)) changed = true;
+  });
+  if (changed) {
+    saveTasksData();
+  }
+  return changed;
+}
+
+export function getDeletedNotes(limit = 100) {
+  return state.tasksData
+    .filter(item => isNoteItem(item) && isDeletedNote(item))
+    .sort((a, b) => new Date(b.deletedAt || b.updatedAt || 0).getTime() - new Date(a.deletedAt || a.updatedAt || 0).getTime())
+    .slice(0, limit)
+    .map(note => ({ id: note.id, title: note.title || 'Untitled', deletedAt: note.deletedAt || note.updatedAt }));
+}
+
+export function restoreDeletedNote(noteId, includeChildren = true) {
+  const note = getAnyNoteById(noteId);
+  if (!note || !isDeletedNote(note)) return false;
+  const restoreIds = new Set([noteId]);
+  if (includeChildren) {
+    const stack = [noteId];
+    while (stack.length) {
+      const currentId = stack.pop();
+      state.tasksData
+        .filter(item => isNoteItem(item) && item.parentId === currentId && isDeletedNote(item))
+        .forEach(child => {
+          restoreIds.add(child.id);
+          stack.push(child.id);
+        });
+    }
+  }
+  state.tasksData.forEach(item => {
+    if (!restoreIds.has(item.id) || !isNoteItem(item)) return;
+    ensureNoteMetadata(item);
+    item.noteLifecycleState = 'active';
+    item.deletedAt = null;
+    item.completed = false;
+    item.completedAt = null;
+    recordNoteChange(item, 'restored', { includeChildren });
+  });
+  persistAndRender(noteId);
+  return true;
+}
+
+export function findNotesByText(query = '', limit = 20) {
+  const q = String(query || '').trim().toLowerCase();
+  const results = state.tasksData
+    .filter(item => isNoteItem(item))
+    .filter(item => !q || (item.title || '').toLowerCase().includes(q) || (item.notes || '').toLowerCase().includes(q))
+    .sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime())
+    .slice(0, limit)
+    .map(item => ({
+      id: item.id,
+      title: item.title || 'Untitled',
+      state: isDeletedNote(item) ? 'deleted' : (item.completed ? 'completed' : 'active'),
+      updatedAt: item.updatedAt || item.createdAt || ''
+    }));
+  return results;
+}
+
+export function getRecentNoteChanges(limit = 20) {
+  return state.tasksData
+    .filter(item => isNoteItem(item))
+    .sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime())
+    .slice(0, limit)
+    .map(item => ({
+      id: item.id,
+      title: item.title || 'Untitled',
+      state: isDeletedNote(item) ? 'deleted' : (item.completed ? 'completed' : 'active'),
+      updatedAt: item.updatedAt || item.createdAt || '',
+      lastAction: (item.noteHistory || [])[item.noteHistory.length - 1]?.action || 'updated'
+    }));
+}
+
+export function createNoteLocalBackup() {
+  const noteItems = state.tasksData.filter(item => isNoteItem(item));
+  const payload = {
+    createdAt: new Date().toISOString(),
+    noteCount: noteItems.length,
+    idsSignature: computeNoteIdSignature(noteItems),
+    notes: noteItems
+  };
+  localStorage.setItem(NOTE_LOCAL_BACKUP_KEY, JSON.stringify(payload));
+  return { createdAt: payload.createdAt, noteCount: payload.noteCount };
+}
+
+export function runNoteIntegrityChecks(previousVersion = '') {
+  const notes = state.tasksData.filter(item => isNoteItem(item));
+  const active = notes.filter(item => isActiveNote(item));
+  const deleted = notes.filter(item => isDeletedNote(item));
+  const completed = notes.filter(item => item.completed && !isDeletedNote(item));
+
+  const currentSnapshot = {
+    at: new Date().toISOString(),
+    version: previousVersion || '',
+    totalCount: notes.length,
+    activeCount: active.length,
+    deletedCount: deleted.length,
+    completedCount: completed.length,
+    idsSignature: computeNoteIdSignature(notes)
+  };
+
+  const previousSnapshot = readIntegritySnapshot();
+  if (previousSnapshot && previousVersion && previousSnapshot.activeCount > 0) {
+    const activeDrop = previousSnapshot.activeCount - active.length;
+    if (activeDrop >= Math.max(3, Math.ceil(previousSnapshot.activeCount * 0.3))) {
+      state.showCacheRefreshPrompt = true;
+      state.cacheRefreshPromptMessage = `Warning: active notes dropped from ${previousSnapshot.activeCount} to ${active.length}. Open Settings > Note Safety to search and restore.`;
+    }
+  }
+
+  writeIntegritySnapshot(currentSnapshot);
+  return currentSnapshot;
+}
+
 // ============================================================================
 // Collapsed Notes
 // ============================================================================
@@ -542,12 +743,12 @@ export function getNotesHierarchy(filter = null) {
 }
 
 export function noteHasChildren(noteId) {
-  return state.tasksData.some(t => t.isNote && !t.completed && t.parentId === noteId);
+  return state.tasksData.some(t => isActiveNote(t) && t.parentId === noteId);
 }
 
 export function getNoteChildren(noteId) {
   return state.tasksData
-    .filter(t => t.isNote && !t.completed && t.parentId === noteId)
+    .filter(t => isActiveNote(t) && t.parentId === noteId)
     .sort(compareNotes);
 }
 
@@ -557,7 +758,7 @@ export function getNoteChildren(noteId) {
 export function countAllDescendants(noteId) {
   let count = 0;
   const collect = (parentId) => {
-    const children = state.tasksData.filter(t => t.isNote && !t.completed && t.parentId === parentId);
+    const children = state.tasksData.filter(t => isActiveNote(t) && t.parentId === parentId);
     count += children.length;
     children.forEach(child => collect(child.id));
   };
@@ -574,7 +775,7 @@ export function isDescendantOf(targetId, ancestorId) {
   while (current) {
     if (visited.has(current)) return false;
     visited.add(current);
-    const note = state.tasksData.find(t => t.id === current && t.isNote);
+    const note = state.tasksData.find(t => t.id === current && isActiveNote(t));
     if (!note || !note.parentId) return false;
     if (note.parentId === ancestorId) return true;
     current = note.parentId;
@@ -592,9 +793,9 @@ export function getNoteAncestors(noteId) {
   while (current) {
     if (visited.has(current)) break;
     visited.add(current);
-    const note = state.tasksData.find(t => t.id === current && t.isNote);
+    const note = state.tasksData.find(t => t.id === current && isActiveNote(t));
     if (!note || !note.parentId) break;
-    const parent = state.tasksData.find(t => t.id === note.parentId && t.isNote);
+    const parent = state.tasksData.find(t => t.id === note.parentId && isActiveNote(t));
     if (!parent) break;
     ancestors.unshift({ id: parent.id, title: parent.title || 'Untitled' });
     current = note.parentId;
@@ -609,7 +810,7 @@ export function getNoteAncestors(noteId) {
 export function createRootNote(filter = null) {
   const { areaId = null, labelId = null, personId = null, categoryId = null } = parseFilter(filter);
   const siblings = state.tasksData
-    .filter(t => t.isNote && !t.completed && !t.parentId && (areaId ? t.areaId === areaId : true))
+    .filter(t => isActiveNote(t) && !t.parentId && (areaId ? t.areaId === areaId : true))
     .sort(compareNotes);
 
   // If zoomed, create as child of zoomed note instead
@@ -632,19 +833,22 @@ export function createRootNote(filter = null) {
     dueDate: null,
     repeat: null,
     isNote: true,
+    noteLifecycleState: 'active',
+    noteHistory: [],
     parentId: null,
     indent: 0,
     noteOrder: getNextOrder(siblings),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
+  addNoteHistoryEntry(newNote, 'created', { source: 'root' });
 
   state.tasksData.push(newNote);
   persistAndRender(newNote.id);
 }
 
 export function indentNote(noteId) {
-  const note = state.tasksData.find(t => t.id === noteId && t.isNote && !t.completed);
+  const note = getActiveNoteById(noteId);
   if (!note) return;
 
   const ordered = getNotesHierarchy(getCurrentNoteFilter(note));
@@ -658,13 +862,13 @@ export function indentNote(noteId) {
 
   // Get new siblings for ordering
   const newSiblings = state.tasksData
-    .filter(t => t.isNote && !t.completed && t.parentId === prev.id)
+    .filter(t => isActiveNote(t) && t.parentId === prev.id)
     .sort(compareNotes);
 
   note.parentId = prev.id;
   note.indent = nextIndent;
   note.noteOrder = getNextOrder(newSiblings);
-  note.updatedAt = new Date().toISOString();
+  recordNoteChange(note, 'updated', { field: 'hierarchy', type: 'indent' });
 
   // Expand parent if collapsed
   if (state.collapsedNotes.has(prev.id)) {
@@ -676,7 +880,7 @@ export function indentNote(noteId) {
 }
 
 export function outdentNote(noteId) {
-  const note = state.tasksData.find(t => t.id === noteId && t.isNote && !t.completed);
+  const note = getActiveNoteById(noteId);
   if (!note || (note.indent || 0) <= 0) return;
 
   const parent = note.parentId ? state.tasksData.find(t => t.id === note.parentId) : null;
@@ -684,7 +888,7 @@ export function outdentNote(noteId) {
 
   // Get new siblings for ordering
   const newSiblings = state.tasksData
-    .filter(t => t.isNote && !t.completed && t.parentId === newParentId && t.areaId === note.areaId)
+    .filter(t => isActiveNote(t) && t.parentId === newParentId && t.areaId === note.areaId)
     .sort(compareNotes);
 
   // Place after the old parent in the new siblings list
@@ -694,16 +898,16 @@ export function outdentNote(noteId) {
 
   note.parentId = newParentId;
   note.indent = Math.max(0, (note.indent || 0) - 1);
-  note.updatedAt = new Date().toISOString();
+  recordNoteChange(note, 'updated', { field: 'hierarchy', type: 'outdent' });
   persistAndRender(noteId);
 }
 
 export function createNoteAfter(noteId) {
-  const note = state.tasksData.find(t => t.id === noteId && t.isNote && !t.completed);
+  const note = getActiveNoteById(noteId);
   if (!note) return;
 
   const siblings = state.tasksData
-    .filter(t => t.isNote && !t.completed && t.parentId === note.parentId && t.areaId === note.areaId)
+    .filter(t => isActiveNote(t) && t.parentId === note.parentId && t.areaId === note.areaId)
     .sort(compareNotes);
 
   const siblingIdx = siblings.findIndex(s => s.id === noteId);
@@ -724,19 +928,22 @@ export function createNoteAfter(noteId) {
     dueDate: null,
     repeat: null,
     isNote: true,
+    noteLifecycleState: 'active',
+    noteHistory: [],
     parentId: note.parentId,
     indent: note.indent || 0,
     noteOrder: newOrder,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
+  addNoteHistoryEntry(newNote, 'created', { source: 'after', relatedTo: noteId });
 
   state.tasksData.push(newNote);
   persistAndRender(newNote.id);
 }
 
 export function createChildNote(noteId) {
-  const note = state.tasksData.find(t => t.id === noteId && t.isNote && !t.completed);
+  const note = getActiveNoteById(noteId);
   if (!note) return;
 
   const existingChildren = getNoteChildren(noteId);
@@ -758,12 +965,15 @@ export function createChildNote(noteId) {
     dueDate: null,
     repeat: null,
     isNote: true,
+    noteLifecycleState: 'active',
+    noteHistory: [],
     parentId: noteId,
     indent: (note.indent || 0) + 1,
     noteOrder: newOrder,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
+  addNoteHistoryEntry(newNote, 'created', { source: 'child', relatedTo: noteId });
 
   if (state.collapsedNotes.has(noteId)) {
     state.collapsedNotes.delete(noteId);
@@ -775,7 +985,7 @@ export function createChildNote(noteId) {
 }
 
 export function deleteNote(noteId, deleteChildren = false) {
-  const note = state.tasksData.find(t => t.id === noteId && t.isNote && !t.completed);
+  const note = getActiveNoteById(noteId);
   if (!note) return;
 
   // Guard: if zoomed note gets deleted, reset zoom
@@ -785,23 +995,32 @@ export function deleteNote(noteId, deleteChildren = false) {
     state.notesBreadcrumb = ancestors.length > 0 ? ancestors.slice(0, -1) : [];
   }
 
+  const now = new Date().toISOString();
+  const markDeleted = (target) => {
+    if (!target || !isActiveNote(target)) return;
+    ensureNoteMetadata(target);
+    target.noteLifecycleState = 'deleted';
+    target.deletedAt = now;
+    target.completed = true;
+    target.completedAt = target.completedAt || now;
+    recordNoteChange(target, 'deleted', { reason: 'manual' });
+  };
+
   if (deleteChildren) {
-    const toDelete = new Set([noteId]);
-    const collectChildren = (parentId) => {
+    const stack = [noteId];
+    while (stack.length) {
+      const currentId = stack.pop();
+      const current = getActiveNoteById(currentId);
+      if (!current) continue;
+      markDeleted(current);
       state.tasksData
-        .filter(t => t.isNote && !t.completed && t.parentId === parentId)
-        .forEach(child => {
-          toDelete.add(child.id);
-          collectChildren(child.id);
-        });
-    };
-    collectChildren(noteId);
-    toDelete.forEach(id => recordTaskDeletionTombstone(id));
-    state.tasksData = state.tasksData.filter(t => !toDelete.has(t.id));
+        .filter(t => isActiveNote(t) && t.parentId === currentId)
+        .forEach(child => stack.push(child.id));
+    }
   } else {
     const allDescendants = [];
     const collectDescendants = (parentId) => {
-      const children = state.tasksData.filter(t => t.isNote && !t.completed && t.parentId === parentId);
+      const children = state.tasksData.filter(t => isActiveNote(t) && t.parentId === parentId);
       children.forEach(child => {
         allDescendants.push(child);
         collectDescendants(child.id);
@@ -817,10 +1036,9 @@ export function deleteNote(noteId, deleteChildren = false) {
       .filter(desc => desc.parentId === noteId)
       .forEach(child => {
         child.parentId = note.parentId;
+        recordNoteChange(child, 'reparented', { from: noteId, to: note.parentId || null });
       });
-
-    recordTaskDeletionTombstone(noteId);
-    state.tasksData = state.tasksData.filter(t => t.id !== noteId);
+    markDeleted(note);
   }
 
   state.collapsedNotes.delete(noteId);
@@ -833,23 +1051,33 @@ export function deleteNote(noteId, deleteChildren = false) {
  * Used by the trash button and backspace-on-empty (not blur auto-cleanup).
  */
 export function deleteNoteWithUndo(noteId, focusAfterDeleteId) {
-  const note = state.tasksData.find(t => t.id === noteId && t.isNote);
+  const note = getActiveNoteById(noteId);
   if (!note) return;
-  const snapshot = JSON.parse(JSON.stringify(note));
-  const children = state.tasksData.filter(t => t.parentId === noteId).map(t => JSON.parse(JSON.stringify(t)));
+  const toSnapshot = new Set([noteId]);
+  const collectChildren = (parentId) => {
+    state.tasksData
+      .filter(t => isActiveNote(t) && t.parentId === parentId)
+      .forEach(child => {
+        toSnapshot.add(child.id);
+        collectChildren(child.id);
+      });
+  };
+  collectChildren(noteId);
+  const snapshot = state.tasksData
+    .filter(t => toSnapshot.has(t.id))
+    .map(t => JSON.parse(JSON.stringify(t)));
   const wasCollapsed = state.collapsedNotes.has(noteId);
-  deleteNote(noteId);
+  deleteNote(noteId, true);
   if (focusAfterDeleteId) {
     setTimeout(() => focusNote(focusAfterDeleteId), 60);
   }
-  startUndoCountdown(`"${snapshot.title || 'Untitled'}" deleted`, { note: snapshot, children, wasCollapsed }, (snap) => {
-    clearTaskDeletionTombstone(snap.note.id);
-    state.tasksData.push(snap.note);
-    snap.children.forEach(c => {
-      const existing = state.tasksData.find(t => t.id === c.id);
-      if (existing) { existing.parentId = c.parentId; existing.indent = c.indent; }
+  startUndoCountdown(`"${note.title || 'Untitled'}" deleted`, { snapshot, wasCollapsed }, (snap) => {
+    snap.snapshot.forEach(item => {
+      const existing = getAnyNoteById(item.id);
+      if (!existing) return;
+      Object.assign(existing, item);
     });
-    if (snap.wasCollapsed) state.collapsedNotes.add(snap.note.id);
+    if (snap.wasCollapsed) state.collapsedNotes.add(noteId);
     saveTasksData();
   });
 }
@@ -903,7 +1131,7 @@ export function focusNote(noteId) {
 // ============================================================================
 
 export function handleNoteKeydown(event, noteId) {
-  const note = state.tasksData.find(t => t.id === noteId && t.isNote && !t.completed);
+  const note = getActiveNoteById(noteId);
   if (!note) return;
 
   // Autocomplete popup navigation — intercept before normal keydown handling
@@ -981,13 +1209,37 @@ export function handleNoteKeydown(event, noteId) {
     return;
   }
 
+  // Cmd/Ctrl+Up = collapse note (Tana-style)
+  if (event.key === 'ArrowUp' && (event.metaKey || event.ctrlKey)) {
+    event.preventDefault();
+    if (noteHasChildren(noteId) && !state.collapsedNotes.has(noteId)) {
+      state.collapsedNotes.add(noteId);
+      saveCollapsedNotes();
+      window.render();
+      setTimeout(() => focusNote(noteId), 30);
+    }
+    return;
+  }
+
+  // Cmd/Ctrl+Down = expand note (Tana-style)
+  if (event.key === 'ArrowDown' && (event.metaKey || event.ctrlKey)) {
+    event.preventDefault();
+    if (noteHasChildren(noteId) && state.collapsedNotes.has(noteId)) {
+      state.collapsedNotes.delete(noteId);
+      saveCollapsedNotes();
+      window.render();
+      setTimeout(() => focusNote(noteId), 30);
+    }
+    return;
+  }
+
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
     const input = event.target;
     const nextTitle = input.textContent.trim();
     if (nextTitle !== (note.title || '')) {
       note.title = nextTitle;
-      note.updatedAt = new Date().toISOString();
+      recordNoteChange(note, 'updated', { field: 'title' });
       saveTasksData();
     }
     createChildNote(noteId);
@@ -1026,7 +1278,7 @@ export function handleNoteKeydown(event, noteId) {
 let noteBlurTimeout;
 
 export function handleNoteBlur(event, noteId) {
-  const note = state.tasksData.find(t => t.id === noteId && t.isNote && !t.completed);
+  const note = getActiveNoteById(noteId);
   if (!note) return;
 
   // Dismiss autocomplete popup with a delay (allows clicking popup items)
@@ -1042,7 +1294,7 @@ export function handleNoteBlur(event, noteId) {
 
   if (newTitle !== previousTitle) {
     note.title = newTitle;
-    note.updatedAt = new Date().toISOString();
+    recordNoteChange(note, 'updated', { field: 'title' });
     saveTasksData();
   }
   if (state.editingNoteId === noteId) {
@@ -1060,7 +1312,7 @@ export function handleNoteFocus(event, noteId) {
 // ============================================================================
 
 export function zoomIntoNote(noteId) {
-  const note = state.tasksData.find(t => t.id === noteId && t.isNote && !t.completed);
+  const note = getActiveNoteById(noteId);
   if (!note) return;
 
   state.zoomedNoteId = noteId;
@@ -1221,8 +1473,8 @@ export function handleNoteDrop(event) {
 }
 
 export function reorderNotes(draggedId, targetId, position) {
-  const dragged = state.tasksData.find(t => t.id === draggedId && t.isNote);
-  const target = state.tasksData.find(t => t.id === targetId && t.isNote);
+  const dragged = getActiveNoteById(draggedId);
+  const target = getActiveNoteById(targetId);
   if (!dragged || !target) return;
 
   // Safety: prevent dropping into own descendants
@@ -1233,7 +1485,7 @@ export function reorderNotes(draggedId, targetId, position) {
     dragged.parentId = targetId;
     dragged.indent = (target.indent || 0) + 1;
     const newSiblings = state.tasksData
-      .filter(t => t.isNote && !t.completed && t.parentId === targetId && t.id !== draggedId)
+      .filter(t => isActiveNote(t) && t.parentId === targetId && t.id !== draggedId)
       .sort(compareNotes);
     dragged.noteOrder = getNextOrder(newSiblings);
 
@@ -1248,7 +1500,7 @@ export function reorderNotes(draggedId, targetId, position) {
     dragged.indent = target.indent || 0;
 
     const siblings = state.tasksData
-      .filter(t => t.isNote && !t.completed && t.parentId === target.parentId && t.areaId === target.areaId && t.id !== draggedId)
+      .filter(t => isActiveNote(t) && t.parentId === target.parentId && t.areaId === target.areaId && t.id !== draggedId)
       .sort(compareNotes);
 
     const targetIdx = siblings.findIndex(s => s.id === targetId);
@@ -1269,7 +1521,7 @@ export function reorderNotes(draggedId, targetId, position) {
     }
   }
 
-  dragged.updatedAt = new Date().toISOString();
+  recordNoteChange(dragged, 'updated', { field: 'hierarchy', type: 'reorder' });
   persistAndRender();
 }
 

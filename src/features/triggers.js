@@ -398,6 +398,36 @@ export function handleTriggerKeydown(event, triggerId) {
     }
   }
 
+  // Cmd/Ctrl+Up = collapse trigger (Tana-style)
+  if (event.key === 'ArrowUp' && (event.metaKey || event.ctrlKey)) {
+    event.preventDefault();
+    if (triggerHasChildren(triggerId) && !state.collapsedTriggers.has(triggerId)) {
+      state.collapsedTriggers.add(triggerId);
+      saveCollapsedTriggers();
+      if (typeof window.render === 'function') window.render();
+      setTimeout(() => {
+        const el = document.querySelector(`[data-trigger-id="${triggerId}"] .trigger-input`);
+        if (el) el.focus();
+      }, 30);
+    }
+    return;
+  }
+
+  // Cmd/Ctrl+Down = expand trigger (Tana-style)
+  if (event.key === 'ArrowDown' && (event.metaKey || event.ctrlKey)) {
+    event.preventDefault();
+    if (triggerHasChildren(triggerId) && state.collapsedTriggers.has(triggerId)) {
+      state.collapsedTriggers.delete(triggerId);
+      saveCollapsedTriggers();
+      if (typeof window.render === 'function') window.render();
+      setTimeout(() => {
+        const el = document.querySelector(`[data-trigger-id="${triggerId}"] .trigger-input`);
+        if (el) el.focus();
+      }, 30);
+    }
+    return;
+  }
+
   if (event.key === 'Tab') {
     event.preventDefault();
     if (event.shiftKey) {
