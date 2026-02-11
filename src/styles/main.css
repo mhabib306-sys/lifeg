@@ -234,6 +234,10 @@ img.twemoji {
 .task-item.no-meta .task-row {
   align-items: center;
 }
+/* Note items: always top-align so bullet sits beside the first line, not the whole paragraph */
+.task-item.no-meta.is-note .task-row {
+  align-items: flex-start;
+}
 
 .task-item.has-meta .task-row {
   align-items: flex-start;

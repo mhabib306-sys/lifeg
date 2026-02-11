@@ -334,7 +334,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
   }
 
   return `
-    <div class="task-item group relative ${hasMetadata && metaParts.length ? 'has-meta' : 'no-meta'}"
+    <div class="task-item group relative ${hasMetadata && metaParts.length ? 'has-meta' : 'no-meta'}${task.isNote ? ' is-note' : ''}"
       draggable="${isInlineEditing || isTouch ? 'false' : 'true'}"
       ${isInlineEditing || isTouch ? '' : `ondragstart="window.handleDragStart(event, '${task.id}')"
       ondragend="window.handleDragEnd(event)"
