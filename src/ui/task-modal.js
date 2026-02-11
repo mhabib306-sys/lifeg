@@ -8,7 +8,7 @@
 // Inline autocomplete engine (#/@/&/!) is in features/inline-autocomplete.js.
 
 import { state } from '../state.js';
-import { createTask, updateTask } from '../features/tasks.js';
+import { createTask, updateTask, deleteTask } from '../features/tasks.js';
 import { createLabel, createPerson, getCategoriesByArea, getCategoryById } from '../features/areas.js';
 import { escapeHtml, formatSmartDate } from '../utils.js';
 import {
@@ -83,6 +83,9 @@ export function saveInlineEdit(taskId) {
         if (inlineMeta.dueDate) updates.dueDate = inlineMeta.dueDate;
       }
       updateTask(taskId, updates);
+    } else {
+      // Empty title — delete the task
+      deleteTask(taskId);
     }
   }
   cleanupInlineAutocomplete('inline-edit-input');
@@ -94,6 +97,13 @@ export function saveInlineEdit(taskId) {
  * Cancel inline editing without saving.
  */
 export function cancelInlineEdit() {
+  // Delete the task if it has no title (was just created via + button)
+  if (state.inlineEditingTaskId) {
+    const task = state.tasksData.find(t => t.id === state.inlineEditingTaskId);
+    if (task && !task.title) {
+      deleteTask(task.id);
+    }
+  }
   cleanupInlineAutocomplete('inline-edit-input');
   state.inlineEditingTaskId = null;
   window.render();

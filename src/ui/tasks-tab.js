@@ -487,6 +487,50 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
         </div>
       </div>
 
+      <!-- Categories -->
+      ${(() => {
+        const subcats = getCategoriesByArea(currentCategory.id);
+        if (subcats.length === 0) return '';
+        return `
+        <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+          <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Categories</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${subcats.length}</span>
+            </div>
+            <button onclick="event.stopPropagation(); window.editingAreaId='${currentCategory.id}'; window.showAreaModal=true; window.render()"
+              class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.001 1.001 0 000-1.41l-2.34-2.34a1.001 1.001 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+              Edit
+            </button>
+          </div>
+          <div class="divide-y divide-[var(--border-light)]">
+            ${subcats.map(sc => {
+              const scTaskCount = state.tasksData.filter(t => t.categoryId === sc.id && !t.completed && !t.isNote).length;
+              const scColor = sc.color || categoryColor;
+              return `
+              <button onclick="window.showCategoryTasks('${sc.id}')"
+                class="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-[var(--bg-secondary)] transition group">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style="background: ${scColor}20; color: ${scColor}">
+                  ${sc.emoji || '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>'}
+                </span>
+                <span class="flex-1 text-[14px] text-[var(--text-primary)] truncate">${escapeHtml(sc.name)}</span>
+                <span class="text-[12px] text-[var(--text-muted)]">${scTaskCount || ''}</span>
+                <svg class="w-4 h-4 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+              </button>`;
+            }).join('')}
+          </div>
+          <div class="px-4 py-2 border-t border-[var(--border-light)]">
+            <button onclick="event.stopPropagation(); window.editingCategoryId=null; window.showCategoryModal=true; window.modalSelectedArea='${currentCategory.id}'; window.render()"
+              class="flex items-center gap-2 px-3 py-2 w-full text-sm text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition text-left">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add Category
+            </button>
+          </div>
+        </div>`;
+      })()}
+
       <!-- Task Sections -->
       <div class="space-y-4">
         ${overdueTasks.length > 0 ? `
