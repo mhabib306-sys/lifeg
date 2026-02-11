@@ -44,25 +44,138 @@ function renderNotesBreadcrumb() {
 }
 
 // ============================================================================
-// buildLabelPersonNotesSection — Notes outliner for label/person views
+// buildTaskSections — Shared section renderer for landing pages
 // ============================================================================
-function buildLabelPersonNotesSection(filteredTasks, viewInfo) {
-  const isLabelView = state.activeFilterType === 'label' && state.activeLabelFilter;
-  const isPersonView = state.activeFilterType === 'person' && state.activePersonFilter;
-  if (!isLabelView && !isPersonView) return '';
+/**
+ * Groups tasks into status sections (overdue, today, upcoming, etc.)
+ * and renders each as a card with header + task list + add button.
+ * @param {Array} taskItems - Non-note tasks to group
+ * @param {string} todayDate - YYYY-MM-DD
+ * @param {string} entityColor - Hex color for accents
+ * @param {string} createPropsExpr - JS expression for createTask options, e.g. "areaId: 'x'"
+ * @param {string} filterExpr - JS filter expression for finding created tasks, e.g. "t.areaId === 'x'"
+ * @returns {string} HTML string
+ */
+function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, filterExpr) {
+  const overdueTasks = taskItems.filter(t => t.dueDate && t.dueDate < todayDate);
+  const todayTasks = taskItems.filter(t =>
+    !overdueTasks.includes(t) && (t.today || t.dueDate === todayDate));
+  const upcomingTasks = taskItems.filter(t =>
+    t.dueDate && t.dueDate > todayDate && !todayTasks.includes(t));
+  const deferredTasks = taskItems.filter(t =>
+    t.deferDate && t.deferDate > todayDate &&
+    !overdueTasks.includes(t) && !upcomingTasks.includes(t));
+  const anytimeTasks = taskItems.filter(t =>
+    t.status === 'anytime' && !overdueTasks.includes(t) &&
+    !todayTasks.includes(t) && !upcomingTasks.includes(t) &&
+    !deferredTasks.includes(t));
+  const somedayTasks = taskItems.filter(t => t.status === 'someday');
+  const inboxTasks = taskItems.filter(t => t.status === 'inbox');
 
-  const noteCount = filteredTasks.filter(t => t.isNote).length;
-  const filterObj = isLabelView ? { labelId: state.activeLabelFilter } : { personId: state.activePersonFilter };
-  const filterArg = isLabelView ? `{labelId:'${state.activeLabelFilter}'}` : `{personId:'${state.activePersonFilter}'}`;
+  const addBtn = (status, label, color) => `
+    <div class="px-4 py-2 border-t border-[var(--border-light)]">
+      <button onclick="window.createTask('', { status: '${status}', ${createPropsExpr} }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && ${filterExpr} && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+        class="flex items-center gap-2 px-3 py-2 w-full text-sm hover:bg-opacity-50 rounded-lg transition text-left" style="color: ${color}">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        ${label}
+      </button>
+    </div>`;
 
   return `
-    <!-- Notes Section -->
-    <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden mt-4">
+    ${overdueTasks.length > 0 ? `
+      <div class="bg-[var(--bg-card)] rounded-xl border border-red-100 overflow-hidden">
+        <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-center gap-2">
+          <svg class="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <span class="text-sm font-semibold text-red-700">Overdue</span>
+          <span class="text-xs text-red-400 ml-1">${overdueTasks.length}</span>
+        </div>
+        <div class="task-list">${overdueTasks.map(task => renderTaskItem(task)).join('')}</div>
+      </div>
+    ` : ''}
+
+    ${todayTasks.length > 0 ? `
+      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+        <div class="px-4 py-3 bg-amber-50/50 border-b border-[var(--border-light)] flex items-center gap-2">
+          <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
+          <span class="text-sm font-semibold text-[var(--text-primary)]">Today</span>
+          <span class="text-xs text-[var(--text-muted)] ml-1">${todayTasks.length}</span>
+        </div>
+        <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
+        ${addBtn('anytime', 'Add to Today...', '#F59E0B')}
+      </div>
+    ` : ''}
+
+    ${upcomingTasks.length > 0 ? `
+      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+        <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
+          <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+          <span class="text-sm font-semibold text-[var(--text-primary)]">Upcoming</span>
+          <span class="text-xs text-[var(--text-muted)] ml-1">${upcomingTasks.length}</span>
+        </div>
+        <div class="task-list">${upcomingTasks.map(task => renderTaskItem(task)).join('')}</div>
+      </div>
+    ` : ''}
+
+    ${deferredTasks.length > 0 ? `
+      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+        <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
+          <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
+          <span class="text-sm font-semibold text-[var(--text-muted)]">Deferred</span>
+          <span class="text-xs text-[var(--text-muted)] ml-1">${deferredTasks.length}</span>
+        </div>
+        <div class="task-list">${deferredTasks.map(task => renderTaskItem(task)).join('')}</div>
+      </div>
+    ` : ''}
+
+    ${inboxTasks.length > 0 ? `
+      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+        <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
+          <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h4.18c.26 1.7 1.74 3 3.57 3h2.5c1.83 0 3.31-1.3 3.57-3H21v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6zm0-2l3-7h12l3 7h-4.18c-.26-1.7-1.74-3-3.57-3h-2.5c-1.83 0-3.31 1.3-3.57 3H3z"/></svg>
+          <span class="text-sm font-semibold text-[var(--text-primary)]">Inbox</span>
+          <span class="text-xs text-[var(--text-muted)] ml-1">${inboxTasks.length}</span>
+        </div>
+        <div class="task-list">${inboxTasks.map(task => renderTaskItem(task)).join('')}</div>
+        ${addBtn('anytime', 'Add Task...', '#3B82F6')}
+      </div>
+    ` : ''}
+
+    ${anytimeTasks.length > 0 ? `
+      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+        <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
+          <svg class="w-4 h-4 text-teal-500" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="2"/><rect x="3" y="10" width="18" height="4" rx="2"/><rect x="3" y="16" width="18" height="4" rx="2"/></svg>
+          <span class="text-sm font-semibold text-[var(--text-primary)]">Anytime</span>
+          <span class="text-xs text-[var(--text-muted)] ml-1">${anytimeTasks.length}</span>
+        </div>
+        <div class="task-list">${anytimeTasks.map(task => renderTaskItem(task)).join('')}</div>
+        ${addBtn('anytime', 'Add to Anytime...', '#14B8A6')}
+      </div>
+    ` : ''}
+
+    ${somedayTasks.length > 0 ? `
+      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+        <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
+          <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h18v4H3V3zm1 5h16v13a1 1 0 01-1 1H5a1 1 0 01-1-1V8zm5 3v2h6v-2H9z"/></svg>
+          <span class="text-sm font-semibold text-[var(--text-primary)]">Someday</span>
+          <span class="text-xs text-[var(--text-muted)] ml-1">${somedayTasks.length}</span>
+        </div>
+        <div class="task-list">${somedayTasks.map(task => renderTaskItem(task)).join('')}</div>
+        ${addBtn('someday', 'Add to Someday...', '#D97706')}
+      </div>
+    ` : ''}
+  `;
+}
+
+// ============================================================================
+// buildNotesSection — Shared notes card for landing pages
+// ============================================================================
+function buildNotesSection(noteItems, filterArg, filterObj) {
+  return `
+    <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
       <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 text-[var(--accent)]" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="10" y="5" width="11" height="2" rx="1"/><rect x="10" y="11" width="11" height="2" rx="1"/><rect x="10" y="17" width="11" height="2" rx="1"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Notes</span>
-          <span class="text-xs text-[var(--text-muted)] ml-1">${noteCount}</span>
+          <span class="text-xs text-[var(--text-muted)] ml-1">${noteItems.length}</span>
         </div>
         <button onclick="window.createRootNote(${filterArg})"
           class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition">
@@ -70,7 +183,7 @@ function buildLabelPersonNotesSection(filteredTasks, viewInfo) {
           Add Note
         </button>
       </div>
-      ${noteCount > 0 ? `
+      ${noteItems.length > 0 ? `
         ${renderNotesBreadcrumb()}
         <div class="py-2">${renderNotesOutliner(filterObj)}</div>
         <div class="px-4 py-2 border-t border-[var(--border-light)]">
@@ -807,6 +920,363 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
 }
 
 // ============================================================================
+// buildLabelTaskListHtml — Dedicated label landing page
+// ============================================================================
+export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
+  if (!label) return '';
+
+  const completedTasks = state.tasksData.filter(t => (t.labels || []).includes(label.id) && t.completed && !t.isNote).length;
+  const taskItems = filteredTasks.filter(t => !t.isNote);
+  const noteItems = filteredTasks.filter(t => t.isNote);
+  const activeTasks = taskItems.length;
+  const labelColor = label.color || '#8B5CF6';
+
+  const overdueCt = taskItems.filter(t => t.dueDate && t.dueDate < todayDate).length;
+  const todayCt = taskItems.filter(t => t.today || t.dueDate === todayDate).length;
+  const completionRate = activeTasks + completedTasks > 0 ? Math.round((completedTasks / (activeTasks + completedTasks)) * 100) : 0;
+
+  const createPropsExpr = `labels: ['${label.id}']`;
+  const filterExpr = `(t.labels||[]).includes('${label.id}')`;
+  const filterArg = `{labelId:'${label.id}'}`;
+  const filterObj = { labelId: label.id };
+
+  return `
+    <div class="flex-1 space-y-4">
+      <!-- Label Hero Header -->
+      <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+        <div class="px-6 pt-6 pb-5">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0" style="background: ${labelColor}20">
+              <span class="w-5 h-5 rounded-full" style="background: ${labelColor}"></span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(label.name)}</h1>
+              <p class="text-[var(--text-muted)] text-[13px] mt-1">${activeTasks} active &middot; ${completedTasks} completed${noteItems.length > 0 ? ` &middot; ${noteItems.length} note${noteItems.length !== 1 ? 's' : ''}` : ''}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="px-6 py-3.5 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/40 flex items-center gap-5">
+          <div class="flex items-center gap-3">
+            <div class="relative w-10 h-10">
+              <svg class="w-10 h-10 transform -rotate-90" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15" fill="none" stroke="var(--border)" stroke-width="2.5"/>
+                <circle cx="18" cy="18" r="15" fill="none" stroke="${labelColor}" stroke-width="2.5"
+                  stroke-dasharray="${completionRate} 100" stroke-linecap="round"/>
+              </svg>
+              <span class="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-[var(--text-primary)]">${completionRate}%</span>
+            </div>
+            <div>
+              <div class="text-[13px] font-medium text-[var(--text-primary)]">Progress</div>
+              <div class="text-[11px] text-[var(--text-muted)]">${completedTasks} of ${activeTasks + completedTasks}</div>
+            </div>
+          </div>
+          ${overdueCt > 0 ? `
+            <div class="flex items-center gap-1.5 text-[12px] font-medium text-red-500">
+              <span class="w-2 h-2 rounded-full bg-red-500"></span>
+              ${overdueCt} overdue
+            </div>
+          ` : ''}
+          ${todayCt > 0 ? `
+            <div class="flex items-center gap-1.5 text-[12px] font-medium text-amber-500">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              ${todayCt} today
+            </div>
+          ` : ''}
+          <div class="flex-1"></div>
+          <div class="flex items-center gap-2">
+            <button onclick="window.createRootNote(${filterArg})"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] transition">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Note
+            </button>
+            <button onclick="window.openNewTaskModal()"
+              class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-white text-[13px] font-medium hover:opacity-90 transition" style="background: ${labelColor}">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add Task
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Add -->
+      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] px-4 py-3">
+        <div class="flex items-center gap-3">
+          <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
+            class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
+            ${state.quickAddIsNote
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
+              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${labelColor}40"></div>`
+            }
+          </div>
+          <input type="text" id="quick-add-input"
+            placeholder="${state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
+            onkeydown="window.handleQuickAddKeydown(event, this)"
+            class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] bg-transparent border-0 outline-none focus:ring-0">
+          <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
+            class="text-[var(--text-muted)] hover:opacity-70 transition p-1" style="color: ${labelColor}">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+          </button>
+        </div>
+        <div class="mt-3 flex flex-wrap items-center gap-2">
+          <button onclick="window.createTask('', { status: 'anytime', labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-anytime">+ Task</button>
+          <button onclick="window.createTask('', { status: 'someday', labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-someday">+ Someday</button>
+          <button onclick="window.createRootNote(${filterArg})"
+            class="area-chip area-chip-action area-chip-note">+ Note</button>
+        </div>
+      </div>
+
+      <!-- Task Sections -->
+      <div class="space-y-4">
+        ${buildTaskSections(taskItems, todayDate, labelColor, createPropsExpr, filterExpr)}
+        ${buildNotesSection(noteItems, filterArg, filterObj)}
+
+        ${filteredTasks.length === 0 ? `
+          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
+            <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
+              <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style="background: ${labelColor}10">
+                <span class="w-10 h-10 rounded-full" style="background: ${labelColor}"></span>
+              </div>
+              <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No items yet</p>
+              <p class="text-sm text-[var(--text-muted)] mb-4">Add your first task or note to ${escapeHtml(label.name)}</p>
+              <button onclick="window.openNewTaskModal()"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${labelColor}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Add First Item
+              </button>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================================
+// buildPersonTaskListHtml — Dedicated person landing page
+// ============================================================================
+export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
+  if (!person) return '';
+
+  const completedTasks = state.tasksData.filter(t => (t.people || []).includes(person.id) && t.completed && !t.isNote).length;
+  const taskItems = filteredTasks.filter(t => !t.isNote);
+  const noteItems = filteredTasks.filter(t => t.isNote);
+  const activeTasks = taskItems.length;
+  const personColor = '#3B82F6';
+
+  const overdueCt = taskItems.filter(t => t.dueDate && t.dueDate < todayDate).length;
+  const todayCt = taskItems.filter(t => t.today || t.dueDate === todayDate).length;
+  const completionRate = activeTasks + completedTasks > 0 ? Math.round((completedTasks / (activeTasks + completedTasks)) * 100) : 0;
+
+  const createPropsExpr = `people: ['${person.id}']`;
+  const filterExpr = `(t.people||[]).includes('${person.id}')`;
+  const filterArg = `{personId:'${person.id}'}`;
+  const filterObj = { personId: person.id };
+
+  return `
+    <div class="flex-1 space-y-4">
+      <!-- Person Hero Header -->
+      <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+        <div class="px-6 pt-6 pb-5">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 text-2xl" style="background: ${personColor}20; color: ${personColor}">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(person.name)}</h1>
+              ${person.jobTitle || person.email ? `
+                <p class="text-[var(--text-muted)] text-[13px] mt-1">${[person.jobTitle, person.email].filter(Boolean).join(' &middot; ')}</p>
+              ` : ''}
+              <p class="text-[var(--text-muted)] text-[13px] ${person.jobTitle || person.email ? '' : 'mt-1'}">${activeTasks} active &middot; ${completedTasks} completed${noteItems.length > 0 ? ` &middot; ${noteItems.length} note${noteItems.length !== 1 ? 's' : ''}` : ''}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="px-6 py-3.5 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/40 flex items-center gap-5">
+          <div class="flex items-center gap-3">
+            <div class="relative w-10 h-10">
+              <svg class="w-10 h-10 transform -rotate-90" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15" fill="none" stroke="var(--border)" stroke-width="2.5"/>
+                <circle cx="18" cy="18" r="15" fill="none" stroke="${personColor}" stroke-width="2.5"
+                  stroke-dasharray="${completionRate} 100" stroke-linecap="round"/>
+              </svg>
+              <span class="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-[var(--text-primary)]">${completionRate}%</span>
+            </div>
+            <div>
+              <div class="text-[13px] font-medium text-[var(--text-primary)]">Progress</div>
+              <div class="text-[11px] text-[var(--text-muted)]">${completedTasks} of ${activeTasks + completedTasks}</div>
+            </div>
+          </div>
+          ${overdueCt > 0 ? `
+            <div class="flex items-center gap-1.5 text-[12px] font-medium text-red-500">
+              <span class="w-2 h-2 rounded-full bg-red-500"></span>
+              ${overdueCt} overdue
+            </div>
+          ` : ''}
+          ${todayCt > 0 ? `
+            <div class="flex items-center gap-1.5 text-[12px] font-medium text-amber-500">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              ${todayCt} today
+            </div>
+          ` : ''}
+          <div class="flex-1"></div>
+          <div class="flex items-center gap-2">
+            <button onclick="window.createRootNote(${filterArg})"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] transition">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Note
+            </button>
+            <button onclick="window.openNewTaskModal()"
+              class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-white text-[13px] font-medium hover:opacity-90 transition" style="background: ${personColor}">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add Task
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Add -->
+      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] px-4 py-3">
+        <div class="flex items-center gap-3">
+          <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
+            class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
+            ${state.quickAddIsNote
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
+              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${personColor}40"></div>`
+            }
+          </div>
+          <input type="text" id="quick-add-input"
+            placeholder="${state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
+            onkeydown="window.handleQuickAddKeydown(event, this)"
+            class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] bg-transparent border-0 outline-none focus:ring-0">
+          <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
+            class="text-[var(--text-muted)] hover:opacity-70 transition p-1" style="color: ${personColor}">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+          </button>
+        </div>
+        <div class="mt-3 flex flex-wrap items-center gap-2">
+          <button onclick="window.createTask('', { status: 'anytime', people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-anytime">+ Task</button>
+          <button onclick="window.createTask('', { status: 'someday', people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+            class="area-chip area-chip-action area-chip-someday">+ Someday</button>
+          <button onclick="window.createRootNote(${filterArg})"
+            class="area-chip area-chip-action area-chip-note">+ Note</button>
+        </div>
+      </div>
+
+      <!-- Task Sections -->
+      <div class="space-y-4">
+        ${buildTaskSections(taskItems, todayDate, personColor, createPropsExpr, filterExpr)}
+        ${buildNotesSection(noteItems, filterArg, filterObj)}
+
+        ${filteredTasks.length === 0 ? `
+          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
+            <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
+              <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style="background: ${personColor}10">
+                <svg class="w-10 h-10" style="color: ${personColor}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+              <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No items yet</p>
+              <p class="text-sm text-[var(--text-muted)] mb-4">Add your first task or note for ${escapeHtml(person.name)}</p>
+              <button onclick="window.openNewTaskModal()"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${personColor}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Add First Item
+              </button>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================================
+// buildCustomPerspectiveTaskListHtml — Custom perspective landing page
+// ============================================================================
+export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, todayDate) {
+  if (!perspective) return '';
+
+  const taskItems = filteredTasks.filter(t => !t.isNote);
+  const activeTasks = taskItems.length;
+  const perspColor = perspective.color || '#6366F1';
+
+  return `
+    <div class="flex-1 space-y-4">
+      <!-- Perspective Hero Header -->
+      <div class="area-hero bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-light)]">
+        <div class="px-6 pt-6 pb-5">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 text-2xl" style="background: ${perspColor}20; color: ${perspColor}">
+              ${perspective.icon || '📌'}
+            </div>
+            <div class="flex-1 min-w-0">
+              <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(perspective.name)}</h1>
+              <p class="text-[var(--text-muted)] text-[13px] mt-1">${activeTasks} task${activeTasks !== 1 ? 's' : ''}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="px-6 py-3.5 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/40 flex items-center justify-end gap-2">
+          <button onclick="window.openNewTaskModal()"
+            class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-white text-[13px] font-medium hover:opacity-90 transition" style="background: ${perspColor}">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Add Task
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Add -->
+      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] px-4 py-3">
+        <div class="flex items-center gap-3">
+          <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
+            class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
+            ${state.quickAddIsNote
+              ? `<div class="w-[7px] h-[7px] rounded-full bg-[#8B5CF6]"></div>`
+              : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: ${perspColor}40"></div>`
+            }
+          </div>
+          <input type="text" id="quick-add-input"
+            placeholder="${state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
+            onkeydown="window.handleQuickAddKeydown(event, this)"
+            class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] bg-transparent border-0 outline-none focus:ring-0">
+          <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
+            class="text-[var(--text-muted)] hover:opacity-70 transition p-1" style="color: ${perspColor}">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Task List -->
+      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+        ${taskItems.length > 0 ? `
+          <div class="task-list">${taskItems.map(task => renderTaskItem(task)).join('')}</div>
+        ` : `
+          <div class="py-16">
+            <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
+              <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style="background: ${perspColor}10; color: ${perspColor}">
+                <span class="text-4xl">${perspective.icon || '📌'}</span>
+              </div>
+              <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No tasks</p>
+              <p class="text-sm text-[var(--text-muted)] mb-4">No tasks match this perspective's filters</p>
+              <button onclick="window.openNewTaskModal()"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${perspColor}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Add Task
+              </button>
+            </div>
+          </div>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================================
 // renderTasksTab — Full tasks workspace view
 // ============================================================================
 /**
@@ -1112,11 +1582,26 @@ export function renderTasksTab() {
   // Check if viewing an area or category - render special views
   const isAreaView = state.activeFilterType === 'area' && state.activeAreaFilter;
   const isCategoryView = state.activeFilterType === 'subcategory' && state.activeCategoryFilter;
+  const isLabelView = state.activeFilterType === 'label' && state.activeLabelFilter;
+  const isPersonView = state.activeFilterType === 'person' && state.activePersonFilter;
+  const isCustomPerspective = state.activeFilterType === 'perspective' && state.customPerspectives.find(p => p.id === state.activePerspective);
   const currentArea = isAreaView ? getAreaById(state.activeAreaFilter) : null;
   const currentSubcategory = isCategoryView ? getCategoryById(state.activeCategoryFilter) : null;
 
-  // Build task list (area view, category view, or default perspective view)
-  const taskListHtml = isAreaView ? buildAreaTaskListHtml(currentArea, filteredTasks, todayDate) : (isCategoryView ? buildCategoryTaskListHtml(currentSubcategory, filteredTasks, todayDate) : `
+  // Build task list — dedicated landing pages for each entity type
+  let taskListHtml;
+  if (isAreaView) {
+    taskListHtml = buildAreaTaskListHtml(currentArea, filteredTasks, todayDate);
+  } else if (isCategoryView) {
+    taskListHtml = buildCategoryTaskListHtml(currentSubcategory, filteredTasks, todayDate);
+  } else if (isLabelView) {
+    taskListHtml = buildLabelTaskListHtml(getLabelById(state.activeLabelFilter), filteredTasks, todayDate);
+  } else if (isPersonView) {
+    taskListHtml = buildPersonTaskListHtml(getPersonById(state.activePersonFilter), filteredTasks, todayDate);
+  } else if (isCustomPerspective) {
+    taskListHtml = buildCustomPerspectiveTaskListHtml(isCustomPerspective, filteredTasks, todayDate);
+  } else {
+    taskListHtml = `
     <div class="flex-1">
       <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
         <div class="task-list-header-desktop px-5 py-4 flex items-center justify-between">
@@ -1292,14 +1777,14 @@ export function renderTasksTab() {
           ` : `
             <!-- Regular task list -->
             <div class="task-list">
-              ${filteredTasks.filter(t => !t.isNote || !(state.activeFilterType === 'label' || state.activeFilterType === 'person')).map(task => renderTaskItem(task)).join('')}
+              ${filteredTasks.map(task => renderTaskItem(task)).join('')}
             </div>
-            ${buildLabelPersonNotesSection(filteredTasks, viewInfo)}
           `))))}
         </div>
       </div>
     </div>
-  `);
+  `;
+  }
 
   return `
     <!-- Mobile Sidebar Drawer (hidden on desktop) -->
