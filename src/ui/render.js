@@ -7,7 +7,7 @@
 
 import { state } from '../state.js';
 import { getLocalDateString, escapeHtml } from '../utils.js';
-import { APP_VERSION, APP_VERSION_SEEN_KEY, THINGS3_ICONS, GITHUB_TOKEN_KEY } from '../constants.js';
+import { APP_VERSION, APP_VERSION_SEEN_KEY, THINGS3_ICONS, getActiveIcons, GITHUB_TOKEN_KEY } from '../constants.js';
 import { saveViewState } from '../data/storage.js';
 import { renderHomeTab } from './home.js';
 
@@ -298,19 +298,19 @@ export function render() {
         <div class="max-w-6xl mx-auto px-6">
           <div class="flex gap-0">
             <button type="button" onclick="switchTab('home')" aria-label="Go to Home tab" aria-current="${state.activeTab === 'home' ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'home' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
-              ${THINGS3_ICONS.home.replace('w-5 h-5', 'w-4 h-4')} Home
+              ${getActiveIcons().home.replace('w-5 h-5', 'w-4 h-4')} Home
             </button>
             <button type="button" onclick="switchTab('tasks')" aria-label="Go to Workspace tab" aria-current="${state.activeTab === 'tasks' ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'tasks' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
-              ${THINGS3_ICONS.workspace} Workspace
+              ${getActiveIcons().workspace} Workspace
             </button>
             <button type="button" onclick="switchTab('life')" aria-label="Go to Life Score tab" aria-current="${state.activeTab === 'life' ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'life' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
-              ${THINGS3_ICONS.lifeScore} Life Score
+              ${getActiveIcons().lifeScore} Life Score
             </button>
             <button type="button" onclick="switchTab('calendar')" aria-label="Go to Calendar tab" aria-current="${isCalendarTabActive ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${isCalendarTabActive ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
-              ${THINGS3_ICONS.calendar} Calendar
+              ${getActiveIcons().calendar} Calendar
             </button>
             <button type="button" onclick="switchTab('settings')" aria-label="Go to Settings tab" aria-current="${state.activeTab === 'settings' ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'settings' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
-              ${THINGS3_ICONS.settings} Settings
+              ${getActiveIcons().settings} Settings
             </button>
           </div>
         </div>

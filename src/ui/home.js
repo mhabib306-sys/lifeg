@@ -6,7 +6,7 @@
 
 import { state } from '../state.js';
 import { getLocalDateString } from '../utils.js';
-import { THINGS3_ICONS, WEATHER_ICONS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, GSHEET_SAVED_PROMPT_KEY, GSHEET_RESPONSE_CACHE_KEY } from '../constants.js';
+import { THINGS3_ICONS, getActiveIcons, WEATHER_ICONS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, GSHEET_SAVED_PROMPT_KEY, GSHEET_RESPONSE_CACHE_KEY } from '../constants.js';
 import {
   renderStatsWidget, renderQuickAddWidget, renderTodayTasksWidget,
   renderNextTasksWidget, renderTodayEventsWidget, renderPrayersWidget,
@@ -299,7 +299,7 @@ export function renderHomeTab() {
             </button>
           ` : ''}
           <button onclick="toggleEditHomeWidgets()" class="text-sm px-3 py-1.5 rounded-lg transition ${state.editingHomeWidgets ? 'bg-coral text-white' : 'text-charcoal/50 hover:text-charcoal hover:bg-charcoal/5'}">
-            ${state.editingHomeWidgets ? '\u2713 Done' : '<span class="inline-flex items-center gap-1">' + THINGS3_ICONS.settings + ' Customize</span>'}
+            ${state.editingHomeWidgets ? '\u2713 Done' : '<span class="inline-flex items-center gap-1">' + getActiveIcons().settings + ' Customize</span>'}
           </button>
         </div>
       </div>

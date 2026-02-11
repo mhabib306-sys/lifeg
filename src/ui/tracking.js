@@ -7,7 +7,7 @@
 
 import { state } from '../state.js';
 import { getLocalDateString, fmt } from '../utils.js';
-import { defaultDayData, THINGS3_ICONS } from '../constants.js';
+import { defaultDayData, THINGS3_ICONS, getActiveIcons } from '../constants.js';
 import { calculateScores } from '../features/scoring.js';
 import { getTodayData } from '../data/storage.js';
 import { getAccentColor } from '../data/github-sync.js';

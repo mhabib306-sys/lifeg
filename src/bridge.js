@@ -14,7 +14,7 @@ import { state } from './state.js';
 import { getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId } from './utils.js';
 
 // -- Constants (some referenced directly in onclick handlers) --
-import { THINGS3_ICONS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, defaultDayData } from './constants.js';
+import { THINGS3_ICONS, GEIST_ICONS, getActiveIcons, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, defaultDayData } from './constants.js';
 
 // -- Data / Storage --
 import {
@@ -246,7 +246,7 @@ Object.assign(window, {
   getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId,
 
   // Constants
-  THINGS3_ICONS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, defaultDayData,
+  THINGS3_ICONS, GEIST_ICONS, getActiveIcons, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, defaultDayData,
 
   // Data / Storage
   saveData, getTodayData, updateData, saveTasksData,

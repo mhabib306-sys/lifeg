@@ -5,7 +5,7 @@
 // notes outliner, and individual task items.
 
 import { state } from '../state.js';
-import { THINGS3_ICONS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
+import { THINGS3_ICONS, getActiveIcons, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
 import { escapeHtml, formatSmartDate, getLocalDateString } from '../utils.js';
 import { getAreaById, getLabelById, getPersonById, getTasksByPerson, getCategoriesByArea, getCategoryById } from '../features/areas.js';
 import { saveViewState } from '../data/storage.js';
@@ -223,7 +223,7 @@ function buildTriggersSection(triggerItems, filterArg, filterObj) {
     <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
       <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <span style="color: #FFCC00">${THINGS3_ICONS.trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
+          <span style="color: #FFCC00">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Triggers</span>
           <span class="text-xs text-[var(--text-muted)] ml-1">${triggerItems.length}</span>
         </div>
@@ -320,7 +320,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
             </button>
           `}
           <span class="flex-1 ml-2.5 text-[13px] leading-snug truncate ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">
-            ${task.flagged ? `<span class="inline-flex items-center mr-1" style="color: #FF9500">${THINGS3_ICONS.flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
+            ${task.flagged ? `<span class="inline-flex items-center mr-1" style="color: #FF9500">${getActiveIcons().flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
             ${escapeHtml(task.title)}
           </span>
           <div class="flex items-center gap-1.5 ml-2 flex-shrink-0 text-[10px]">
@@ -361,7 +361,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
           ` : `
             <span ondblclick="event.stopPropagation(); window.startInlineEdit('${task.id}')"
               class="task-title text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug transition cursor-text">
-              ${task.flagged ? `<span class="inline-flex items-center mr-1.5" style="color: #FF9500">${THINGS3_ICONS.flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
+              ${task.flagged ? `<span class="inline-flex items-center mr-1.5" style="color: #FF9500">${getActiveIcons().flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
               ${escapeHtml(task.title)}
             </span>
           `}
@@ -1380,7 +1380,7 @@ export function renderTasksTab() {
         <div class="py-2 px-2">
           <button onclick="window.startReview()"
             class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg transition-all ${state.reviewMode ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
-            <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="color: #34C759">${THINGS3_ICONS.review}</span>
+            <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="color: #34C759">${getActiveIcons().review}</span>
             <span class="flex-1 text-[14px] ${state.reviewMode ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">Review</span>
             ${staleTaskCount > 0 ? `<span class="count-badge min-w-[20px] text-right text-[12px] text-[var(--text-muted)]">${staleTaskCount}</span>` : ''}
           </button>
@@ -1755,7 +1755,7 @@ export function renderTasksTab() {
               ${renderSection(startingTasks,
                 '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>',
                 'Starting', '#147EFB', dueTasks.length > 0 || todayStatusTasks.length > 0 ? 'mt-2' : '')}
-              ${renderSection(nextTasks, THINGS3_ICONS.next, 'Next', '#5856D6',
+              ${renderSection(nextTasks, getActiveIcons().next, 'Next', '#5856D6',
                 allDated.length > 0 ? 'mt-4' : '')}
               ${totalTasks === 0 ? `
                 <div class="empty-state flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">

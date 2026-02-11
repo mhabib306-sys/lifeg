@@ -6,7 +6,7 @@
 
 import { state } from '../state.js';
 import { getTasksForDate } from '../features/calendar.js';
-import { THINGS3_ICONS } from '../constants.js';
+import { THINGS3_ICONS, getActiveIcons } from '../constants.js';
 import { escapeHtml, getLocalDateString, formatEventTime } from '../utils.js';
 import {
   hasMeetingNotes, q, getSelectedModalEvent,
@@ -346,7 +346,7 @@ export function renderCalendarView() {
         <section class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
           <div class="px-5 py-4 flex items-center justify-between border-b border-[var(--border-light)]">
             <div class="flex items-center gap-3">
-              <span class="text-2xl text-[var(--accent)]">${THINGS3_ICONS.calendar}</span>
+              <span class="text-2xl text-[var(--accent)]">${getActiveIcons().calendar}</span>
               <h2 class="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
             </div>
             <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Task">

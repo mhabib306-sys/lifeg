@@ -7,7 +7,7 @@
 
 import { state } from '../state.js';
 import { saveViewState } from '../data/storage.js';
-import { THINGS3_ICONS } from '../constants.js';
+import { THINGS3_ICONS, getActiveIcons } from '../constants.js';
 
 let drawerPreviouslyFocused = null;
 let drawerKeydownHandlerBound = false;
@@ -118,23 +118,23 @@ export function renderBottomNav() {
     <nav class="mobile-bottom-nav" aria-label="Main navigation">
       <div class="mobile-bottom-nav-inner" role="tablist">
         <button onclick="switchTab('home')" class="mobile-nav-item ${state.activeTab === 'home' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'home'}" aria-label="Home">
-          ${THINGS3_ICONS.home}
+          ${getActiveIcons().home}
           <span class="mobile-nav-label">Home</span>
         </button>
         <button onclick="switchTab('tasks')" class="mobile-nav-item ${state.activeTab === 'tasks' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'tasks'}" aria-label="Workspace">
-          ${THINGS3_ICONS.workspace}
+          ${getActiveIcons().workspace}
           <span class="mobile-nav-label">Workspace</span>
         </button>
         <button onclick="switchTab('life')" class="mobile-nav-item ${state.activeTab === 'life' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'life'}" aria-label="Life Score">
-          ${THINGS3_ICONS.lifeScore}
+          ${getActiveIcons().lifeScore}
           <span class="mobile-nav-label">Life</span>
         </button>
         <button onclick="switchTab('calendar')" class="mobile-nav-item ${state.activeTab === 'calendar' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'calendar'}" aria-label="Calendar">
-          ${THINGS3_ICONS.calendar}
+          ${getActiveIcons().calendar}
           <span class="mobile-nav-label">Calendar</span>
         </button>
         <button onclick="switchTab('settings')" class="mobile-nav-item ${state.activeTab === 'settings' ? 'active' : ''}" role="tab" aria-selected="${state.activeTab === 'settings'}" aria-label="Settings">
-          ${THINGS3_ICONS.settings}
+          ${getActiveIcons().settings}
           <span class="mobile-nav-label">Settings</span>
         </button>
         <button onclick="window.forceHardRefresh()" class="mobile-nav-item" role="button" aria-label="Refresh">

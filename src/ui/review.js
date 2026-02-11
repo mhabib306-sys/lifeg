@@ -5,7 +5,7 @@
 // engage or pass each item.
 
 import { state } from '../state.js';
-import { THINGS3_ICONS } from '../constants.js';
+import { THINGS3_ICONS, getActiveIcons } from '../constants.js';
 import { escapeHtml, getLocalDateString } from '../utils.js';
 import { getAreaById } from '../features/areas.js';
 import { renderTriggersOutliner } from '../features/triggers.js';
@@ -120,7 +120,7 @@ export function renderReviewMode() {
     return `
       <div class="flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
         <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 bg-[var(--bg-secondary)]">
-          ${THINGS3_ICONS.review}
+          ${getActiveIcons().review}
         </div>
         <p class="text-lg font-medium mb-1">No areas to review</p>
         <p class="text-sm">Create areas in your workspace first</p>
@@ -166,7 +166,7 @@ export function renderReviewMode() {
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
           <span class="w-10 h-10 flex items-center justify-center rounded-xl" style="background: ${areaColor}15; color: ${areaColor}">
-            ${THINGS3_ICONS.review}
+            ${getActiveIcons().review}
           </span>
           <div>
             <h2 class="text-xl font-bold text-[var(--text-primary)]">Weekly Review</h2>
@@ -201,7 +201,7 @@ export function renderReviewMode() {
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <span class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background: ${areaColor}15">
-              ${currentArea.emoji || THINGS3_ICONS.area.replace('w-5 h-5', 'w-6 h-6')}
+              ${currentArea.emoji || getActiveIcons().area.replace('w-5 h-5', 'w-6 h-6')}
             </span>
             <div>
               <h3 class="text-lg font-bold text-[var(--text-primary)]">${escapeHtml(currentArea.name)}</h3>
@@ -241,7 +241,7 @@ export function renderReviewMode() {
       <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between" style="background: #FFCC0008">
           <div class="flex items-center gap-2">
-            <span style="color: #FFCC00">${THINGS3_ICONS.trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
+            <span style="color: #FFCC00">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
             <span class="text-sm font-semibold text-[var(--text-primary)]">Triggers</span>
             <span class="text-xs text-[var(--text-muted)] ml-1">${areaTriggers.length}</span>
           </div>

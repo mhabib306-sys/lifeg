@@ -7,7 +7,7 @@
 
 import { state } from '../state.js';
 import { generateTaskId, escapeHtml } from '../utils.js';
-import { TRIGGERS_KEY, COLLAPSED_TRIGGERS_KEY, THINGS3_ICONS } from '../constants.js';
+import { TRIGGERS_KEY, COLLAPSED_TRIGGERS_KEY, THINGS3_ICONS, getActiveIcons } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // Helpers
