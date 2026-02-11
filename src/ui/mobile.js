@@ -47,6 +47,60 @@ function handleDrawerKeydown(e) {
 // Mobile Drawer
 // ---------------------------------------------------------------------------
 
+// Swipe-to-close gesture state
+let _swipeTouchStartX = 0;
+let _swipeTouchCurrentX = 0;
+let _swipeDragging = false;
+
+function _handleSwipeStart(e) {
+  _swipeTouchStartX = e.touches[0].clientX;
+  _swipeTouchCurrentX = _swipeTouchStartX;
+  _swipeDragging = true;
+}
+
+function _handleSwipeMove(e) {
+  if (!_swipeDragging) return;
+  _swipeTouchCurrentX = e.touches[0].clientX;
+  const delta = _swipeTouchCurrentX - _swipeTouchStartX;
+  if (delta < 0) {
+    const drawer = document.querySelector('.mobile-sidebar-drawer');
+    if (drawer) {
+      drawer.style.transform = `translate3d(${delta}px, 0, 0)`;
+      drawer.style.transition = 'none';
+    }
+  }
+}
+
+function _handleSwipeEnd() {
+  if (!_swipeDragging) return;
+  _swipeDragging = false;
+  const delta = _swipeTouchCurrentX - _swipeTouchStartX;
+  const drawer = document.querySelector('.mobile-sidebar-drawer');
+  if (drawer) {
+    drawer.style.transition = '';
+    drawer.style.transform = '';
+  }
+  if (delta < -60) {
+    closeMobileDrawer();
+  }
+}
+
+function attachDrawerSwipe() {
+  const overlay = document.getElementById('mobile-sidebar-overlay');
+  if (!overlay) return;
+  overlay.addEventListener('touchstart', _handleSwipeStart, { passive: true });
+  overlay.addEventListener('touchmove', _handleSwipeMove, { passive: true });
+  overlay.addEventListener('touchend', _handleSwipeEnd, { passive: true });
+}
+
+function detachDrawerSwipe() {
+  const overlay = document.getElementById('mobile-sidebar-overlay');
+  if (!overlay) return;
+  overlay.removeEventListener('touchstart', _handleSwipeStart);
+  overlay.removeEventListener('touchmove', _handleSwipeMove);
+  overlay.removeEventListener('touchend', _handleSwipeEnd);
+}
+
 /**
  * Open the mobile sidebar drawer.
  * Sets mobileDrawerOpen = true, prevents body scroll, and toggles the overlay.
@@ -66,6 +120,8 @@ export function openMobileDrawer() {
     const closeBtn = document.getElementById('mobile-drawer-close');
     if (closeBtn) closeBtn.focus();
   }, 20);
+  // Attach swipe-to-close gesture
+  attachDrawerSwipe();
 }
 
 /**
@@ -73,6 +129,7 @@ export function openMobileDrawer() {
  * Sets mobileDrawerOpen = false, restores body scroll, and toggles the overlay.
  */
 export function closeMobileDrawer() {
+  detachDrawerSwipe();
   state.mobileDrawerOpen = false;
   document.body.style.overflow = '';
   document.body.classList.remove('drawer-open');
