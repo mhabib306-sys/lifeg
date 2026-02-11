@@ -223,6 +223,20 @@ export function renderReviewMode() {
         </div>
       </div>
 
+      <!-- Quick Add -->
+      <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] px-4 py-3 mb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentArea.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentArea.id}' && !t.completed); if (tasks.length) { state.reviewMode = false; window.showAreaTasks('${currentArea.id}'); setTimeout(() => window.startInlineEdit(tasks[tasks.length-1].id), 100); } }, 100);"
+            class="area-chip area-chip-action area-chip-anytime">+ Task</button>
+          <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${currentArea.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentArea.id}' && !t.completed); if (tasks.length) { state.reviewMode = false; window.showAreaTasks('${currentArea.id}'); setTimeout(() => window.startInlineEdit(tasks[tasks.length-1].id), 100); } }, 100);"
+            class="area-chip area-chip-action area-chip-today">+ Today</button>
+          <button onclick="window.createTask('', { status: 'someday', areaId: '${currentArea.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentArea.id}' && !t.completed); if (tasks.length) { state.reviewMode = false; window.showAreaTasks('${currentArea.id}'); setTimeout(() => window.startInlineEdit(tasks[tasks.length-1].id), 100); } }, 100);"
+            class="area-chip area-chip-action area-chip-someday">+ Someday</button>
+          <button onclick="window.createRootNote('${currentArea.id}')"
+            class="area-chip area-chip-action area-chip-note">+ Note</button>
+        </div>
+      </div>
+
       <!-- Triggers Section -->
       <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between" style="background: #FFCC0008">

@@ -157,6 +157,7 @@ export function renderBottomNav() {
  * @param {string} categoryId - The category/area ID to filter by
  */
 export function showAreaTasks(categoryId) {
+  state.reviewMode = false;
   state.activeFilterType = 'area';
   state.activeAreaFilter = categoryId;
   state.activeLabelFilter = null;
@@ -178,6 +179,7 @@ export function showAreaTasks(categoryId) {
  * @param {string} labelId - The label/tag ID to filter by
  */
 export function showLabelTasks(labelId) {
+  state.reviewMode = false;
   state.activeFilterType = 'label';
   state.activeLabelFilter = labelId;
   state.activeAreaFilter = null;
@@ -199,6 +201,7 @@ export function showLabelTasks(labelId) {
  * @param {string} perspectiveId - The perspective ID to activate
  */
 export function showPerspectiveTasks(perspectiveId) {
+  state.reviewMode = false;
   if (perspectiveId === 'calendar') {
     closeMobileDrawer();
     state.activeTab = 'calendar';
@@ -230,6 +233,7 @@ export function showPerspectiveTasks(perspectiveId) {
  * @param {string} personId - The person ID to filter by
  */
 export function showPersonTasks(personId) {
+  state.reviewMode = false;
   state.activeFilterType = 'person';
   state.activePersonFilter = personId;
   state.activePerspective = null;
@@ -252,6 +256,7 @@ export function showPersonTasks(personId) {
  * @param {string} categoryId - The category/sub-area ID to filter by
  */
 export function showCategoryTasks(categoryId) {
+  state.reviewMode = false;
   state.activeFilterType = 'subcategory';
   state.activeCategoryFilter = categoryId;
   state.activePerspective = null;

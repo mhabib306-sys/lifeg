@@ -11,6 +11,7 @@ import { parseBraindump, getAnthropicKey, refineVoiceTranscriptWithAI, submitBra
 
 let speechRecognition = null;
 let speechFinalText = '';
+let speechPreVoiceText = ''; // Text that existed before voice capture started
 
 function getSpeechRecognitionCtor() {
   return window.SpeechRecognition || window.webkitSpeechRecognition || null;
@@ -107,6 +108,7 @@ export function startBraindumpVoiceCapture() {
   }
 
   speechFinalText = '';
+  speechPreVoiceText = (state.braindumpRawText || '').trim();
   const recognition = new SpeechCtor();
   speechRecognition = recognition;
   recognition.lang = navigator.language || 'en-US';
@@ -139,9 +141,10 @@ export function startBraindumpVoiceCapture() {
     }
     if (finalChunk) {
       speechFinalText += finalChunk;
-      const merged = ((state.braindumpRawText || '').trim()
-        ? `${state.braindumpRawText.trim()}\n${speechFinalText.trim()}`
-        : speechFinalText.trim());
+      // Rebuild from pre-voice text + all speech so far (avoids cumulative duplication)
+      const merged = speechPreVoiceText
+        ? `${speechPreVoiceText}\n${speechFinalText.trim()}`
+        : speechFinalText.trim();
       state.braindumpRawText = merged;
       const ta = document.getElementById('braindump-textarea');
       if (ta) {
@@ -171,13 +174,16 @@ export function startBraindumpVoiceCapture() {
       if (hasAnthropicKey) {
         try {
           const cleaned = await refineVoiceTranscriptWithAI(rawTranscript);
-          mergeTranscript(cleaned || rawTranscript);
+          // Replace voice portion with AI-cleaned text (onresult already added raw)
+          const finalText = (cleaned || rawTranscript).trim();
+          state.braindumpRawText = speechPreVoiceText
+            ? `${speechPreVoiceText}\n${finalText}`
+            : finalText;
         } catch {
-          mergeTranscript(rawTranscript);
+          // Raw text already in braindumpRawText from onresult — nothing to do
         }
-      } else {
-        mergeTranscript(rawTranscript);
       }
+      // If no AI key, raw text is already in braindumpRawText from onresult — no merge needed
     }
     state.braindumpVoiceTranscribing = false;
     window.render();
