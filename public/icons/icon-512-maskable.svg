@@ -7,9 +7,8 @@
   </defs>
   <!-- Full-bleed amber background for maskable safe zone -->
   <rect width="512" height="512" fill="url(#bg)"/>
-  <!-- House silhouette centered in safe zone -->
-  <path d="M256 102 L398 214 V390 H114 V214 Z" fill="white" opacity="0.25"/>
-  <!-- Flame centered -->
-  <path d="M256 163 C256 163 317 244 317 295 C317 331 290 356 256 356 C222 356 195 331 195 295 C195 244 256 163 256 163Z" fill="white"/>
-  <path d="M256 229 C256 229 287 270 287 295 C287 315 273 328 256 328 C239 328 225 315 225 295 C225 270 256 229 256 229Z" fill="#F59E0B"/>
+  <!-- House centered in safe zone -->
+  <path d="M256 133 L369 225 V379 H143 V225 Z" fill="white"/>
+  <!-- Door -->
+  <rect x="220" y="282" width="72" height="97" rx="10" fill="#D97706"/>
 </svg>
