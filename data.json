@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T16:33:18.540Z",
+  "lastUpdated": "2026-02-11T16:33:52.260Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -9488,6 +9488,17 @@
       "triggerOrder": 1000,
       "createdAt": "2026-02-11T14:39:52.942Z",
       "updatedAt": "2026-02-11T14:40:12.135Z"
+    },
+    {
+      "id": "trigger_1770827621954_d1d8p",
+      "title": "How is Ahmed progressing in his work?",
+      "areaId": "family",
+      "categoryId": null,
+      "parentId": null,
+      "indent": 0,
+      "triggerOrder": 1000,
+      "createdAt": "2026-02-11T16:33:41.954Z",
+      "updatedAt": "2026-02-11T16:33:48.251Z"
     }
   ],
   "xp": {
