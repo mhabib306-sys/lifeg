@@ -115,6 +115,23 @@ import {
   handleDrop, reorderTasks, normalizeTaskOrders, setupSidebarDragDrop
 } from './features/drag-drop.js';
 
+import {
+  createTrigger, createRootTrigger, createTriggerAfter, createChildTrigger,
+  updateTrigger, deleteTrigger, indentTrigger, outdentTrigger,
+  toggleTriggerCollapse, zoomIntoTrigger, zoomOutOfTrigger, navigateToTriggerBreadcrumb,
+  handleTriggerKeydown, handleTriggerInput, handleTriggerBlur,
+  handleTriggerDragStart, handleTriggerDragEnd, handleTriggerDragOver,
+  handleTriggerDragLeave, handleTriggerDrop, reorderTriggers,
+  renderTriggersBreadcrumb, renderTriggerItem, renderTriggersOutliner,
+  getTriggerCountForArea
+} from './features/triggers.js';
+
+import {
+  renderReviewMode, startReview, exitReview, reviewNextArea, reviewPrevArea,
+  reviewEngageTask, reviewPassTask, reviewMarkAreaDone,
+  getStaleTasksForArea, getTotalStaleTaskCount
+} from './ui/review.js';
+
 import { createPerspective, deletePerspective, editCustomPerspective } from './features/perspectives.js';
 
 import {
@@ -169,7 +186,7 @@ import { createPrayerInput, createToggle, createNumberInput, createCounter, crea
 import {
   openMobileDrawer, closeMobileDrawer, renderMobileDrawer, renderBottomNav,
   showAreaTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, showCategoryTasks, scrollToContent,
-  toggleSidebarAreaCollapse
+  toggleSidebarAreaCollapse, toggleWorkspaceSidebar
 } from './ui/mobile.js';
 
 // -- Task Modal --
@@ -321,6 +338,21 @@ Object.assign(window, {
   handleDragStart, handleDragEnd, handleDragOver, handleDragLeave,
   handleDrop, reorderTasks, normalizeTaskOrders, setupSidebarDragDrop,
 
+  // Triggers
+  createTrigger, createRootTrigger, createTriggerAfter, createChildTrigger,
+  updateTrigger, deleteTrigger, indentTrigger, outdentTrigger,
+  toggleTriggerCollapse, zoomIntoTrigger, zoomOutOfTrigger, navigateToTriggerBreadcrumb,
+  handleTriggerKeydown, handleTriggerInput, handleTriggerBlur,
+  handleTriggerDragStart, handleTriggerDragEnd, handleTriggerDragOver,
+  handleTriggerDragLeave, handleTriggerDrop, reorderTriggers,
+  renderTriggersBreadcrumb, renderTriggerItem, renderTriggersOutliner,
+  getTriggerCountForArea,
+
+  // Review Mode
+  renderReviewMode, startReview, exitReview, reviewNextArea, reviewPrevArea,
+  reviewEngageTask, reviewPassTask, reviewMarkAreaDone,
+  getStaleTasksForArea, getTotalStaleTaskCount,
+
   // Perspectives
   createPerspective, deletePerspective, editCustomPerspective,
 
@@ -364,7 +396,7 @@ Object.assign(window, {
   // Mobile
   openMobileDrawer, closeMobileDrawer, renderMobileDrawer, renderBottomNav,
   showAreaTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, showCategoryTasks, scrollToContent,
-  toggleSidebarAreaCollapse,
+  toggleSidebarAreaCollapse, toggleWorkspaceSidebar,
 
   // Task Modal
   startInlineEdit, saveInlineEdit, cancelInlineEdit, handleInlineEditKeydown,
@@ -424,6 +456,8 @@ const stateProxies = [
   'conflictNotifications', 'renderPerf', 'showCacheRefreshPrompt', 'cacheRefreshPromptMessage',
   'CATEGORY_WEIGHTS', 'xp', 'streak', 'achievements', 'dailyFocusDismissed',
   'gsheetData', 'gsheetSyncing', 'gsheetError', 'gsheetPrompt', 'gsheetResponse', 'gsheetAsking', 'gsheetEditingPrompt',
+  'triggers', 'editingTriggerId', 'collapsedTriggers', 'zoomedTriggerId', 'triggersBreadcrumb',
+  'reviewMode', 'reviewAreaIndex', 'reviewCompletedAreas',
 ];
 
 stateProxies.forEach(prop => {

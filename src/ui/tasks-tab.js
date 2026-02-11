@@ -42,6 +42,14 @@ function renderNotesOutliner(filter) {
 function renderNotesBreadcrumb() {
   return window.renderNotesBreadcrumb();
 }
+function renderTriggersOutliner(filter) {
+  if (typeof window.renderTriggersOutliner === 'function') return window.renderTriggersOutliner(filter);
+  return '';
+}
+function renderTriggersBreadcrumb() {
+  if (typeof window.renderTriggersBreadcrumb === 'function') return window.renderTriggersBreadcrumb();
+  return '';
+}
 
 // ============================================================================
 // buildTaskSections — Shared section renderer for landing pages
@@ -200,6 +208,48 @@ function buildNotesSection(noteItems, filterArg, filterObj) {
             class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent-light)] text-[var(--accent)] text-sm font-medium rounded-lg hover:bg-[var(--accent-light)] transition">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             Create your first note
+          </button>
+        </div>
+      `}
+    </div>
+  `;
+}
+
+// ============================================================================
+// buildTriggersSection — Shared triggers card for landing pages
+// ============================================================================
+function buildTriggersSection(triggerItems, filterArg, filterObj) {
+  return `
+    <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+      <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span style="color: #FFCC00">${THINGS3_ICONS.trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
+          <span class="text-sm font-semibold text-[var(--text-primary)]">Triggers</span>
+          <span class="text-xs text-[var(--text-muted)] ml-1">${triggerItems.length}</span>
+        </div>
+        <button onclick="window.createRootTrigger(${filterArg})"
+          class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[#FFCC00] hover:bg-[#FFCC0010] rounded-lg transition">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          Add Trigger
+        </button>
+      </div>
+      ${triggerItems.length > 0 ? `
+        ${renderTriggersBreadcrumb()}
+        <div class="py-2">${renderTriggersOutliner(filterObj)}</div>
+        <div class="px-4 py-2 border-t border-[var(--border-light)]">
+          <button onclick="window.createRootTrigger(${filterArg})"
+            class="flex items-center gap-2 px-3 py-2 w-full text-sm text-[var(--text-muted)] hover:text-[#FFCC00] hover:bg-[#FFCC0010] rounded-lg transition text-left">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Add another trigger...
+          </button>
+        </div>
+      ` : `
+        <div class="px-4 py-8 text-center">
+          <p class="text-sm text-[var(--text-muted)] mb-3">No triggers here yet</p>
+          <button onclick="window.createRootTrigger(${filterArg})"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-[#FFCC0010] text-[#FFCC00] text-sm font-medium rounded-lg hover:bg-[#FFCC0020] transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Add your first trigger
           </button>
         </div>
       `}
@@ -371,6 +421,8 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
   const activeTasks = areaTasks.filter(t => !t.isNote).length;
   const noteItems = areaTasks.filter(t => t.isNote);
   const taskItems = areaTasks.filter(t => !t.isNote);
+  const showTasks = state.workspaceContentMode !== 'notes';
+  const showNotes = state.workspaceContentMode !== 'tasks';
   const overdueCt = taskItems.filter(t => t.dueDate && t.dueDate < todayDate).length;
   const todayCt = taskItems.filter(t =>
     !(t.dueDate && t.dueDate < todayDate) && (t.today || t.dueDate === todayDate)).length;
@@ -520,8 +572,13 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
 
       <!-- Task Sections -->
       <div class="space-y-4">
-        ${buildTaskSections(taskItems, todayDate, categoryColor, createPropsExpr, filterExpr)}
-        ${buildNotesSection(noteItems, `'${currentCategory.id}'`, currentCategory.id)}
+        ${showTasks ? buildTaskSections(taskItems, todayDate, categoryColor, createPropsExpr, filterExpr) : ''}
+        ${showNotes ? buildNotesSection(noteItems, `'${currentCategory.id}'`, currentCategory.id) : ''}
+        ${buildTriggersSection(
+          state.triggers.filter(t => t.areaId === currentCategory.id && !t.categoryId),
+          `{areaId:'${currentCategory.id}'}`,
+          { areaId: currentCategory.id }
+        )}
 
         ${totalTasks === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
@@ -563,6 +620,8 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
   const activeTasks = catTasks.filter(t => !t.isNote).length;
   const noteItems = catTasks.filter(t => t.isNote);
   const taskItems = catTasks.filter(t => !t.isNote);
+  const showTasks = state.workspaceContentMode !== 'notes';
+  const showNotes = state.workspaceContentMode !== 'tasks';
   const overdueCt = taskItems.filter(t => t.dueDate && t.dueDate < todayDate).length;
   const todayCt = taskItems.filter(t =>
     !(t.dueDate && t.dueDate < todayDate) && (t.today || t.dueDate === todayDate)).length;
@@ -677,8 +736,13 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
 
       <!-- Task Sections -->
       <div class="space-y-4">
-        ${buildTaskSections(taskItems, todayDate, categoryColor, createPropsExpr, filterExpr)}
-        ${buildNotesSection(noteItems, `{areaId:'${category.areaId}',categoryId:'${category.id}'}`, {categoryId: category.id})}
+        ${showTasks ? buildTaskSections(taskItems, todayDate, categoryColor, createPropsExpr, filterExpr) : ''}
+        ${showNotes ? buildNotesSection(noteItems, `{areaId:'${category.areaId}',categoryId:'${category.id}'}`, {categoryId: category.id}) : ''}
+        ${buildTriggersSection(
+          state.triggers.filter(t => t.areaId === category.areaId && t.categoryId === category.id),
+          `{areaId:'${category.areaId}',categoryId:'${category.id}'}`,
+          { areaId: category.areaId, categoryId: category.id }
+        )}
 
         ${filteredTasks.length === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
@@ -703,6 +767,8 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
   const completedTasks = state.tasksData.filter(t => (t.labels || []).includes(label.id) && t.completed && !t.isNote).length;
   const taskItems = filteredTasks.filter(t => !t.isNote);
   const noteItems = filteredTasks.filter(t => t.isNote);
+  const showTasks = state.workspaceContentMode !== 'notes';
+  const showNotes = state.workspaceContentMode !== 'tasks';
   const activeTasks = taskItems.length;
   const labelColor = label.color || '#5856D6';
 
@@ -810,8 +876,8 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
 
       <!-- Task Sections -->
       <div class="space-y-4">
-        ${buildTaskSections(taskItems, todayDate, labelColor, createPropsExpr, filterExpr)}
-        ${buildNotesSection(noteItems, filterArg, filterObj)}
+        ${showTasks ? buildTaskSections(taskItems, todayDate, labelColor, createPropsExpr, filterExpr) : ''}
+        ${showNotes ? buildNotesSection(noteItems, filterArg, filterObj) : ''}
 
         ${filteredTasks.length === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
@@ -843,6 +909,8 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
   const completedTasks = state.tasksData.filter(t => (t.people || []).includes(person.id) && t.completed && !t.isNote).length;
   const taskItems = filteredTasks.filter(t => !t.isNote);
   const noteItems = filteredTasks.filter(t => t.isNote);
+  const showTasks = state.workspaceContentMode !== 'notes';
+  const showNotes = state.workspaceContentMode !== 'tasks';
   const activeTasks = taskItems.length;
   const personColor = '#147EFB';
 
@@ -953,8 +1021,8 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
 
       <!-- Task Sections -->
       <div class="space-y-4">
-        ${buildTaskSections(taskItems, todayDate, personColor, createPropsExpr, filterExpr)}
-        ${buildNotesSection(noteItems, filterArg, filterObj)}
+        ${showTasks ? buildTaskSections(taskItems, todayDate, personColor, createPropsExpr, filterExpr) : ''}
+        ${showNotes ? buildNotesSection(noteItems, filterArg, filterObj) : ''}
 
         ${filteredTasks.length === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
@@ -983,8 +1051,7 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
 export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, todayDate) {
   if (!perspective) return '';
 
-  const taskItems = filteredTasks.filter(t => !t.isNote);
-  const activeTasks = taskItems.length;
+  const activeItems = filteredTasks.length;
   const perspColor = perspective.color || '#6366F1';
 
   return `
@@ -998,7 +1065,7 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
             </div>
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(perspective.name)}</h1>
-              <p class="text-[var(--text-muted)] text-[13px] mt-1">${activeTasks} task${activeTasks !== 1 ? 's' : ''}</p>
+              <p class="text-[var(--text-muted)] text-[13px] mt-1">${activeItems} item${activeItems !== 1 ? 's' : ''}</p>
             </div>
           </div>
         </div>
@@ -1036,8 +1103,8 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
 
       <!-- Task List -->
       <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
-        ${taskItems.length > 0 ? `
-          <div class="task-list">${taskItems.map(task => renderTaskItem(task)).join('')}</div>
+        ${filteredTasks.length > 0 ? `
+          <div class="task-list">${filteredTasks.map(task => renderTaskItem(task)).join('')}</div>
         ` : `
           <div class="py-16">
             <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
@@ -1097,6 +1164,16 @@ export function renderTasksTab() {
     taskCounts[p.id] = getFilteredTasks(p.id).length;
   });
 
+  // Review stale task count
+  const STALE_DAYS = 7;
+  const staleCutoff = new Date();
+  staleCutoff.setDate(staleCutoff.getDate() - STALE_DAYS);
+  const staleTaskCount = state.tasksData.filter(t => {
+    if (t.completed || t.isNote || t.status === 'someday' || !t.areaId) return false;
+    if (!t.lastReviewedAt) return true;
+    return new Date(t.lastReviewedAt) < staleCutoff;
+  }).length;
+
   // Count tasks per category
   const categoryCounts = {};
   state.taskAreas.forEach(cat => {
@@ -1121,6 +1198,147 @@ export function renderTasksTab() {
   const isSubcatActive = (scId) => state.activeFilterType === 'subcategory' && state.activeCategoryFilter === scId;
   const isLabelActive = (lId) => state.activeFilterType === 'label' && state.activeLabelFilter === lId;
   const isPersonActive = (pId) => state.activeFilterType === 'person' && state.activePersonFilter === pId;
+  const effectiveWorkspaceMode = state.activeFilterType === 'perspective' && state.activePerspective === 'notes'
+    ? 'notes'
+    : (state.workspaceContentMode || 'both');
+  const isNotesLikeView = state.activePerspective === 'notes' || effectiveWorkspaceMode === 'notes';
+  const isDesktopSidebarCollapsed = !!state.workspaceSidebarCollapsed;
+
+  const workspaceModeControlHtml = (() => {
+    const options = [
+      { id: 'tasks', label: 'Tasks' },
+      { id: 'both', label: 'Both' },
+      { id: 'notes', label: 'Notes' }
+    ];
+    return `
+      <div class="workspace-mode-control" role="group" aria-label="Workspace content mode">
+        ${options.map(opt => {
+          const isLocked = state.activeFilterType === 'perspective' && state.activePerspective === 'notes' && opt.id !== 'notes';
+          const isActive = effectiveWorkspaceMode === opt.id;
+          const click = isLocked ? '' : `window.state.workspaceContentMode='${opt.id}'; window.saveViewState(); window.render();`;
+          return `
+            <button
+              type="button"
+              ${isLocked ? 'disabled' : ''}
+              onclick="${click}"
+              class="workspace-mode-btn ${isActive ? 'active' : ''}"
+              title="${isLocked ? 'All Notes view is locked to Notes mode' : `Show ${opt.label.toLowerCase()} only`}">
+              ${opt.label}
+            </button>
+          `;
+        }).join('')}
+      </div>
+    `;
+  })();
+
+  const selectedAreaId = state.activeFilterType === 'area'
+    ? state.activeAreaFilter
+    : (state.activeFilterType === 'subcategory'
+      ? getCategoryById(state.activeCategoryFilter)?.areaId
+      : null);
+  const selectedCategoryId = state.activeFilterType === 'subcategory' ? state.activeCategoryFilter : null;
+
+  const workspaceTopRailHtml = `
+    <div class="workspace-shell bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] mb-4">
+      <div class="workspace-shell-header px-4 py-3 border-b border-[var(--border-light)] flex flex-wrap items-center gap-3 justify-between">
+        <div class="min-w-0">
+          <div class="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Workspace</div>
+          <div class="text-sm text-[var(--text-secondary)] truncate">Filter and mode controls</div>
+        </div>
+        ${workspaceModeControlHtml}
+      </div>
+
+      <div class="workspace-rail px-3 py-2 border-b border-[var(--border-light)]">
+        <div class="workspace-rail-title">Views</div>
+        <div class="workspace-chip-row">
+          ${BUILTIN_PERSPECTIVES.map(p => `
+            <button onclick="window.showPerspectiveTasks('${p.id}')" class="workspace-chip ${isPerspectiveActive(p.id) ? 'active' : ''}">
+              <span class="workspace-chip-icon" style="color:${p.color}">${p.icon}</span>
+              <span>${p.name}</span>
+              <span class="workspace-chip-count">${taskCounts[p.id] || ''}</span>
+            </button>
+          `).join('')}
+          <button onclick="window.showPerspectiveTasks('notes')" class="workspace-chip ${isPerspectiveActive('notes') ? 'active' : ''}">
+            <span class="workspace-chip-icon" style="color:${NOTES_PERSPECTIVE.color}">${NOTES_PERSPECTIVE.icon}</span>
+            <span>All Notes</span>
+            <span class="workspace-chip-count">${taskCounts.notes || ''}</span>
+          </button>
+          ${state.customPerspectives.map(p => `
+            <button onclick="window.showPerspectiveTasks('${p.id}')" class="workspace-chip ${isPerspectiveActive(p.id) ? 'active' : ''}">
+              <span class="workspace-chip-icon">${p.icon || '📌'}</span>
+              <span>${escapeHtml(p.name)}</span>
+              <span class="workspace-chip-count">${taskCounts[p.id] || ''}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="workspace-rail px-3 py-2 border-b border-[var(--border-light)]">
+        <div class="workspace-rail-title">Areas</div>
+        <div class="workspace-chip-row workspace-chip-row-areas">
+          <button onclick="window.showPerspectiveTasks('${state.activePerspective || 'inbox'}')" class="workspace-area-chip ${!selectedAreaId ? 'active' : ''}">
+            <span class="workspace-area-name">All Areas</span>
+          </button>
+          ${state.taskAreas.map(area => `
+            <button onclick="window.showAreaTasks('${area.id}')" class="workspace-area-chip ${isAreaActive(area.id) || selectedAreaId === area.id ? 'active' : ''}" style="--area-color:${area.color || '#6366F1'}">
+              <span class="workspace-area-emoji">${area.emoji || '📁'}</span>
+              <span class="workspace-area-name">${escapeHtml(area.name)}</span>
+              <span class="workspace-area-count">${categoryCounts[area.id] || ''}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      ${selectedAreaId ? `
+      <div class="workspace-rail px-3 py-2 border-b border-[var(--border-light)]">
+        <div class="workspace-rail-title">Categories</div>
+        <div class="workspace-chip-row">
+          <button onclick="window.showAreaTasks('${selectedAreaId}')" class="workspace-chip ${!selectedCategoryId ? 'active' : ''}">
+            All in ${escapeHtml(getAreaById(selectedAreaId)?.name || 'Area')}
+          </button>
+          ${getCategoriesByArea(selectedAreaId).map(subcat => `
+            <button onclick="window.showCategoryTasks('${subcat.id}')" class="workspace-chip ${isSubcatActive(subcat.id) ? 'active' : ''}">
+              <span class="workspace-chip-icon">${subcat.emoji || '📂'}</span>
+              <span>${escapeHtml(subcat.name)}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+      ` : ''}
+
+      <div class="workspace-rail px-3 py-2">
+        <details class="workspace-overflow">
+          <summary class="workspace-overflow-summary">More Filters</summary>
+          <div class="workspace-overflow-grid">
+            <div>
+              <div class="workspace-overflow-title">Tags</div>
+              <div class="workspace-overflow-list">
+                ${state.taskLabels.map(label => `
+                  <button onclick="window.showLabelTasks('${label.id}')" class="workspace-overflow-item ${isLabelActive(label.id) ? 'active' : ''}">
+                    <span class="workspace-dot" style="background:${label.color || '#6B7280'}"></span>
+                    <span>${escapeHtml(label.name)}</span>
+                    <span class="workspace-chip-count">${labelCounts[label.id] || ''}</span>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+            <div>
+              <div class="workspace-overflow-title">People</div>
+              <div class="workspace-overflow-list">
+                ${state.taskPeople.map(person => `
+                  <button onclick="window.showPersonTasks('${person.id}')" class="workspace-overflow-item ${isPersonActive(person.id) ? 'active' : ''}">
+                    <span>👤</span>
+                    <span>${escapeHtml(person.name)}</span>
+                    <span class="workspace-chip-count">${peopleCounts[person.id] || ''}</span>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  `;
 
   // Build sidebar
   const sidebarHtml = `
@@ -1153,6 +1371,18 @@ export function renderTasksTab() {
             <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="color: ${NOTES_PERSPECTIVE.color}">${NOTES_PERSPECTIVE.icon}</span>
             <span class="flex-1 text-[14px] ${isPerspectiveActive('notes') ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">All Notes</span>
             <span class="count-badge min-w-[20px] text-right text-[12px] ${isPerspectiveActive('notes') ? 'text-[var(--text-secondary)]' : 'text-[var(--text-muted)]'}">${taskCounts['notes'] || ''}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Review -->
+      <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
+        <div class="py-2 px-2">
+          <button onclick="window.startReview()"
+            class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg transition-all ${state.reviewMode ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
+            <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="color: #34C759">${THINGS3_ICONS.review}</span>
+            <span class="flex-1 text-[14px] ${state.reviewMode ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">Review</span>
+            ${staleTaskCount > 0 ? `<span class="count-badge min-w-[20px] text-right text-[12px] text-[var(--text-muted)]">${staleTaskCount}</span>` : ''}
           </button>
         </div>
       </div>
@@ -1373,7 +1603,9 @@ export function renderTasksTab() {
 
   // Build task list — dedicated landing pages for each entity type
   let taskListHtml;
-  if (isAreaView) {
+  if (state.reviewMode) {
+    taskListHtml = typeof window.renderReviewMode === 'function' ? window.renderReviewMode() : '<div class="p-8 text-center text-[var(--text-muted)]">Loading review mode...</div>';
+  } else if (isAreaView) {
     taskListHtml = buildAreaTaskListHtml(currentArea, filteredTasks, todayDate);
   } else if (isCategoryView) {
     taskListHtml = buildCategoryTaskListHtml(currentSubcategory, filteredTasks, todayDate);
@@ -1396,7 +1628,7 @@ export function renderTasksTab() {
             </div>
           </div>
           <button onclick="window.openNewTaskModal()"
-            class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="${state.activePerspective === 'notes' ? 'Add Note' : 'Add Task'}">
+            class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="${isNotesLikeView ? 'Add Note' : 'Add Task'}">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
           </button>
         </div>
@@ -1405,7 +1637,7 @@ export function renderTasksTab() {
         <!-- Quick Add Input -->
         <div class="quick-add-section px-4 py-3 border-b border-[var(--border-light)]">
           <div class="flex items-center gap-3">
-            ${state.activePerspective === 'notes' ? `
+            ${isNotesLikeView ? `
               <div class="w-2 h-2 rounded-full border-2 border-dashed border-[#5856D6]/40 flex-shrink-0 ml-1.5"></div>
             ` : `
               <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
@@ -1417,11 +1649,11 @@ export function renderTasksTab() {
               </div>
             `}
             <input type="text" id="quick-add-input"
-              placeholder="${state.activePerspective === 'notes' || state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
+              placeholder="${isNotesLikeView || state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
               onkeydown="window.handleQuickAddKeydown(event, this)"
               class="flex-1 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)]/50 bg-transparent border-0 outline-none focus:ring-0">
             <button onclick="window.quickAddTask(document.getElementById('quick-add-input'))"
-              class="text-[var(--text-muted)] hover:text-[var(--accent)] transition p-1" title="${state.activePerspective === 'notes' || state.quickAddIsNote ? 'Add Note' : 'Add to ' + viewInfo.name}">
+              class="text-[var(--text-muted)] hover:text-[var(--accent)] transition p-1" title="${isNotesLikeView || state.quickAddIsNote ? 'Add Note' : 'Add to ' + viewInfo.name}">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
             </button>
           </div>
@@ -1573,19 +1805,51 @@ export function renderTasksTab() {
     <!-- Mobile Sidebar Drawer (hidden on desktop) -->
     <div id="mobile-sidebar-overlay" class="mobile-sidebar-overlay md:hidden ${state.mobileDrawerOpen ? 'show' : ''}" onclick="if(event.target===this) closeMobileDrawer()" role="dialog" aria-modal="true" aria-hidden="${state.mobileDrawerOpen ? 'false' : 'true'}" aria-label="Workspace sidebar">
       <div class="mobile-sidebar-drawer" onclick="event.stopPropagation()">
-        <div class="p-4 border-b border-[var(--border-light)] flex items-center justify-between" style="padding-top: max(16px, env(safe-area-inset-top));">
-          <h2 class="text-lg font-bold text-[var(--text-primary)]">Workspace</h2>
-          <button id="mobile-drawer-close" onclick="closeMobileDrawer()" class="w-11 h-11 flex items-center justify-center rounded-full text-[var(--text-muted)] active:bg-[var(--bg-secondary)] transition" aria-label="Close sidebar">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-          </button>
+        <div class="p-4 border-b border-[var(--border-light)]" style="padding-top: max(16px, env(safe-area-inset-top));">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-bold text-[var(--text-primary)]">Workspace</h2>
+            <button id="mobile-drawer-close" onclick="closeMobileDrawer()" class="w-11 h-11 flex items-center justify-center rounded-full text-[var(--text-muted)] active:bg-[var(--bg-secondary)] transition" aria-label="Close sidebar">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+          </div>
+          ${workspaceModeControlHtml}
         </div>
         ${sidebarHtml.replace('w-full md:w-64', 'w-full')}
       </div>
     </div>
 
     <div class="flex flex-col md:flex-row gap-6">
-      <div class="hidden md:block">${sidebarHtml}</div>
-      ${taskListHtml}
+      ${!isDesktopSidebarCollapsed ? `
+      <div class="hidden md:block">
+        <div class="workspace-sidebar-toolbar mb-3 flex items-center gap-2">
+          <div class="workspace-sidebar-mode">${workspaceModeControlHtml}</div>
+          <button
+            onclick="window.toggleWorkspaceSidebar()"
+            class="workspace-sidebar-toggle-btn"
+            title="Collapse workspace sidebar"
+            aria-label="Collapse workspace sidebar">
+            Collapse
+          </button>
+        </div>
+        ${sidebarHtml}
+      </div>
+      ` : ''}
+
+      <div class="flex-1 space-y-3">
+        ${isDesktopSidebarCollapsed ? `
+        <div class="hidden md:block">
+          <button
+            onclick="window.toggleWorkspaceSidebar()"
+            class="workspace-sidebar-show-btn"
+            title="Show workspace sidebar"
+            aria-label="Show workspace sidebar">
+            Show Sidebar
+          </button>
+        </div>
+        ` : ''}
+        <div class="md:hidden mb-2">${workspaceModeControlHtml}</div>
+        ${taskListHtml}
+      </div>
     </div>
   `;
 }

@@ -4,6 +4,13 @@ import { getLocalDateString } from '../utils.js';
 import { BUILTIN_PERSPECTIVES } from '../constants.js';
 import { getTasksByPerson, getAreaById, getLabelById, getPersonById, getCategoryById } from './areas.js';
 
+export function applyWorkspaceContentMode(items, mode = 'both') {
+  if (!Array.isArray(items)) return [];
+  if (mode === 'tasks') return items.filter(item => !item?.isNote);
+  if (mode === 'notes') return items.filter(item => !!item?.isNote);
+  return items;
+}
+
 /**
  * Initialize task order properties
  * Assigns order values to tasks missing them.
@@ -342,17 +349,23 @@ export function getTasksBySubcategory(categoryId) {
 
 // Get current filtered tasks based on active filter type
 export function getCurrentFilteredTasks() {
-  if (state.activeFilterType === 'area' && state.activeAreaFilter) {
-    return getTasksByCategory(state.activeAreaFilter);
-  } else if (state.activeFilterType === 'label' && state.activeLabelFilter) {
-    return getTasksByLabel(state.activeLabelFilter);
-  } else if (state.activeFilterType === 'person' && state.activePersonFilter) {
-    return getTasksByPerson(state.activePersonFilter);
-  } else if (state.activeFilterType === 'subcategory' && state.activeCategoryFilter) {
-    return getTasksBySubcategory(state.activeCategoryFilter);
-  } else {
-    return getFilteredTasks(state.activePerspective);
+  if (state.activeFilterType === 'perspective' && state.activePerspective === 'notes') {
+    return getFilteredTasks('notes');
   }
+
+  let filtered;
+  if (state.activeFilterType === 'area' && state.activeAreaFilter) {
+    filtered = getTasksByCategory(state.activeAreaFilter);
+  } else if (state.activeFilterType === 'label' && state.activeLabelFilter) {
+    filtered = getTasksByLabel(state.activeLabelFilter);
+  } else if (state.activeFilterType === 'person' && state.activePersonFilter) {
+    filtered = getTasksByPerson(state.activePersonFilter);
+  } else if (state.activeFilterType === 'subcategory' && state.activeCategoryFilter) {
+    filtered = getTasksBySubcategory(state.activeCategoryFilter);
+  } else {
+    filtered = getFilteredTasks(state.activePerspective);
+  }
+  return applyWorkspaceContentMode(filtered, state.workspaceContentMode || 'both');
 }
 
 // Get current view info

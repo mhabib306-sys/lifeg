@@ -107,6 +107,7 @@ export function createTask(title, options = {}) {
     parentId: options.parentId || null,   // For nested notes - parent note ID
     indent: options.indent || 0,          // Nesting level (0 = root, 1 = first child, etc.)
     meetingEventKey: options.meetingEventKey || null, // Meeting-linked notes/tasks
+    lastReviewedAt: null, // ISO string — set when reviewed in Review Mode
     order: (state.tasksData.filter(t => !t.completed).length + 1) * 1000, // For manual ordering
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()

@@ -44,6 +44,8 @@ import {
   CONFLICT_NOTIFICATIONS_KEY,
   GSHEET_CACHE_KEY,
   COLLAPSED_NOTES_KEY,
+  TRIGGERS_KEY,
+  COLLAPSED_TRIGGERS_KEY,
 } from './constants.js';
 
 // ---------------------------------------------------------------------------
@@ -139,6 +141,9 @@ let initialActivePerspective = savedViewState.activePerspective || 'inbox';
 if (initialActivePerspective === 'home') initialActivePerspective = 'inbox';
 // Calendar perspective now belongs exclusively to the Calendar tab.
 if (initialActivePerspective === 'calendar') initialActivePerspective = 'inbox';
+const initialWorkspaceContentMode = ['tasks', 'notes', 'both'].includes(savedViewState.workspaceContentMode)
+  ? savedViewState.workspaceContentMode
+  : 'both';
 
 // ---------------------------------------------------------------------------
 // Collapsed notes (Set) — loaded from localStorage
@@ -250,6 +255,8 @@ export const state = {
 
   // ---- Task view / filter state ----
   activePerspective: initialActivePerspective,
+  workspaceContentMode: initialWorkspaceContentMode,
+  workspaceSidebarCollapsed: false,
   activeFilterType: (savedViewState.activeFilterType === 'category' ? 'area' : savedViewState.activeFilterType) || 'perspective',
   activeAreaFilter: savedViewState.activeAreaFilter || null,
   activeLabelFilter: savedViewState.activeLabelFilter || null,
@@ -398,6 +405,18 @@ export const state = {
   }),
   achievements: safeJsonParse(ACHIEVEMENTS_KEY, { unlocked: {} }),
   dailyFocusDismissed: null,
+
+  // ---- Triggers (GTD trigger lists) ----
+  triggers: safeJsonParse(TRIGGERS_KEY, []),
+  editingTriggerId: null,
+  collapsedTriggers: (() => { try { const s = localStorage.getItem(COLLAPSED_TRIGGERS_KEY); return new Set(s ? JSON.parse(s) : []); } catch(e) { return new Set(); } })(),
+  zoomedTriggerId: null,
+  triggersBreadcrumb: [],
+
+  // ---- Review Mode ----
+  reviewMode: false,
+  reviewAreaIndex: 0,
+  reviewCompletedAreas: [],
 
   // ---- Google Sheets ----
   gsheetData: safeJsonParse(GSHEET_CACHE_KEY, null),

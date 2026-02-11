@@ -17,6 +17,7 @@ import {
   VIEW_STATE_KEY,
   LAST_UPDATED_KEY,
   COLLAPSED_NOTES_KEY,
+  TRIGGERS_KEY,
   defaultDayData
 } from '../constants.js';
 import { getLocalDateString } from '../utils.js';
@@ -92,6 +93,7 @@ export function saveTasksData() {
   safeLocalStorageSet(TASK_PEOPLE_KEY, state.taskPeople);
   safeLocalStorageSet(CATEGORIES_KEY, state.taskCategories);
   safeLocalStorageSet(PERSPECTIVES_KEY, state.customPerspectives);
+  safeLocalStorageSet(TRIGGERS_KEY, state.triggers);
   localStorage.setItem(LAST_UPDATED_KEY, Date.now().toString());
   window.debouncedSaveToGithub();
 }
@@ -141,6 +143,7 @@ export function saveViewState() {
     activeTab: state.activeTab,
     activeSubTab: state.activeSubTab,
     activePerspective: safePerspective,
+    workspaceContentMode: state.workspaceContentMode || 'both',
     activeFilterType: state.activeFilterType,
     activeAreaFilter: state.activeAreaFilter,
     activeLabelFilter: state.activeLabelFilter,

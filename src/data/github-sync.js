@@ -28,6 +28,7 @@ import {
   STREAK_KEY,
   ACHIEVEMENTS_KEY,
   CATEGORY_WEIGHTS_KEY,
+  TRIGGERS_KEY,
   LAST_UPDATED_KEY
 } from '../constants.js';
 
@@ -497,6 +498,7 @@ export async function saveToGithub() {
       customPerspectives: state.customPerspectives,
       homeWidgets: state.homeWidgets,
       meetingNotesByEvent: state.meetingNotesByEvent || {},
+      triggers: state.triggers || [],
       xp: state.xp,
       streak: state.streak,
       achievements: state.achievements
@@ -640,6 +642,10 @@ export async function loadCloudData() {
         if (cloudData.achievements) {
           state.achievements = cloudData.achievements;
           localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(state.achievements));
+        }
+        if (cloudData.triggers && Array.isArray(cloudData.triggers)) {
+          state.triggers = cloudData.triggers;
+          localStorage.setItem(TRIGGERS_KEY, JSON.stringify(state.triggers));
         }
         console.log('Loaded from GitHub');
         updateSyncStatus('success', 'Loaded from GitHub');

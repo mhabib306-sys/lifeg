@@ -66,12 +66,17 @@ export function calcPrayerScore(value) {
 // SCORES CACHE
 // ============================================================================
 
+// Daily focus cache — avoids recomputing 7-day averages on every render()
+let _dailyFocusCache = null;
+let _dailyFocusCacheVersion = -1;
+
 /**
  * Clear the scores cache (call after any data change)
  */
 export function invalidateScoresCache() {
   state.scoresCache.clear();
   state.scoresCacheVersion++;
+  _dailyFocusCache = null;
 }
 
 /**
@@ -801,6 +806,9 @@ export function markAchievementNotified(achievementId) {
  * @returns {{ category: string, avgPercent: number, tip: string } | null}
  */
 export function getDailyFocus() {
+  if (_dailyFocusCache && _dailyFocusCacheVersion === state.scoresCacheVersion) {
+    return _dailyFocusCache;
+  }
   const today = new Date();
   const categoryTotals = { prayer: 0, diabetes: 0, whoop: 0, family: 0, habits: 0 };
   const categoryCounts = { prayer: 0, diabetes: 0, whoop: 0, family: 0, habits: 0 };
@@ -840,12 +848,15 @@ export function getDailyFocus() {
   if (!weakest) return null;
 
   const displayNames = { prayer: 'Prayer', diabetes: 'Glucose', whoop: 'Recovery', family: 'Family', habits: 'Habits' };
-  return {
+  const result = {
     category: weakest,
     displayName: displayNames[weakest] || weakest,
     avgPercent: Math.round(weakestAvg * 100),
     tip: FOCUS_TIPS[weakest] || 'Focus on improving this area.'
   };
+  _dailyFocusCache = result;
+  _dailyFocusCacheVersion = state.scoresCacheVersion;
+  return result;
 }
 
 /**

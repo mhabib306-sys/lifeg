@@ -282,6 +282,15 @@ export function toggleSidebarAreaCollapse(areaId) {
 }
 
 /**
+ * Toggle full desktop workspace sidebar visibility.
+ * This does not affect mobile drawer behavior.
+ */
+export function toggleWorkspaceSidebar() {
+  state.workspaceSidebarCollapsed = !state.workspaceSidebarCollapsed;
+  window.render();
+}
+
+/**
  * Auto-scroll to content on mobile after navigation.
  * Only triggers on touch devices or viewports <= 768px.
  * Scrolls to .main-content or <main>, or falls back to top of page.
