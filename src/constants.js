@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.22.0 - Homebase';
+export const APP_VERSION = '4.22.1 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -188,8 +188,8 @@ export const THINGS3_ICONS = {
   logbook: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 012-2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm6.7 11.3l-3-3 1.4-1.4 1.6 1.6 4.6-4.6 1.4 1.4-6 6z"/></svg>`,
   // Trash - gray trash can
   trash: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`,
-  // Area - Things 3 style: filled folder/area icon
-  area: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>`,
+  // Area - Things 3 style: two-tone folder with depth
+  area: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>`,
   // Next - Things 3/OmniFocus style: play button in circle
   next: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="white"/></svg>`,
   // Notes - Things 3 style: clean bullet list
@@ -235,6 +235,18 @@ export const BUILTIN_PERSPECTIVES = [
 
 // Notes perspective (separate from task perspectives - uses outline/bullet style)
 export const NOTES_PERSPECTIVE = { id: 'notes', name: 'Notes', icon: THINGS3_ICONS.notes, color: '#5856D6', filter: { notes: true }, builtin: true };
+
+// Things 3 curated area colors — 32 colors in 4 rows of 8
+export const THINGS3_AREA_COLORS = [
+  // Row 1: Blues & Teals
+  '#147EFB', '#5AC8FA', '#34AADC', '#007AFF', '#4A90D9', '#5856D6', '#2E6B9E', '#1B3A5C',
+  // Row 2: Greens & Yellows
+  '#34C759', '#30B94E', '#4CD964', '#8CC63F', '#FFCC00', '#FF9500', '#FF9F0A', '#FFD60A',
+  // Row 3: Reds, Pinks & Purples
+  '#FF3B30', '#FF6482', '#FF2D55', '#E85D75', '#AF52DE', '#BF5AF2', '#9B59B6', '#7B68EE',
+  // Row 4: Neutrals & Earth tones
+  '#C69C6D', '#A2845E', '#8E8E93', '#636366', '#48484A', '#3A3A3C', '#6E6E73', '#86868B',
+];
 
 export const defaultDayData = {
   prayers: { fajr: '', dhuhr: '', asr: '', maghrib: '', isha: '', quran: 0 },

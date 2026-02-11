@@ -388,7 +388,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 text-2xl" style="background: ${categoryColor}20; color: ${categoryColor}">
-              ${currentCategory.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>'}
+              ${currentCategory.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
             </div>
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(currentCategory.name)}</h1>
@@ -482,7 +482,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
         <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
           <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+              <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>
               <span class="text-sm font-semibold text-[var(--text-primary)]">Categories</span>
               <span class="text-xs text-[var(--text-muted)] ml-1">${subcats.length}</span>
             </div>
@@ -500,7 +500,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
               <button onclick="window.showCategoryTasks('${sc.id}')"
                 class="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-[var(--bg-secondary)] transition group">
                 <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style="background: ${scColor}20; color: ${scColor}">
-                  ${sc.emoji || '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>'}
+                  ${sc.emoji || '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
                 </span>
                 <span class="flex-1 text-[14px] text-[var(--text-primary)] truncate">${escapeHtml(sc.name)}</span>
                 <span class="text-[12px] text-[var(--text-muted)]">${scTaskCount || ''}</span>
@@ -527,7 +527,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
             <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
               <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style="background: ${categoryColor}10">
-                <svg class="w-10 h-10" style="color: ${categoryColor}" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>
+                <svg class="w-10 h-10" style="color: ${categoryColor}" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>
               </div>
               <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No items yet</p>
               <p class="text-sm text-[var(--text-muted)] mb-4">Add your first task or note to ${currentCategory.name}</p>
@@ -580,7 +580,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 text-2xl" style="background: ${categoryColor}20; color: ${categoryColor}">
-              ${category.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>'}
+              ${category.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
             </div>
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(category.name)}</h1>
@@ -683,7 +683,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
         ${filteredTasks.length === 0 ? `
           <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
             <div class="empty-state flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
-              <svg class="w-16 h-16 mb-4 opacity-30" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 6h-2v2h-2v-2h-2v-2h2v-2h2v2h2v2z"/></svg>
+              <svg class="w-16 h-16 mb-4 opacity-30" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>
               <p class="text-[15px] font-medium">No tasks in ${escapeHtml(category.name)}</p>
               <p class="text-[13px] mt-1">Add a task to get started</p>
             </div>
@@ -1214,7 +1214,7 @@ export function renderTasksTab() {
                   </span>
                 ` : `<span class="w-4 h-4 flex-shrink-0 -ml-0.5"></span>`}
                 <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style="background: ${cat.color}20; color: ${cat.color}">
-                  ${areaEmoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>'}
+                  ${areaEmoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
                 </span>
                 <span class="flex-1 text-[14px] truncate ${isAreaActive(cat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(cat.name)}</span>
                 <span class="min-w-[20px] text-right text-[12px] group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${categoryCounts[cat.id] || ''}</span>
@@ -1228,7 +1228,7 @@ export function renderTasksTab() {
                 <div onclick="window.showCategoryTasks('${subcat.id}')"
                   class="sidebar-item w-full pl-10 pr-3 py-1.5 flex items-center gap-2.5 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isSubcatActive(subcat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
                   <span class="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-xs" style="background: ${subcat.color}20; color: ${subcat.color}">
-                    ${subcatEmoji || '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>'}
+                    ${subcatEmoji || '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
                   </span>
                   <span class="flex-1 text-[13px] truncate ${isSubcatActive(subcat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(subcat.name)}</span>
                   <span onclick="event.stopPropagation(); window.editingCategoryId='${subcat.id}'; window.showCategoryModal=true; window.render()"

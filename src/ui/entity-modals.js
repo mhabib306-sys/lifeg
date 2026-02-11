@@ -14,6 +14,7 @@ import {
 import { createPerspective, deletePerspective } from '../features/perspectives.js';
 import { saveTasksData } from '../data/storage.js';
 import { escapeHtml } from '../utils.js';
+import { THINGS3_AREA_COLORS } from '../constants.js';
 
 // ============================================================================
 // ENTITY MODAL SAVE FUNCTIONS (Area, Label, Person)
@@ -273,6 +274,32 @@ function renderEmojiPicker(selectFnName = 'selectPerspectiveEmoji') {
 }
 
 // ============================================================================
+// COLOR SWATCH PICKER
+// ============================================================================
+
+/**
+ * Render a 32-color swatch grid for area/category color picking.
+ * @param {string} selectedColor - Currently selected hex color
+ * @param {string} inputId - ID for the hidden input that stores the value
+ * @param {string} previewId - ID of the folder preview element to update live
+ * @returns {string} HTML string
+ */
+function renderColorSwatches(selectedColor, inputId, previewId) {
+  const swatches = THINGS3_AREA_COLORS.map(color => {
+    const isSelected = color.toLowerCase() === selectedColor.toLowerCase();
+    return `<button type="button" class="color-swatch${isSelected ? ' selected' : ''}" style="background:${color}" title="${color}"
+      onclick="document.getElementById('${inputId}').value='${color}';var p=document.getElementById('${previewId}');if(p){p.style.background='${color}20';p.style.color='${color}';}document.querySelectorAll('#${inputId}-grid .color-swatch').forEach(function(s){s.classList.remove('selected')});this.classList.add('selected');"></button>`;
+  }).join('');
+
+  return `
+    <input type="hidden" id="${inputId}" value="${selectedColor}">
+    <div>
+      <span class="text-[13px] text-[var(--text-muted)]">Folder color</span>
+      <div id="${inputId}-grid" class="color-swatch-grid mt-2">${swatches}</div>
+    </div>`;
+}
+
+// ============================================================================
 // ENTITY MODAL RENDERERS
 // ============================================================================
 
@@ -498,7 +525,7 @@ export function renderAreaModalHtml() {
               <button type="button" onclick="event.stopPropagation(); areaEmojiPickerOpen=!areaEmojiPickerOpen; emojiSearchQuery=''; render()"
                 id="area-folder-preview"
                 class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl cursor-pointer hover:ring-2 hover:ring-[var(--accent)]/40 transition" style="background: ${areaColor}20; color: ${areaColor}">
-                ${areaEmoji || '<svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2H4z"/></svg>'}
+                ${areaEmoji || '<svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
               </button>
               ${state.areaEmojiPickerOpen ? renderEmojiPicker('selectAreaEmoji') : ''}
             </div>
@@ -507,11 +534,7 @@ export function renderAreaModalHtml() {
                 placeholder="Area name" autofocus maxlength="100"
                 onkeydown="if(event.key==='Enter'){event.preventDefault();saveAreaFromModal();}"
                 class="modal-input-enhanced w-full text-lg font-medium">
-              <div class="flex items-center gap-3">
-                <input type="color" id="area-color" value="${areaColor}" class="w-8 h-8 rounded cursor-pointer border-0"
-                  oninput="const preview=document.getElementById('area-folder-preview');if(preview){preview.style.background=this.value+'20';preview.style.color=this.value;}">
-                <span class="text-[13px] text-[var(--text-muted)]">Folder color</span>
-              </div>
+              ${renderColorSwatches(areaColor, 'area-color', 'area-folder-preview')}
             </div>
           </div>
         </div>
@@ -562,7 +585,7 @@ export function renderCategoryModalHtml() {
               <button type="button" onclick="event.stopPropagation(); categoryEmojiPickerOpen=!categoryEmojiPickerOpen; emojiSearchQuery=''; render()"
                 id="cat-folder-preview"
                 class="w-14 h-14 rounded-xl flex items-center justify-center text-xl cursor-pointer hover:ring-2 hover:ring-[var(--accent)]/40 transition" style="background: ${defaultColor}20; color: ${defaultColor}">
-                ${catEmoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 6h-2v2h-2v-2h-2v-2h2v-2h2v2h2v2z"/></svg>'}
+                ${catEmoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>'}
               </button>
               ${state.categoryEmojiPickerOpen ? renderEmojiPicker('selectCategoryEmoji') : ''}
             </div>
@@ -572,11 +595,7 @@ export function renderCategoryModalHtml() {
               <select id="category-area" class="modal-input-enhanced w-full text-sm">
                 ${(state.taskAreas || []).map(a => `<option value="${a.id}" ${a.id === defaultAreaId ? 'selected' : ''}>${escapeHtml(a.name)}</option>`).join('')}
               </select>
-              <div class="flex items-center gap-3">
-                <input type="color" id="category-color" value="${defaultColor}" class="w-8 h-8 rounded cursor-pointer border-0"
-                  oninput="const p=document.getElementById('cat-folder-preview');if(p){p.style.background=this.value+'20';p.style.color=this.value;}">
-                <span class="text-[13px] text-[var(--text-muted)]">Folder color</span>
-              </div>
+              ${renderColorSwatches(defaultColor, 'category-color', 'cat-folder-preview')}
             </div>
           </div>
         </div>
