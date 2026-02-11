@@ -140,11 +140,19 @@ function initApp() {
 
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
-    // Cmd/Ctrl + K = global search
+    // Cmd/Ctrl + K = global search (toggle)
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
       e.preventDefault();
-      state.showGlobalSearch ? window.closeGlobalSearch() : window.openGlobalSearch();
+      if (state.showGlobalSearch) {
+        window.closeGlobalSearch();
+        render();
+      } else {
+        window.openGlobalSearch();
+      }
+      return; // [Bug 9/10/11 fix] Don't process further shortcuts
     }
+    // [Bug 9/10/11 fix] Block all other keyboard shortcuts while search is open
+    if (state.showGlobalSearch) return;
     // Cmd/Ctrl + N = new task
     if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
       e.preventDefault();
@@ -157,9 +165,7 @@ function initApp() {
     }
     // Escape = close overlays
     if (e.key === 'Escape') {
-      if (state.showGlobalSearch) {
-        window.closeGlobalSearch();
-      } else if (state.showBraindump) {
+      if (state.showBraindump) {
         window.closeBraindump();
       } else if (state.showTaskModal) {
         window.closeTaskModal();

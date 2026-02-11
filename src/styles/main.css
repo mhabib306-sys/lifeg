@@ -4416,6 +4416,7 @@ body.mobile-keyboard-open .main-content {
   overflow-y: auto;
   max-height: 50vh;
   padding: 4px 0;
+  scroll-padding-top: 28px; /* [Bug 19 fix] Account for sticky group headers */
 }
 
 .global-search-group-header {
@@ -4453,6 +4454,9 @@ body.mobile-keyboard-open .main-content {
   text-align: left;
   transition: background 0.1s ease;
   font-family: var(--font-family);
+}
+.global-search-result:focus {
+  outline: none; /* [Bug 12 fix] Remove browser default focus outline */
 }
 .global-search-result:hover,
 .global-search-result.active {
@@ -4561,6 +4565,14 @@ mark.global-search-highlight {
   border-radius: 3px;
   padding: 0px 4px;
   font-family: var(--font-family);
+}
+
+/* [Bug 16 fix] Safe horizontal padding for narrow desktop viewports */
+@media (min-width: 769px) {
+  .global-search-overlay {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }
 
 /* Mobile: full-screen search */

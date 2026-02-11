@@ -6,6 +6,7 @@
 
 import { state } from '../state.js';
 import { escapeHtml } from '../utils.js';
+import { BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -28,6 +29,30 @@ const TOTAL_CAP = 50;
 const DEBOUNCE_MS = 150;
 
 let debounceTimer = null;
+
+// ---------------------------------------------------------------------------
+// Helpers: sanitize user-supplied values for safe HTML insertion
+// ---------------------------------------------------------------------------
+
+/** Sanitize a CSS color value — allow only safe color formats */
+function safeColor(color) {
+  if (!color || typeof color !== 'string') return '';
+  // Allow hex colors, rgb/rgba, hsl/hsla, and CSS var() references
+  if (/^#[0-9a-fA-F]{3,8}$/.test(color)) return color;
+  if (/^(rgb|hsl)a?\([^)]+\)$/.test(color)) return color;
+  if (/^var\(--[\w-]+\)$/.test(color)) return color;
+  return '';
+}
+
+/** Strip query prefix (#, @, &) to get the actual search term */
+function stripPrefix(query) {
+  if (!query) return '';
+  const trimmed = query.trim();
+  if (trimmed.length > 0 && ['#', '@', '&'].includes(trimmed[0])) {
+    return trimmed.slice(1).trim();
+  }
+  return trimmed;
+}
 
 // ---------------------------------------------------------------------------
 // Public API
@@ -53,19 +78,30 @@ export function closeGlobalSearch() {
   state.globalSearchResults = [];
   state.globalSearchActiveIndex = -1;
   state.globalSearchTypeFilter = null;
-  if (debounceTimer) clearTimeout(debounceTimer);
-  window.render();
+  if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null; }
+  // NOTE: does NOT call render() — callers handle rendering to avoid double-render
 }
 
 export function handleGlobalSearchInput(value) {
   state.globalSearchQuery = value;
 
-  // Detect prefix shortcuts and auto-set type filter
+  // [Bug 3/4/14 fix] Detect prefix shortcuts and auto-set type filter;
+  // reset filter when prefix is removed
   const prefixMap = { '#': 'area', '@': 'label', '&': 'person' };
-  if (value.length >= 1 && prefixMap[value[0]]) {
-    const detectedType = prefixMap[value[0]];
+  const firstChar = value.length > 0 ? value[0] : '';
+  if (prefixMap[firstChar]) {
+    const detectedType = prefixMap[firstChar];
     if (state.globalSearchTypeFilter !== detectedType) {
       state.globalSearchTypeFilter = detectedType;
+      updateChipsDOM(); // [Bug 4 fix] update chips immediately
+    }
+  } else if (state.globalSearchTypeFilter) {
+    // [Bug 3 fix] Only auto-reset if the current filter was set by a prefix
+    // (check if it matches one of the prefix types)
+    const prefixTypes = Object.values(prefixMap);
+    if (prefixTypes.includes(state.globalSearchTypeFilter)) {
+      state.globalSearchTypeFilter = null;
+      updateChipsDOM();
     }
   }
 
@@ -73,7 +109,7 @@ export function handleGlobalSearchInput(value) {
   debounceTimer = setTimeout(() => {
     const results = performGlobalSearch(value, state.globalSearchTypeFilter);
     state.globalSearchResults = results;
-    state.globalSearchActiveIndex = results.length > 0 ? 0 : -1;
+    state.globalSearchActiveIndex = getFlatItems(results).length > 0 ? 0 : -1;
     updateResultsDOM();
   }, DEBOUNCE_MS);
 }
@@ -87,12 +123,14 @@ export function handleGlobalSearchKeydown(event) {
     if (total > 0) {
       state.globalSearchActiveIndex = (state.globalSearchActiveIndex + 1) % total;
       updateResultsDOM();
+      scrollActiveIntoView(); // [Bug 2 fix]
     }
   } else if (event.key === 'ArrowUp') {
     event.preventDefault();
     if (total > 0) {
       state.globalSearchActiveIndex = (state.globalSearchActiveIndex - 1 + total) % total;
       updateResultsDOM();
+      scrollActiveIntoView(); // [Bug 2 fix]
     }
   } else if (event.key === 'Enter') {
     event.preventDefault();
@@ -101,7 +139,9 @@ export function handleGlobalSearchKeydown(event) {
     }
   } else if (event.key === 'Escape') {
     event.preventDefault();
+    event.stopPropagation(); // [Bug 1 fix] prevent main.js handler from also firing
     closeGlobalSearch();
+    window.render();
   } else if (event.key === 'Tab') {
     event.preventDefault();
     cycleTypeFilter(event.shiftKey);
@@ -112,18 +152,21 @@ export function selectGlobalSearchResult(index) {
   const flatItems = getFlatItems();
   if (index < 0 || index >= flatItems.length) return;
   const item = flatItems[index];
+  // [Bug 1 fix] Close search state WITHOUT rendering, then navigate (which renders once)
   closeGlobalSearch();
   navigateToResult(item);
 }
 
 export function setSearchTypeFilter(type) {
-  state.globalSearchTypeFilter = state.globalSearchTypeFilter === type ? null : type;
+  // [Bug 14 fix] When user explicitly clicks a chip, also clear any prefix from query
+  const prevFilter = state.globalSearchTypeFilter;
+  state.globalSearchTypeFilter = prevFilter === type ? null : type;
+
   // Re-run search with new filter
   const results = performGlobalSearch(state.globalSearchQuery, state.globalSearchTypeFilter);
   state.globalSearchResults = results;
-  state.globalSearchActiveIndex = results.length > 0 ? 0 : -1;
+  state.globalSearchActiveIndex = getFlatItems(results).length > 0 ? 0 : -1;
   updateResultsDOM();
-  // Update chip active state
   updateChipsDOM();
   // Re-focus input
   const input = document.getElementById('global-search-input');
@@ -135,11 +178,7 @@ export function setSearchTypeFilter(type) {
 // ---------------------------------------------------------------------------
 
 function performGlobalSearch(rawQuery, typeFilter) {
-  // Strip prefix characters for the actual search term
-  let query = rawQuery.trim();
-  if (query.length > 0 && ['#', '@', '&'].includes(query[0])) {
-    query = query.slice(1).trim();
-  }
+  const query = stripPrefix(rawQuery);
   if (!query) return [];
 
   const lower = query.toLowerCase();
@@ -181,16 +220,22 @@ function searchEntities(type, lower, original) {
 
   switch (type) {
     case 'task': {
-      const tasks = (state.tasksData || []).filter(t => !t.isNote && !t.completed && t.title);
+      // [Bug 18 fix] Include completed tasks but with a score penalty
+      const tasks = (state.tasksData || []).filter(t => !t.isNote && t.title);
       for (const task of tasks) {
-        const score = scoreMatch(task.title, lower) + (task.notes ? scoreNotesMatch(task.notes, lower) : 0);
+        let score = scoreMatch(task.title, lower) + (task.notes ? scoreNotesMatch(task.notes, lower) : 0);
         if (score > 0) {
+          // Penalize completed tasks so they rank lower
+          if (task.completed) score = Math.max(1, Math.floor(score * 0.4));
           const area = task.areaId ? (state.taskAreas || []).find(a => a.id === task.areaId) : null;
+          const statusLabel = task.completed ? 'Completed'
+            : (task.status === 'today' || task.today) ? 'Today'
+            : task.status || 'inbox';
           results.push({
             id: task.id, type: 'task', title: task.title, score,
-            subtitle: [area?.name, task.status === 'today' || task.today ? 'Today' : task.status].filter(Boolean).join(' · '),
-            icon: task.flagged ? '🚩' : '☑️',
-            color: area?.color || 'var(--accent)',
+            subtitle: [area?.name, statusLabel].filter(Boolean).join(' · '),
+            icon: task.completed ? '✅' : task.flagged ? '🚩' : '☑️',
+            color: safeColor(area?.color) || 'var(--accent)',
           });
         }
       }
@@ -205,7 +250,7 @@ function searchEntities(type, lower, original) {
           results.push({
             id: note.id, type: 'note', title: note.title, score,
             subtitle: area?.name || 'No area',
-            icon: '📝', color: area?.color || 'var(--text-muted)',
+            icon: '📝', color: safeColor(area?.color) || 'var(--text-muted)',
           });
         }
       }
@@ -220,7 +265,7 @@ function searchEntities(type, lower, original) {
           results.push({
             id: area.id, type: 'area', title: area.name, score,
             subtitle: `${taskCount} task${taskCount !== 1 ? 's' : ''}`,
-            icon: area.emoji || area.icon || '📦', color: area.color || 'var(--accent)',
+            icon: area.emoji || area.icon || '📦', color: safeColor(area.color) || 'var(--accent)',
           });
         }
       }
@@ -235,7 +280,7 @@ function searchEntities(type, lower, original) {
           results.push({
             id: cat.id, type: 'category', title: cat.name, score,
             subtitle: area?.name || '',
-            icon: cat.emoji || '📂', color: cat.color || area?.color || 'var(--accent)',
+            icon: cat.emoji || '📂', color: safeColor(cat.color || area?.color) || 'var(--accent)',
           });
         }
       }
@@ -250,7 +295,7 @@ function searchEntities(type, lower, original) {
           results.push({
             id: label.id, type: 'label', title: label.name, score,
             subtitle: `${taskCount} task${taskCount !== 1 ? 's' : ''}`,
-            icon: '🏷️', color: label.color || '#6B7280',
+            icon: '🏷️', color: safeColor(label.color) || '#6B7280',
           });
         }
       }
@@ -274,14 +319,18 @@ function searchEntities(type, lower, original) {
       break;
     }
     case 'perspective': {
-      const customs = state.customPerspectives || [];
-      for (const p of customs) {
+      // [Bug 17 fix] Search both builtin AND custom perspectives
+      const builtins = Array.from(BUILTIN_PERSPECTIVES).map(p => ({ ...p, _builtin: true }));
+      const notesPerspective = { ...NOTES_PERSPECTIVE, _builtin: true };
+      const customs = (state.customPerspectives || []).map(p => ({ ...p, _builtin: false }));
+      const allPerspectives = [...builtins, notesPerspective, ...customs];
+      for (const p of allPerspectives) {
         const score = scoreMatch(p.name, lower);
         if (score > 0) {
           results.push({
             id: p.id, type: 'perspective', title: p.name, score,
-            subtitle: 'Custom perspective',
-            icon: '🔭', color: 'var(--accent)',
+            subtitle: p._builtin ? 'Built-in perspective' : 'Custom perspective',
+            icon: '🔭', color: safeColor(p.color) || 'var(--accent)',
           });
         }
       }
@@ -297,7 +346,7 @@ function searchEntities(type, lower, original) {
           results.push({
             id: trig.id, type: 'trigger', title: trig.title, score,
             subtitle: area?.name || '',
-            icon: '⚡', color: area?.color || 'var(--text-muted)',
+            icon: '⚡', color: safeColor(area?.color) || 'var(--text-muted)',
           });
         }
       }
@@ -360,7 +409,6 @@ function navigateToResult(item) {
       window.showPerspectiveTasks(item.id);
       break;
     case 'trigger': {
-      // Switch to tasks tab with area filter if trigger has area
       const trig = (state.triggers || []).find(t => t.id === item.id);
       if (trig?.areaId) {
         window.showAreaTasks(trig.areaId);
@@ -377,9 +425,10 @@ function navigateToResult(item) {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function getFlatItems() {
+function getFlatItems(groups) {
+  const source = groups || state.globalSearchResults;
   const items = [];
-  for (const group of state.globalSearchResults) {
+  for (const group of source) {
     for (const item of group.items) {
       items.push(item);
     }
@@ -396,27 +445,36 @@ function cycleTypeFilter(reverse) {
   state.globalSearchTypeFilter = keys[next];
   const results = performGlobalSearch(state.globalSearchQuery, state.globalSearchTypeFilter);
   state.globalSearchResults = results;
-  state.globalSearchActiveIndex = results.length > 0 ? 0 : -1;
+  state.globalSearchActiveIndex = getFlatItems(results).length > 0 ? 0 : -1;
   updateResultsDOM();
   updateChipsDOM();
 }
 
+// [Bug 8 fix] Highlight on the raw text FIRST, then escape the non-matched parts
 function highlightMatch(text, query) {
   if (!text || !query) return escapeHtml(text || '');
-  let cleanQuery = query.trim();
-  if (cleanQuery.length > 0 && ['#', '@', '&'].includes(cleanQuery[0])) {
-    cleanQuery = cleanQuery.slice(1).trim();
-  }
+  const cleanQuery = stripPrefix(query);
   if (!cleanQuery) return escapeHtml(text);
-  const escaped = escapeHtml(text);
-  const lower = escaped.toLowerCase();
+  const lower = text.toLowerCase();
   const qLower = cleanQuery.toLowerCase();
   const idx = lower.indexOf(qLower);
-  if (idx === -1) return escaped;
-  const before = escaped.slice(0, idx);
-  const match = escaped.slice(idx, idx + cleanQuery.length);
-  const after = escaped.slice(idx + cleanQuery.length);
-  return `${before}<mark class="global-search-highlight">${match}</mark>${after}`;
+  if (idx === -1) return escapeHtml(text);
+  // Split raw text, escape each part, wrap match in <mark>
+  const before = text.slice(0, idx);
+  const match = text.slice(idx, idx + cleanQuery.length);
+  const after = text.slice(idx + cleanQuery.length);
+  return `${escapeHtml(before)}<mark class="global-search-highlight">${escapeHtml(match)}</mark>${escapeHtml(after)}`;
+}
+
+// [Bug 2 fix] Scroll active result into view within the results container
+function scrollActiveIntoView() {
+  requestAnimationFrame(() => {
+    const container = document.getElementById('global-search-results');
+    const active = container?.querySelector('.global-search-result.active');
+    if (active && container) {
+      active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -442,11 +500,12 @@ function updateChipsDOM() {
 export function renderGlobalSearchHtml() {
   if (!state.showGlobalSearch) return '';
 
+  // [Bug 15 fix] ARIA attributes for accessibility
   return `
-    <div class="global-search-overlay" onclick="if(event.target===this)closeGlobalSearch()">
+    <div class="global-search-overlay" onclick="if(event.target===this){closeGlobalSearch();render()}" role="dialog" aria-modal="true" aria-label="Search">
       <div class="global-search-modal">
         <div class="global-search-input-wrapper">
-          <svg class="global-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="global-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
           </svg>
           <input
@@ -458,16 +517,20 @@ export function renderGlobalSearchHtml() {
             onkeydown="handleGlobalSearchKeydown(event)"
             autocomplete="off"
             spellcheck="false"
+            role="combobox"
+            aria-expanded="true"
+            aria-controls="global-search-results"
+            aria-autocomplete="list"
           />
-          <kbd class="global-search-esc" onclick="closeGlobalSearch()">ESC</kbd>
+          <kbd class="global-search-esc" onclick="closeGlobalSearch();render()" aria-label="Close search">ESC</kbd>
         </div>
-        <div id="global-search-type-filters" class="global-search-type-filters">
+        <div id="global-search-type-filters" class="global-search-type-filters" role="toolbar" aria-label="Filter by type">
           ${renderChipsInnerHtml()}
         </div>
-        <div id="global-search-results" class="global-search-results">
+        <div id="global-search-results" class="global-search-results" role="listbox" aria-label="Search results">
           ${renderResultsInnerHtml()}
         </div>
-        <div class="global-search-footer">
+        <div class="global-search-footer" aria-hidden="true">
           <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> Navigate</span>
           <span><kbd>&crarr;</kbd> Open</span>
           <span><kbd>Tab</kbd> Filter</span>
@@ -479,9 +542,11 @@ export function renderGlobalSearchHtml() {
 
 function renderChipsInnerHtml() {
   const active = state.globalSearchTypeFilter;
-  let html = `<button class="global-search-type-chip ${active === null ? 'active' : ''}" onclick="setSearchTypeFilter(null);event.stopPropagation()">All</button>`;
+  // [Bug 13 fix] type="button" on all chips
+  let html = `<button type="button" class="global-search-type-chip ${active === null ? 'active' : ''}" onclick="setSearchTypeFilter(null);event.stopPropagation()" aria-pressed="${active === null}">All</button>`;
   for (const t of SEARCH_TYPES) {
-    html += `<button class="global-search-type-chip ${active === t.key ? 'active' : ''}" onclick="setSearchTypeFilter('${t.key}');event.stopPropagation()">${t.icon} ${t.label}</button>`;
+    const isActive = active === t.key;
+    html += `<button type="button" class="global-search-type-chip ${isActive ? 'active' : ''}" onclick="setSearchTypeFilter('${t.key}');event.stopPropagation()" aria-pressed="${isActive}">${escapeHtml(t.icon)} ${escapeHtml(t.label)}</button>`;
   }
   return html;
 }
@@ -490,10 +555,13 @@ function renderResultsInnerHtml() {
   const groups = state.globalSearchResults;
   const query = state.globalSearchQuery;
 
-  if (!query || !query.trim()) {
+  // [Bug 5 fix] Check stripped query, not raw query, for empty state
+  const strippedQuery = stripPrefix(query);
+
+  if (!strippedQuery) {
     return `<div class="global-search-empty">
       <div class="global-search-empty-icon">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.3">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.3" aria-hidden="true">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
         </svg>
       </div>
@@ -504,7 +572,7 @@ function renderResultsInnerHtml() {
 
   if (!groups || groups.length === 0) {
     return `<div class="global-search-empty">
-      <p>No results for "${escapeHtml(query.trim())}"</p>
+      <p>No results for "${escapeHtml(strippedQuery)}"</p>
     </div>`;
   }
 
@@ -512,17 +580,25 @@ function renderResultsInnerHtml() {
   let flatIdx = 0;
 
   for (const group of groups) {
-    html += `<div class="global-search-group-header">
-      <span>${group.icon} ${escapeHtml(group.label)}</span>
+    html += `<div class="global-search-group-header" aria-hidden="true">
+      <span>${escapeHtml(group.icon)} ${escapeHtml(group.label)}</span>
       <span class="global-search-group-count">${group.items.length} found</span>
     </div>`;
 
     for (const item of group.items) {
       const isActive = flatIdx === state.globalSearchActiveIndex;
-      html += `<button class="global-search-result ${isActive ? 'active' : ''}"
+      const colorStyle = safeColor(item.color) ? `style="color:${safeColor(item.color)}"` : '';
+      // [Bug 6 fix] safeColor() sanitizes the style value
+      // [Bug 7 fix] escapeHtml() on icon to prevent XSS from user emoji data
+      // [Bug 13 fix] type="button" on result buttons
+      // [Bug 15 fix] role="option" for accessibility
+      // [Bug 20 fix] Use data-idx attribute and a single delegated handler instead of hardcoded index
+      html += `<button type="button" class="global-search-result ${isActive ? 'active' : ''}"
+        role="option" aria-selected="${isActive}"
+        data-result-idx="${flatIdx}"
         onclick="selectGlobalSearchResult(${flatIdx})"
-        onmouseenter="state.globalSearchActiveIndex=${flatIdx};document.querySelectorAll('.global-search-result').forEach((el,i)=>{el.classList.toggle('active',i===${flatIdx})})">
-        <span class="global-search-result-icon" ${item.color ? `style="color:${item.color}"` : ''}>${item.icon}</span>
+        onmouseenter="this.parentElement.querySelector('.global-search-result.active')?.classList.remove('active');this.classList.add('active');state.globalSearchActiveIndex=${flatIdx}">
+        <span class="global-search-result-icon" ${colorStyle}>${escapeHtml(item.icon)}</span>
         <div class="global-search-result-text">
           <span class="global-search-result-title">${highlightMatch(item.title, query)}</span>
           ${item.subtitle ? `<span class="global-search-result-subtitle">${escapeHtml(item.subtitle)}</span>` : ''}
