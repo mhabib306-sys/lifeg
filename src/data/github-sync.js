@@ -72,6 +72,7 @@ export function getTheme() {
 export function setTheme(themeName) {
   localStorage.setItem(THEME_KEY, themeName);
   document.documentElement.setAttribute('data-theme', themeName);
+  syncThemeColorMeta();
   window.render();
 }
 
@@ -81,6 +82,20 @@ export function setTheme(themeName) {
 export function applyStoredTheme() {
   const theme = getTheme();
   document.documentElement.setAttribute('data-theme', theme);
+  syncThemeColorMeta();
+}
+
+/**
+ * Update the theme-color meta tag to match the active theme's --bg-primary.
+ */
+function syncThemeColorMeta() {
+  requestAnimationFrame(() => {
+    const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg-primary').trim();
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta && bg) {
+      meta.setAttribute('content', bg);
+    }
+  });
 }
 
 /**
