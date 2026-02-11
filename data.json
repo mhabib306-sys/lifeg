@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T09:30:24.615Z",
+  "lastUpdated": "2026-02-11T09:30:42.928Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3455,6 +3455,15 @@
       "color": "#ea39b2",
       "createdAt": "2026-02-10T20:55:05.510Z",
       "updatedAt": "2026-02-10T20:55:05.510Z"
+    },
+    {
+      "id": "subcat_1770802240121",
+      "name": "Finance",
+      "areaId": "work",
+      "color": "#ea39b2",
+      "emoji": "",
+      "createdAt": "2026-02-11T09:30:40.122Z",
+      "updatedAt": "2026-02-11T09:30:40.122Z"
     }
   ],
   "taskLabels": [
