@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T11:55:45.853Z",
+  "lastUpdated": "2026-02-11T11:56:07.812Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3396,7 +3396,8 @@
     {
       "id": "family",
       "name": "Family",
-      "color": "#C4943D"
+      "color": "#5AC8FA",
+      "emoji": ""
     },
     {
       "id": "health",
