@@ -1632,7 +1632,7 @@ export function renderTasksTab() {
           `).join('')}
           ${hiddenCount > 0 ? `
           <button onclick="window.showAllLabelsPage()"
-            class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
+            class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-dark)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
             View all ${state.taskLabels.length} tags
           </button>` : ''}
         </div>
@@ -1685,7 +1685,7 @@ export function renderTasksTab() {
           `).join('')}
           ${hiddenCount > 0 ? `
           <button onclick="window.showAllPeoplePage()"
-            class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-hover)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
+            class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-dark)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
             View all ${state.taskPeople.length} people
           </button>` : ''}
         </div>
