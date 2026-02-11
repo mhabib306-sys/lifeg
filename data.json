@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T15:29:28.418Z",
+  "lastUpdated": "2026-02-11T15:30:17.211Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -2458,52 +2458,6 @@
       "updatedAt": "2026-02-10T13:40:41.002Z"
     },
     {
-      "id": "task_1770592026419_sywzrdy29",
-      "title": "something",
-      "notes": "",
-      "status": "anytime",
-      "today": false,
-      "flagged": false,
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "cat_1769983795940",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "order": 27000,
-      "createdAt": "2026-02-08T23:07:06.419Z",
-      "updatedAt": "2026-02-08T23:08:55.378Z",
-      "noteOrder": 9000
-    },
-    {
-      "id": "task_1770592037280_st0eoglpu",
-      "title": "Sub-note",
-      "notes": "",
-      "status": "anytime",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "cat_1769983795940",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": true,
-      "parentId": null,
-      "indent": 0,
-      "createdAt": "2026-02-08T23:07:17.280Z",
-      "updatedAt": "2026-02-08T23:08:53.590Z",
-      "today": false,
-      "flagged": false,
-      "order": 26000,
-      "noteOrder": 10000
-    },
-    {
       "id": "task_1770596756539_vp4g87inh",
       "title": "Check if someone can get Solgar b12 from abroad",
       "notes": "",
@@ -3208,7 +3162,9 @@
     "task_1770540828612_b3q4ssdag": "2026-02-11T15:21:42.543Z",
     "task_1770540831423_c87emukre": "2026-02-11T15:21:44.309Z",
     "task_1770823746786_r54c66h2m": "2026-02-11T15:29:07.899Z",
-    "task_1770823764141_0ei0moxse": "2026-02-11T15:29:25.879Z"
+    "task_1770823764141_0ei0moxse": "2026-02-11T15:29:25.879Z",
+    "task_1770592026419_sywzrdy29": "2026-02-11T15:30:14.251Z",
+    "task_1770592037280_st0eoglpu": "2026-02-11T15:30:16.318Z"
   },
   "deletedEntityTombstones": {
     "taskPeople": {
