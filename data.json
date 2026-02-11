@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T14:40:21.623Z",
+  "lastUpdated": "2026-02-11T14:40:30.010Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3109,8 +3109,9 @@
       "meetingEventKey": null,
       "order": 46000,
       "createdAt": "2026-02-10T21:11:52.678Z",
-      "updatedAt": "2026-02-11T11:56:25.044Z",
-      "gcalEventId": "ducvgs9jpbi8khrumd99anvk9s"
+      "updatedAt": "2026-02-11T14:40:27.275Z",
+      "gcalEventId": "ducvgs9jpbi8khrumd99anvk9s",
+      "lastReviewedAt": "2026-02-11T14:40:27.275Z"
     },
     {
       "id": "task_1770757992681_jdxcz8o65",
