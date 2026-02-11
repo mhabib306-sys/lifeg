@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T19:34:43.329Z",
+  "lastUpdated": "2026-02-11T19:35:07.531Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -7517,9 +7517,9 @@
       "name": "care@amie.so",
       "email": "care@amie.so",
       "color": "#4A90A4",
-      "googleContactId": "people/c1571422250547515798",
+      "googleContactId": "people/c1863183983212515330",
       "createdAt": "2026-02-10T13:26:31.338Z",
-      "updatedAt": "2026-02-10T13:26:31.338Z",
+      "updatedAt": "2026-02-11T19:35:04.844Z",
       "jobTitle": ""
     },
     {
@@ -7967,9 +7967,9 @@
       "name": "dennis@amie.so",
       "email": "dennis@amie.so",
       "color": "#6366F1",
-      "googleContactId": "people/c5938266036781953627",
+      "googleContactId": "people/c714831531375425207",
       "createdAt": "2026-02-10T13:26:31.340Z",
-      "updatedAt": "2026-02-10T13:26:31.340Z",
+      "updatedAt": "2026-02-11T19:35:04.844Z",
       "jobTitle": ""
     },
     {
@@ -9211,6 +9211,16 @@
       "createdAt": "2026-02-10T13:26:31.351Z",
       "updatedAt": "2026-02-10T14:44:29.343Z",
       "jobTitle": "Chief Technology Officer"
+    },
+    {
+      "id": "person_1770838504844_nrn7b",
+      "name": "nancyelsabaa91@gmail.com",
+      "email": "nancyelsabaa91@gmail.com",
+      "jobTitle": "",
+      "color": "#6B8E5A",
+      "googleContactId": "people/c1219086474605231212",
+      "createdAt": "2026-02-11T19:35:04.844Z",
+      "updatedAt": "2026-02-11T19:35:04.844Z"
     }
   ],
   "customPerspectives": [
