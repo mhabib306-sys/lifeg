@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T07:15:11.170Z",
+  "lastUpdated": "2026-02-11T08:00:52.566Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3287,8 +3287,7 @@
     {
       "id": "personal",
       "name": "Self",
-      "color": "#4a90a4",
-      "emoji": "🧍"
+      "color": "#4a90a4"
     },
     {
       "id": "work",
@@ -3386,18 +3385,14 @@
       "id": "person_1769977441169",
       "name": "Seif Ghallab",
       "color": "#6b7280",
-      "email": "seifag@outlook.com",
-      "googleContactId": "people/c2352969596018857057",
-      "updatedAt": "2026-02-10T14:44:29.343Z",
-      "jobTitle": "Head of Fresh and Private Label"
+      "email": "",
+      "jobTitle": ""
     },
     {
       "id": "person_1769988307264",
       "name": "Mostafa Amin",
-      "email": "m@breadfast.com",
-      "googleContactId": "people/c3811983489892675898",
-      "updatedAt": "2026-02-10T14:44:29.341Z",
-      "jobTitle": "Chief Executive Officer"
+      "email": "",
+      "jobTitle": ""
     },
     {
       "id": "person_1769988593103",
@@ -3426,18 +3421,14 @@
     {
       "id": "person-1770490296950",
       "name": "Nancy",
-      "email": "nancyfawzy_91@hotmail.com",
-      "googleContactId": "people/c2369068443619026976",
-      "updatedAt": "2026-02-10T13:26:31.351Z",
+      "email": "",
       "jobTitle": ""
     },
     {
       "id": "person-1770510421604",
       "name": "Ali Refaai",
-      "email": "ali.refaai@breadfast.com",
-      "googleContactId": "people/c8003857861184180042",
-      "updatedAt": "2026-02-10T14:44:29.343Z",
-      "jobTitle": "Commercial Director"
+      "email": "",
+      "jobTitle": ""
     },
     {
       "id": "person_1770576686684",
@@ -3448,9 +3439,9 @@
     },
     {
       "id": "person_1770591589441",
-      "name": "Nadine Khaled",
+      "name": "Nadine",
       "color": "#4A90A4",
-      "email": "nadine.khaled@breadfast.com",
+      "email": "",
       "jobTitle": ""
     },
     {
@@ -9196,9 +9187,9 @@
       "visible": true
     },
     {
-      "id": "quick-stats",
-      "type": "stats",
-      "title": "Quick Stats",
+      "id": "today-tasks",
+      "type": "today-tasks",
+      "title": "Today",
       "size": "half",
       "order": 1,
       "visible": true
@@ -9212,51 +9203,11 @@
       "visible": true
     },
     {
-      "id": "today-tasks",
-      "type": "today-tasks",
-      "title": "Today",
+      "id": "quick-stats",
+      "type": "stats",
+      "title": "Quick Stats",
       "size": "half",
       "order": 3,
-      "visible": true
-    },
-    {
-      "id": "glucose",
-      "type": "glucose",
-      "title": "Glucose",
-      "size": "half",
-      "order": 4,
-      "visible": true
-    },
-    {
-      "id": "next-tasks",
-      "type": "next-tasks",
-      "title": "Next",
-      "size": "half",
-      "order": 5,
-      "visible": true
-    },
-    {
-      "id": "whoop",
-      "type": "whoop",
-      "title": "Whoop",
-      "size": "half",
-      "order": 6,
-      "visible": true
-    },
-    {
-      "id": "today-events",
-      "type": "today-events",
-      "title": "Today's Events",
-      "size": "half",
-      "order": 7,
-      "visible": true
-    },
-    {
-      "id": "gsheet-yesterday",
-      "type": "gsheet-yesterday",
-      "title": "Yesterday",
-      "size": "half",
-      "order": 8,
       "visible": true
     },
     {
@@ -9264,7 +9215,23 @@
       "type": "score",
       "title": "Today's Score",
       "size": "half",
-      "order": 9,
+      "order": 4,
+      "visible": true
+    },
+    {
+      "id": "today-events",
+      "type": "today-events",
+      "title": "Today's Events",
+      "size": "half",
+      "order": 5,
+      "visible": true
+    },
+    {
+      "id": "next-tasks",
+      "type": "next-tasks",
+      "title": "Next",
+      "size": "half",
+      "order": 6,
       "visible": true
     },
     {
@@ -9272,13 +9239,37 @@
       "type": "prayers",
       "title": "Prayers",
       "size": "half",
-      "order": 10,
+      "order": 7,
+      "visible": true
+    },
+    {
+      "id": "glucose",
+      "type": "glucose",
+      "title": "Glucose",
+      "size": "half",
+      "order": 8,
+      "visible": true
+    },
+    {
+      "id": "whoop",
+      "type": "whoop",
+      "title": "Whoop",
+      "size": "half",
+      "order": 9,
       "visible": true
     },
     {
       "id": "habits",
       "type": "habits",
       "title": "Habits",
+      "size": "half",
+      "order": 10,
+      "visible": true
+    },
+    {
+      "id": "gsheet-yesterday",
+      "type": "gsheet-yesterday",
+      "title": "Yesterday",
       "size": "half",
       "order": 11,
       "visible": true
