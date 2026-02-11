@@ -597,7 +597,7 @@ function renderResultsInnerHtml() {
         role="option" aria-selected="${isActive}"
         data-result-idx="${flatIdx}"
         onclick="selectGlobalSearchResult(${flatIdx})"
-        onmouseenter="this.parentElement.querySelector('.global-search-result.active')?.classList.remove('active');this.classList.add('active');state.globalSearchActiveIndex=${flatIdx}">
+        onmouseenter="this.parentElement.querySelector('.global-search-result.active')?.classList.remove('active');this.classList.add('active');window.globalSearchActiveIndex=${flatIdx}">
         <span class="global-search-result-icon" ${colorStyle}>${escapeHtml(item.icon)}</span>
         <div class="global-search-result-text">
           <span class="global-search-result-title">${highlightMatch(item.title, query)}</span>

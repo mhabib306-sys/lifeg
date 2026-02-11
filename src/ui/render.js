@@ -188,7 +188,7 @@ export function render() {
           </svg>
           <h1 class="text-2xl font-bold text-[var(--text-primary)] mb-1">Homebase</h1>
           <p class="text-sm text-[var(--text-muted)] mb-8">Your life, all in one place</p>
-          ${state.authError ? `<p class="text-sm text-red-500 mb-4">${state.authError}</p>` : ''}
+          ${state.authError ? `<p class="text-sm text-red-500 mb-4">${escapeHtml(state.authError)}</p>` : ''}
           <button type="button" onclick="signInWithGoogle()"
             class="flex items-center gap-3 px-6 py-3 bg-white border border-[var(--border)] rounded-xl shadow-sm hover:shadow-md transition text-sm font-medium text-[var(--text-primary)]">
             <svg class="w-5 h-5" viewBox="0 0 24 24">

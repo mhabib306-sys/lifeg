@@ -328,6 +328,7 @@ export function createNextRepeatOccurrence(completedTask) {
     today: completedTask.today || false,
     flagged: completedTask.flagged || false,
     areaId: completedTask.areaId,
+    categoryId: completedTask.categoryId || null,
     labels: [...(completedTask.labels || [])],
     people: [...(completedTask.people || [])],
     deferDate: newDeferDate,
@@ -347,6 +348,7 @@ export function updateRepeatUI(type) {
   const details = document.getElementById('repeat-details');
   const fromContainer = document.getElementById('repeat-from-container');
   const unitLabel = document.getElementById('repeat-unit-label');
+  if (!details || !fromContainer) return;
 
   if (type === 'none') {
     details.style.display = 'none';
@@ -354,7 +356,7 @@ export function updateRepeatUI(type) {
   } else {
     details.style.display = 'flex';
     fromContainer.style.display = 'block';
-    unitLabel.textContent = getRepeatUnitLabel(type);
+    if (unitLabel) unitLabel.textContent = getRepeatUnitLabel(type);
   }
 }
 

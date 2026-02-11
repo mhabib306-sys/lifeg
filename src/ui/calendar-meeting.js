@@ -227,7 +227,7 @@ export function getSelectedModalEvent() {
 const formatEventTimeLabel = formatEventTime;
 
 export function q(str) {
-  return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 }
 
 function renderCalendarSidebarTaskItem(task) {

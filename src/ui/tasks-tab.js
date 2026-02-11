@@ -587,7 +587,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
                 <svg class="w-10 h-10" style="color: ${categoryColor}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
               </div>
               <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No items yet</p>
-              <p class="text-sm text-[var(--text-muted)] mb-4">Add your first task or note to ${currentCategory.name}</p>
+              <p class="text-sm text-[var(--text-muted)] mb-4">Add your first task or note to ${escapeHtml(currentCategory.name)}</p>
               <button onclick="window.openNewTaskModal()"
                 class="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-sm hover:opacity-90 transition" style="background: ${categoryColor}">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -935,7 +935,7 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(person.name)}</h1>
               ${person.jobTitle || person.email ? `
-                <p class="text-[var(--text-muted)] text-[13px] mt-1">${[person.jobTitle, person.email].filter(Boolean).join(' &middot; ')}</p>
+                <p class="text-[var(--text-muted)] text-[13px] mt-1">${[person.jobTitle, person.email].filter(Boolean).map(v => escapeHtml(v)).join(' &middot; ')}</p>
               ` : ''}
               <p class="text-[var(--text-muted)] text-[13px] ${person.jobTitle || person.email ? '' : 'mt-1'}">${activeTasks} active &middot; ${completedTasks} completed${noteItems.length > 0 ? ` &middot; ${noteItems.length} note${noteItems.length !== 1 ? 's' : ''}` : ''}</p>
             </div>

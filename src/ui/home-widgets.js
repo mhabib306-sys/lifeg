@@ -5,7 +5,7 @@
 // widget card.  The shell (header, edit controls, wrapper) lives in home.js.
 
 import { state } from '../state.js';
-import { getLocalDateString, formatEventTime } from '../utils.js';
+import { getLocalDateString, formatEventTime, escapeHtml } from '../utils.js';
 import { THINGS3_ICONS, getActiveIcons, WEATHER_ICONS, WEATHER_DESCRIPTIONS, defaultDayData, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, GSHEET_SAVED_PROMPT_KEY, GSHEET_RESPONSE_CACHE_KEY } from '../constants.js';
 
 // ---------------------------------------------------------------------------
@@ -28,7 +28,8 @@ function getFilteredTasks(perspectiveId) {
 }
 
 function getTierForScore(score) {
-  return window.getScoreTier(score);
+  if (typeof window.getScoreTier === 'function') return window.getScoreTier(score);
+  return { label: '', color: 'var(--text-muted)', emoji: '' };
 }
 
 const formatHomeEventTime = formatEventTime;
@@ -239,7 +240,7 @@ export function renderTodayEventsWidget(today) {
     <div class="max-h-[300px] overflow-y-auto space-y-1">
       ${events.slice(0, 6).map(event => `
         <button
-          onclick="${event.htmlLink ? `window.open('${String(event.htmlLink).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}','_blank')` : `switchTab('calendar'); calendarSelectDate('${today}')`}"
+          onclick="${event.htmlLink ? `window.open(decodeURIComponent('${encodeURIComponent(event.htmlLink)}'),'_blank')` : `switchTab('calendar'); calendarSelectDate('${today}')`}"
           class="w-full text-left rounded-lg px-2.5 py-2 hover:bg-[var(--bg-secondary)] transition border border-transparent hover:border-[var(--border-light)]">
           <div class="flex items-start gap-2.5">
             <span class="mt-1 w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
@@ -768,7 +769,7 @@ export function renderGSheetWidget(today) {
         <span class="text-[10px] text-[var(--text-muted)] truncate block group-hover:text-[var(--accent)] transition">${savedPrompt.replace(/</g, '&lt;')}</span>
       </button>
       <div class="flex items-center gap-3 ml-3 flex-shrink-0">
-        ${tabCount ? `<span class="text-[10px] text-[var(--text-muted)]" title="${tabNames}">${tabCount} tabs</span>` : ''}
+        ${tabCount ? `<span class="text-[10px] text-[var(--text-muted)]" title="${escapeHtml(tabNames)}">${tabCount} tabs</span>` : ''}
         <button onclick="handleGSheetRefresh()" class="inline-flex items-center gap-1 text-[10px] text-[var(--accent)] font-medium hover:opacity-80 transition ${asking || syncing ? 'opacity-50 pointer-events-none' : ''}" ${asking || syncing ? 'disabled' : ''} title="Re-run prompt">
           <svg class="w-3 h-3 ${asking ? 'animate-spin' : ''}" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
           Refresh

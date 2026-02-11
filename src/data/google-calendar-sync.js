@@ -37,6 +37,7 @@ let syncIntervalId = null;
 let tokenRefreshIntervalId = null;
 let tokenRefreshPromise = null;
 let silentRefreshFailedAt = 0; // Timestamp of last failed silent refresh
+let visibilityChangeHandler = null;
 const SILENT_REFRESH_COOLDOWN_MS = 30 * 60 * 1000; // Don't retry silent refresh for 30 min after failure
 
 function persistOfflineQueue() {
@@ -725,7 +726,8 @@ export function initGCalSync() {
   }, 2 * 60 * 1000); // Check every 2 minutes (tighter than before)
 
   // When user returns to the tab, check token immediately
-  document.addEventListener('visibilitychange', async () => {
+  if (visibilityChangeHandler) document.removeEventListener('visibilitychange', visibilityChangeHandler);
+  visibilityChangeHandler = async () => {
     if (document.visibilityState !== 'visible') return;
     if (!isGCalConnected()) return;
     if (!isTokenValid()) {
@@ -735,5 +737,6 @@ export function initGCalSync() {
         window.render();
       }
     }
-  });
+  };
+  document.addEventListener('visibilitychange', visibilityChangeHandler);
 }

@@ -1090,7 +1090,7 @@ function getCursorAtStart(el) {
   const sel = window.getSelection();
   if (!sel.rangeCount) return true;
   const range = sel.getRangeAt(0);
-  return range.collapsed && range.startOffset === 0 && range.startContainer === el.firstChild || range.startContainer === el;
+  return range.collapsed && range.startOffset === 0 && (range.startContainer === el.firstChild || range.startContainer === el);
 }
 
 function getCursorAtEnd(el) {

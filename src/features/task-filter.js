@@ -267,7 +267,7 @@ export function groupTasksByDate(tasks) {
   // Sort dates and return as array of { date, label, tasks }
   return Object.keys(groups).sort().map(date => {
     const d = new Date(date + 'T00:00:00');
-    const diffDays = Math.floor((d - today) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.round((d - today) / (1000 * 60 * 60 * 24));
     let label;
     if (diffDays === 0) label = 'Today';
     else if (diffDays === 1) label = 'Tomorrow';
@@ -296,7 +296,7 @@ export function groupTasksByCompletionDate(tasks) {
   // Sort dates descending (most recent first) and return as array of { date, label, tasks }
   return Object.keys(groups).sort().reverse().map(date => {
     const d = new Date(date + 'T00:00:00');
-    const diffDays = Math.floor((today - d) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.round((today - d) / (1000 * 60 * 60 * 24));
     let label;
     if (diffDays === 0) label = 'Today';
     else if (diffDays === 1) label = 'Yesterday';

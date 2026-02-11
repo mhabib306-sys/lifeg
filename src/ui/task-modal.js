@@ -456,7 +456,7 @@ export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDispl
              data-id="${item.id}"
              onmouseenter="this.classList.add('highlighted'); document.querySelectorAll('#${dropdownId} .autocomplete-option').forEach((o,i) => { if(o !== this) o.classList.remove('highlighted'); })">
           ${getIconFn ? getIconFn(item) : ''}
-          <span>${getDisplayFn(item)}</span>
+          <span>${escapeHtml(getDisplayFn(item))}</span>
         </div>
       `).join('');
 
@@ -464,7 +464,7 @@ export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDispl
         dropdown.innerHTML += `
           <div class="autocomplete-create" data-create="true">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            Create "${filter}"
+            Create "${escapeHtml(filter)}"
           </div>
         `;
       }
@@ -530,11 +530,17 @@ export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDispl
     }
   });
 
-  document.addEventListener('click', (e) => {
+  const outsideClickHandler = (e) => {
+    if (!document.contains(input)) {
+      // Input was removed from DOM (re-render) — clean up this listener
+      document.removeEventListener('click', outsideClickHandler);
+      return;
+    }
     if (!input.contains(e.target) && !dropdown.contains(e.target)) {
       dropdown.classList.remove('show');
     }
-  });
+  };
+  document.addEventListener('click', outsideClickHandler);
 }
 
 // ============================================================================

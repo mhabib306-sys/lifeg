@@ -537,7 +537,7 @@ export async function saveToGithub() {
         body: JSON.stringify({
           message: `Auto-save: ${new Date().toLocaleString()}`,
           content: content,
-          sha: sha
+          ...(sha ? { sha } : {})
         })
       }
     );

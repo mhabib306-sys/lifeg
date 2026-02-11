@@ -185,7 +185,7 @@ export function renderBulkEntryTab() {
 
   // Generate month options (2026 and 2027)
   let monthOptions = '';
-  [2026, 2027].forEach(function(year) {
+  [new Date().getFullYear(), new Date().getFullYear() + 1].forEach(function(year) {
     for (let m = 0; m < 12; m++) {
       const label = new Date(year, m).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
       const selected = m === state.bulkMonth && year === state.bulkYear ? 'selected' : '';
@@ -338,7 +338,7 @@ export function renderBulkEntryTab() {
 function renderBulkShell(monthName, categoryColors, categories, allCategories, autoSyncNote, daysInMonth) {
   // Generate month options
   let monthOptions = '';
-  [2026, 2027].forEach(function(year) {
+  [new Date().getFullYear(), new Date().getFullYear() + 1].forEach(function(year) {
     for (let m = 0; m < 12; m++) {
       const label = new Date(year, m).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
       const selected = m === state.bulkMonth && year === state.bulkYear ? 'selected' : '';

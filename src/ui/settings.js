@@ -5,6 +5,7 @@
 // theme selector, cloud sync, data management, and changelog.
 
 import { state } from '../state.js';
+import { escapeHtml } from '../utils.js';
 import { THEMES } from '../constants.js';
 import { getGithubToken, setGithubToken, getTheme, setTheme } from '../data/github-sync.js';
 import { updateWeight, resetWeights, updateMaxScore, resetMaxScores } from '../features/scoring.js';
@@ -237,9 +238,9 @@ function renderGCalSettingsCard() {
         <p class="text-sm text-charcoal/40 mb-4">Loading calendars...</p>
       ` : gcalError ? `
         <div class="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
-          <p class="text-sm text-amber-800">${gcalError}</p>
+          <p class="text-sm text-amber-800">${escapeHtml(gcalError)}</p>
           ${gcalErrorUrl ? `
-            <a href="${gcalErrorUrl}" target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex text-xs font-medium text-amber-900 underline hover:text-amber-700">Open API setup in Google Cloud</a>
+            <a href="${escapeHtml(gcalErrorUrl)}" target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex text-xs font-medium text-amber-900 underline hover:text-amber-700">Open API setup in Google Cloud</a>
           ` : ''}
           <button onclick="window.fetchCalendarList()" class="mt-2 px-3 py-1.5 bg-white border border-amber-300 rounded text-xs font-medium text-amber-800 hover:bg-amber-100 transition">
             Retry loading calendars
@@ -255,7 +256,7 @@ function renderGCalSettingsCard() {
                   onchange="window.toggleCalendarSelection('${c.id.replace(/'/g, "\\'")}')"
                   class="rounded text-coral focus:ring-coral">
                 <span class="w-3 h-3 rounded-full flex-shrink-0" style="background: ${c.backgroundColor}"></span>
-                <span class="text-sm text-charcoal truncate">${c.summary}</span>
+                <span class="text-sm text-charcoal truncate">${escapeHtml(c.summary)}</span>
               </label>
             `).join('')}
           </div>
@@ -266,7 +267,7 @@ function renderGCalSettingsCard() {
           <select onchange="window.setTargetCalendar(this.value); window.render()"
             class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none">
             ${writableCalendars.map(c => `
-              <option value="${c.id}" ${c.id === targetCal ? 'selected' : ''}>${c.summary}</option>
+              <option value="${escapeHtml(c.id)}" ${c.id === targetCal ? 'selected' : ''}>${escapeHtml(c.summary)}</option>
             `).join('')}
           </select>
         </div>
@@ -283,7 +284,7 @@ function renderGCalSettingsCard() {
           </button>
         </div>
         ${state.gcontactsError ? `
-          <p class="text-xs text-amber-700 mt-2">${state.gcontactsError}</p>
+          <p class="text-xs text-amber-700 mt-2">${escapeHtml(state.gcontactsError)}</p>
         ` : ''}
       </div>
 
@@ -475,12 +476,12 @@ export function renderSettingsTab() {
       <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
         <div class="flex items-center gap-4">
           ${user.photoURL
-            ? `<img src="${user.photoURL}" alt="" class="w-10 h-10 rounded-full border border-[var(--border)]" referrerpolicy="no-referrer">`
+            ? `<img src="${escapeHtml(user.photoURL)}" alt="" class="w-10 h-10 rounded-full border border-[var(--border)]" referrerpolicy="no-referrer">`
             : `<div class="w-10 h-10 rounded-full bg-[var(--accent)] text-white flex items-center justify-center text-base font-semibold">${(user.displayName || user.email || '?')[0].toUpperCase()}</div>`
           }
           <div class="flex-1 min-w-0">
-            <p class="font-medium text-[var(--text-primary)] truncate">${user.displayName || 'User'}</p>
-            <p class="text-xs text-[var(--text-muted)] truncate">${user.email || ''}</p>
+            <p class="font-medium text-[var(--text-primary)] truncate">${escapeHtml(user.displayName || 'User')}</p>
+            <p class="text-xs text-[var(--text-muted)] truncate">${escapeHtml(user.email || '')}</p>
           </div>
           <button onclick="signOutUser()" class="px-3 py-1.5 bg-warmgray text-charcoal rounded-lg text-xs font-medium hover:bg-softborder transition">
             Sign Out

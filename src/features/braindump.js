@@ -418,8 +418,8 @@ export function extractMetadata(text) {
     for (const match of dateMatches) {
       const query = match.slice(1);
       const result = window.parseDateQuery(query);
-      if (result) {
-        deferDate = result;
+      if (result && result.length > 0) {
+        deferDate = result[0].date;
         title = title.replace(match, '').trim();
         break; // Only use first date match
       }
@@ -440,8 +440,8 @@ export function extractMetadata(text) {
       if (match) {
         const dateQuery = query || match[1];
         const result = window.parseDateQuery(dateQuery);
-        if (result) {
-          dueDate = result;
+        if (result && result.length > 0) {
+          dueDate = result[0].date;
           // Don't strip natural language dates from title — they're contextual
           break;
         }

@@ -159,7 +159,7 @@ function initApp() {
       window.openNewTaskModal();
     }
     // Cmd/Ctrl + Shift + D = open Braindump
-    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'd') {
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'd') {
       e.preventDefault();
       window.openBraindump();
     }

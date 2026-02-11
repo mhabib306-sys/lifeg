@@ -46,7 +46,7 @@ function safeLocalStorageSet(key, value) {
  * Save allData (daily tracking data) to localStorage
  */
 export function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.allData));
+  safeLocalStorageSet(STORAGE_KEY, state.allData);
   localStorage.setItem(LAST_UPDATED_KEY, Date.now().toString());
 }
 
@@ -129,7 +129,12 @@ export function updateDailyField(category, field, value) {
   if (!state.allData[today]) state.allData[today] = {};
   if (!state.allData[today][category]) state.allData[today][category] = {};
   state.allData[today][category][field] = value === '' ? null : parseFloat(value) || value;
+  invalidateScoresCache();
   saveData();
+  if (typeof window.processGamification === 'function') {
+    const result = window.processGamification(today);
+    showGamificationToasts(result);
+  }
   window.debouncedSaveToGithub();
   window.render(); // Update UI to reflect score changes
 }

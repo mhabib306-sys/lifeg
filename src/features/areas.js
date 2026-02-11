@@ -59,10 +59,17 @@ export function updateArea(areaId, updates) {
 
 export function deleteArea(areaId) {
   markEntityDeleted('taskCategories', areaId);
+  // Find sub-categories that belong to this area
+  const orphanedCatIds = state.taskCategories
+    .filter(c => c.areaId === areaId)
+    .map(c => c.id);
+  // Remove orphaned sub-categories
+  state.taskCategories = state.taskCategories.filter(c => c.areaId !== areaId);
   state.taskAreas = state.taskAreas.filter(c => c.id !== areaId);
-  // Remove area from tasks that use it
+  // Remove area and orphaned categoryId from tasks
   state.tasksData.forEach(task => {
     if (task.areaId === areaId) task.areaId = null;
+    if (orphanedCatIds.includes(task.categoryId)) task.categoryId = null;
   });
   saveTasksData();
 }

@@ -235,8 +235,8 @@ export const state = {
   activeSubTab: initialActiveSubTab,
 
   // ---- Bulk entry ----
-  bulkMonth: 0,          // January (0-indexed)
-  bulkYear: 2026,
+  bulkMonth: new Date().getMonth(),
+  bulkYear: new Date().getFullYear(),
   bulkCategory: 'prayers',
 
   // ---- Tasks system ----

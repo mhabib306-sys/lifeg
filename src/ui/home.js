@@ -5,7 +5,7 @@
 // Individual widget content renderers live in home-widgets.js.
 
 import { state } from '../state.js';
-import { getLocalDateString } from '../utils.js';
+import { getLocalDateString, escapeHtml } from '../utils.js';
 import { THINGS3_ICONS, getActiveIcons, WEATHER_ICONS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, GSHEET_SAVED_PROMPT_KEY, GSHEET_RESPONSE_CACHE_KEY } from '../constants.js';
 import {
   renderStatsWidget, renderQuickAddWidget, renderTodayTasksWidget,
@@ -123,7 +123,7 @@ export function renderHomeWidget(widget, isEditing) {
       <div class="widget-header px-4 py-2 border-b border-[var(--border-light)] flex items-center gap-2">
         ${isEditing ? '<div class="text-[var(--text-muted)]/30 cursor-grab"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg></div>' : ''}
         <span style="color: ${widgetColors[widget.type] || '#6B7280'}">${widgetIcons[widget.type] || ''}</span>
-        <h3 class="widget-title text-sm font-medium text-[var(--text-primary)]">${widget.title}</h3>
+        <h3 class="widget-title text-sm font-medium text-[var(--text-primary)]">${escapeHtml(widget.title)}</h3>
         ${editControls}
       </div>
       <div class="widget-body ${widget.type === 'today-tasks' || widget.type === 'today-events' || widget.type === 'next-tasks' || widget.type === 'perspective' ? 'px-2 py-1' : 'p-4'}">
@@ -329,7 +329,7 @@ export function renderHomeTab() {
                       ? 'border-[var(--border-light)] bg-[var(--bg-secondary)] opacity-50 cursor-default'
                       : 'border-[var(--border-light)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 cursor-pointer'}">
                     <span style="color: ${p.color}">${p.icon || ''}</span>
-                    <span class="text-sm text-[var(--text-primary)] truncate">${p.name}</span>
+                    <span class="text-sm text-[var(--text-primary)] truncate">${escapeHtml(p.name)}</span>
                     ${isAdded ? '<svg class="w-3.5 h-3.5 text-green-500 ml-auto flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : ''}
                   </button>
                 `;
