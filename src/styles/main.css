@@ -2125,12 +2125,18 @@ img.twemoji {
     word-wrap: break-word !important;
   }
 
-  /* Larger touch target for task checkbox */
+  /* 44px touch target via invisible pseudo-element (HIG compliance) */
   .task-item .task-checkbox {
-    min-width: 22px !important;
-    min-height: 22px !important;
-    width: 22px !important;
-    height: 22px !important;
+    position: relative;
+  }
+  .task-item .task-checkbox::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
   }
 
   /* Task metadata on mobile - smaller but readable */
