@@ -130,7 +130,7 @@ import {
 
 import {
   renderReviewMode, startReview, exitReview, reviewNextArea, reviewPrevArea,
-  reviewEngageTask, reviewPassTask, reviewMarkAreaDone,
+  reviewEngageTask, reviewPassTask, reviewMarkAreaDone, reviewAddTask,
   getStaleTasksForArea, getTotalStaleTaskCount
 } from './ui/review.js';
 
@@ -356,7 +356,7 @@ Object.assign(window, {
 
   // Review Mode
   renderReviewMode, startReview, exitReview, reviewNextArea, reviewPrevArea,
-  reviewEngageTask, reviewPassTask, reviewMarkAreaDone,
+  reviewEngageTask, reviewPassTask, reviewMarkAreaDone, reviewAddTask,
   getStaleTasksForArea, getTotalStaleTaskCount,
 
   // Perspectives

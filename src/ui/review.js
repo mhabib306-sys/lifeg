@@ -111,6 +111,29 @@ export function reviewMarkAreaDone() {
 }
 
 // ---------------------------------------------------------------------------
+// Review-mode task creation (opens modal without leaving review)
+// ---------------------------------------------------------------------------
+
+export function reviewAddTask(areaId, status = 'anytime', today = false) {
+  state.editingTaskId = null;
+  state.newTaskContext = {
+    areaId,
+    categoryId: null,
+    labelId: null,
+    labelIds: null,
+    personId: null,
+    status,
+    today,
+  };
+  state.showTaskModal = true;
+  if (typeof window.render === 'function') window.render();
+  setTimeout(() => {
+    const titleInput = document.getElementById('task-title');
+    if (titleInput) titleInput.focus();
+  }, 50);
+}
+
+// ---------------------------------------------------------------------------
 // Renderer
 // ---------------------------------------------------------------------------
 
@@ -223,26 +246,13 @@ export function renderReviewMode() {
         </div>
       </div>
 
-      <!-- Quick Add -->
-      <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] px-4 py-3 mb-4">
-        <div class="flex flex-wrap items-center gap-2">
-          <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentArea.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentArea.id}' && !t.completed); if (tasks.length) { state.reviewMode = false; window.showAreaTasks('${currentArea.id}'); setTimeout(() => window.startInlineEdit(tasks[tasks.length-1].id), 100); } }, 100);"
-            class="area-chip area-chip-action area-chip-anytime">+ Task</button>
-          <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${currentArea.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentArea.id}' && !t.completed); if (tasks.length) { state.reviewMode = false; window.showAreaTasks('${currentArea.id}'); setTimeout(() => window.startInlineEdit(tasks[tasks.length-1].id), 100); } }, 100);"
-            class="area-chip area-chip-action area-chip-today">+ Today</button>
-          <button onclick="window.createTask('', { status: 'someday', areaId: '${currentArea.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentArea.id}' && !t.completed); if (tasks.length) { state.reviewMode = false; window.showAreaTasks('${currentArea.id}'); setTimeout(() => window.startInlineEdit(tasks[tasks.length-1].id), 100); } }, 100);"
-            class="area-chip area-chip-action area-chip-someday">+ Someday</button>
-          <button onclick="window.createRootNote('${currentArea.id}')"
-            class="area-chip area-chip-action area-chip-note">+ Note</button>
-        </div>
-      </div>
-
-      <!-- Triggers Section -->
+      <!-- Step 1: Triggers Section -->
       <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between" style="background: #FFCC0008">
           <div class="flex items-center gap-2">
+            <span class="review-step-badge" style="background: ${areaColor}; color: white">1</span>
             <span style="color: #FFCC00">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
-            <span class="text-sm font-semibold text-[var(--text-primary)]">Triggers</span>
+            <span class="text-sm font-semibold text-[var(--text-primary)]">Review Triggers</span>
             <span class="text-xs text-[var(--text-muted)] ml-1">${areaTriggers.length}</span>
           </div>
           <button onclick="window.createRootTrigger({areaId:'${currentArea.id}'})"
@@ -253,6 +263,46 @@ export function renderReviewMode() {
         </div>
         <div class="py-2">
           ${renderTriggersOutliner({ areaId: currentArea.id })}
+        </div>
+        ${areaTriggers.length > 0 ? `
+          <div class="px-4 py-2.5 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/30">
+            <p class="text-xs text-[var(--text-muted)] italic">Read through each trigger — does anything need a new task?</p>
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- Step 2: Capture Tasks -->
+      <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
+        <div class="px-4 py-3 border-b border-[var(--border-light)]" style="background: ${areaColor}06">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="review-step-badge" style="background: ${areaColor}; color: white">2</span>
+            <span class="text-sm font-semibold text-[var(--text-primary)]">Capture Tasks</span>
+          </div>
+          <p class="text-xs text-[var(--text-muted)] ml-6">Add any tasks prompted by the triggers above</p>
+        </div>
+        <div class="px-4 py-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="window.reviewAddTask('${currentArea.id}', 'anytime', false)"
+              class="area-chip area-chip-action area-chip-anytime">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Task
+            </button>
+            <button onclick="window.reviewAddTask('${currentArea.id}', 'anytime', true)"
+              class="area-chip area-chip-action area-chip-today">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+              Today
+            </button>
+            <button onclick="window.reviewAddTask('${currentArea.id}', 'someday', false)"
+              class="area-chip area-chip-action area-chip-someday">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+              Someday
+            </button>
+            <button onclick="window.createRootNote('${currentArea.id}')"
+              class="area-chip area-chip-action area-chip-note">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zM13 9V3.5L18.5 9H13z"/></svg>
+              Note
+            </button>
+          </div>
         </div>
       </div>
 

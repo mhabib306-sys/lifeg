@@ -4532,6 +4532,18 @@ body.mobile-keyboard-open .main-content {
   max-width: 720px;
   margin: 0 auto;
 }
+.review-step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
 .review-task-card {
   transition: background 0.12s ease;
 }
