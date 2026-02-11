@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T09:00:07.247Z",
+  "lastUpdated": "2026-02-11T09:11:17.216Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1710,8 +1710,8 @@
         "quran": 0
       },
       "glucose": {
-        "avg": "200",
-        "tir": "40",
+        "avg": "187",
+        "tir": "51",
         "insulin": ""
       },
       "whoop": {
@@ -1721,10 +1721,10 @@
         "whoopAge": ""
       },
       "libre": {
-        "currentGlucose": 187,
+        "currentGlucose": 293,
         "trend": "↘",
-        "readingsCount": 48,
-        "lastReading": "2/11/2026 10:39:24 AM"
+        "readingsCount": 47,
+        "lastReading": "2/11/2026 9:14:55 AM"
       },
       "family": {
         "mom": false,
@@ -3269,6 +3269,32 @@
       "createdAt": "2026-02-10T21:14:04.360Z",
       "updatedAt": "2026-02-10T21:14:11.474Z",
       "gcalEventId": "hc7if8ipqe13bbra7e2a6htq3c"
+    },
+    {
+      "id": "task_1770801074299_wqdfzm9a1",
+      "title": "Discuss Cheese payments issues given the impact on revenue and edge against competition",
+      "notes": "",
+      "status": "inbox",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "areaId": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [
+        "person-1770510421604"
+      ],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": null,
+      "order": 48000,
+      "createdAt": "2026-02-11T09:11:14.299Z",
+      "updatedAt": "2026-02-11T09:11:14.299Z"
     },
     {
       "id": "task_1770798843221_1g1e3i6t8",
