@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T22:18:17.010Z",
+  "lastUpdated": "2026-02-11T22:26:32.942Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1795,6 +1795,13 @@
     "habits": 16,
     "total": 96
   },
+  "categoryWeights": {
+    "prayer": 20,
+    "diabetes": 20,
+    "whoop": 20,
+    "family": 20,
+    "habits": 20
+  },
   "tasks": [
     {
       "id": "task_1769967191520_ysymax68m",
@@ -3385,9 +3392,14 @@
       "noteOrder": 1000,
       "createdAt": "2026-02-11T21:51:10.858Z",
       "updatedAt": "2026-02-11T21:51:11.672Z",
-      "deletedAt": "2026-02-11T21:51:11.672Z"
+      "deletedAt": "2026-02-11T21:51:11.672Z",
+      "today": false,
+      "flagged": false,
+      "order": 65000
     }
   ],
+  "deletedTaskTombstones": {},
+  "deletedEntityTombstones": {},
   "taskCategories": [
     {
       "id": "personal",
@@ -3415,6 +3427,7 @@
       "color": "#478054"
     }
   ],
+  "categories": [],
   "taskLabels": [
     {
       "id": "urgent",
@@ -10652,6 +10665,272 @@
       "content": "",
       "createdAt": "2026-02-11T14:18:23.239Z",
       "updatedAt": "2026-02-11T14:18:23.239Z"
+    }
+  },
+  "triggers": [],
+  "xp": {
+    "total": 1914,
+    "history": [
+      {
+        "base": 20,
+        "streakBonus": 0,
+        "total": 20,
+        "date": "2026-01-01"
+      },
+      {
+        "base": 40,
+        "streakBonus": 4,
+        "total": 44,
+        "date": "2026-01-02"
+      },
+      {
+        "base": 36,
+        "streakBonus": 3,
+        "total": 39,
+        "date": "2026-01-03"
+      },
+      {
+        "base": 40,
+        "streakBonus": 7,
+        "total": 47,
+        "date": "2026-01-04"
+      },
+      {
+        "base": 36,
+        "streakBonus": 7,
+        "total": 43,
+        "date": "2026-01-05"
+      },
+      {
+        "base": 37,
+        "streakBonus": 7,
+        "total": 44,
+        "date": "2026-01-06"
+      },
+      {
+        "base": 40,
+        "streakBonus": 12,
+        "total": 52,
+        "date": "2026-01-07"
+      },
+      {
+        "base": 40,
+        "streakBonus": 12,
+        "total": 52,
+        "date": "2026-01-08"
+      },
+      {
+        "base": 40,
+        "streakBonus": 12,
+        "total": 52,
+        "date": "2026-01-09"
+      },
+      {
+        "base": 40,
+        "streakBonus": 12,
+        "total": 52,
+        "date": "2026-01-10"
+      },
+      {
+        "base": 40,
+        "streakBonus": 12,
+        "total": 52,
+        "date": "2026-01-11"
+      },
+      {
+        "base": 34,
+        "streakBonus": 10,
+        "total": 44,
+        "date": "2026-01-12"
+      },
+      {
+        "base": 28,
+        "streakBonus": 8,
+        "total": 36,
+        "date": "2026-01-13"
+      },
+      {
+        "base": 37,
+        "streakBonus": 14,
+        "total": 51,
+        "date": "2026-01-14"
+      },
+      {
+        "base": 31,
+        "streakBonus": 12,
+        "total": 43,
+        "date": "2026-01-15"
+      },
+      {
+        "base": 28,
+        "streakBonus": 11,
+        "total": 39,
+        "date": "2026-01-16"
+      },
+      {
+        "base": 40,
+        "streakBonus": 15,
+        "total": 55,
+        "date": "2026-01-17"
+      },
+      {
+        "base": 40,
+        "streakBonus": 15,
+        "total": 55,
+        "date": "2026-01-18"
+      },
+      {
+        "base": 34,
+        "streakBonus": 13,
+        "total": 47,
+        "date": "2026-01-19"
+      },
+      {
+        "base": 28,
+        "streakBonus": 11,
+        "total": 39,
+        "date": "2026-01-20"
+      },
+      {
+        "base": 25,
+        "streakBonus": 9,
+        "total": 34,
+        "date": "2026-01-21"
+      },
+      {
+        "base": 28,
+        "streakBonus": 11,
+        "total": 39,
+        "date": "2026-01-22"
+      },
+      {
+        "base": 25,
+        "streakBonus": 9,
+        "total": 34,
+        "date": "2026-01-23"
+      },
+      {
+        "base": 25,
+        "streakBonus": 9,
+        "total": 34,
+        "date": "2026-01-24"
+      },
+      {
+        "base": 25,
+        "streakBonus": 9,
+        "total": 34,
+        "date": "2026-01-25"
+      },
+      {
+        "base": 25,
+        "streakBonus": 9,
+        "total": 34,
+        "date": "2026-01-26"
+      },
+      {
+        "base": 78,
+        "streakBonus": 31,
+        "total": 109,
+        "date": "2026-01-27"
+      },
+      {
+        "base": 69,
+        "streakBonus": 27,
+        "total": 96,
+        "date": "2026-01-28"
+      },
+      {
+        "base": 56,
+        "streakBonus": 22,
+        "total": 78,
+        "date": "2026-01-29"
+      },
+      {
+        "base": 58,
+        "streakBonus": 29,
+        "total": 87,
+        "date": "2026-01-30"
+      },
+      {
+        "base": 61,
+        "streakBonus": 30,
+        "total": 91,
+        "date": "2026-01-31"
+      },
+      {
+        "base": 52,
+        "streakBonus": 26,
+        "total": 78,
+        "date": "2026-02-01"
+      },
+      {
+        "base": 20,
+        "streakBonus": 10,
+        "total": 30,
+        "date": "2026-02-02"
+      },
+      {
+        "base": 20,
+        "streakBonus": 10,
+        "total": 30,
+        "date": "2026-02-04"
+      },
+      {
+        "base": 20,
+        "streakBonus": 10,
+        "total": 30,
+        "date": "2026-02-05"
+      },
+      {
+        "base": 27,
+        "streakBonus": 0,
+        "total": 27,
+        "date": "2026-02-07"
+      },
+      {
+        "base": 36,
+        "streakBonus": 0,
+        "total": 36,
+        "date": "2026-02-09"
+      },
+      {
+        "base": 34,
+        "streakBonus": 3,
+        "total": 37,
+        "date": "2026-02-10"
+      },
+      {
+        "base": 64,
+        "streakBonus": 6,
+        "total": 70,
+        "date": "2026-02-11"
+      }
+    ]
+  },
+  "streak": {
+    "current": 3,
+    "longest": 35,
+    "lastLoggedDate": "2026-02-11",
+    "shield": {
+      "available": true,
+      "lastUsed": "2026-02-02"
+    },
+    "multiplier": 1.1
+  },
+  "achievements": {
+    "unlocked": {
+      "first-steps": {
+        "date": "2026-02-11",
+        "notified": false
+      },
+      "family-first": {
+        "date": "2026-02-11",
+        "notified": false
+      },
+      "day-one": {
+        "date": "2026-02-11",
+        "notified": false
+      }
     }
   }
 }
