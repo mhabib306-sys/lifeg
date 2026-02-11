@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T14:39:44.290Z",
+  "lastUpdated": "2026-02-11T14:39:55.615Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -9480,7 +9480,19 @@
       "updatedAt": "2026-02-11T14:18:23.239Z"
     }
   },
-  "triggers": [],
+  "triggers": [
+    {
+      "id": "trigger_1770820792942_9k7wr",
+      "title": "",
+      "areaId": "personal",
+      "categoryId": null,
+      "parentId": null,
+      "indent": 0,
+      "triggerOrder": 1000,
+      "createdAt": "2026-02-11T14:39:52.942Z",
+      "updatedAt": "2026-02-11T14:39:52.942Z"
+    }
+  ],
   "xp": {
     "total": 1836,
     "history": [
