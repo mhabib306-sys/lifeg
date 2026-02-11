@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T16:34:42.959Z",
+  "lastUpdated": "2026-02-11T16:35:19.041Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -9499,6 +9499,17 @@
       "triggerOrder": 1000,
       "createdAt": "2026-02-11T16:33:41.954Z",
       "updatedAt": "2026-02-11T16:33:48.251Z"
+    },
+    {
+      "id": "trigger_1770827711787_55c51",
+      "title": "Did I plan for a time to visit mom this week?",
+      "areaId": "family",
+      "categoryId": null,
+      "parentId": null,
+      "indent": 0,
+      "triggerOrder": 2000,
+      "createdAt": "2026-02-11T16:35:11.787Z",
+      "updatedAt": "2026-02-11T16:35:16.056Z"
     }
   ],
   "xp": {
