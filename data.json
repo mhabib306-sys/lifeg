@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T10:34:33.010Z",
+  "lastUpdated": "2026-02-11T10:34:41.383Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1902,25 +1902,6 @@
       "gcalEventId": "gmtdhvbpnh2amf7mq3rhsjd89o"
     },
     {
-      "id": "task_1769983575696_3yq56ixj0",
-      "title": "task",
-      "notes": "",
-      "status": "inbox",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "createdAt": "2026-02-01T22:06:15.696Z",
-      "updatedAt": "2026-02-01T22:06:15.696Z",
-      "order": 3000,
-      "today": false,
-      "flagged": false
-    },
-    {
       "id": "task_1769984504582_xua0ibokb",
       "title": "Quran Memorization Gift",
       "notes": "",
@@ -2317,28 +2298,6 @@
       "today": false,
       "flagged": false,
       "noteOrder": 6000
-    },
-    {
-      "id": "task_1770485272782_1l1ycs1mk",
-      "title": "",
-      "notes": "",
-      "status": "inbox",
-      "completed": false,
-      "completedAt": null,
-      "categoryId": "personal",
-      "labels": [],
-      "people": [],
-      "deferDate": null,
-      "dueDate": null,
-      "repeat": null,
-      "isNote": false,
-      "parentId": null,
-      "indent": 0,
-      "createdAt": "2026-02-07T17:27:52.782Z",
-      "updatedAt": "2026-02-07T17:27:52.782Z",
-      "order": 1000,
-      "today": false,
-      "flagged": false
     },
     {
       "id": "task_1770490285825_vgowyp7kn",
@@ -3199,12 +3158,12 @@
       "id": "task_1770757912678_tf46h9h2v",
       "title": "Order Flagyl",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "today": false,
       "flagged": false,
       "completed": false,
       "completedAt": null,
-      "areaId": null,
+      "areaId": "health",
       "categoryId": null,
       "labels": [],
       "people": [],
@@ -3217,7 +3176,7 @@
       "meetingEventKey": null,
       "order": 46000,
       "createdAt": "2026-02-10T21:11:52.678Z",
-      "updatedAt": "2026-02-10T21:11:54.711Z",
+      "updatedAt": "2026-02-11T10:34:37.907Z",
       "gcalEventId": "ducvgs9jpbi8khrumd99anvk9s"
     },
     {
@@ -3430,7 +3389,9 @@
     "task_1770802293606_8z1kqbdwd": "2026-02-11T09:31:34.082Z",
     "task_1770802528702_xzv7xuwzc": "2026-02-11T09:35:32.822Z",
     "task_1770802524314_ojsjq0wxu": "2026-02-11T09:36:15.366Z",
-    "task_1770802526660_gntrnylhs": "2026-02-11T09:36:15.881Z"
+    "task_1770802526660_gntrnylhs": "2026-02-11T09:36:15.881Z",
+    "task_1770485272782_1l1ycs1mk": "2026-02-11T10:34:40.170Z",
+    "task_1769983575696_3yq56ixj0": "2026-02-11T10:34:40.620Z"
   },
   "deletedEntityTombstones": {
     "taskPeople": {
