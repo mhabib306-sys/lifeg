@@ -17,7 +17,7 @@ import './bridge.js';
 // -- Direct imports for init-only functions --
 import { state } from './state.js';
 import { initializeTaskOrders } from './features/task-filter.js';
-import { initializeNoteOrders } from './features/notes.js';
+import { initializeNoteOrders, ensureNoteSafetyMetadata, runNoteIntegrityChecks } from './features/notes.js';
 import { initWeather } from './features/weather.js';
 import { initWhoopSync } from './data/whoop-sync.js';
 import { initLibreSync } from './data/libre-sync.js';
@@ -96,6 +96,7 @@ function initApp() {
   migrateTodayFlag();
   initializeTaskOrders();
   initializeNoteOrders();
+  ensureNoteSafetyMetadata();
 
   // Ensure home widgets are complete
   ensureHomeWidgets();
@@ -208,6 +209,7 @@ function bootstrap() {
     state.showCacheRefreshPrompt = true;
     state.cacheRefreshPromptMessage = `Detected update from ${lastSeenVersion} to ${APP_VERSION}. A hard refresh is recommended.`;
   }
+  runNoteIntegrityChecks(lastSeenVersion);
   localStorage.setItem(APP_VERSION_SEEN_KEY, APP_VERSION);
 
   // Show loading spinner

@@ -341,6 +341,39 @@ function renderAIClassificationCard() {
   `;
 }
 
+function renderNoteSafetyCard() {
+  const notes = state.tasksData.filter(item => item?.isNote);
+  const activeCount = notes.filter(item => !item.completed && item.noteLifecycleState !== 'deleted').length;
+  const deletedCount = notes.filter(item => item.noteLifecycleState === 'deleted').length;
+  const completedCount = notes.filter(item => item.completed && item.noteLifecycleState !== 'deleted').length;
+
+  return `
+    <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-charcoal text-sm">Note Safety</h3>
+        <span class="text-xs text-charcoal/50">${activeCount} active · ${deletedCount} deleted · ${completedCount} completed</span>
+      </div>
+      <p class="text-xs text-charcoal/50 mb-3">Use this to find missing notes, inspect recent changes, and create a local backup before/after updates.</p>
+      <div class="flex flex-wrap gap-2 mb-2">
+        <input id="note-safety-search" type="text" placeholder="Search notes (e.g. mom)"
+          class="flex-1 min-w-[180px] px-3 py-1.5 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none">
+        <button onclick="(() => { const q = document.getElementById('note-safety-search')?.value || ''; const rows = window.findNotesByText(q, 20); alert(rows.length ? rows.map(r => (r.title + ' [' + r.state + '] · ' + new Date(r.updatedAt).toLocaleString())).join('\\n') : 'No matching notes found.'); })()"
+          class="sb-btn px-3 py-1.5 rounded text-xs font-medium">Find Notes</button>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button onclick="(() => { const rows = window.getRecentNoteChanges(20); alert(rows.length ? rows.map(r => (r.title + ' [' + r.state + '] · ' + r.lastAction + ' · ' + new Date(r.updatedAt).toLocaleString())).join('\\n') : 'No recent note changes found.'); })()"
+          class="px-3 py-1.5 bg-warmgray text-charcoal rounded-lg text-xs font-medium hover:bg-softborder transition">Recent Changes</button>
+        <button onclick="(() => { const rows = window.getDeletedNotes(20); alert(rows.length ? rows.map(r => (r.title + ' · deleted ' + new Date(r.deletedAt).toLocaleString() + ' · id=' + r.id)).join('\\n') : 'Trash is empty.'); })()"
+          class="px-3 py-1.5 bg-warmgray text-charcoal rounded-lg text-xs font-medium hover:bg-softborder transition">Show Deleted</button>
+        <button onclick="(() => { const latest = window.getDeletedNotes(1)[0]; if (!latest) { alert('No deleted note to restore.'); return; } const ok = window.restoreDeletedNote(latest.id, true); alert(ok ? ('Restored: ' + latest.title) : 'Could not restore note.'); })()"
+          class="px-3 py-1.5 bg-coral/10 text-coral rounded-lg text-xs font-medium hover:bg-coral/20 transition">Restore Latest</button>
+        <button onclick="(() => { const info = window.createNoteLocalBackup(); alert('Backup saved locally: ' + info.noteCount + ' notes at ' + new Date(info.createdAt).toLocaleString()); })()"
+          class="px-3 py-1.5 bg-coral text-white rounded-lg text-xs font-medium hover:bg-coralDark transition">Create Local Backup</button>
+      </div>
+    </div>
+  `;
+}
+
 function renderOfflineQueueCard() {
   const queue = window.getGCalOfflineQueue?.() || [];
   return `
@@ -622,6 +655,8 @@ export function renderSettingsTab() {
           <button onclick="window.forceHardRefresh()" class="px-3 py-1.5 bg-coral/10 text-coral rounded-lg text-xs font-medium hover:bg-coral/20 transition">Force Refresh</button>
         </div>
       </div>
+
+      ${renderNoteSafetyCard()}
 
       <!-- Developer Tools (collapsible) -->
       <details class="sb-card rounded-lg bg-[var(--bg-card)] group">
