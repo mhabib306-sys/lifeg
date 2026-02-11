@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-11T21:46:40.578Z",
+  "lastUpdated": "2026-02-11T21:51:17.651Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3353,6 +3353,46 @@
       "order": 41000,
       "createdAt": "2026-02-11T20:15:15.600Z",
       "updatedAt": "2026-02-11T20:15:15.600Z"
+    },
+    {
+      "id": "task_1770846670858_v5b81swq9",
+      "title": "",
+      "notes": "",
+      "status": "anytime",
+      "completed": true,
+      "completedAt": "2026-02-11T21:51:11.672Z",
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "noteLifecycleState": "deleted",
+      "noteHistory": [
+        {
+          "id": "nh_1770846670858_7gr87o",
+          "action": "created",
+          "at": "2026-02-11T21:51:10.858Z",
+          "details": {
+            "source": "child",
+            "relatedTo": "task_1770660818521_qanl2io2l"
+          }
+        },
+        {
+          "id": "nh_1770846671672_c1xiyk",
+          "action": "deleted",
+          "at": "2026-02-11T21:51:11.672Z",
+          "details": {
+            "reason": "manual"
+          }
+        }
+      ],
+      "parentId": "task_1770660818521_qanl2io2l",
+      "indent": 1,
+      "noteOrder": 1000,
+      "createdAt": "2026-02-11T21:51:10.858Z",
+      "updatedAt": "2026-02-11T21:51:11.672Z",
+      "deletedAt": "2026-02-11T21:51:11.672Z"
     }
   ],
   "deletedTaskTombstones": {
