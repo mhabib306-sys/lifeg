@@ -130,6 +130,8 @@ function writeWhoopToDate(dateKey, data) {
   if (data.strain !== null && data.strain !== undefined) {
     state.allData[dateKey].whoop.strain = data.strain;
   }
+
+  state.allData[dateKey]._lastModified = new Date().toISOString();
 }
 
 export async function syncWhoopNow() {

@@ -71,6 +71,7 @@ export function updateData(category, field, value) {
     todayData[category] = {};
   }
   todayData[category][field] = value;
+  todayData._lastModified = new Date().toISOString();
   state.allData[state.currentDate] = todayData;
   invalidateScoresCache(); // Clear memoization cache when data changes
   saveData();
@@ -94,7 +95,11 @@ export function saveTasksData() {
   safeLocalStorageSet(CATEGORIES_KEY, state.taskCategories);
   safeLocalStorageSet(PERSPECTIVES_KEY, state.customPerspectives);
   safeLocalStorageSet(TRIGGERS_KEY, state.triggers);
-  localStorage.setItem(LAST_UPDATED_KEY, Date.now().toString());
+  // NOTE: Do NOT set LAST_UPDATED_KEY here. That key tracks daily tracking
+  // data (allData) freshness for shouldUseCloud() in loadCloudData().
+  // Task/entity saves must not bump it — otherwise init-time saves
+  // (e.g. initializeTaskOrders) make local appear newer than cloud,
+  // preventing wholesale cloud data adoption on app startup.
   window.debouncedSaveToGithub();
 }
 
@@ -108,6 +113,7 @@ export function toggleDailyField(category, field) {
   if (!state.allData[today]) state.allData[today] = {};
   if (!state.allData[today][category]) state.allData[today][category] = {};
   state.allData[today][category][field] = !state.allData[today][category][field];
+  state.allData[today]._lastModified = new Date().toISOString();
   invalidateScoresCache();
   saveData();
   if (typeof window.processGamification === 'function') {
@@ -129,6 +135,7 @@ export function updateDailyField(category, field, value) {
   if (!state.allData[today]) state.allData[today] = {};
   if (!state.allData[today][category]) state.allData[today][category] = {};
   state.allData[today][category][field] = value === '' ? null : parseFloat(value) || value;
+  state.allData[today]._lastModified = new Date().toISOString();
   invalidateScoresCache();
   saveData();
   if (typeof window.processGamification === 'function') {

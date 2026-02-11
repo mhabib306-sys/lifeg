@@ -137,6 +137,8 @@ function writeLibreToDate(dateKey, data) {
   entry.libre.trend = data.trend || '';
   entry.libre.readingsCount = data.readingsCount || 0;
   entry.libre.lastReading = data.lastReading || '';
+
+  state.allData[dateKey]._lastModified = new Date().toISOString();
 }
 
 export async function syncLibreNow() {
