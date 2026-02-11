@@ -295,6 +295,10 @@ function buildNoteMetaChipsHtml(note) {
     const cat = state.taskAreas.find(c => c.id === note.areaId);
     if (cat) metaParts.push(escapeHtml(cat.name));
   }
+  if (note.categoryId) {
+    const subcat = state.taskCategories.find(c => c.id === note.categoryId);
+    if (subcat) metaParts.push(escapeHtml(subcat.name));
+  }
   (note.labels || []).forEach(lid => {
     const label = state.taskLabels.find(l => l.id === lid);
     if (label) metaParts.push(escapeHtml(label.name));
