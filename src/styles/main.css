@@ -4531,3 +4531,198 @@ body.mobile-keyboard-open .main-content {
     left: calc(22px + (var(--trigger-depth) * 20px));
   }
 }
+
+/* ============================================================================
+   GEIST THEME — Geist Design System Overrides
+   Scoped under [data-theme="geist"] to avoid bleeding into other themes.
+   Tokens from geist-colors official library. Aesthetic: monochrome, tight
+   radii, crisp 1px borders, black buttons, blue-700 accent, subtle glow.
+   ============================================================================ */
+
+/* --- Typography & Base --- */
+[data-theme="geist"] body {
+  background: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  letter-spacing: -0.011em;
+  line-height: 1.5;
+}
+
+/* --- Cards — crisp border, no shadow by default --- */
+[data-theme="geist"] .sb-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: none;
+  border-radius: var(--border-radius);
+}
+[data-theme="geist"] .sb-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- Buttons — Vercel black pill --- */
+[data-theme="geist"] .sb-btn {
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  box-shadow: none;
+  transform: none;
+  letter-spacing: 0;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+[data-theme="geist"] .sb-btn:hover,
+[data-theme="geist"] .sb-btn:active {
+  transform: none;
+  box-shadow: none;
+}
+
+/* --- Links --- */
+[data-theme="geist"] .sb-link {
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--accent);
+}
+[data-theme="geist"] .sb-link:hover {
+  text-decoration: underline;
+}
+
+/* --- Form Inputs — 1px border, blue glow on focus --- */
+[data-theme="geist"] input[type="number"],
+[data-theme="geist"] input[type="text"],
+[data-theme="geist"] textarea,
+[data-theme="geist"] select {
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius-sm);
+  box-shadow: none;
+  background: var(--bg-input);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+[data-theme="geist"] input[type="number"]:focus,
+[data-theme="geist"] input[type="text"]:focus,
+[data-theme="geist"] textarea:focus,
+[data-theme="geist"] select:focus {
+  border-color: var(--geist-border-focus);
+  box-shadow: var(--geist-glow);
+  outline: none;
+}
+
+/* --- Task items — clean borders, tight radius --- */
+[data-theme="geist"] .task-item {
+  border-radius: var(--border-radius-sm);
+  border: 1px solid transparent;
+  transition: background 0.1s ease, border-color 0.1s ease;
+}
+[data-theme="geist"] .task-item:hover {
+  background: var(--bg-hover);
+  border-color: var(--border);
+}
+
+/* --- Workspace chips/sidebar — monochrome, tight --- */
+[data-theme="geist"] .workspace-chip {
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+[data-theme="geist"] .workspace-chip.active {
+  background: #000;
+  color: #FFF;
+}
+[data-theme="geist"] .workspace-chip:not(.active):hover {
+  background: var(--bg-secondary);
+}
+
+/* --- Area chips --- */
+[data-theme="geist"] .area-chip {
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+}
+
+/* --- Modals — sharp corners, strong overlay, border --- */
+[data-theme="geist"] .modal-container {
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-modal);
+}
+
+/* --- Notes & triggers — tighter vertical --- */
+[data-theme="geist"] .note-item,
+[data-theme="geist"] .trigger-item {
+  border-radius: var(--border-radius-sm);
+}
+
+/* --- Sidebar items --- */
+[data-theme="geist"] .sidebar-item {
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+}
+[data-theme="geist"] .sidebar-item.active {
+  background: var(--sidebar-active);
+}
+
+/* --- Badges / pills — tighter --- */
+[data-theme="geist"] .count-badge {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Scrollbars --- */
+[data-theme="geist"] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+[data-theme="geist"] ::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+[data-theme="geist"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+[data-theme="geist"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* --- Toggles --- */
+[data-theme="geist"] .sb-toggle-track {
+  border-radius: 9999px;
+}
+
+/* --- SVG Icons — thinner strokes for Geist aesthetic --- */
+[data-theme="geist"] .workspace-chip-icon svg,
+[data-theme="geist"] .sidebar-item svg,
+[data-theme="geist"] .review-mode svg:not([fill]) {
+  stroke-width: 1.5px;
+}
+
+/* --- Review mode cards --- */
+[data-theme="geist"] .review-task-card {
+  border-radius: var(--border-radius-sm);
+  transition: background 0.1s ease;
+}
+[data-theme="geist"] .review-task-card:hover {
+  background: var(--bg-hover);
+}
+
+/* --- Quick add section --- */
+[data-theme="geist"] .quick-add-section input {
+  border: none !important;
+  box-shadow: none !important;
+}
+[data-theme="geist"] .quick-add-section input:focus {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* --- Active/focus glow for interactive elements --- */
+[data-theme="geist"] button:focus-visible {
+  outline: none;
+  box-shadow: var(--geist-glow);
+}
+
+/* --- Code / mono elements --- */
+[data-theme="geist"] code,
+[data-theme="geist"] pre,
+[data-theme="geist"] .font-mono {
+  font-family: var(--font-mono);
+  background: var(--geist-bg-code);
+  border-radius: var(--border-radius-sm);
+}

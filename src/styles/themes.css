@@ -120,3 +120,91 @@
   --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
   --shadow-modal: 0 20px 40px rgba(0,0,0,0.15);
 }
+
+/* Theme: Geist — Geist Design System
+   Color scale sourced from geist-colors (official token library).
+   Gray: 10-step neutral monochrome.  Blue-700 (#0070F3) = primary accent.
+   All values are the light-mode Geist tokens. */
+[data-theme="geist"] {
+  /* Backgrounds (background-100 #FFF, background-200 #FAFAFA, gray-100 #F2F2F2) */
+  --bg-primary: #FAFAFA;
+  --bg-secondary: #F2F2F2;
+  --bg-card: #FFFFFF;
+  --bg-input: #FFFFFF;
+  --bg-hover: #F2F2F2;
+  --bg-tertiary: #EBEBEB;
+
+  /* Typography (gray-1000, gray-900, gray-700) */
+  --text-primary: #171717;
+  --text-secondary: #666666;
+  --text-muted: #8F8F8F;
+
+  /* Accent — Geist blue-700 primary, blue-800 dark, blue-100 light */
+  --accent: #0070F3;
+  --accent-dark: #0060D1;
+  --accent-light: rgba(0, 112, 243, 0.08);
+  --accent-hover: rgba(0, 0, 0, 0.05);
+  --notes-accent: #8E4EC6;
+
+  /* Semantic — Geist scale 700 per color: red, amber, green, purple */
+  --flagged-color: #FFB224;
+  --overdue-color: #E5484D;
+  --deferred-color: #8F8F8F;
+  --notes-color: #8E4EC6;
+  --success: #46A758;
+  --warning: #FFB224;
+  --danger: #E5484D;
+
+  /* Perspective colors (mapped to Geist palette) */
+  --inbox-color: #0070F3;
+  --today-color: #FFB224;
+  --upcoming-color: #E5484D;
+  --anytime-color: #0070F3;
+  --someday-color: #8F8F8F;
+  --logbook-color: #46A758;
+
+  /* Borders — gray-300 (#E6E6E6) and gray-100 (#F2F2F2) */
+  --border: #E6E6E6;
+  --border-light: #F2F2F2;
+
+  /* Buttons — black foreground on white, Geist convention */
+  --btn-bg: #000000;
+  --btn-hover: #171717;
+
+  /* Sidebar */
+  --sidebar-bg: #FAFAFA;
+  --sidebar-active: rgba(0, 112, 243, 0.08);
+  --sidebar-hover: rgba(0, 0, 0, 0.05);
+
+  /* Modal */
+  --modal-bg: #FFFFFF;
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Toggle (gray-500, gray-600) */
+  --toggle-off: #C9C9C9;
+  --toggle-off-hover: #A8A8A8;
+
+  /* Scrollbar (grayAlpha-200, grayAlpha-500) */
+  --scrollbar-thumb: rgba(0, 0, 0, 0.08);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.21);
+
+  /* Font — Geist Sans, Geist Mono. Falls back to Inter → system. */
+  --font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'SF Mono', 'Fira Code', 'Roboto Mono', monospace;
+
+  /* Radius — Geist uses tight corners: 6px base, 8px large, 4px small */
+  --border-radius: 6px;
+  --border-radius-lg: 8px;
+  --border-radius-sm: 4px;
+
+  /* Shadows — clean and minimal, dual-layer */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --shadow-modal: 0 16px 48px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
+
+  /* Geist-specific tokens */
+  --geist-glow: 0 0 0 2px rgba(0, 112, 243, 0.25);
+  --geist-border-focus: #0070F3;
+  --geist-bg-code: #F2F2F2;
+}

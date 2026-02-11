@@ -472,6 +472,10 @@ export function renderSettingsTab() {
                   <div class="w-5 h-5 rounded-full bg-[#F7F6F4] border border-[var(--border)]"></div>
                   <div class="w-5 h-5 rounded-full bg-[#E5533D]"></div>
                   <div class="w-5 h-5 rounded-full bg-[#1a1a1a]"></div>
+                ` : key === 'geist' ? `
+                  <div class="w-5 h-5 rounded-full bg-[#FAFAFA] border border-[#E6E6E6]"></div>
+                  <div class="w-5 h-5 rounded-full bg-[#0070F3]"></div>
+                  <div class="w-5 h-5 rounded-full bg-[#000000]"></div>
                 ` : `
                   <div class="w-5 h-5 rounded-full bg-[#FFFFFF] border border-[var(--border)]"></div>
                   <div class="w-5 h-5 rounded-full bg-[#147EFB]"></div>

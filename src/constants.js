@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.23.1 - Homebase';
+export const APP_VERSION = '4.23.2 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -20,7 +20,8 @@ export const DATA_URL = 'data.json';
 // Available themes
 export const THEMES = {
   simplebits: { name: 'SimpleBits', description: 'Warm cream tones with coral accents' },
-  things3: { name: 'Things 3', description: 'Clean white with blue accents' }
+  things3: { name: 'Things 3', description: 'Clean white with blue accents' },
+  geist: { name: 'Geist', description: 'Vercel-inspired monochrome with sharp edges' }
 };
 
 // GitHub repo config
