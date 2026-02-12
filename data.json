@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T08:38:52.345Z",
+  "lastUpdated": "2026-02-12T08:38:56.127Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -10830,12 +10830,12 @@
   "triggers": [],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "UlEh3sC8rfyBmZN32ugk4g==",
-    "wrapIv": "IxJQO1MFyjPrf/zV",
-    "wrappedKey": "aGkmPU1EC1I02FJLqzEm4wvxQa3LjrQRvVW8LcaZFqZxD1aGFHhEVpbnV61s099g",
-    "dataIv": "Ry+DuoF2CAMxkkuG",
-    "data": "oRjpRRU5/plZjLfLSXzA1/RV+4h/PbGDf1jWXJ+AQVs7JXaVBdoj5Mbt+DMIdWefmHuYklwjJcvWwNSwYafRqPJWbYieNt0ebdI8YkpzUl6K1l1qiZWWN1dgdYpro0zzmNoD+CXF+gBwpbg/FWLWApQDEP1Ofv/lEPVE5CG3aUCpmhgWBnuB9Pryk3CHxKxuDP2xlwZNDV4TXOumFdCPgK9AK57LIXcqHVytHVwFSWv3pyscrFV7G7jr9cd1aWK/QoXQC8AacOeOlcSGdMdJUKmIdtk6Vsx1iQY3uObLg3NOqmMnrQ3QtW84TMIlL0i4VsOQX99o2UCQ3G5QfDFJ0JJI6podOpYqDBKwaziZqRDO15kcXe4CiI8ayLcWoojOeu7gEKtlqQ8f5nqnSdiBjLR8HxExrm//wAUlfqnB+ufKh7RrnKQh6vsiaxkvQqzkbhd3Unsg/ZO7J9iWXERYgeVLZtB/w3Kw40GhF+7o7dQ7mnE6P36x7sEukbTv9XqJjLAsaucrjnFVkjx+bWJzA3gh2qTCjqGiyIh9",
-    "updatedAt": "2026-02-12T08:38:52.355Z"
+    "salt": "yofgZILPxNcC5T8cYN0MqQ==",
+    "wrapIv": "DGtJwyCVFffTVcWz",
+    "wrappedKey": "6krJBKbAhmeOVBcHuY2YUeR5o1SXKU4JaH+icp0FruNb5ZybG5NgSYjTdVVqodLp",
+    "dataIv": "5MEf5//KnOKrmaEo",
+    "data": "b9ZfFouTSZzPj75UvuGaZjKZ5XdcK0fYMI0q6q/Uw/nz6UTjwYaPcEA9FQgmpwlN7leh7degYgf47i6q20RkDRnoDdl7XOIa3s6tRD9VyPYsEymTPyA4lLreyJI75M/guX/djdp2JgZ7dIixZmo8bftxLNjhXKl6vArKEpzXthYGr8MiPN2xGZAu2WboRFO0NImT4jyPHNroM9YaahlPOB2SLN2NIz+b0ruGzrG8p0K6X9My08ewXjZbU6Nh+ROj+/+a6NBTMmuiT+o2g1KvX2llEXffrp62Hgk9vjd7jTN4N2D+TbFCuJoKRhNyVQHbtQN2X+AFIlfKROkTplZ+a9jYgRD3+5kW9kiyseGj1RZUemfmN6ZXKznl4ACyAcp3Wq3cZ4x0K/3FMuETQAWfhrw8zrr4oUBj/WPyKuSBuE6j6zw2RghqQxnj5b/rcAGPxzUK59UfpT135tzLEQnTp1Iw9peqP2KgU2TIMbFl2iG1G2jVWWHKcvejpo0g3YQXp/IF6/rRIsYM2gOTsNKBO5JZ0SFfibbxfYJj",
+    "updatedAt": "2026-02-12T08:38:56.135Z"
   },
   "xp": {
     "total": 1914,
