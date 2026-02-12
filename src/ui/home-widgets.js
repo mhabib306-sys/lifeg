@@ -247,7 +247,7 @@ export function renderTodayEventsWidget(today) {
           <div class="flex items-start gap-2.5">
             <span class="mt-1 w-2 h-2 rounded-full flex-shrink-0" style="background: var(--success)"></span>
             <div class="min-w-0 flex-1">
-              <p class="text-[13px] font-medium text-[var(--text-primary)] truncate">${event.summary ? event.summary.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '(No title)'}</p>
+              <p class="text-[13px] font-medium text-[var(--text-primary)] truncate">${escapeHtml(event.summary || '(No title)')}</p>
               <p class="text-[11px] text-[var(--text-muted)] mt-0.5">${formatHomeEventTime(event)}</p>
             </div>
           </div>
@@ -725,7 +725,7 @@ export function renderGSheetWidget(today) {
     return `
       <div class="flex items-center gap-2">
         <input id="gsheet-prompt-input" type="text" placeholder="e.g. Summarize my last 14 days..."
-          value="${(savedPrompt).replace(/"/g, '&quot;')}"
+          value="${escapeHtml(savedPrompt)}"
           onkeydown="if(event.key==='Enter'){event.preventDefault();handleGSheetSavePrompt()}${editing ? ";if(event.key==='Escape'){event.preventDefault();handleGSheetCancelEdit()}" : ''}"
           class="input-field flex-1"
         />
@@ -754,7 +754,7 @@ export function renderGSheetWidget(today) {
       </div>`;
   } else if (response) {
     const isError = response.startsWith('Error:');
-    const responseContent = isError ? response.replace(/</g, '&lt;') : normalizeGSheetResponseHtml(response);
+    const responseContent = isError ? escapeHtml(response) : normalizeGSheetResponseHtml(response);
     responseHtml = `
       <div class="max-h-[300px] overflow-y-auto">
         <div class="gsheet-response text-sm leading-relaxed ${isError ? 'text-red-500' : 'text-[var(--text-primary)]'}">${responseContent}</div>
@@ -768,7 +768,7 @@ export function renderGSheetWidget(today) {
     ${responseHtml}
     <div class="flex items-center justify-between mt-3 pt-3 border-t border-[var(--border-light)]">
       <button onclick="handleGSheetEditPrompt()" class="flex-1 min-w-0 text-left group" title="Click to edit prompt">
-        <span class="text-[10px] text-[var(--text-muted)] truncate block group-hover:text-[var(--accent)] transition">${savedPrompt.replace(/</g, '&lt;')}</span>
+        <span class="text-[10px] text-[var(--text-muted)] truncate block group-hover:text-[var(--accent)] transition">${escapeHtml(savedPrompt)}</span>
       </button>
       <div class="flex items-center gap-3 ml-3 flex-shrink-0">
         ${tabCount ? `<span class="text-[10px] text-[var(--text-muted)]" title="${escapeHtml(tabNames)}">${tabCount} tabs</span>` : ''}

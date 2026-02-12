@@ -217,6 +217,9 @@ Respond with ONLY valid JSON — no markdown, no explanation. The JSON must be a
     });
   } catch (err) {
     clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      throw new Error('Classification timed out — try shorter text or check your connection');
+    }
     throw err;
   }
 }

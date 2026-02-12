@@ -530,6 +530,7 @@ export function resetMaxScores() {
   state.MAX_SCORES = JSON.parse(JSON.stringify(DEFAULT_MAX_SCORES));
   saveMaxScores();
   invalidateScoresCache();
+  window.debouncedSaveToGithub();
   window.render();
 }
 

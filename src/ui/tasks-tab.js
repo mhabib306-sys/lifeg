@@ -354,7 +354,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
         `}
         <div class="flex-1 min-w-0">
           ${isInlineEditing ? `
-            <input type="text" id="inline-edit-input" value="${task.title.replace(/"/g, '&quot;')}"
+            <input type="text" id="inline-edit-input" value="${escapeHtml(task.title)}"
               onkeydown="window.handleInlineEditKeydown(event, '${task.id}')"
               onblur="setTimeout(() => { if(window.inlineEditingTaskId) window.saveInlineEdit('${task.id}'); }, 180)"
               class="w-full text-[16px] text-[var(--text-primary)] bg-[var(--bg-input)] border border-[var(--accent)] rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-light)]">
