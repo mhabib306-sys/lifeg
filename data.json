@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T13:43:26.124Z",
+  "lastUpdated": "2026-02-12T13:43:46.543Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1765,10 +1765,10 @@
         "whoopAge": ""
       },
       "libre": {
-        "currentGlucose": 170,
+        "currentGlucose": 166,
         "trend": "↘",
         "readingsCount": 47,
-        "lastReading": "2/12/2026 3:40:46 PM"
+        "lastReading": "2/12/2026 3:42:47 PM"
       },
       "family": {
         "mom": false,
@@ -1787,7 +1787,7 @@
         "brushTeeth": 0,
         "nop": ""
       },
-      "_lastModified": "2026-02-12T13:41:41.874Z"
+      "_lastModified": "2026-02-12T13:43:43.843Z"
     }
   },
   "weights": {
@@ -10949,12 +10949,12 @@
   ],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "PXRYfD+oE/5Nv6u5wX0Xtw==",
-    "wrapIv": "6bE71+LZx6VlfO/1",
-    "wrappedKey": "FZdfGfqRbVm+6aL3gbiSgynEf1DqmAz+Fk11K01BeG8myIk7urCiY6dgy7A+gK51",
-    "dataIv": "VCU5XF7487uZgEpQ",
-    "data": "vwet7Wpcu4DIdFRL+2ksn6acrMDlV5GYkYbMtPRQePSlJWs81nb/p2oZ99yhw8Z2wuUuwfXJFpg3HhhpBP9y6Jd6rkeDapAfGKWWLbyxhj93eo6midKybh9Tr0gTQxCDg36yAX6/31MocApfKB7z4m1Dg62Q/TGb4HHF3tn7YipzIor3bSLrHAPIBs2dl9nmjpiOcEA87SdufF4jkjiUq4aSs1VCX9Hpp5b2qmBl5guc2gAtpExCqb5FRV6oqUpIaGKltTyMuk91y3t9WgLG+VJ1w/ibfB0/JCtcDYJGgLnILvC/PZy3lwsBVxp41NGjheVlBA5IeSTX3Od50H2+CJprTH9HyO0maXopTUh2doij76nZvm4WpOiJq8ZZMweazTe85jqHURBnQ5BUjztc+96hgRJc0qHEkgheEwOqywlOHn6tyRfXF5XYygsHBgfAyvnIv+J3ob05QbgDMVsEC7EyODi9hK6dBQP3/FcTOIna/uXt8tDDbTb7ffhLc1rP+BEaH4K7ewHzEPql1o2FRR/UgF7C+VHdZVOY",
-    "updatedAt": "2026-02-12T13:43:26.134Z"
+    "salt": "pm1IXjfzUUOVbLfTGZtWkQ==",
+    "wrapIv": "JWM5/Peu2YTq3XRM",
+    "wrappedKey": "8B3YhM3hQhDOlaZvydnfSJnr5lrqJDYIx9DTMqSuEDM6LEzF/kdXzKHUo/4ZrHwv",
+    "dataIv": "Z+kPc6Bqd6sWOf00",
+    "data": "8B/e0b0gbJ1mbzXgUiha7be4XqxD0rWTtDQC/x1fxeSY6aejlQQfqBtlA1LObxT5Zh98GNH+KZEb84lv/xz2Zp1es+fGtuyGEWdPP6fi7nKBw1q4r97Cm+d/aImrIEhr2JkSmri0C49eTWS20F8deAj1cT/EEohWlfLX6yDFy3VGTpKIgdHpsOBT8F/neQDwdpLQAQ2lDM0Bz0BS6+zlJL0IcfeuhrafKMe3o6zy9TfOtrvvWWnWvs05EtCYn2Pxb2B3DjCpnFSAe6eaKjY1wSITi1CvdsbbRA0lmKzzs9JmKOFokNjRC6OxHsNPEtI5MIM7L68yHHExQ3I4eQ3SVk2QFV4s4gwf7WeJUJii9OFwzyRp8MBDrfpE7UNlQA5ioRROTXg1oh4UwDnNjgBRuCsc0MGlc9pDRHjmisiJabL97RbttqmjhJ1XCF9YIyugI4XfCIZdJi6uEbXzQuQaxJg2mGwsNMI956iREijilceLCsIbheqp+8Mv3QG42Ha1u8ClCzC5r76Lzj4n2+D/nKEqIFAWM7S3Ini9",
+    "updatedAt": "2026-02-12T13:43:46.553Z"
   },
   "xp": {
     "total": 1937,
