@@ -213,7 +213,7 @@ export function saveMaxScores() {
  * Save home widget configuration to localStorage
  */
 export function saveHomeWidgets() {
-  localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+  safeLocalStorageSet(HOME_WIDGETS_KEY, state.homeWidgets);
 }
 
 /**

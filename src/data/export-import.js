@@ -17,7 +17,9 @@ import {
   ACHIEVEMENTS_KEY,
   HOME_WIDGETS_KEY,
   TRIGGERS_KEY,
-  MEETING_NOTES_KEY
+  MEETING_NOTES_KEY,
+  DELETED_TASK_TOMBSTONES_KEY,
+  DELETED_ENTITY_TOMBSTONES_KEY
 } from '../constants.js';
 import { getLocalDateString } from '../utils.js';
 import { saveData, saveWeights } from './storage.js';
@@ -48,6 +50,8 @@ export function exportData() {
     xp: state.xp,
     streak: state.streak,
     achievements: state.achievements,
+    deletedTaskTombstones: state.deletedTaskTombstones || {},
+    deletedEntityTombstones: state.deletedEntityTombstones || {},
     lastUpdated: new Date().toISOString()
   };
   const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
@@ -64,8 +68,92 @@ export function exportData() {
 // ---------------------------------------------------------------------------
 
 /**
+ * Validate the structure of imported data to prevent state corruption.
+ * Returns an array of error messages (empty = valid).
+ */
+function validateImportData(imported) {
+  const errors = [];
+  if (!imported || typeof imported !== 'object') {
+    errors.push('File is not a valid JSON object');
+    return errors;
+  }
+  // At least one recognized data key must exist
+  const knownKeys = ['data', 'weights', 'tasks', 'taskCategories', 'categories',
+    'taskLabels', 'taskPeople', 'customPerspectives', 'homeWidgets', 'triggers',
+    'meetingNotesByEvent', 'xp', 'streak', 'achievements', 'maxScores',
+    'categoryWeights', 'deletedTaskTombstones', 'deletedEntityTombstones'];
+  const hasAnyKey = knownKeys.some(k => imported[k] !== undefined);
+  if (!hasAnyKey) {
+    errors.push('File does not contain any recognized Homebase data');
+    return errors;
+  }
+  // Type checks for critical fields
+  if (imported.data !== undefined && (typeof imported.data !== 'object' || Array.isArray(imported.data))) {
+    errors.push('data must be an object (daily tracking entries)');
+  }
+  if (imported.tasks !== undefined && !Array.isArray(imported.tasks)) {
+    errors.push('tasks must be an array');
+  }
+  if (imported.tasks && Array.isArray(imported.tasks)) {
+    const sample = imported.tasks.slice(0, 5);
+    sample.forEach((task, i) => {
+      if (!task || typeof task !== 'object') errors.push(`tasks[${i}] is not an object`);
+      else if (!task.id) errors.push(`tasks[${i}] missing id`);
+    });
+  }
+  if (imported.taskCategories !== undefined && !Array.isArray(imported.taskCategories)) {
+    errors.push('taskCategories must be an array');
+  }
+  if (imported.categories !== undefined && !Array.isArray(imported.categories)) {
+    errors.push('categories must be an array');
+  }
+  if (imported.taskLabels !== undefined && !Array.isArray(imported.taskLabels)) {
+    errors.push('taskLabels must be an array');
+  }
+  if (imported.taskPeople !== undefined && !Array.isArray(imported.taskPeople)) {
+    errors.push('taskPeople must be an array');
+  }
+  return errors;
+}
+
+/**
+ * Silently create an auto-backup before destructive import.
+ * Saves to localStorage so it survives even if import corrupts state.
+ */
+function createPreImportBackup() {
+  const backup = {
+    data: state.allData,
+    weights: state.WEIGHTS,
+    maxScores: state.MAX_SCORES,
+    categoryWeights: state.CATEGORY_WEIGHTS,
+    tasks: state.tasksData,
+    taskCategories: state.taskAreas,
+    categories: state.taskCategories,
+    taskLabels: state.taskLabels,
+    taskPeople: state.taskPeople,
+    customPerspectives: state.customPerspectives,
+    homeWidgets: state.homeWidgets,
+    triggers: state.triggers,
+    meetingNotesByEvent: state.meetingNotesByEvent || {},
+    xp: state.xp,
+    streak: state.streak,
+    achievements: state.achievements,
+    deletedTaskTombstones: state.deletedTaskTombstones || {},
+    deletedEntityTombstones: state.deletedEntityTombstones || {},
+    lastUpdated: new Date().toISOString()
+  };
+  try {
+    localStorage.setItem('lifeGamification_preImportBackup', JSON.stringify(backup));
+    return true;
+  } catch (e) {
+    console.warn('Could not create pre-import backup:', e.message);
+    return false;
+  }
+}
+
+/**
  * Import data from a JSON backup file (via file input change event)
- * Merges/replaces allData, weights, tasks, categories, labels, people, perspectives
+ * Shows confirmation dialog, validates data, creates auto-backup before replacing.
  * @param {Event} event - File input change event
  */
 export function importData(event) {
@@ -75,6 +163,34 @@ export function importData(event) {
   reader.onload = (e) => {
     try {
       const imported = JSON.parse(e.target.result);
+
+      // Validate before proceeding
+      const validationErrors = validateImportData(imported);
+      if (validationErrors.length > 0) {
+        alert('Import failed — invalid data:\n\n' + validationErrors.join('\n'));
+        return;
+      }
+
+      // Build summary for confirmation
+      const taskCount = Array.isArray(imported.tasks) ? imported.tasks.length : 0;
+      const dateCount = imported.data ? Object.keys(imported.data).length : 0;
+      const fileDate = imported.lastUpdated
+        ? new Date(imported.lastUpdated).toLocaleDateString()
+        : 'unknown';
+
+      const confirmed = confirm(
+        `Import backup from ${fileDate}?\n\n` +
+        `This will REPLACE your current data:\n` +
+        `• ${taskCount} tasks\n` +
+        `• ${dateCount} days of tracking data\n\n` +
+        `A backup of your current data will be saved automatically.\n` +
+        `Continue?`
+      );
+      if (!confirmed) return;
+
+      // Auto-backup current state before overwriting
+      createPreImportBackup();
+
       if (imported.data) {
         state.allData = imported.data;
         saveData();
@@ -141,6 +257,15 @@ export function importData(event) {
       if (imported.meetingNotesByEvent) {
         state.meetingNotesByEvent = imported.meetingNotesByEvent;
         localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(state.meetingNotesByEvent));
+      }
+      // Restore tombstones to prevent deleted items from resurrecting on cloud sync
+      if (imported.deletedTaskTombstones) {
+        state.deletedTaskTombstones = imported.deletedTaskTombstones;
+        localStorage.setItem(DELETED_TASK_TOMBSTONES_KEY, JSON.stringify(state.deletedTaskTombstones));
+      }
+      if (imported.deletedEntityTombstones) {
+        state.deletedEntityTombstones = imported.deletedEntityTombstones;
+        localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(state.deletedEntityTombstones));
       }
       alert('Data imported successfully!');
       window.debouncedSaveToGithub();

@@ -1,5 +1,5 @@
 import { state } from '../state.js';
-import { saveTasksData } from '../data/storage.js';
+import { saveTasksData, saveViewState } from '../data/storage.js';
 import { ensureEntityTombstones, persistEntityTombstones } from './areas.js';
 
 function markPerspectiveDeleted(id) {
@@ -51,7 +51,10 @@ export function createPerspective(name, icon, filter) {
 export function deletePerspective(perspectiveId) {
   markPerspectiveDeleted(perspectiveId);
   state.customPerspectives = state.customPerspectives.filter(p => p.id !== perspectiveId);
-  if (state.activePerspective === perspectiveId) state.activePerspective = 'inbox';
+  if (state.activePerspective === perspectiveId) {
+    state.activePerspective = 'inbox';
+    saveViewState();
+  }
   saveTasksData();
 }
 

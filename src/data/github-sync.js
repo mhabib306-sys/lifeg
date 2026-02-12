@@ -805,9 +805,12 @@ export async function saveToGithub(options = {}) {
     if (updateResponse.ok) {
       const saveLatency = Math.round(performance.now() - saveStartTime);
       // PUT succeeded — merged state is now committed, persist to localStorage
+      // All keys must mirror rollbackMerge() to prevent state divergence
       if (premergeSnapshot) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state.allData));
         localStorage.setItem(TASKS_KEY, JSON.stringify(state.tasksData));
+        localStorage.setItem(DELETED_TASK_TOMBSTONES_KEY, JSON.stringify(state.deletedTaskTombstones));
+        localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(state.deletedEntityTombstones));
         localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
         localStorage.setItem(CATEGORIES_KEY, JSON.stringify(state.taskCategories));
         localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
@@ -816,10 +819,12 @@ export async function saveToGithub(options = {}) {
         localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
         localStorage.setItem(TRIGGERS_KEY, JSON.stringify(state.triggers));
         localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(state.meetingNotesByEvent || {}));
+        localStorage.setItem(CONFLICT_NOTIFICATIONS_KEY, JSON.stringify(state.conflictNotifications || []));
       }
       state.syncRetryCount = 0; // Reset retry counter on success
       state.syncRateLimited = false;
-      // Clear dirty flag — data is safely in the cloud
+      // Clear dirty flag AFTER localStorage writes succeed — if a write above
+      // threw QuotaExceededError, dirty stays true so next session retries
       state.githubSyncDirty = false;
       localStorage.setItem(GITHUB_SYNC_DIRTY_KEY, 'false');
       // Clear any pending retry timer — this save already succeeded
@@ -997,6 +1002,9 @@ export async function loadCloudData() {
     // so edits from other devices aren't lost
     mergeCloudAllData(cloudData.data);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.allData));
+    // Update timestamp so subsequent shouldUseCloud() checks are based on
+    // the merged result, not a stale pre-merge timestamp
+    localStorage.setItem(LAST_UPDATED_KEY, Date.now().toString());
   }
 
   try {
