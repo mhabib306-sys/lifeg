@@ -1,6 +1,6 @@
 {
   "name": "homebase",
-  "version": "4.42.0",
+  "version": "4.42.1",
   "description": "Homebase - Life Gamification & Task Management",
   "type": "module",
   "scripts": {
@@ -8,6 +8,7 @@
     "build": "vite build",
     "postbuild": "node scripts/validate-build.js",
     "preview": "vite preview",
+    "bump": "node scripts/bump-version.js",
     "predeploy": "node scripts/check-version.js",
     "deploy": "vite build && node scripts/validate-build.js && cd dist && rm -f .DS_Store && touch .nojekyll && git init && git checkout -b gh-pages && git add -A && git commit -m Deploy && ORIGIN_URL=$(git -C .. remote get-url origin) && git remote add origin \"$ORIGIN_URL\" && git push -f origin gh-pages && rm -rf .git",
     "test": "vitest run",

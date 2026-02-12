@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents (Claude Code, Codex, etc.) when 
 
 ## Project Overview
 
-**Homebase** (v4.42.0 - Homebase) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
+**Homebase** (v4.42.1 - Homebase) — A modular life gamification & task management web app. Combines Things 3/OmniFocus-style task management with daily habit tracking, health metrics, and gamification scoring. Built with Vite + Tailwind CSS v4 + vanilla JavaScript ES modules.
 
 ## Git Workflow
 
@@ -12,16 +12,17 @@ This is a git repo with a GitHub remote. **Every change must be committed and pu
 
 ## Versioning
 
-**Always bump the version after making changes.** Update these locations:
-1. `APP_VERSION` constant in `src/constants.js`
-2. Version in `package.json`
-3. Version in this file's Project Overview section
-4. Update docs in `docs/` if behavior or structure changed
+**Always bump the version after making changes.** Use the automated bump script:
 
-Use semantic versioning (MAJOR.MINOR.PATCH):
-- **PATCH** (e.g. 4.0.0 → 4.0.1): Bug fixes, small tweaks
-- **MINOR** (e.g. 4.0.0 → 4.1.0): New features, enhancements, UI overhauls
-- **MAJOR** (e.g. 4.0.0 → 5.0.0): Breaking changes, major new systems
+```bash
+npm run bump patch   # Bug fixes, small tweaks (4.42.0 → 4.42.1)
+npm run bump minor   # New features, enhancements (4.42.0 → 4.43.0)
+npm run bump major   # Breaking changes (4.42.0 → 5.0.0)
+```
+
+This auto-updates all 4 version locations (package.json → constants.js, index.html, CLAUDE.md). **Do NOT manually edit version strings** — always use `npm run bump`. The `predeploy` hook also auto-syncs versions, so `npm run deploy` will fix any drift automatically.
+
+Update docs in `docs/` if behavior or structure changed.
 
 Mention the new version number when reporting completed work.
 
