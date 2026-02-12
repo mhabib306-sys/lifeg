@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "bump": "node scripts/bump-version.js",
     "predeploy": "node scripts/check-version.js",
-    "deploy": "vite build && node scripts/validate-build.js && cd dist && rm -f .DS_Store && touch .nojekyll && git init && git checkout -b gh-pages && git add -A && git commit -m Deploy && ORIGIN_URL=$(git -C .. remote get-url origin) && git remote add origin \"$ORIGIN_URL\" && git push -f origin gh-pages && rm -rf .git",
+    "deploy": "vite build && node scripts/validate-build.js && cd dist && rm -rf .git .DS_Store && touch .nojekyll && git init && git checkout -B gh-pages && git add -A && git commit -m Deploy && ORIGIN_URL=$(git -C .. remote get-url origin) && git remote add origin \"$ORIGIN_URL\" && git push -f origin gh-pages && rm -rf .git",
     "test": "vitest run",
     "lint": "eslint src/ && node scripts/check-xss.js",
     "tauri": "tauri",
