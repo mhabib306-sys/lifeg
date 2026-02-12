@@ -393,71 +393,54 @@ export function renderBraindumpOverlay() {
   return renderInputStep();
 }
 
-// ---- Step 1: Input ----
+// ---- Step 1: Input (iA Writer-inspired) ----
 function renderInputStep() {
-  const lineCount = state.braindumpRawText ? state.braindumpRawText.split('\n').filter(l => l.trim()).length : 0;
+  const text = state.braindumpRawText || '';
+  const lineCount = text ? text.split('\n').filter(l => l.trim()).length : 0;
+  const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
   const voiceActive = state.braindumpVoiceRecording || state.braindumpVoiceTranscribing;
-  const voiceLabel = state.braindumpVoiceTranscribing ? 'Processing Voice...' : voiceActive ? 'Stop Voice' : 'Voice Input';
   const hasAnthropicKey = !!getAnthropicKey();
 
   return `
-    <div class="braindump-overlay" onclick="if(event.target===this)closeBraindump()">
-      <div class="braindump-container">
-        <div class="braindump-header">
-          <div class="flex items-center gap-3">
-            <div class="braindump-icon">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
-                <polyline points="14 3 14 9 20 9"/>
-                <line x1="8" y1="13" x2="16" y2="13"/>
-                <line x1="8" y1="17" x2="13" y2="17"/>
-              </svg>
-            </div>
-            <div>
-              <h2 class="text-lg font-bold text-[var(--text-primary)]">Braindump</h2>
-              <p class="text-xs text-[var(--text-muted)]">Pour it all out. We'll sort it.</p>
-            </div>
-          </div>
-          <button onclick="closeBraindump()" class="braindump-close" aria-label="Close">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    <div class="braindump-overlay braindump-writer">
+      <div class="braindump-writer-chrome">
+        <button onclick="closeBraindump()" class="braindump-writer-back" aria-label="Close">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <div class="braindump-writer-status">
+          <span id="braindump-count" class="braindump-writer-count">${lineCount > 0 ? `${lineCount} line${lineCount !== 1 ? 's' : ''} · ${wordCount} word${wordCount !== 1 ? 's' : ''}` : ''}</span>
+        </div>
+        <div class="braindump-writer-actions">
+          <button id="braindump-voice-btn" onclick="toggleBraindumpVoiceCapture()" class="braindump-writer-tool ${voiceActive ? 'is-recording' : ''}" ${state.braindumpVoiceTranscribing ? 'disabled' : ''} aria-label="Voice input" title="${hasAnthropicKey ? 'Voice + AI cleanup' : 'Voice capture'}">
+            ${voiceActive ? `
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+            ` : `
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            `}
           </button>
-        </div>
-
-        <div class="braindump-body">
-          <textarea id="braindump-textarea" class="braindump-textarea"
-            placeholder="Type freely... tasks, notes, ideas. One per line, or just let it flow."
-            oninput="state.braindumpRawText = this.value; document.getElementById('braindump-process-btn').disabled = !this.value.trim() || state.braindumpVoiceRecording || state.braindumpVoiceTranscribing; var c = this.value.split('\\n').filter(l=>l.trim()).length; document.getElementById('braindump-count').textContent = c > 0 ? c + ' item' + (c!==1?'s':'') : '';"
-          >${escapeHtml(state.braindumpRawText)}</textarea>
-
-          <div class="braindump-tips">
-            <span class="braindump-tip"># areas</span>
-            <span class="braindump-tip">@ tags</span>
-            <span class="braindump-tip">& people</span>
-            <span class="braindump-tip">! dates</span>
-            <span class="braindump-tip">voice dictation</span>
-          </div>
-
-          <div id="braindump-voice-error" class="braindump-voice-error" style="${state.braindumpVoiceError ? '' : 'display:none'}">${state.braindumpVoiceError ? escapeHtml(state.braindumpVoiceError) : ''}</div>
-        </div>
-
-        <div class="braindump-footer">
-          <div class="braindump-footer-left">
-            <span id="braindump-count" class="text-xs text-[var(--text-muted)]">${lineCount > 0 ? `${lineCount} item${lineCount !== 1 ? 's' : ''}` : ''}</span>
-            <button id="braindump-voice-btn" onclick="toggleBraindumpVoiceCapture()" class="braindump-voice-btn ${voiceActive ? 'is-recording' : ''}" ${state.braindumpVoiceTranscribing ? 'disabled' : ''} title="${hasAnthropicKey ? 'Voice capture + Anthropic cleanup' : 'Voice capture on-device (add Anthropic key for cleanup)'}">
-              ${voiceActive ? `
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
-              ` : `
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V7a3 3 0 1 0-6 0v4a3 3 0 0 0 3 3zm5-3a1 1 0 1 1 2 0 7 7 0 0 1-6 6.92V21h2a1 1 0 1 1 0 2H9a1 1 0 1 1 0-2h2v-3.08A7 7 0 0 1 5 11a1 1 0 1 1 2 0 5 5 0 0 0 10 0z"/></svg>
-              `}
-              <span>${voiceLabel}</span>
-            </button>
-          </div>
-          <button id="braindump-process-btn" onclick="processBraindump()" class="braindump-process-btn" ${(!state.braindumpRawText.trim() || voiceActive) ? 'disabled' : ''}>
+          <button id="braindump-process-btn" onclick="processBraindump()" class="braindump-writer-process" ${(!text.trim() || voiceActive) ? 'disabled' : ''}>
             Process
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         </div>
       </div>
+
+      <div class="braindump-writer-body">
+        <textarea id="braindump-textarea" class="braindump-writer-textarea"
+          placeholder="Just write."
+          spellcheck="true"
+          oninput="state.braindumpRawText = this.value; document.getElementById('braindump-process-btn').disabled = !this.value.trim() || state.braindumpVoiceRecording || state.braindumpVoiceTranscribing; var lines = this.value.split('\\n').filter(l=>l.trim()).length; var words = this.value.trim() ? this.value.trim().split(/\\s+/).length : 0; document.getElementById('braindump-count').textContent = lines > 0 ? lines + ' line' + (lines!==1?'s':'') + ' \\u00b7 ' + words + ' word' + (words!==1?'s':'') : '';"
+        >${escapeHtml(text)}</textarea>
+      </div>
+
+      <div class="braindump-writer-hints">
+        <span># area</span>
+        <span>@ tag</span>
+        <span>& person</span>
+        <span>! date</span>
+      </div>
+
+      <div id="braindump-voice-error" class="braindump-voice-error" style="${state.braindumpVoiceError ? '' : 'display:none'}">${state.braindumpVoiceError ? escapeHtml(state.braindumpVoiceError) : ''}</div>
     </div>
   `;
 }
