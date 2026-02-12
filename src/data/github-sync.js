@@ -692,8 +692,24 @@ export async function saveToGithub(options = {}) {
       if (premergeSnapshot) {
         rollbackMerge(premergeSnapshot);
       }
-      const error = await updateResponse.json();
-      throw new Error(error.message || 'Failed to save');
+      let errorMsg = `HTTP ${updateResponse.status}`;
+      try {
+        const error = await updateResponse.json();
+        errorMsg = error.message || errorMsg;
+      } catch (_) { /* response may not be JSON */ }
+      if (updateResponse.status === 409) {
+        // SHA conflict — another device saved. Reset retry counter so next
+        // attempt fetches the fresh SHA and re-merges.
+        state.syncRetryCount = 0;
+        throw new Error('Conflict: file changed by another device');
+      }
+      if (updateResponse.status === 401) {
+        throw new Error('GitHub token is invalid or expired');
+      }
+      if (updateResponse.status === 403) {
+        throw new Error('GitHub rate limit exceeded — try again later');
+      }
+      throw new Error(errorMsg);
     }
   } catch (e) {
     // Rollback merged state on any failure (network error, abort, etc.)
@@ -747,6 +763,8 @@ export function debouncedSaveToGithub() {
     clearTimeout(state.syncRetryTimer);
     state.syncRetryTimer = null;
   }
+  // Reset backoff counter on new user action so retries start fresh
+  state.syncRetryCount = 0;
   state.syncDebounceTimer = setTimeout(() => {
     state.syncDebounceTimer = null;
     saveToGithub().catch(err => console.error('Debounced save failed:', err));
@@ -840,7 +858,6 @@ export async function loadCloudData() {
         mergeSingletonIfNewer('xp', cloudData.xp, XP_KEY);
         mergeSingletonIfNewer('streak', cloudData.streak, STREAK_KEY);
         mergeSingletonIfNewer('achievements', cloudData.achievements, ACHIEVEMENTS_KEY);
-        // Triggers are now properly merged inside mergeTaskCollectionsFromCloud() above
 
         // Restore encrypted credentials (gap-fill: only writes where local is empty)
         if (cloudData.encryptedCredentials) {
@@ -854,6 +871,16 @@ export async function loadCloudData() {
         console.log('Loaded from GitHub');
         updateSyncStatus('success', 'Loaded from GitHub');
         return;
+      } else if (response.status === 401) {
+        updateSyncStatus('error', 'GitHub token invalid or expired');
+        console.error('GitHub auth failed (401) — token may be expired');
+        return;
+      } else if (response.status === 403) {
+        updateSyncStatus('error', 'GitHub rate limit exceeded');
+        console.error('GitHub rate limited (403)');
+        return;
+      } else if (response.status === 404) {
+        console.log('Cloud data file not found — first sync will create it');
       }
     }
 
@@ -871,7 +898,12 @@ export async function loadCloudData() {
       invalidateScoresCache();
     }
   } catch (e) {
-    console.log('Offline mode - using local data');
+    if (e.name === 'AbortError' || !navigator.onLine) {
+      console.log('Offline mode — using local data');
+    } else {
+      console.error('Cloud load failed:', e.message);
+      updateSyncStatus('error', `Load failed: ${e.message}`);
+    }
   } finally {
     state.syncInProgress = false;
   }

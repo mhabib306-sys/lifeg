@@ -38,6 +38,19 @@ function safeLocalStorageSet(key, value) {
   }
 }
 
+/** Safe raw string write (for non-JSON values like timestamps) */
+function safeLocalStorageSetRaw(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') {
+      console.error('Storage quota exceeded for key:', key);
+    }
+    return false;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Core persistence
 // ---------------------------------------------------------------------------
@@ -47,7 +60,7 @@ function safeLocalStorageSet(key, value) {
  */
 export function saveData() {
   safeLocalStorageSet(STORAGE_KEY, state.allData);
-  localStorage.setItem(LAST_UPDATED_KEY, Date.now().toString());
+  safeLocalStorageSetRaw(LAST_UPDATED_KEY, Date.now().toString());
 }
 
 /**
@@ -151,7 +164,8 @@ export function updateDailyField(category, field, value) {
   const today = getLocalDateString();
   if (!state.allData[today]) state.allData[today] = {};
   if (!state.allData[today][category]) state.allData[today][category] = {};
-  state.allData[today][category][field] = value === '' ? null : parseFloat(value) || value;
+  const parsed = parseFloat(value);
+  state.allData[today][category][field] = value === '' ? null : (Number.isNaN(parsed) ? value : parsed);
   state.allData[today]._lastModified = new Date().toISOString();
   invalidateScoresCache();
   saveData();
@@ -168,7 +182,7 @@ export function updateDailyField(category, field, value) {
  */
 export function saveViewState() {
   const safePerspective = state.activePerspective === 'calendar' ? 'inbox' : state.activePerspective;
-  localStorage.setItem(VIEW_STATE_KEY, JSON.stringify({
+  safeLocalStorageSet(VIEW_STATE_KEY, {
     activeTab: state.activeTab,
     activeSubTab: state.activeSubTab,
     activePerspective: safePerspective,
@@ -178,21 +192,21 @@ export function saveViewState() {
     activeLabelFilter: state.activeLabelFilter,
     activePersonFilter: state.activePersonFilter,
     activeCategoryFilter: state.activeCategoryFilter
-  }));
+  });
 }
 
 /**
  * Save scoring weights to localStorage
  */
 export function saveWeights() {
-  localStorage.setItem(WEIGHTS_KEY, JSON.stringify(state.WEIGHTS));
+  safeLocalStorageSet(WEIGHTS_KEY, state.WEIGHTS);
 }
 
 /**
  * Save max scores to localStorage
  */
 export function saveMaxScores() {
-  localStorage.setItem(MAX_SCORES_KEY, JSON.stringify(state.MAX_SCORES));
+  safeLocalStorageSet(MAX_SCORES_KEY, state.MAX_SCORES);
 }
 
 /**
@@ -206,7 +220,7 @@ export function saveHomeWidgets() {
  * Save collapsed notes set to localStorage
  */
 export function saveCollapsedNotes() {
-  localStorage.setItem(COLLAPSED_NOTES_KEY, JSON.stringify([...state.collapsedNotes]));
+  safeLocalStorageSet(COLLAPSED_NOTES_KEY, [...state.collapsedNotes]);
 }
 
 // ---------------------------------------------------------------------------

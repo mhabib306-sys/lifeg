@@ -28,7 +28,13 @@ function clearWidgetDeleted(id) {
 // ---- Persistence ----
 
 export function saveHomeWidgets() {
-  localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+  try {
+    localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') {
+      console.error('Storage quota exceeded for homeWidgets');
+    }
+  }
   if (typeof window.debouncedSaveToGithub === 'function') {
     window.debouncedSaveToGithub();
   }

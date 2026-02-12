@@ -14,7 +14,10 @@ import {
   CATEGORY_WEIGHTS_KEY,
   XP_KEY,
   STREAK_KEY,
-  ACHIEVEMENTS_KEY
+  ACHIEVEMENTS_KEY,
+  HOME_WIDGETS_KEY,
+  TRIGGERS_KEY,
+  MEETING_NOTES_KEY
 } from '../constants.js';
 import { getLocalDateString } from '../utils.js';
 import { saveData, saveWeights } from './storage.js';
@@ -31,12 +34,20 @@ export function exportData() {
   const exportObj = {
     data: state.allData,
     weights: state.WEIGHTS,
+    maxScores: state.MAX_SCORES,
+    categoryWeights: state.CATEGORY_WEIGHTS,
     tasks: state.tasksData,
     taskCategories: state.taskAreas,
     categories: state.taskCategories,
     taskLabels: state.taskLabels,
     taskPeople: state.taskPeople,
     customPerspectives: state.customPerspectives,
+    homeWidgets: state.homeWidgets,
+    triggers: state.triggers,
+    meetingNotesByEvent: state.meetingNotesByEvent || {},
+    xp: state.xp,
+    streak: state.streak,
+    achievements: state.achievements,
     lastUpdated: new Date().toISOString()
   };
   const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
@@ -118,6 +129,18 @@ export function importData(event) {
       if (imported.customPerspectives) {
         state.customPerspectives = imported.customPerspectives;
         localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(state.customPerspectives));
+      }
+      if (imported.homeWidgets) {
+        state.homeWidgets = imported.homeWidgets;
+        localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+      }
+      if (imported.triggers) {
+        state.triggers = imported.triggers;
+        localStorage.setItem(TRIGGERS_KEY, JSON.stringify(state.triggers));
+      }
+      if (imported.meetingNotesByEvent) {
+        state.meetingNotesByEvent = imported.meetingNotesByEvent;
+        localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(state.meetingNotesByEvent));
       }
       alert('Data imported successfully!');
       window.debouncedSaveToGithub();
