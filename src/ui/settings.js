@@ -23,16 +23,22 @@ import {
 import { GCAL_LAST_SYNC_KEY, GCONTACTS_LAST_SYNC_KEY } from '../constants.js';
 
 // ============================================================================
+// Helpers
+// ============================================================================
+
+function formatSyncTime(ts) {
+  if (!ts) return 'Never';
+  const d = typeof ts === 'string' ? new Date(ts) : new Date(typeof ts === 'number' ? ts : parseInt(ts, 10));
+  return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+function statusDot(on) {
+  return `<span class="w-2 h-2 rounded-full flex-shrink-0 ${on ? 'bg-green-500' : 'bg-[var(--text-muted)]/40'}"></span>`;
+}
+
+// ============================================================================
 // createWeightInput — Single weight/max-score input row
 // ============================================================================
-/**
- * Create a labeled number input for a scoring weight or threshold value.
- * @param {string} label - Human-readable label for the weight
- * @param {number} value - Current numeric value
- * @param {string} category - Weight category key (e.g. 'prayer', 'glucose')
- * @param {string|null} field - Field key within the category, or null for top-level
- * @returns {string} HTML string for the input row
- */
 export function createWeightInput(label, value, category, field = null) {
   return `
     <div class="flex items-center justify-between py-2 border-b border-[var(--border-light)]">
@@ -45,133 +51,88 @@ export function createWeightInput(label, value, category, field = null) {
 }
 
 // ============================================================================
-// renderWhoopSettingsCard — WHOOP Integration settings
+// Worker-based integration (WHOOP / Libre) — shared compact renderer
 // ============================================================================
-function renderWhoopSettingsCard() {
-  const connected = isWhoopConnected();
-  const workerUrl = getWhoopWorkerUrl();
-  const apiKey = getWhoopApiKey();
-  const lastSync = getWhoopLastSync();
+function renderWorkerIntegration(name, {
+  connected, workerUrl, apiKey, lastSync,
+  setUrlFn, setKeyFn, connectFn, disconnectFn, syncFn, checkStatusFn,
+  isLast = false
+}) {
   const hasConfig = workerUrl && apiKey;
+  const lastSyncText = formatSyncTime(lastSync);
+  const border = isLast ? '' : 'border-b border-[var(--border-light)]';
 
-  const lastSyncText = lastSync
-    ? new Date(lastSync).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
-    : 'Never';
-
-  return `
-    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-[var(--text-primary)] mb-4">WHOOP Integration <span class="text-[var(--accent)]">→</span></h3>
-      <p class="text-sm text-[var(--text-muted)] mb-4">Auto-sync sleep performance, recovery, and strain from your WHOOP account.</p>
-
-      <div class="space-y-3 mb-4">
-        <div>
-          <label class="text-sm text-[var(--text-secondary)] block mb-1">Worker URL</label>
-          <input type="url" value="${workerUrl}" placeholder="https://whoop-proxy.xxx.workers.dev"
-            class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none"
-            onchange="window.setWhoopWorkerUrl(this.value)">
+  if (connected) {
+    return `
+      <div class="py-3 ${border}">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5 min-w-0">
+            ${statusDot(true)}
+            <span class="text-sm font-medium text-[var(--text-primary)]">${name}</span>
+            <span class="text-xs text-[var(--text-muted)]">${lastSyncText}</span>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button onclick="window.${syncFn}()" class="px-2.5 py-1 bg-coral text-white rounded text-xs font-medium hover:bg-coralDark transition">Sync</button>
+            <button onclick="window.${disconnectFn}(); window.render()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Disconnect</button>
+          </div>
         </div>
-        <div>
-          <label class="text-sm text-[var(--text-secondary)] block mb-1">API Key</label>
-          <input type="password" value="${apiKey}" placeholder="Shared secret from worker setup"
-            class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none"
-            onchange="window.setWhoopApiKey(this.value)">
+        <details class="mt-2">
+          <summary class="text-xs text-[var(--text-muted)] cursor-pointer hover:text-[var(--text-secondary)] select-none">Configure</summary>
+          <div class="mt-2 space-y-2 pl-4">
+            <div>
+              <label class="text-xs text-[var(--text-muted)] block mb-1">Worker URL</label>
+              <input type="url" value="${workerUrl}" placeholder="https://..."
+                class="w-full px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none"
+                onchange="window.${setUrlFn}(this.value)">
+            </div>
+            <div>
+              <label class="text-xs text-[var(--text-muted)] block mb-1">API Key</label>
+              <input type="password" value="${apiKey}" placeholder="Shared secret"
+                class="w-full px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none"
+                onchange="window.${setKeyFn}(this.value)">
+            </div>
+          </div>
+        </details>
+      </div>
+    `;
+  }
+
+  // Not connected
+  return `
+    <div class="py-3 ${border}">
+      <div class="flex items-center justify-between gap-3 mb-3">
+        <div class="flex items-center gap-2.5">
+          ${statusDot(false)}
+          <span class="text-sm font-medium text-[var(--text-primary)]">${name}</span>
+          <span class="text-xs text-[var(--text-muted)]">Not connected</span>
         </div>
       </div>
-
-      <div class="flex flex-wrap gap-3 pt-4 border-t border-[var(--border)]">
-        ${connected ? `
-          <button onclick="window.syncWhoopNow()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
-            Sync Now
-          </button>
-          <button onclick="window.disconnectWhoop(); window.render()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition">
-            Disconnect
-          </button>
-          <span class="flex items-center text-xs text-[var(--text-muted)]">
-            <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-            Connected · Last sync: ${lastSyncText}
-          </span>
-        ` : `
-          <button onclick="window.connectWhoop()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
-            Connect WHOOP
-          </button>
-          <button onclick="window.checkWhoopStatus()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
-            Check Status
-          </button>
-          <span class="flex items-center text-xs text-[var(--text-muted)]">
-            <span class="w-2 h-2 rounded-full bg-[var(--text-muted)]/40 mr-2"></span> Not connected
-          </span>
-        `}
+      <div class="space-y-2 pl-4 mb-3">
+        <div>
+          <label class="text-xs text-[var(--text-muted)] block mb-1">Worker URL</label>
+          <input type="url" value="${workerUrl}" placeholder="https://..."
+            class="w-full px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none"
+            onchange="window.${setUrlFn}(this.value)">
+        </div>
+        <div>
+          <label class="text-xs text-[var(--text-muted)] block mb-1">API Key</label>
+          <input type="password" value="${apiKey}" placeholder="Shared secret"
+            class="w-full px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none"
+            onchange="window.${setKeyFn}(this.value)">
+        </div>
+      </div>
+      <div class="flex items-center gap-2 pl-4">
+        <button onclick="window.${connectFn}()" class="px-3 py-1.5 bg-coral text-white rounded text-xs font-medium hover:bg-coralDark transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>Connect</button>
+        ${checkStatusFn ? `<button onclick="window.${checkStatusFn}()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-xs font-medium hover:bg-[var(--bg-tertiary)] transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>Check Status</button>` : ''}
       </div>
     </div>
   `;
 }
 
 // ============================================================================
-// renderLibreSettingsCard — Freestyle Libre CGM integration
+// Google Calendar integration (flat, no card wrapper)
 // ============================================================================
-function renderLibreSettingsCard() {
-  const connected = isLibreConnected();
-  const workerUrl = getLibreWorkerUrl();
-  const apiKey = getLibreApiKey();
-  const lastSync = getLibreLastSync();
-  const hasConfig = workerUrl && apiKey;
-
-  const lastSyncText = lastSync
-    ? new Date(lastSync).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
-    : 'Never';
-
-  return `
-    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-[var(--text-primary)] mb-4">Freestyle Libre CGM <span class="text-[var(--accent)]">→</span></h3>
-      <p class="text-sm text-[var(--text-muted)] mb-4">Auto-sync glucose readings from your Freestyle Libre sensor via LibreLinkUp. Auto-fills daily glucose average and TIR.</p>
-
-      <div class="space-y-3 mb-4">
-        <div>
-          <label class="text-sm text-[var(--text-secondary)] block mb-1">Worker URL</label>
-          <input type="url" value="${workerUrl}" placeholder="https://libre-proxy.xxx.workers.dev"
-            class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none"
-            onchange="window.setLibreWorkerUrl(this.value)">
-        </div>
-        <div>
-          <label class="text-sm text-[var(--text-secondary)] block mb-1">API Key</label>
-          <input type="password" value="${apiKey}" placeholder="Shared secret from worker setup"
-            class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none"
-            onchange="window.setLibreApiKey(this.value)">
-        </div>
-      </div>
-
-      <div class="flex flex-wrap gap-3 pt-4 border-t border-[var(--border)]">
-        ${connected ? `
-          <button onclick="window.syncLibreNow()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
-            Sync Now
-          </button>
-          <button onclick="window.disconnectLibre(); window.render()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition">
-            Disconnect
-          </button>
-          <span class="flex items-center text-xs text-[var(--text-muted)]">
-            <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-            Connected · Last sync: ${lastSyncText}
-          </span>
-        ` : `
-          <button onclick="window.connectLibre()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
-            Connect Libre
-          </button>
-          <button onclick="window.checkLibreStatus()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>
-            Check Status
-          </button>
-          <span class="flex items-center text-xs text-[var(--text-muted)]">
-            <span class="w-2 h-2 rounded-full bg-[var(--text-muted)]/40 mr-2"></span> Not connected
-          </span>
-        `}
-      </div>
-    </div>
-  `;
-}
-
-// ============================================================================
-// renderGCalSettingsCard — Google Calendar integration
-// ============================================================================
-function renderGCalSettingsCard() {
+function renderGCalIntegration() {
   const connected = isGCalConnected();
   const tokenExpired = state.gcalTokenExpired;
   const calendarsLoading = state.gcalCalendarsLoading;
@@ -180,31 +141,23 @@ function renderGCalSettingsCard() {
   const selected = getSelectedCalendars();
   const targetCal = getTargetCalendar();
   const lastSync = localStorage.getItem(GCAL_LAST_SYNC_KEY);
-  const lastSyncText = lastSync
-    ? new Date(parseInt(lastSync, 10)).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
-    : 'Never';
+  const lastSyncText = formatSyncTime(lastSync ? parseInt(lastSync, 10) : null);
   const contactsLastSync = localStorage.getItem(GCONTACTS_LAST_SYNC_KEY);
-  const contactsLastSyncText = contactsLastSync
-    ? new Date(parseInt(contactsLastSync, 10)).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
-    : 'Never';
+  const contactsLastSyncText = formatSyncTime(contactsLastSync ? parseInt(contactsLastSync, 10) : null);
   const gcalErrorUrlMatch = gcalError ? gcalError.match(/https?:\/\/[^\s]+/) : null;
   const gcalErrorUrl = gcalErrorUrlMatch ? gcalErrorUrlMatch[0] : '';
-
-  // Writable calendars for the "push to" dropdown
   const writableCalendars = calendars.filter(c => c.accessRole === 'owner' || c.accessRole === 'writer');
 
   if (!connected) {
     return `
-      <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-        <h3 class="font-semibold text-[var(--text-primary)] mb-4">Google Calendar <span class="text-[var(--accent)]">→</span></h3>
-        <p class="text-sm text-[var(--text-muted)] mb-4">See Google Calendar events in the Calendar view and push dated tasks to Google Calendar.</p>
-        <div class="flex flex-wrap gap-3 pt-4 border-t border-[var(--border)]">
-          <button onclick="window.connectGCal()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
-            Connect Google Calendar
-          </button>
-          <span class="flex items-center text-xs text-[var(--text-muted)]">
-            <span class="w-2 h-2 rounded-full bg-[var(--text-muted)]/40 mr-2"></span> Not connected
-          </span>
+      <div class="py-3 border-b border-[var(--border-light)]">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            ${statusDot(false)}
+            <span class="text-sm font-medium text-[var(--text-primary)]">Google Calendar</span>
+            <span class="text-xs text-[var(--text-muted)]">Not connected</span>
+          </div>
+          <button onclick="window.connectGCal()" class="px-3 py-1.5 bg-coral text-white rounded text-xs font-medium hover:bg-coralDark transition">Connect</button>
         </div>
       </div>
     `;
@@ -212,246 +165,247 @@ function renderGCalSettingsCard() {
 
   if (tokenExpired) {
     return `
-      <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-        <h3 class="font-semibold text-[var(--text-primary)] mb-4">Google Calendar <span class="text-[var(--accent)]">→</span></h3>
-        <p class="text-sm text-[var(--text-muted)] mb-4">Your Google Calendar session has expired. Reconnect to resume syncing.</p>
-        <div class="flex flex-wrap gap-3 pt-4 border-t border-[var(--border)]">
-          <button onclick="window.reconnectGCal()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
-            Reconnect
-          </button>
-          <button onclick="window.disconnectGCal()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition">
-            Disconnect
-          </button>
-          <span class="flex items-center text-xs text-[var(--text-muted)]">
-            <span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span> Session expired
-          </span>
+      <div class="py-3 border-b border-[var(--border-light)]">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2 h-2 rounded-full flex-shrink-0 bg-amber-400"></span>
+            <span class="text-sm font-medium text-[var(--text-primary)]">Google Calendar</span>
+            <span class="text-xs text-amber-600">Session expired</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="window.reconnectGCal()" class="px-2.5 py-1 bg-coral text-white rounded text-xs font-medium hover:bg-coralDark transition">Reconnect</button>
+            <button onclick="window.disconnectGCal()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Disconnect</button>
+          </div>
         </div>
       </div>
     `;
   }
 
+  // Connected
   return `
-    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-[var(--text-primary)] mb-4">Google Calendar <span class="text-[var(--accent)]">→</span></h3>
-      <p class="text-sm text-[var(--text-muted)] mb-4">Select calendars to show events from and choose which calendar to push tasks to.</p>
+    <div class="py-3 border-b border-[var(--border-light)]">
+      <div class="flex items-center justify-between gap-3 mb-3">
+        <div class="flex items-center gap-2.5 min-w-0">
+          ${statusDot(true)}
+          <span class="text-sm font-medium text-[var(--text-primary)]">Google Calendar</span>
+          <span class="text-xs text-[var(--text-muted)]">${lastSyncText}</span>
+        </div>
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+          <button onclick="window.syncGCalNow()" class="px-2.5 py-1 bg-coral text-white rounded text-xs font-medium hover:bg-coralDark transition">Sync</button>
+          <button onclick="window.disconnectGCal()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Disconnect</button>
+        </div>
+      </div>
 
       ${calendarsLoading ? `
-        <p class="text-sm text-[var(--text-muted)] mb-4">Loading calendars...</p>
+        <p class="text-xs text-[var(--text-muted)] pl-4 mb-2">Loading calendars...</p>
       ` : gcalError ? `
-        <div class="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
-          <p class="text-sm text-amber-800">${escapeHtml(gcalError)}</p>
-          ${gcalErrorUrl ? `
-            <a href="${escapeHtml(gcalErrorUrl)}" target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex text-xs font-medium text-amber-900 underline hover:text-amber-700">Open API setup in Google Cloud</a>
-          ` : ''}
-          <button onclick="window.fetchCalendarList()" class="mt-2 px-3 py-1.5 bg-white border border-amber-300 rounded text-xs font-medium text-amber-800 hover:bg-amber-100 transition">
-            Retry loading calendars
-          </button>
+        <div class="ml-4 mb-2 p-2.5 rounded bg-amber-50 border border-amber-200">
+          <p class="text-xs text-amber-800">${escapeHtml(gcalError)}</p>
+          ${gcalErrorUrl ? `<a href="${escapeHtml(gcalErrorUrl)}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-medium text-amber-900 underline">Open API setup</a>` : ''}
+          <button onclick="window.fetchCalendarList()" class="ml-2 px-2 py-1 bg-white border border-amber-300 rounded text-[11px] font-medium text-amber-800 hover:bg-amber-100 transition">Retry</button>
         </div>
       ` : calendars.length > 0 ? `
-        <div class="mb-4">
-          <label class="text-sm text-[var(--text-secondary)] block mb-2">Show events from:</label>
-          <div class="space-y-1.5 max-h-40 overflow-y-auto">
-            ${calendars.map(c => `
-              <label class="flex items-center gap-2 px-2 py-1 rounded hover:bg-[var(--bg-secondary)] cursor-pointer">
-                <input type="checkbox" ${selected.includes(c.id) ? 'checked' : ''}
-                  onchange="window.toggleCalendarSelection('${c.id.replace(/'/g, "\\'")}')"
-                  class="rounded text-[var(--accent)] focus:ring-coral">
-                <span class="w-3 h-3 rounded-full flex-shrink-0" style="background: ${c.backgroundColor}"></span>
-                <span class="text-sm text-[var(--text-primary)] truncate">${escapeHtml(c.summary)}</span>
-              </label>
-            `).join('')}
-          </div>
-        </div>
-
-        <div class="mb-4">
-          <label class="text-sm text-[var(--text-secondary)] block mb-2">Push tasks to:</label>
-          <select onchange="window.setTargetCalendar(this.value); window.render()"
-            class="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none">
-            ${writableCalendars.map(c => `
-              <option value="${escapeHtml(c.id)}" ${c.id === targetCal ? 'selected' : ''}>${escapeHtml(c.summary)}</option>
-            `).join('')}
-          </select>
-        </div>
-      ` : '<p class="text-sm text-[var(--text-muted)] mb-4">No calendars found for this account.</p>'}
-
-      <div class="mb-4 p-3 rounded-lg bg-[var(--bg-secondary)]/25 border border-[var(--border)]">
-        <div class="flex items-center justify-between gap-3">
+        <div class="pl-4 space-y-3 mb-2">
           <div>
-            <p class="text-sm font-medium text-[var(--text-primary)]">People Sync From Google Contacts</p>
-            <p class="text-xs text-[var(--text-muted)] mt-1">Auto sync runs in background. Last sync: ${contactsLastSyncText}</p>
+            <label class="text-xs text-[var(--text-muted)] block mb-1.5">Show events from</label>
+            <div class="space-y-1 max-h-36 overflow-y-auto">
+              ${calendars.map(c => `
+                <label class="flex items-center gap-2 px-1.5 py-0.5 rounded hover:bg-[var(--bg-secondary)] cursor-pointer">
+                  <input type="checkbox" ${selected.includes(c.id) ? 'checked' : ''}
+                    onchange="window.toggleCalendarSelection('${c.id.replace(/'/g, "\\'")}')"
+                    class="rounded text-[var(--accent)] focus:ring-coral">
+                  <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background: ${c.backgroundColor}"></span>
+                  <span class="text-xs text-[var(--text-primary)] truncate">${escapeHtml(c.summary)}</span>
+                </label>
+              `).join('')}
+            </div>
           </div>
-          <button onclick="window.syncGoogleContactsNow()" class="px-3 py-1.5 bg-white border border-[var(--border)] rounded text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition ${state.gcontactsSyncing ? 'opacity-60 cursor-not-allowed' : ''}" ${state.gcontactsSyncing ? 'disabled' : ''}>
-            ${state.gcontactsSyncing ? 'Syncing...' : 'Sync Contacts'}
-          </button>
+          <div>
+            <label class="text-xs text-[var(--text-muted)] block mb-1">Push tasks to</label>
+            <select onchange="window.setTargetCalendar(this.value)"
+              class="w-full px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none">
+              ${writableCalendars.map(c => `
+                <option value="${escapeHtml(c.id)}" ${c.id === targetCal ? 'selected' : ''}>${escapeHtml(c.summary)}</option>
+              `).join('')}
+            </select>
+          </div>
+          <div class="flex items-center justify-between gap-2 pt-2 border-t border-[var(--border-light)]">
+            <div class="min-w-0">
+              <span class="text-xs text-[var(--text-muted)]">Contacts sync · ${contactsLastSyncText}</span>
+            </div>
+            <button onclick="window.syncGoogleContactsNow()" class="px-2 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${state.gcontactsSyncing ? 'opacity-60 cursor-not-allowed' : ''}" ${state.gcontactsSyncing ? 'disabled' : ''}>
+              ${state.gcontactsSyncing ? 'Syncing...' : 'Sync Contacts'}
+            </button>
+          </div>
         </div>
-        ${state.gcontactsError ? `
-          <p class="text-xs text-amber-700 mt-2">${escapeHtml(state.gcontactsError)}</p>
-        ` : ''}
-      </div>
-
-      <div class="flex flex-wrap gap-3 pt-4 border-t border-[var(--border)]">
-        <button onclick="window.syncGCalNow()" class="px-4 py-2 bg-coral text-white rounded-lg text-sm font-medium hover:bg-coralDark transition">
-          Sync Now
-        </button>
-        <button onclick="window.disconnectGCal()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition">
-          Disconnect
-        </button>
-        <span class="flex items-center text-xs text-[var(--text-muted)]">
-          <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-          Connected · Last sync: ${lastSyncText}
-        </span>
-      </div>
+        ${state.gcontactsError ? `<p class="text-[11px] text-amber-700 pl-4 mb-1">${escapeHtml(state.gcontactsError)}</p>` : ''}
+      ` : '<p class="text-xs text-[var(--text-muted)] pl-4 mb-2">No calendars found.</p>'}
     </div>
   `;
 }
 
 // ============================================================================
-// renderAIClassificationCard — Anthropic API key for braindump AI
+// AI Classification (flat, compact)
 // ============================================================================
-function renderAIClassificationCard() {
+function renderAIIntegration() {
   const apiKey = getAnthropicKey();
   const hasKey = !!apiKey;
 
   return `
-    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-[var(--text-primary)] mb-4">AI Classification <span class="text-[var(--accent)]">→</span></h3>
-      <p class="text-sm text-[var(--text-muted)] mb-4">Use Claude AI to split/classify Braindump text and power voice-mode processing with the same key. Without an API key, the heuristic classifier is used and voice mode may be limited by browser support.</p>
-
-      <div class="mb-4">
-        <label class="text-sm text-[var(--text-secondary)] block mb-2">Anthropic API Key</label>
-        <div class="flex gap-2">
-          <input type="password" id="anthropic-key-input" value="${apiKey}"
-            placeholder="sk-ant-..."
-            class="flex-1 px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none">
-          <button onclick="window.setAnthropicKey(document.getElementById('anthropic-key-input').value); window.render()"
-            class="sb-btn px-4 py-2 rounded text-sm font-medium">
-            Save Key
-          </button>
+    <div class="py-3">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          ${statusDot(hasKey)}
+          <span class="text-sm font-medium text-[var(--text-primary)]">AI Classification</span>
+          <span class="text-xs text-[var(--text-muted)]">${hasKey ? 'Configured' : 'Not configured'}</span>
         </div>
-        <p class="text-xs text-[var(--text-muted)] mt-2">
-          Create an API key at
-          <a href="https://console.anthropic.com/settings/keys" target="_blank" class="sb-link">console.anthropic.com</a>.
-          Uses Claude Haiku 4.5 for fast, low-cost classification.
-        </p>
       </div>
+      <details class="mt-2">
+        <summary class="text-xs text-[var(--text-muted)] cursor-pointer hover:text-[var(--text-secondary)] select-none">${hasKey ? 'Change API key' : 'Configure API key'}</summary>
+        <div class="mt-2 pl-4">
+          <div class="flex gap-2 mb-1.5">
+            <input type="password" id="anthropic-key-input" value="${apiKey}"
+              placeholder="sk-ant-..."
+              class="flex-1 px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none">
+            <button onclick="window.setAnthropicKey(document.getElementById('anthropic-key-input').value); window.render()"
+              class="px-3 py-1.5 bg-coral text-white rounded text-xs font-medium hover:bg-coralDark transition">Save</button>
+          </div>
+          <p class="text-[11px] text-[var(--text-muted)]">
+            Get a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" class="sb-link text-[11px]">console.anthropic.com</a>. Uses Claude Haiku 4.5.
+          </p>
+        </div>
+      </details>
+    </div>
+  `;
+}
 
-      <div class="flex items-center gap-2 pt-3 border-t border-[var(--border)]">
-        <span class="w-2 h-2 rounded-full ${hasKey ? 'bg-green-500' : 'bg-[var(--text-muted)]/40'}"></span>
-        <span class="text-xs text-[var(--text-muted)]">${hasKey ? 'Configured — AI classification active' : 'Not configured — using heuristic classifier'}</span>
+// ============================================================================
+// Data & Diagnostics sub-sections (flat, no card wrappers)
+// ============================================================================
+
+function renderDataManagementSection() {
+  return `
+    <div class="py-3 border-b border-[var(--border-light)]">
+      <h4 class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-2.5">Data Management</h4>
+      <div class="flex flex-wrap gap-2">
+        <button onclick="window.exportData()" class="sb-btn px-3 py-1.5 rounded text-xs font-medium">Export</button>
+        <label class="sb-btn px-3 py-1.5 rounded text-xs font-medium cursor-pointer">
+          Import
+          <input type="file" accept=".json" class="hidden" onchange="window.importData(event)">
+        </label>
+        <button onclick="window.forceHardRefresh()" class="px-3 py-1.5 bg-coral/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-coral/20 transition">Force Refresh</button>
       </div>
     </div>
   `;
 }
 
-function renderNoteSafetyCard() {
+function renderNoteSafetySection() {
   const notes = state.tasksData.filter(item => item?.isNote);
   const activeCount = notes.filter(item => !item.completed && item.noteLifecycleState !== 'deleted').length;
   const deletedCount = notes.filter(item => item.noteLifecycleState === 'deleted').length;
   const completedCount = notes.filter(item => item.completed && item.noteLifecycleState !== 'deleted').length;
 
   return `
-    <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="font-semibold text-[var(--text-primary)] text-sm">Note Safety</h3>
-        <span class="text-xs text-[var(--text-muted)]">${activeCount} active · ${deletedCount} deleted · ${completedCount} completed</span>
+    <div class="py-3 border-b border-[var(--border-light)]">
+      <div class="flex items-center justify-between mb-2.5">
+        <h4 class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Note Safety</h4>
+        <span class="text-[11px] text-[var(--text-muted)]">${activeCount} active · ${deletedCount} deleted · ${completedCount} done</span>
       </div>
-      <p class="text-xs text-[var(--text-muted)] mb-3">Use this to find missing notes, inspect recent changes, and create a local backup before/after updates.</p>
       <div class="flex flex-wrap gap-2 mb-2">
-        <input id="note-safety-search" type="text" placeholder="Search notes (e.g. mom)"
-          class="flex-1 min-w-[180px] px-3 py-1.5 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none">
+        <input id="note-safety-search" type="text" placeholder="Search notes..."
+          class="flex-1 min-w-[140px] px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none">
         <button onclick="(() => { const q = document.getElementById('note-safety-search')?.value || ''; const rows = window.findNotesByText(q, 20); alert(rows.length ? rows.map(r => (r.title + ' [' + r.state + '] · ' + new Date(r.updatedAt).toLocaleString())).join('\\n') : 'No matching notes found.'); })()"
-          class="sb-btn px-3 py-1.5 rounded text-xs font-medium">Find Notes</button>
+          class="sb-btn px-2.5 py-1.5 rounded text-xs font-medium">Find</button>
       </div>
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-1.5">
         <button onclick="(() => { const rows = window.getRecentNoteChanges(20); alert(rows.length ? rows.map(r => (r.title + ' [' + r.state + '] · ' + r.lastAction + ' · ' + new Date(r.updatedAt).toLocaleString())).join('\\n') : 'No recent note changes found.'); })()"
-          class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Recent Changes</button>
+          class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition">Recent Changes</button>
         <button onclick="(() => { const rows = window.getDeletedNotes(20); alert(rows.length ? rows.map(r => (r.title + ' · deleted ' + new Date(r.deletedAt).toLocaleString() + ' · id=' + r.id)).join('\\n') : 'Trash is empty.'); })()"
-          class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Show Deleted</button>
+          class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition">Deleted</button>
         <button onclick="(() => { const latest = window.getDeletedNotes(1)[0]; if (!latest) { alert('No deleted note to restore.'); return; } const ok = window.restoreDeletedNote(latest.id, true); alert(ok ? ('Restored: ' + latest.title) : 'Could not restore note.'); })()"
-          class="px-3 py-1.5 bg-coral/10 text-[var(--accent)] rounded-lg text-xs font-medium hover:bg-coral/20 transition">Restore Latest</button>
+          class="px-2.5 py-1 bg-coral/10 text-[var(--accent)] rounded text-[11px] font-medium hover:bg-coral/20 transition">Restore Latest</button>
         <button onclick="(() => { const info = window.createNoteLocalBackup(); alert('Backup saved locally: ' + info.noteCount + ' notes at ' + new Date(info.createdAt).toLocaleString()); })()"
-          class="px-3 py-1.5 bg-coral text-white rounded-lg text-xs font-medium hover:bg-coralDark transition">Create Local Backup</button>
+          class="px-2.5 py-1 bg-coral text-white rounded text-[11px] font-medium hover:bg-coralDark transition">Backup</button>
       </div>
     </div>
   `;
 }
 
-function renderOfflineQueueCard() {
+function renderOfflineQueueSection() {
   const queue = window.getGCalOfflineQueue?.() || [];
   return `
-    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-[var(--text-primary)] mb-4">Offline Queue <span class="text-[var(--accent)]">→</span></h3>
-      <p class="text-sm text-[var(--text-muted)] mb-4">Google Calendar write actions queued while offline or failing token/network checks.</p>
-      <div class="flex flex-wrap gap-2 mb-3">
-        <button onclick="window.retryGCalOfflineQueue()" class="px-3 py-1.5 bg-coral text-white rounded-lg text-xs font-semibold hover:bg-coralDark transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Retry All</button>
-        <button onclick="window.clearGCalOfflineQueue()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-xs font-semibold hover:bg-[var(--bg-tertiary)] transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Clear</button>
-        <span class="text-xs text-[var(--text-muted)] flex items-center">${queue.length} queued</span>
+    <div class="py-3 border-b border-[var(--border-light)]">
+      <div class="flex items-center justify-between mb-2.5">
+        <h4 class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Offline Queue</h4>
+        <span class="text-[11px] text-[var(--text-muted)]">${queue.length} queued</span>
       </div>
-      <div class="space-y-2 max-h-56 overflow-auto">
-        ${queue.length ? queue.map(item => `
-          <div class="px-3 py-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] flex items-start justify-between gap-2">
-            <div class="min-w-0">
-              <p class="text-xs font-semibold text-[var(--text-primary)]">${item.type}</p>
-              <p class="text-[11px] text-[var(--text-muted)]">${new Date(item.createdAt).toLocaleString()}</p>
-              ${item.lastError ? `<p class="text-[11px] text-amber-700 mt-0.5">${item.lastError}</p>` : ''}
+      <div class="flex items-center gap-2 mb-2">
+        <button onclick="window.retryGCalOfflineQueue()" class="px-2.5 py-1 bg-coral text-white rounded text-[11px] font-medium hover:bg-coralDark transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Retry All</button>
+        <button onclick="window.clearGCalOfflineQueue()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Clear</button>
+      </div>
+      ${queue.length ? `
+        <div class="space-y-1.5 max-h-40 overflow-auto">
+          ${queue.map(item => `
+            <div class="px-2.5 py-1.5 rounded bg-[var(--bg-secondary)] border border-[var(--border)] flex items-center justify-between gap-2 text-[11px]">
+              <div class="min-w-0">
+                <span class="font-medium text-[var(--text-primary)]">${item.type}</span>
+                <span class="text-[var(--text-muted)] ml-1">${new Date(item.createdAt).toLocaleString()}</span>
+                ${item.lastError ? `<span class="text-amber-700 ml-1">${item.lastError}</span>` : ''}
+              </div>
+              <button onclick="window.removeGCalOfflineQueueItem('${item.id}')" class="text-[11px] px-1.5 py-0.5 rounded bg-white border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex-shrink-0">Remove</button>
             </div>
-            <button onclick="window.removeGCalOfflineQueueItem('${item.id}')" class="text-xs px-2 py-1 rounded bg-white border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Remove</button>
-          </div>
-        `).join('') : '<p class="text-sm text-[var(--text-muted)]">Queue is empty.</p>'}
-      </div>
+          `).join('')}
+        </div>
+      ` : ''}
     </div>
   `;
 }
 
-function renderConflictCenterCard() {
+function renderConflictCenterSection() {
   const conflicts = state.conflictNotifications || [];
   return `
-    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-[var(--text-primary)] mb-4">Conflict Center <span class="text-[var(--accent)]">→</span></h3>
-      <p class="text-sm text-[var(--text-muted)] mb-4">Notifications created when cloud/local payloads require conflict policy decisions.</p>
-      <div class="flex items-center gap-2 mb-3">
-        <button onclick="window.clearConflictNotifications()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-xs font-semibold hover:bg-[var(--bg-tertiary)] transition ${conflicts.length ? '' : 'opacity-50 cursor-not-allowed'}" ${conflicts.length ? '' : 'disabled'}>Clear All</button>
-        <span class="text-xs text-[var(--text-muted)]">${conflicts.length} items</span>
+    <div class="py-3 border-b border-[var(--border-light)]">
+      <div class="flex items-center justify-between mb-2.5">
+        <h4 class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Conflict Center</h4>
+        <span class="text-[11px] text-[var(--text-muted)]">${conflicts.length} items</span>
       </div>
-      <div class="space-y-2 max-h-56 overflow-auto">
-        ${conflicts.length ? conflicts.map(item => `
-          <div class="px-3 py-2 rounded-lg border border-amber-200 bg-amber-50 flex items-start justify-between gap-2">
-            <div class="min-w-0">
-              <p class="text-xs font-semibold text-amber-900">${item.entity || 'entity'} • ${item.mode || 'policy'}</p>
-              <p class="text-[11px] text-amber-800">${item.reason || ''}</p>
-              <p class="text-[11px] text-amber-700">${new Date(item.createdAt).toLocaleString()}</p>
+      <div class="flex items-center gap-2 mb-2">
+        <button onclick="window.clearConflictNotifications()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${conflicts.length ? '' : 'opacity-50 cursor-not-allowed'}" ${conflicts.length ? '' : 'disabled'}>Clear All</button>
+      </div>
+      ${conflicts.length ? `
+        <div class="space-y-1.5 max-h-40 overflow-auto">
+          ${conflicts.map(item => `
+            <div class="px-2.5 py-1.5 rounded border border-amber-200 bg-amber-50 flex items-center justify-between gap-2 text-[11px]">
+              <div class="min-w-0">
+                <span class="font-medium text-amber-900">${item.entity || 'entity'} · ${item.mode || 'policy'}</span>
+                <span class="text-amber-700 ml-1">${item.reason || ''}</span>
+              </div>
+              <button onclick="window.dismissConflictNotification('${item.id}')" class="text-[11px] px-1.5 py-0.5 rounded bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 flex-shrink-0">Dismiss</button>
             </div>
-            <button onclick="window.dismissConflictNotification('${item.id}')" class="text-xs px-2 py-1 rounded bg-white border border-amber-300 text-amber-900 hover:bg-amber-100">Dismiss</button>
-          </div>
-        `).join('') : '<p class="text-sm text-[var(--text-muted)]">No conflicts logged.</p>'}
-      </div>
+          `).join('')}
+        </div>
+      ` : ''}
     </div>
   `;
 }
 
-function renderPerformanceCard() {
+function renderPerformanceSection() {
   const perf = state.renderPerf || { lastMs: 0, avgMs: 0, maxMs: 0, count: 0 };
   return `
-    <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)]">
-      <h3 class="font-semibold text-[var(--text-primary)] mb-4">Client Profiling <span class="text-[var(--accent)]">→</span></h3>
-      <p class="text-sm text-[var(--text-muted)] mb-4">Lightweight render metrics sampled in-browser.</p>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-        <div class="p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
-          <div class="text-xs text-[var(--text-muted)]">Last Render</div>
-          <div class="text-lg font-semibold text-[var(--text-primary)]">${perf.lastMs} ms</div>
-        </div>
-        <div class="p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
-          <div class="text-xs text-[var(--text-muted)]">Average</div>
-          <div class="text-lg font-semibold text-[var(--text-primary)]">${perf.avgMs} ms</div>
-        </div>
-        <div class="p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
-          <div class="text-xs text-[var(--text-muted)]">Max</div>
-          <div class="text-lg font-semibold text-[var(--text-primary)]">${perf.maxMs} ms</div>
-        </div>
-        <div class="p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
-          <div class="text-xs text-[var(--text-muted)]">Samples</div>
-          <div class="text-lg font-semibold text-[var(--text-primary)]">${perf.count}</div>
-        </div>
+    <div class="py-3">
+      <h4 class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-2.5">Client Profiling</h4>
+      <div class="grid grid-cols-4 gap-2 text-center">
+        ${[
+          ['Last', perf.lastMs],
+          ['Avg', perf.avgMs],
+          ['Max', perf.maxMs],
+          ['Samples', perf.count]
+        ].map(([label, val]) => `
+          <div class="py-2 rounded bg-[var(--bg-secondary)] border border-[var(--border)]">
+            <div class="text-[11px] text-[var(--text-muted)]">${label}</div>
+            <div class="text-sm font-semibold text-[var(--text-primary)]">${val}${label !== 'Samples' ? ' ms' : ''}</div>
+          </div>
+        `).join('')}
       </div>
     </div>
   `;
@@ -460,10 +414,6 @@ function renderPerformanceCard() {
 // ============================================================================
 // renderSettingsTab — Full settings page
 // ============================================================================
-/**
- * Render the complete Settings tab with all configuration sections.
- * @returns {string} HTML string for the settings tab
- */
 export function renderSettingsTab() {
   const user = state.currentUser;
   const whoopConnected = isWhoopConnected();
@@ -491,7 +441,7 @@ export function renderSettingsTab() {
       </div>
       ` : ''}
 
-      <!-- Theme (compact inline) -->
+      <!-- Theme -->
       <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
         <h3 class="font-semibold text-[var(--text-primary)] text-sm mb-3">Theme</h3>
         <div class="flex gap-3">
@@ -522,7 +472,7 @@ export function renderSettingsTab() {
         </div>
       </div>
 
-      <!-- Cloud Sync (compact) -->
+      <!-- Cloud Sync -->
       <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
         <div class="flex items-center justify-between mb-3">
           <h3 class="font-semibold text-[var(--text-primary)] text-sm">Cloud Sync</h3>
@@ -550,7 +500,7 @@ export function renderSettingsTab() {
         })()}
       </div>
 
-      <!-- Integrations (collapsible group) -->
+      <!-- Integrations -->
       <details ${state.settingsIntegrationsOpen ? 'open' : ''} ontoggle="window.settingsIntegrationsOpen = this.open" class="sb-card rounded-lg bg-[var(--bg-card)] group">
         <summary class="px-5 py-4 cursor-pointer select-none list-none flex items-center justify-between">
           <div class="flex items-center gap-2">
@@ -559,15 +509,37 @@ export function renderSettingsTab() {
           </div>
           <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
         </summary>
-        <div class="px-5 pb-5 space-y-4 border-t border-[var(--border-light)] pt-4">
-          ${renderWhoopSettingsCard()}
-          ${renderLibreSettingsCard()}
-          ${renderGCalSettingsCard()}
-          ${renderAIClassificationCard()}
+        <div class="px-5 pb-4 border-t border-[var(--border-light)]">
+          ${renderWorkerIntegration('WHOOP', {
+            connected: whoopConnected,
+            workerUrl: getWhoopWorkerUrl(),
+            apiKey: getWhoopApiKey(),
+            lastSync: getWhoopLastSync(),
+            setUrlFn: 'setWhoopWorkerUrl',
+            setKeyFn: 'setWhoopApiKey',
+            connectFn: 'connectWhoop',
+            disconnectFn: 'disconnectWhoop',
+            syncFn: 'syncWhoopNow',
+            checkStatusFn: 'checkWhoopStatus',
+          })}
+          ${renderWorkerIntegration('Freestyle Libre', {
+            connected: libreConnected,
+            workerUrl: getLibreWorkerUrl(),
+            apiKey: getLibreApiKey(),
+            lastSync: getLibreLastSync(),
+            setUrlFn: 'setLibreWorkerUrl',
+            setKeyFn: 'setLibreApiKey',
+            connectFn: 'connectLibre',
+            disconnectFn: 'disconnectLibre',
+            syncFn: 'syncLibreNow',
+            checkStatusFn: 'checkLibreStatus',
+          })}
+          ${renderGCalIntegration()}
+          ${renderAIIntegration()}
         </div>
       </details>
 
-      <!-- Scoring Configuration (collapsible) -->
+      <!-- Scoring Configuration -->
       <details ${state.settingsScoringOpen ? 'open' : ''} ontoggle="window.settingsScoringOpen = this.open" class="sb-card rounded-lg bg-[var(--bg-card)] group">
         <summary class="px-5 py-4 cursor-pointer select-none list-none flex items-center justify-between">
           <div class="flex items-center gap-2">
@@ -577,7 +549,6 @@ export function renderSettingsTab() {
           <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
         </summary>
         <div class="px-5 pb-5 border-t border-[var(--border-light)] pt-4 space-y-6">
-          <!-- Scoring Weights -->
           <div>
             <div class="flex justify-between items-center mb-3">
               <h4 class="text-sm font-medium text-[var(--text-primary)]">Scoring Weights</h4>
@@ -632,7 +603,6 @@ export function renderSettingsTab() {
             </div>
           </div>
 
-          <!-- Perfect Day Targets -->
           <div>
             <div class="flex justify-between items-center mb-3">
               <h4 class="text-sm font-medium text-[var(--text-primary)]">Perfect Day Targets</h4>
@@ -652,33 +622,20 @@ export function renderSettingsTab() {
         </div>
       </details>
 
-      <!-- Data Management (compact) -->
-      <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
-        <h3 class="font-semibold text-[var(--text-primary)] text-sm mb-3">Data Management</h3>
-        <div class="flex flex-wrap gap-2">
-          <button onclick="window.exportData()" class="sb-btn px-3 py-1.5 rounded text-xs font-medium">Export</button>
-          <label class="sb-btn px-3 py-1.5 rounded text-xs font-medium cursor-pointer">
-            Import
-            <input type="file" accept=".json" class="hidden" onchange="window.importData(event)">
-          </label>
-          <button onclick="window.forceHardRefresh()" class="px-3 py-1.5 bg-coral/10 text-[var(--accent)] rounded-lg text-xs font-medium hover:bg-coral/20 transition">Force Refresh</button>
-        </div>
-      </div>
-
-      ${renderNoteSafetyCard()}
-
-      <!-- Developer Tools (collapsible) -->
-      <details ${state.settingsDevToolsOpen ? 'open' : ''} ontoggle="window.settingsDevToolsOpen = this.open" class="sb-card rounded-lg bg-[var(--bg-card)] group">
+      <!-- Data & Diagnostics -->
+      <details ${state.settingsDataDiagOpen ? 'open' : ''} ontoggle="window.settingsDataDiagOpen = this.open" class="sb-card rounded-lg bg-[var(--bg-card)] group">
         <summary class="px-5 py-4 cursor-pointer select-none list-none flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <h3 class="font-semibold text-[var(--text-primary)] text-sm">Developer Tools</h3>
+            <h3 class="font-semibold text-[var(--text-primary)] text-sm">Data & Diagnostics</h3>
           </div>
           <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
         </summary>
-        <div class="px-5 pb-5 space-y-4 border-t border-[var(--border-light)] pt-4">
-          ${renderOfflineQueueCard()}
-          ${renderConflictCenterCard()}
-          ${renderPerformanceCard()}
+        <div class="px-5 pb-4 border-t border-[var(--border-light)]">
+          ${renderDataManagementSection()}
+          ${renderNoteSafetySection()}
+          ${renderOfflineQueueSection()}
+          ${renderConflictCenterSection()}
+          ${renderPerformanceSection()}
         </div>
       </details>
     </div>

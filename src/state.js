@@ -445,6 +445,7 @@ export const state = {
   settingsIntegrationsOpen: false,
   settingsScoringOpen: false,
   settingsDevToolsOpen: false,
+  settingsDataDiagOpen: false,
 
   // ---- Responsive ----
   _lastRenderWasMobile: false,

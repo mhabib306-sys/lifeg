@@ -483,7 +483,7 @@ const stateProxies = [
   'triggers', 'editingTriggerId', 'collapsedTriggers', 'zoomedTriggerId', 'triggersBreadcrumb',
   'reviewMode', 'reviewAreaIndex', 'reviewCompletedAreas',
   'showGlobalSearch', 'globalSearchQuery', 'globalSearchResults', 'globalSearchActiveIndex', 'globalSearchTypeFilter',
-  'settingsIntegrationsOpen', 'settingsScoringOpen', 'settingsDevToolsOpen',
+  'settingsIntegrationsOpen', 'settingsScoringOpen', 'settingsDevToolsOpen', 'settingsDataDiagOpen',
 ];
 
 stateProxies.forEach(prop => {
