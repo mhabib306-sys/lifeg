@@ -725,10 +725,8 @@ export function toggleCalendarSelection(calendarId) {
     selected.splice(idx, 1);
   }
   setSelectedCalendars(selected);
-  // Preserve scroll — render() replaces entire DOM
-  const scrollY = window.scrollY;
-  window.render();
-  window.scrollTo(0, scrollY);
+  // No render() needed — the browser already toggled the checkbox visually.
+  // Re-rendering would destroy the inner scroll position of the calendar list.
   // Only re-fetch when adding a calendar (its events may not be cached yet)
   if (adding) syncGCalNow();
 }
