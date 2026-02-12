@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T08:54:05.761Z",
+  "lastUpdated": "2026-02-12T08:54:43.310Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3468,6 +3468,33 @@
       "order": 41000,
       "createdAt": "2026-02-12T04:45:41.437Z",
       "updatedAt": "2026-02-12T07:43:41.119Z"
+    },
+    {
+      "id": "task_1770886480375_2gz1nfbkx",
+      "title": "Team structure and hiring status",
+      "notes": "",
+      "status": "anytime",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "areaId": "work",
+      "categoryId": null,
+      "labels": [],
+      "people": [
+        "person_1770695842533"
+      ],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": null,
+      "lastReviewedAt": null,
+      "order": 42000,
+      "createdAt": "2026-02-12T08:54:40.375Z",
+      "updatedAt": "2026-02-12T08:54:40.375Z"
     }
   ],
   "deletedTaskTombstones": {
@@ -10830,12 +10857,12 @@
   "triggers": [],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "e7s+QWo7WJFYAdW6LoayHg==",
-    "wrapIv": "iure8EaiczxVCFjt",
-    "wrappedKey": "wOyZ5SsN9a79Q+oIXIYBfMcSv9zBl7UiTKu4pSpdbShIx54YP8JW6WsFZfxODLq3",
-    "dataIv": "G/azgolihdp8AGIw",
-    "data": "GbxmquRXG3+UjbIlYxU0giXWP8D1m3MxpDbtFj/BeDML92hdUXWV5Y71ItivZlG3yULafXiX2CJxAUXIQ11CsH45iMdUDyiMSPaXtT06KZlOiX0jhFCaHlk9527v1fiSKbHDoXbVJANY2dCBhROIQ+W7dKtegVQw4ksW3BRVtNN7wS1ye55jzoGXj0DiUFFj8n1jozA51jPCySoYGP7+pbJZeI+mrKQl/+ZIgk7FlbUPZzb/K9SxLGYOT11Lgoidyxw8Ux96dCSvmDjn+TO/953EIpCl5O+wRJvczsI8L2aHG29x6ab7zAUk3mP1ef6EOePWFgNICdrO/9+us0ePDWrQTAkkdCTeGEbrWjEQOdpsRuvdA1tkqSavaCOByRDTSC7yYYpmGgHO2Hvg6FQsMuBkQiVku63DUfZXmn5aRyBUQRDpNz8ftphtE6U3+FTfyubCvMiwA2ueIECOzk6WOP1zhNAZYQB5a7mkl+EXh6geyju0NNNvxeNr50JMSPTmf0GyX6BR+0601bNjNkz8VBInHvaEd5xzP/1l",
-    "updatedAt": "2026-02-12T08:54:05.769Z"
+    "salt": "xG305ghaJVdI2hflZnwj6Q==",
+    "wrapIv": "nUFCuuheZfFv9gYG",
+    "wrappedKey": "dihETDlupY04sNYhof464kKBAnSZ9iFdHOQ/peUFGUfBQJC+p6UiJ8FoEWIQmIP7",
+    "dataIv": "XcQka1ujJtss5IWX",
+    "data": "Fnes1BXP3m2ki3cRH0dfzSnhXJ7S3q+MA4EcYq6Ud5I7LPZ1rMmcLCBuPQ2otOm9a0pHFXBIDEHJMAWJiOgJjfqb4IY2W1nZW2qHOvnAI2sTR8yav+jXD6KRUjg+JYaoTWxWq70DRdf2cOoE2PBvwIC1o9ak9U/v/XKQP9InNv0zVKdxtc+2EH6b10bwovM+BerRPRQP6yQZdoOBTWndK7EMXbkxKAOhrQFwMxGsukyiijuk0Ex/ZG9KSiCU/I8obwZ0OoYZUYdrxZp+eAF47OROkvOP07NtQGmP+Uv3o9TG53bNamffOn9R8nIsadvF3cBmTmES4ZFNA6zjPDdX2ReuX5jMJD7/pXSzhBYLcgcQ99dZyXTSXoEjB+iRwvIUIyeXgKcOoEYepq5u0tRysYAvjjUtmamJ8ioAWwD4Bd2D6NpMr2egIxA5R0UGCInkbd0gi+xYzehu+h9nqY1FbWT4ByooKk9FH2Sod/hE0s3igsfR5LxTaOwQQR3mzCkFCa90ICQaUVzqV0wsfGGq6kfu/ChgXCyivxru",
+    "updatedAt": "2026-02-12T08:54:43.320Z"
   },
   "xp": {
     "total": 1937,
