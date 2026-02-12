@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T13:46:45.676Z",
+  "lastUpdated": "2026-02-12T13:47:34.493Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -10966,24 +10966,24 @@
   "triggers": [
     {
       "id": "trigger_1770889818115_bda98",
-      "title": "Self trigger",
+      "title": "Have time for myself this week",
       "areaId": "personal",
       "categoryId": null,
       "parentId": null,
       "indent": 0,
       "triggerOrder": 1000,
       "createdAt": "2026-02-12T09:50:18.115Z",
-      "updatedAt": "2026-02-12T09:50:21.066Z"
+      "updatedAt": "2026-02-12T13:47:27.587Z"
     }
   ],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "dLlrRJ8wYRsh/NyGt+bZLQ==",
-    "wrapIv": "1YJC6GsMgmdDjbIT",
-    "wrappedKey": "yv9LRerFT3X7UpldM98gZ2l7lTSzGL77LNSCq0StTy1p1jqczkrhvUGW59N04BxK",
-    "dataIv": "T2QcP+FkZR2Y+skl",
-    "data": "god5QH0iPpp59ugqffivNgrreiF/8NzKwGKqxrOCrxDu1idYGtA9/YqgJXA8Wy7XhMo/G2RzxwV/mHYuZpnC9a/RVc4/o+mlzP3CVBs8L/rl41+f7OJQksQ2yM+0ZmbbVM7JvPRQgquGG2KQO4LnxgXSleVoVge7mugQ1REAA4VhfpzLREcz1ybyPBrgxbKiskgajUD7plP8VG8i8SDmd+0N5ODOS01anEFEoGYLbgqe067Giky6XzqavtAEMub4vcUzosyY1MFO7arUqsJbEQlwqh7tVIOhxWUFpFt8eRx2n1azOk6b6vypJRrq1e4Q7wNqKJMPCKk5ov+jxZbMP8AWyzWqK3oten64sj+aXpKCI7GUstFgjKYXUJwEy4DEKBnmDJPOVQZA99gLaJMAEIGbphH57LlZTaZXwymJQhc8qsqcN5RXz5h8a3VGzS8WHujY4x6G6us6t2xlckyiULUmuey6gSsMExprVo8wVPUCejXCiDq3JHCGWR4kB3EwQEnkpkmBMygBFS3Mb322w1pzel8xPoK+UKxM",
-    "updatedAt": "2026-02-12T13:46:45.686Z"
+    "salt": "JJhlpcyanyScEJ02xteA9Q==",
+    "wrapIv": "U9RwDBng3xWu5jnf",
+    "wrappedKey": "qbbG+Ge/JkVstDM01VCROpaVcIHFHSUjmGiYCQNlMgSu/KZ96yIfCcU0Qn9yZ4Zn",
+    "dataIv": "YzvPvzY96ZifCHAP",
+    "data": "19zygac0Nk5IeDbl2dlKnPWvW2Ra6pot+zx5ZtdZZzVCGNNq5ZF1dL4e3eoYisBkX91DaHdgNJiMOO+zg9G2iZCOejYQrNn7sgbZbmKlAKJKwUOrHm+AeXlny/MTxesw0JfbRI2wOxl4Qcs5B/7bS/opwjNpVQAJ+uKmbIp4lbliDUsDGPKUcLTfmiLePm85C2PhospOqAy+4NiJUOUam8fcy0nsTAA0+yTQmaPH6ICQKn4l6b4AR3nbta9tONNcOjIIvl8cN/Ea9gw+AAffIwk9Maht2DWn83RXZTDn9kmbVU87VqXl8xksQDvTukwDj6h2D3e2hmAHg5E70pWwoqgkoz2ifXbCe5m+IrBZlcryOFGd1NF+92o0iA6A16oxCltbm6y50IbV/sugJvCRrgfE6BmFl+ee70QdPYQULEp5k9ciQ0mdnrtmoePGxOgJzasdYx0HNvsIwlKtffPE9UXmFH0BdS3fyI5Ri5Ptq3fHNbD3XGVX9TNaunmijcaeGTumoOxUEcgrSz0s3hQWfX574DQmXFGDX3UH",
+    "updatedAt": "2026-02-12T13:47:34.501Z"
   },
   "xp": {
     "total": 1937,
