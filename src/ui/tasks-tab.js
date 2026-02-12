@@ -1577,11 +1577,13 @@ export function renderTasksTab() {
                     class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
                 </div>
               `}).join('')}
+              ${isAreaActive(cat.id) ? `
               <button onclick="event.stopPropagation(); window.editingCategoryId=null; window.showCategoryModal=true; window.modalSelectedArea='${cat.id}'; window.render()"
                 class="w-full pl-10 pr-3 py-1 flex items-center gap-2 text-[12px] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
                 <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
                 Add Category
               </button>
+              ` : ''}
             ` : ''}
           `;
           }).join('')}

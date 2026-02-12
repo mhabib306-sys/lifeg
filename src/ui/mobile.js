@@ -215,6 +215,7 @@ export function showAreaTasks(categoryId) {
   state.activeAreaFilter = categoryId;
   state.activeLabelFilter = null;
   state.activePersonFilter = null;
+  state.collapsedSidebarAreas.delete(categoryId);
   closeMobileDrawer();
   // Switch to tasks tab when navigating from Quick Stats or other widgets
   if (state.activeTab !== 'tasks') {
