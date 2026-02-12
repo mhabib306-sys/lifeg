@@ -207,7 +207,7 @@ import {
   selectCategory, renderCategoryInput,
   addTag, removeTag, renderTagsInput,
   addPerson as addPersonModal, removePerson as removePersonModal, renderPeopleInput,
-  toggleRepeat, initModalAutocomplete,
+  toggleRepeat, initModalAutocomplete, cleanupModalAutocomplete,
   closeTaskModal, saveTaskFromModal,
   renderTaskModalHtml
 } from './ui/task-modal.js';
@@ -436,7 +436,7 @@ Object.assign(window, {
   selectCategory, renderCategoryInput,
   addTag, removeTag, renderTagsInput,
   addPersonModal, removePersonModal, renderPeopleInput,
-  toggleRepeat, initModalAutocomplete,
+  toggleRepeat, initModalAutocomplete, cleanupModalAutocomplete,
   closeTaskModal, saveTaskFromModal, savePerspectiveFromModal, selectPerspectiveEmoji, selectAreaEmoji, selectCategoryEmoji, updateEmojiGrid, toggleEmojiPicker,
   renderTaskModalHtml,
   renderPerspectiveModalHtml, renderAreaModalHtml, renderCategoryModalHtml, renderLabelModalHtml, renderPersonModalHtml,

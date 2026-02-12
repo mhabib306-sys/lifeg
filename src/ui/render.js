@@ -144,6 +144,9 @@ function getGithubToken() {
 // render() — Main render function
 // ============================================================================
 
+// Track pending rAF for inline autocomplete setup to prevent races
+let _inlineAcRafId = null;
+
 /**
  * Full-DOM replacement render. Reads state.activeTab to decide which tab
  * renderer to call, then patches the #app element with the complete page
@@ -382,9 +385,13 @@ export function render() {
       dateInput.addEventListener('change', (e) => { state.currentDate = e.target.value; render(); });
     }
 
-    // Setup sidebar drag and drop after DOM is updated
+    // Setup sidebar drag and drop after DOM is updated (only when needed)
     if (state.activeTab === 'tasks') {
-      setupSidebarDragDrop();
+      // Only re-init if sidebar has new un-initialized draggable items
+      const hasPendingDragItems = document.querySelector('.draggable-item:not([data-drag-initialized])');
+      if (hasPendingDragItems) {
+        setupSidebarDragDrop();
+      }
     }
 
     // Initialize autocomplete for task modal if it's open
@@ -403,14 +410,17 @@ export function render() {
     }
 
     // Initialize inline autocomplete for quick-add inputs
-    setTimeout(() => {
+    // Use rAF instead of fragile setTimeout to wait for DOM paint
+    if (_inlineAcRafId) cancelAnimationFrame(_inlineAcRafId);
+    _inlineAcRafId = requestAnimationFrame(() => {
+      _inlineAcRafId = null;
       if (document.getElementById('quick-add-input')) {
         setupInlineAutocomplete('quick-add-input');
       }
       if (document.getElementById('home-quick-add-input')) {
         setupInlineAutocomplete('home-quick-add-input');
       }
-    }, 60);
+    });
 
     const anyModalOpen = !!(
       state.showTaskModal ||

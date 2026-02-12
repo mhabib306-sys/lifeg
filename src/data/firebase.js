@@ -265,7 +265,21 @@ export function initAuth(onReady) {
   }
 
   let firstCall = true;
+
+  // Safety timeout: if Firebase auth doesn't respond within 5 seconds,
+  // assume no user and show the login screen instead of hanging forever.
+  const authTimeout = setTimeout(() => {
+    if (firstCall) {
+      console.warn('[Auth] Firebase auth timed out — showing login screen');
+      firstCall = false;
+      state.authLoading = false;
+      state.currentUser = null;
+      onReady(null);
+    }
+  }, 5000);
+
   onAuthStateChanged(auth, (user) => {
+    clearTimeout(authTimeout);
     state.currentUser = user;
     state.authLoading = false;
     state.authError = null;

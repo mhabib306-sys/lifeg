@@ -209,6 +209,143 @@ const initialHomeWidgets = (safeJsonParse(HOME_WIDGETS_KEY, null) || DEFAULT_HOM
 // ---------------------------------------------------------------------------
 // The single exported state object
 // ---------------------------------------------------------------------------
+
+/**
+ * @typedef {Object} HomebaseState
+ *
+ * --- Auth ---
+ * @property {Object|null} currentUser - Firebase user object or null
+ * @property {boolean} authLoading - True while auth state is being determined
+ * @property {string|null} authError - Auth error message if any
+ *
+ * --- Sync ---
+ * @property {'idle'|'syncing'|'success'|'error'} syncStatus
+ * @property {Date|null} lastSyncTime
+ * @property {number|null} syncDebounceTimer - setTimeout ID
+ * @property {boolean} syncInProgress - Lock to prevent concurrent save/load
+ * @property {boolean} syncPendingRetry
+ * @property {number} syncRetryCount - Exponential backoff counter
+ * @property {number|null} syncRetryTimer - setTimeout ID
+ * @property {boolean} cloudPullPending - Deferred cloud pull after save
+ * @property {boolean} githubSyncDirty - True if local changes are unsaved
+ * @property {boolean} syncRateLimited - True when GitHub returns 403
+ * @property {number} syncSequence - Monotonic sync counter
+ * @property {Object} syncHealth - Sync health metrics (saves, loads, errors, latency)
+ *
+ * --- Weather ---
+ * @property {Object|null} weatherData
+ * @property {{lat: number, lon: number, city: string}} weatherLocation
+ *
+ * --- Scoring ---
+ * @property {Object} WEIGHTS - Category scoring weights
+ * @property {Object} MAX_SCORES - Max score values per metric
+ * @property {Object} CATEGORY_WEIGHTS - Weights for gamification categories
+ * @property {{total: number, history: Array}} xp - Experience points
+ * @property {{current: number, longest: number, lastLoggedDate: string|null, shield: Object, multiplier: number}} streak
+ * @property {{unlocked: Object}} achievements
+ * @property {string|null} dailyFocusDismissed
+ *
+ * --- Core Data ---
+ * @property {Object} storedData - Raw localStorage data
+ * @property {Object} allData - Merged data (JANUARY_DATA + stored)
+ * @property {string} currentDate - ISO date string (YYYY-MM-DD)
+ *
+ * --- Navigation ---
+ * @property {'home'|'tasks'|'life'|'calendar'|'settings'} activeTab
+ * @property {'daily'|'bulk'|'dashboard'} activeSubTab
+ *
+ * --- Tasks ---
+ * @property {Array<Object>} tasksData - All tasks
+ * @property {Object} deletedTaskTombstones - {taskId: ISO timestamp}
+ * @property {Object} deletedEntityTombstones - {collection: {id: ISO timestamp}}
+ * @property {Array<Object>} taskAreas
+ * @property {Array<Object>} taskLabels
+ * @property {Array<Object>} taskPeople
+ * @property {Array<Object>} taskCategories
+ * @property {Array<Object>} customPerspectives
+ *
+ * --- Task View / Filter ---
+ * @property {string} activePerspective
+ * @property {'tasks'|'notes'|'both'} workspaceContentMode
+ * @property {boolean} workspaceSidebarCollapsed
+ * @property {'perspective'|'area'|'label'|'person'} activeFilterType
+ * @property {string|null} activeAreaFilter
+ * @property {string|null} activeLabelFilter
+ * @property {string|null} activePersonFilter
+ * @property {string|null} activeCategoryFilter
+ *
+ * --- UI Modals ---
+ * @property {boolean} showTaskModal
+ * @property {boolean} showPerspectiveModal
+ * @property {boolean} showAreaModal
+ * @property {boolean} showLabelModal
+ * @property {boolean} showPersonModal
+ * @property {boolean} showCategoryModal
+ * @property {boolean} showBraindump
+ * @property {boolean} showGlobalSearch
+ *
+ * --- Task Modal State ---
+ * @property {string|null} modalSelectedArea
+ * @property {string|null} modalSelectedCategory
+ * @property {string} modalSelectedStatus
+ * @property {boolean} modalSelectedToday
+ * @property {boolean} modalSelectedFlagged
+ * @property {Array<string>} modalSelectedTags
+ * @property {Array<string>} modalSelectedPeople
+ * @property {boolean} modalIsNote
+ * @property {boolean} modalRepeatEnabled
+ * @property {boolean} modalStateInitialized
+ *
+ * --- Entity Editing ---
+ * @property {string|null} editingTaskId
+ * @property {string|null} editingAreaId
+ * @property {string|null} editingLabelId
+ * @property {string|null} editingPersonId
+ * @property {string|null} editingPerspectiveId
+ * @property {string|null} editingCategoryId
+ * @property {string|null} editingNoteId
+ * @property {string|null} editingTriggerId
+ *
+ * --- Emoji Pickers ---
+ * @property {boolean} perspectiveEmojiPickerOpen
+ * @property {boolean} areaEmojiPickerOpen
+ * @property {boolean} categoryEmojiPickerOpen
+ * @property {string} emojiSearchQuery
+ * @property {string} pendingPerspectiveEmoji
+ * @property {string} pendingAreaEmoji
+ * @property {string} pendingCategoryEmoji
+ *
+ * --- Calendar ---
+ * @property {number} calendarMonth - 0-11
+ * @property {number} calendarYear
+ * @property {string} calendarSelectedDate
+ * @property {'month'|'week'|'3days'} calendarViewMode
+ * @property {boolean} calendarEventModalOpen
+ * @property {string|null} calendarEventModalCalendarId
+ * @property {string|null} calendarEventModalEventId
+ *
+ * --- Drag & Drop ---
+ * @property {string|null} draggedTaskId
+ * @property {string|null} dragOverTaskId
+ * @property {'top'|'bottom'|null} dragPosition
+ * @property {string|null} draggedSidebarItem
+ * @property {string|null} draggedSidebarType
+ * @property {'top'|'bottom'|null} sidebarDragPosition
+ * @property {string|null} draggedNoteId
+ * @property {string|null} dragOverNoteId
+ * @property {'top'|'bottom'|'child'|null} noteDragPosition
+ *
+ * --- Notes Outliner ---
+ * @property {Set<string>} collapsedNotes
+ * @property {string|null} zoomedNoteId
+ * @property {Array<{id: string, title: string}>} notesBreadcrumb
+ *
+ * --- Render Performance ---
+ * @property {{lastMs: number, avgMs: number, maxMs: number, count: number}} renderPerf
+ * @property {boolean} _lastRenderWasMobile
+ */
+
+/** @type {HomebaseState} */
 export const state = {
   // ---- Auth ----
   currentUser: null,

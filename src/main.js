@@ -318,6 +318,43 @@ function bootstrap() {
   });
 }
 
+// ============================================================================
+// Global Error Boundary — catch uncaught errors and unhandled rejections
+// ============================================================================
+
+window.onerror = (message, source, lineno, colno, error) => {
+  console.error('[Homebase] Uncaught error:', { message, source, lineno, colno, error });
+  try {
+    const health = state.syncHealth;
+    if (health && Array.isArray(health.recentEvents)) {
+      health.recentEvents.unshift({
+        type: 'uncaught_error',
+        message: String(message),
+        source: source ? `${source}:${lineno}:${colno}` : 'unknown',
+        timestamp: new Date().toISOString(),
+      });
+      if (health.recentEvents.length > 20) health.recentEvents.length = 20;
+    }
+  } catch (_) {}
+};
+
+window.onunhandledrejection = (event) => {
+  const reason = event.reason;
+  console.error('[Homebase] Unhandled promise rejection:', reason);
+  try {
+    const health = state.syncHealth;
+    if (health && Array.isArray(health.recentEvents)) {
+      health.recentEvents.unshift({
+        type: 'unhandled_rejection',
+        message: reason instanceof Error ? reason.message : String(reason),
+        stack: reason instanceof Error ? reason.stack?.split('\n').slice(0, 3).join('\n') : undefined,
+        timestamp: new Date().toISOString(),
+      });
+      if (health.recentEvents.length > 20) health.recentEvents.length = 20;
+    }
+  } catch (_) {}
+};
+
 // Start when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', bootstrap);

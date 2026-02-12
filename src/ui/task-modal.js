@@ -438,10 +438,28 @@ export function addInlinePerson() {
  * @param {Function} [createFn=null] - Called with text to create new item
  * @param {string} [placeholder='Search...'] - Input placeholder
  */
+// Track active AbortControllers for modal autocomplete cleanup
+const _autocompleteControllers = new Map();
+
+export function cleanupModalAutocomplete() {
+  for (const [id, controller] of _autocompleteControllers) {
+    controller.abort();
+  }
+  _autocompleteControllers.clear();
+}
+
 export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDisplayFn, getIconFn, allowCreate = false, createFn = null, placeholder = 'Search...') {
   const input = document.getElementById(inputId);
   const dropdown = document.getElementById(dropdownId);
   if (!input || !dropdown) return;
+
+  // Abort any previous controller for this input to prevent listener accumulation
+  if (_autocompleteControllers.has(inputId)) {
+    _autocompleteControllers.get(inputId).abort();
+  }
+  const ac = new AbortController();
+  _autocompleteControllers.set(inputId, ac);
+  const signal = ac.signal;
 
   let highlightedIndex = -1;
 
@@ -510,12 +528,12 @@ export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDispl
   input.addEventListener('focus', () => {
     renderOptions(input.value);
     dropdown.classList.add('show');
-  });
+  }, { signal });
 
   input.addEventListener('input', () => {
     highlightedIndex = -1;
     renderOptions(input.value);
-  });
+  }, { signal });
 
   input.addEventListener('keydown', (e) => {
     const options = dropdown.querySelectorAll('.autocomplete-option');
@@ -539,19 +557,18 @@ export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDispl
       e.stopPropagation();
       dropdown.classList.remove('show');
     }
-  });
+  }, { signal });
 
-  const outsideClickHandler = (e) => {
+  document.addEventListener('click', (e) => {
     if (!document.contains(input)) {
-      // Input was removed from DOM (re-render) — clean up this listener
-      document.removeEventListener('click', outsideClickHandler);
+      ac.abort();
+      _autocompleteControllers.delete(inputId);
       return;
     }
     if (!input.contains(e.target) && !dropdown.contains(e.target)) {
       dropdown.classList.remove('show');
     }
-  };
-  document.addEventListener('click', outsideClickHandler);
+  }, { signal });
 }
 
 // ============================================================================
@@ -1044,6 +1061,7 @@ export function initModalAutocomplete() {
  */
 export function closeTaskModal() {
   cleanupInlineAutocomplete('task-title');
+  cleanupModalAutocomplete();
   state.showTaskModal = false;
   state.editingTaskId = null;
   state.modalStateInitialized = false;
