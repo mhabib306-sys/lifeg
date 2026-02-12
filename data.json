@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T08:53:46.615Z",
+  "lastUpdated": "2026-02-12T08:53:59.382Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1746,7 +1746,7 @@
     },
     "2026-02-12": {
       "prayers": {
-        "fajr": "",
+        "fajr": "1",
         "dhuhr": "",
         "asr": "",
         "maghrib": "",
@@ -1787,7 +1787,7 @@
         "brushTeeth": 0,
         "nop": ""
       },
-      "_lastModified": "2026-02-12T08:46:58.623Z"
+      "_lastModified": "2026-02-12T08:53:58.556Z"
     }
   },
   "weights": {
@@ -10830,15 +10830,15 @@
   "triggers": [],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "+0t7KWlP/YEMLv/RBjiGyg==",
-    "wrapIv": "54cfI1YDSbHs32Ru",
-    "wrappedKey": "dAqopl37xT+vZxsyPoFWZ4kfGjZ1SFf9+vSbShxDkxosrvUdmUNtMj7e7Vy64fFW",
-    "dataIv": "KmaHd0pZVaqVLtHH",
-    "data": "u9sCxH0drQ771ioL0RqOlVDtUgobwTox8OVQ8sjM3/Z+7ZTNa/tjEkd2fh10VOZfmoxSD583GZPDcCwjEdLArdif7doOhWQKqJyolSRQjrtIrgz3xFuHrojnZQIgokSm6Ubg2m2yH1HybbIuXg2RB0ilnKdFdPjOuarwtx6QWKBD9Eow0XdmnnJQv7RpsyX2RHsx0Jtg/6oqha0QLebRynhaoED3S1toWRlOnFPNvKBetWVj887FATLkqTUnRS2MhRNE/1anQh5QoCqqwNsvvZmYbKTK5/GrJvElrpulmvBtzVT5VZ9VNzL7kI+TqjE66MBbrXcbRQk8gs0XCatAsCsboMHDCBo1VZLSjMb6JHaU6+txIyne0pXEnuefUxV1+uqyIQdzsbdYpoUV9KfN/dj9AQN5V/igdjTpbfDWw28OVOZxgS5cCoUO137QakdcYFmz8B1t4n4npoBIcBBf0Gs3xsCA0na8pXVaiKCd9o4z9aP+guYDTN9zbMfBPJQspNjGkRrlGHmTSRd61RmY/I3ajqCqd6xea4qU",
-    "updatedAt": "2026-02-12T08:53:46.622Z"
+    "salt": "8SCpQ6jfln73WLQ8S2YDzg==",
+    "wrapIv": "88dD/TJAW4s0RFmI",
+    "wrappedKey": "dZ8W+T6+kMITFOVYS/qSLLdTOgBxHT5C5fmCJncjjvJ+Q0ecJeineP3P5toXDwrm",
+    "dataIv": "twW3HZcTJqa/+iE0",
+    "data": "FFqVF2SAFYOtiHX5CSe/6+H9v0vggkIu3Aspp9BfJNxeVbodmlECM9iZKKxa5pMg7UG0eKLGdK/y1GfMf9GSiv6vMGL4mIfropiGnO1kHMuKYIvRy5V6aY1G9XPSNghFtUidD8K7Xu7FxFrPuVLCIleatm4w/9flicQ2Zkv9dhdDOO7x8sjE6ddFmdrr62hPBEs18uINhJvb+zKEmrrs0JF0XwNLn4pCBE0Qgf0d6rkVfucKWA4plh6fEvK9dLs/oxGXT1duaLEfvDSawizXQ7QAm1AoMxTrG+RsrAcHz5KSULlbvjVvHTEhOrsT6oan6pbKrdBNKscukp9JlmEYvp4WBhjPHAzykDxMD+rcM6pIaF8HZsjgotvO50gvZuVMRq/4L6197UPpCmTpPcjyG1XIcIgrjzkKvfNhEa0GwkqGXHk1RhIr0nQg66ZSSCh4VkCbfPy8KWnE6takQkIRjNypttMrNI0KNvZTuQBg++4Hj5Xsi0LwFI2TrdimUYHzElFNpZ6Qn5Cbo2kpXU/qaJtmiVX+fJB3e0AU",
+    "updatedAt": "2026-02-12T08:53:59.390Z"
   },
   "xp": {
-    "total": 1914,
+    "total": 1937,
     "history": [
       {
         "base": 20,
@@ -11073,18 +11073,26 @@
         "streakBonus": 6,
         "total": 70,
         "date": "2026-02-11"
+      },
+      {
+        "base": 20,
+        "streakBonus": 3,
+        "total": 23,
+        "date": "2026-02-12"
       }
-    ]
+    ],
+    "_updatedAt": "2026-02-12T08:53:56.269Z"
   },
   "streak": {
-    "current": 3,
+    "current": 4,
     "longest": 35,
-    "lastLoggedDate": "2026-02-11",
+    "lastLoggedDate": "2026-02-12",
     "shield": {
       "available": true,
       "lastUsed": "2026-02-02"
     },
-    "multiplier": 1.1
+    "multiplier": 1.2,
+    "_updatedAt": "2026-02-12T08:53:56.269Z"
   },
   "achievements": {
     "unlocked": {
