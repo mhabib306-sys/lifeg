@@ -529,14 +529,13 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
       <!-- Categories -->
       ${(() => {
         const subcats = getCategoriesByArea(currentCategory.id);
-        if (subcats.length === 0) return '';
         return `
         <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
-          <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+          <div class="px-4 py-3 ${subcats.length > 0 ? 'border-b border-[var(--border-light)]' : ''} flex items-center justify-between">
             <div class="flex items-center gap-2">
               <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>
               <span class="text-sm font-semibold text-[var(--text-primary)]">Categories</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${subcats.length}</span>
+              ${subcats.length > 0 ? `<span class="text-xs text-[var(--text-muted)] ml-1">${subcats.length}</span>` : ''}
             </div>
             <button onclick="event.stopPropagation(); window.editingAreaId='${currentCategory.id}'; window.showAreaModal=true; window.render()"
               class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
@@ -544,6 +543,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
               Edit
             </button>
           </div>
+          ${subcats.length > 0 ? `
           <div class="divide-y divide-[var(--border-light)]">
             ${subcats.map(sc => {
               const scTaskCount = state.tasksData.filter(t => t.categoryId === sc.id && !t.completed && !t.isNote).length;
@@ -559,8 +559,8 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
                 <svg class="w-4 h-4 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
               </button>`;
             }).join('')}
-          </div>
-          <div class="px-4 py-2 border-t border-[var(--border-light)]">
+          </div>` : ''}
+          <div class="px-4 py-2 ${subcats.length > 0 ? 'border-t border-[var(--border-light)]' : ''}">
             <button onclick="event.stopPropagation(); window.editingCategoryId=null; window.showCategoryModal=true; window.modalSelectedArea='${currentCategory.id}'; window.render()"
               class="flex items-center gap-2 px-3 py-2 w-full text-sm text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition text-left">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -1563,7 +1563,7 @@ export function renderTasksTab() {
                 <span onclick="event.stopPropagation(); window.editingAreaId='${cat.id}'; window.showAreaModal=true; window.render()"
                   class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
               </div>
-            ${hasSubcats && !isCollapsed ? `
+            ${!isCollapsed ? `
               ${subcats.map(subcat => {
                 const subcatEmoji = subcat.emoji || '';
                 return `
