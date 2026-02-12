@@ -70,12 +70,22 @@ function pickPrimaryPhotoUrl(person) {
 
 async function fetchAndResizePhoto(photoUrl) {
   try {
-    const token = getAccessToken();
-    if (!token || !photoUrl) return '';
-    const res = await fetch(photoUrl, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return '';
+    if (!photoUrl) return '';
+    // Google photo URLs (lh3.googleusercontent.com) are self-authenticating —
+    // the token is embedded in the URL path. Sending an Authorization header
+    // triggers a CORS preflight that Google's image CDN doesn't handle,
+    // causing every fetch to fail silently. Fetch without auth headers.
+    let res = await fetch(photoUrl);
+    if (!res.ok) {
+      // Fallback: try with auth in case the URL requires it
+      const token = getAccessToken();
+      if (token) {
+        res = await fetch(photoUrl, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+      if (!res.ok) return '';
+    }
     const blob = await res.blob();
     const bitmap = await createImageBitmap(blob);
     const size = 64;
@@ -155,10 +165,13 @@ function mergeGoogleContactsIntoPeople(contacts) {
         existing.updatedAt = new Date().toISOString();
         changed++;
       }
-      // Track photo update if source URL changed
-      if (photoUrl && String(existing.photoUrl || '') !== photoUrl) {
-        existing.photoUrl = photoUrl;
-        peopleNeedingPhotos.push(existing);
+      // Track photo update if source URL changed OR previous fetch failed (photoData empty)
+      if (photoUrl) {
+        const urlChanged = String(existing.photoUrl || '') !== photoUrl;
+        if (urlChanged) existing.photoUrl = photoUrl;
+        if (urlChanged || !existing.photoData) {
+          peopleNeedingPhotos.push(existing);
+        }
       }
       continue;
     }
@@ -192,7 +205,7 @@ async function fetchConnectionsPage({ pageToken = '', syncToken = '', requestSyn
 
   const params = new URLSearchParams({
     personFields: 'names,emailAddresses,organizations,metadata,photos',
-    pageSize: '500',
+    pageSize: '1000',
   });
   if (pageToken) params.set('pageToken', pageToken);
   if (syncToken) params.set('syncToken', syncToken);
@@ -225,6 +238,28 @@ async function fetchConnectionsPage({ pageToken = '', syncToken = '', requestSyn
   return res.json();
 }
 
+async function fetchOtherContactsPage(pageToken = '') {
+  const token = getAccessToken();
+  if (!token) return null;
+
+  const params = new URLSearchParams({
+    readMask: 'names,emailAddresses,photos,metadata',
+    pageSize: '1000',
+  });
+  if (pageToken) params.set('pageToken', pageToken);
+
+  const res = await fetch(`${PEOPLE_API}/otherContacts?${params.toString()}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (res.status === 401) return { authExpired: true };
+  // 403 likely means missing contacts.other.readonly scope — not fatal
+  if (res.status === 403) return { otherContactsUnavailable: true };
+  if (!res.ok) return { error: `Other contacts request failed (${res.status})` };
+
+  return res.json();
+}
+
 async function fetchPhotosForPeople(people) {
   let fetched = 0;
   for (const person of people) {
@@ -243,7 +278,7 @@ async function fetchPhotosForPeople(people) {
   }
 }
 
-export async function syncGoogleContactsNow() {
+export async function syncGoogleContactsNow({ forceFullResync = false } = {}) {
   if (!isGCalConnected()) return false;
   const token = getAccessToken();
   if (!token) return false;
@@ -253,14 +288,20 @@ export async function syncGoogleContactsNow() {
   window.render();
 
   try {
+    if (forceFullResync) {
+      setContactsSyncToken('');
+    }
+
     let syncToken = getContactsSyncToken();
     let pageToken = '';
     let nextSyncToken = '';
     let allConnections = [];
-    let fullResyncAttempted = false;
+    let fullResyncAttempted = forceFullResync;
 
     let scopeRecoveryAttempted = false;
     let authRefreshAttempted = false;
+
+    // ── Fetch "My Contacts" ──
     while (true) {
       const data = await fetchConnectionsPage({
         pageToken,
@@ -273,7 +314,6 @@ export async function syncGoogleContactsNow() {
         return false;
       }
       if (data.authExpired) {
-        // Attempt silent token refresh before giving up
         if (!authRefreshAttempted) {
           authRefreshAttempted = true;
           const refreshed = await window.signInWithGoogleCalendar?.({ mode: 'silent' });
@@ -319,7 +359,25 @@ export async function syncGoogleContactsNow() {
       if (!pageToken) break;
     }
 
+    // ── Fetch "Other Contacts" (people interacted with but not saved) ──
+    let otherPageToken = '';
+    while (true) {
+      const other = await fetchOtherContactsPage(otherPageToken);
+      if (!other || other.authExpired || other.otherContactsUnavailable || other.error) break;
+      allConnections = allConnections.concat(Array.isArray(other.otherContacts) ? other.otherContacts : []);
+      otherPageToken = other.nextPageToken || '';
+      if (!otherPageToken) break;
+    }
+
     const { changed, peopleNeedingPhotos } = mergeGoogleContactsIntoPeople(allConnections);
+
+    // Also retry photos for existing people who have a URL but no photo data
+    for (const person of state.taskPeople) {
+      if (person.photoUrl && !person.photoData && !peopleNeedingPhotos.includes(person)) {
+        peopleNeedingPhotos.push(person);
+      }
+    }
+
     if (changed > 0) {
       saveTasksData();
     }
@@ -340,6 +398,10 @@ export async function syncGoogleContactsNow() {
     state.gcontactsSyncing = false;
     window.render();
   }
+}
+
+export function forceFullContactsResync() {
+  return syncGoogleContactsNow({ forceFullResync: true });
 }
 
 export function initGoogleContactsSync() {

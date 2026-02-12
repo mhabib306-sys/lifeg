@@ -119,7 +119,7 @@ export async function signInWithGoogleCalendar(options = {}) {
     client_id: GOOGLE_CLIENT_ID,
     redirect_uri: redirectUri,
     response_type: 'id_token token',
-    scope: 'openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly https://www.googleapis.com/auth/spreadsheets.readonly',
+    scope: 'openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly https://www.googleapis.com/auth/contacts.other.readonly https://www.googleapis.com/auth/spreadsheets.readonly',
     nonce: nonce,
     include_granted_scopes: 'true',
     prompt: 'consent'
@@ -181,7 +181,7 @@ async function requestCalendarTokenWithGIS(mode = 'interactive') {
     try {
       const tokenClient = window.google.accounts.oauth2.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
-        scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly https://www.googleapis.com/auth/spreadsheets.readonly',
+        scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly https://www.googleapis.com/auth/contacts.other.readonly https://www.googleapis.com/auth/spreadsheets.readonly',
         // FedCM: allows token refresh in browsers that block third-party cookies
         // (Safari ITP, Chrome Privacy Sandbox). Falls back gracefully if unsupported.
         use_fedcm_for_prompt: true,

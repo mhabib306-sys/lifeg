@@ -308,9 +308,14 @@ function renderGCalIntegration() {
             <div class="min-w-0">
               <span class="text-xs text-[var(--text-muted)]">Contacts sync · ${contactsLastSyncText}</span>
             </div>
-            <button onclick="window.syncGoogleContactsNow()" class="px-2 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${state.gcontactsSyncing ? 'opacity-60 cursor-not-allowed' : ''}" ${state.gcontactsSyncing ? 'disabled' : ''}>
-              ${state.gcontactsSyncing ? 'Syncing...' : 'Sync Contacts'}
-            </button>
+            <div class="flex items-center gap-1.5">
+              <button onclick="window.forceFullContactsResync()" class="px-2 py-1 bg-[var(--bg-secondary)] text-[var(--text-muted)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${state.gcontactsSyncing ? 'opacity-60 cursor-not-allowed' : ''}" ${state.gcontactsSyncing ? 'disabled' : ''} title="Clear cache and re-fetch all contacts">
+                Full Resync
+              </button>
+              <button onclick="window.syncGoogleContactsNow()" class="px-2 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${state.gcontactsSyncing ? 'opacity-60 cursor-not-allowed' : ''}" ${state.gcontactsSyncing ? 'disabled' : ''}>
+                ${state.gcontactsSyncing ? 'Syncing...' : 'Sync Contacts'}
+              </button>
+            </div>
           </div>
         </div>
         ${state.gcontactsError ? `<p class="text-[11px] text-amber-700 pl-4 mb-1">${escapeHtml(state.gcontactsError)}</p>` : ''}

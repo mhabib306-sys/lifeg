@@ -60,7 +60,7 @@ import {
   initGCalSync, toggleCalendarSelection, stopGCalSyncTimers
 } from './data/google-calendar-sync.js';
 import {
-  syncGoogleContactsNow, initGoogleContactsSync
+  syncGoogleContactsNow, initGoogleContactsSync, forceFullContactsResync
 } from './data/google-contacts-sync.js';
 import {
   syncGSheetNow, initGSheetSync, askGSheet
@@ -306,7 +306,7 @@ Object.assign(window, {
   rescheduleGCalEventIfConnected, getGCalOfflineQueue, retryGCalOfflineQueue, clearGCalOfflineQueue, removeGCalOfflineQueueItem,
   syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
   initGCalSync, toggleCalendarSelection, stopGCalSyncTimers,
-  syncGoogleContactsNow, initGoogleContactsSync,
+  syncGoogleContactsNow, initGoogleContactsSync, forceFullContactsResync,
   syncGSheetNow, initGSheetSync, askGSheet,
   openCalendarEventActions, closeCalendarEventActions,
   openCalendarMeetingNotes, openCalendarMeetingNotesByEventKey, openCalendarMeetingWorkspaceByEventKey, closeCalendarMeetingNotes, setCalendarMeetingNotesScope,
