@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T07:42:45.252Z",
+  "lastUpdated": "2026-02-12T07:43:44.024Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3454,7 +3454,9 @@
       "areaId": null,
       "categoryId": null,
       "labels": [],
-      "people": [],
+      "people": [
+        "person-1770510421604"
+      ],
       "deferDate": null,
       "dueDate": null,
       "repeat": null,
@@ -3465,7 +3467,7 @@
       "lastReviewedAt": null,
       "order": 41000,
       "createdAt": "2026-02-12T04:45:41.437Z",
-      "updatedAt": "2026-02-12T04:45:41.437Z"
+      "updatedAt": "2026-02-12T07:43:41.119Z"
     }
   ],
   "deletedTaskTombstones": {
