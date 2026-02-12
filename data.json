@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T09:10:11.561Z",
+  "lastUpdated": "2026-02-12T09:50:08.417Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1754,8 +1754,8 @@
         "quran": 0
       },
       "glucose": {
-        "avg": "136",
-        "tir": "92",
+        "avg": "129",
+        "tir": "100",
         "insulin": ""
       },
       "whoop": {
@@ -1765,10 +1765,10 @@
         "whoopAge": ""
       },
       "libre": {
-        "currentGlucose": 127,
+        "currentGlucose": 137,
         "trend": "↘",
         "readingsCount": 48,
-        "lastReading": "2/12/2026 10:46:00 AM"
+        "lastReading": "2/12/2026 11:49:21 AM"
       },
       "family": {
         "mom": false,
@@ -1787,7 +1787,7 @@
         "brushTeeth": 0,
         "nop": ""
       },
-      "_lastModified": "2026-02-12T09:00:02.739Z"
+      "_lastModified": "2026-02-12T09:50:02.978Z"
     }
   },
   "weights": {
@@ -10884,12 +10884,12 @@
   "triggers": [],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "Iob/D7hVqXBDCJknIxaI/g==",
-    "wrapIv": "mEwqR15/sPAiVYvC",
-    "wrappedKey": "AxbIpiG5CDYr/nX1qL8w7t7/smbw4Qm33Cv3zlO02S83dxGIykHvxgupgJ3I1yro",
-    "dataIv": "Jqw/MRa7Bn7v9xm+",
-    "data": "vWkJZOzggwUK8RQxWpg9qll1cuDWpagjAtAM4J4TA/wU3oWaJZClWsO86FA0KKjE458YP+w890IePhQJvsgXTpLvIft1L9slc+SNWF1TZvUqfbfqVlKwpL+UwS4DN2k6zhVTGfsDAIP0xONWm+OMsdQvYELseSbriPUe5xqh7R4MQA8ALUkTYeJpOPm4163VDnm98czDb5FxBFI/qrxs6ndqPMry5rlSD8GZlstqy4LPIGxF3tg+6WNIUDBo+afgoJJ8/n/8uqU1PU+Wag0zfc7g75CZVenHkTB/F/HHjGFlwN7vopgY632EQy+Ax9gntFjj8B9d6jtFQCB0+Djem4hXiZUkvBYlLzNjm+IPbnvxLYPjarqaNmWxVA09GwW/DRZ0NuGL2Z0B7NyJC8ICV8q5fI7OMjn7w2BsjKkrrO6vnlC9eDJsWshorSTK++pSxKZMkUDC0oIxyqBhaV8PuEGFHh2Jbq7TYIETIfE7JNegYBHMn8Px3abIDbkwCjBoLK+PMEJ5eXeNEEhry/iz3knQgPac7XnVGSfi",
-    "updatedAt": "2026-02-12T09:10:11.570Z"
+    "salt": "+rv2p58CwbHGpfyl5n0H8A==",
+    "wrapIv": "Gpty3PVw9FkodOPZ",
+    "wrappedKey": "geyFVWfWIRxvEgx0ecr1PAn3VqDBUqFXU5dq32XOkRpyWL4OckQJguv2NgB65x0x",
+    "dataIv": "NAq88GF3VRHUdxFC",
+    "data": "Q9pbZ2mMA7j5CQwS2fxMp4himVUg1O1WXUnIYGmEt1WLTTH+FR42iv6l4QDqDnqLOf5e/DXftpSAhcqb4n3q6Oc6C3PamQoaZ+jaLn2PTl06BTYzpQtyf6Wj0dLMcoDYNu/yFI1q98K5aRCqb9mYOZbnplCcO7JJ6mVyhBFoip7/RAb5vgTgICKmc5l8NNO4XZ5olR0Bxs/c5ZAxpUDnWNaSOpvn0b/v4tt0jovH2pnx/2QG4BrMdhYaXg2k06GWEHxs/cRNdWFfAbTXVrKeo8U0ict9IeyA7/QOyYJmUi8q8ymGaFN6SCRq6xTBeBStCqhcKot/kaYSvZ03C9KtYJsL4W1/2kgnln9t0UpRee4+q2biM0tgNyxlJmcVyGF43wJMUR/c0WuDT8/M4GA0+Gp2w9ckIRFuZHuJKdvCuVpYx/BR9ynXprCubgawiBHe0ErPmez3xtopA5ZoPa2KMEWgf8X9DzeLaHgNUqR0FvN5SJxn5DUsisrTgBXb8x8i9I0EJD7R/cgvax/xTqj7lZEI7zuFS3ZNz8MA",
+    "updatedAt": "2026-02-12T09:50:08.429Z"
   },
   "xp": {
     "total": 1937,
@@ -11146,7 +11146,7 @@
       "lastUsed": "2026-02-02"
     },
     "multiplier": 1.2,
-    "_updatedAt": "2026-02-12T09:10:08.670Z"
+    "_updatedAt": "2026-02-12T09:50:06.342Z"
   },
   "achievements": {
     "unlocked": {
