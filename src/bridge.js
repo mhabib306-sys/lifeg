@@ -32,6 +32,8 @@ import {
 
 import { exportData, importData } from './data/export-import.js';
 
+import { getCredentialSyncStatus } from './data/credential-sync.js';
+
 import { signInWithGoogle, signOutUser, getCurrentUser, initAuth, signInWithGoogleCalendar, getLastGisErrorType, preloadGoogleIdentityServices } from './data/firebase.js';
 
 import {
@@ -272,6 +274,9 @@ Object.assign(window, {
 
   // Export/Import
   exportData, importData,
+
+  // Credential Sync
+  getCredentialSyncStatus,
 
   // Firebase Auth
   signInWithGoogle, signOutUser, getCurrentUser, initAuth, signInWithGoogleCalendar, getLastGisErrorType, preloadGoogleIdentityServices,

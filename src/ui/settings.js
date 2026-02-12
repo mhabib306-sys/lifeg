@@ -16,6 +16,7 @@ import {
   isLibreConnected, getLibreWorkerUrl, getLibreApiKey, getLibreLastSync
 } from '../data/libre-sync.js';
 import { getAnthropicKey } from '../features/braindump.js';
+import { getCredentialSyncStatus } from '../data/credential-sync.js';
 import {
   isGCalConnected, getSelectedCalendars, getTargetCalendar
 } from '../data/google-calendar-sync.js';
@@ -540,6 +541,13 @@ export function renderSettingsTab() {
           <button onclick="window.saveToGithub()" class="px-3 py-1.5 bg-coral text-white rounded-lg text-xs font-medium hover:bg-coralDark transition ${getGithubToken() ? '' : 'opacity-50 cursor-not-allowed'}" ${getGithubToken() ? '' : 'disabled'}>Sync Now</button>
           <button onclick="window.loadCloudData().then(() => window.render())" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)]rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Pull from Cloud</button>
         </div>
+        ${(() => {
+          const credStatus = getCredentialSyncStatus();
+          return `<div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-[var(--border-light)]">
+            <span class="w-1.5 h-1.5 rounded-full ${credStatus.hasCreds ? 'bg-green-500' : 'bg-[var(--text-muted)]/40'}"></span>
+            <span class="text-[11px] text-[var(--text-muted)]">${credStatus.hasCreds ? credStatus.count + ' credential' + (credStatus.count !== 1 ? 's' : '') + ' synced to cloud' : 'No credentials to sync'}</span>
+          </div>`;
+        })()}
       </div>
 
       <!-- Integrations (collapsible group) -->

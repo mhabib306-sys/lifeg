@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.34.0 - Homebase';
+export const APP_VERSION = '4.35.0 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -112,6 +112,15 @@ export const GCONTACTS_LAST_SYNC_KEY = 'nucleusGoogleContactsLastSync';
 export const MEETING_NOTES_KEY = 'nucleusMeetingNotes';
 export const TRIGGERS_KEY = 'lifeGamificationTriggers';
 export const COLLAPSED_TRIGGERS_KEY = 'lifeGamificationCollapsedTriggers';
+
+// Credentials to sync across devices (encrypted in data.json)
+export const CRED_SYNC_KEYS = [
+  { localStorage: 'lifeGamificationAnthropicKey', id: 'anthropicKey' },
+  { localStorage: 'nucleusWhoopWorkerUrl', id: 'whoopWorkerUrl' },
+  { localStorage: 'nucleusWhoopApiKey', id: 'whoopApiKey' },
+  { localStorage: 'nucleusLibreWorkerUrl', id: 'libreWorkerUrl' },
+  { localStorage: 'nucleusLibreApiKey', id: 'libreApiKey' },
+];
 
 // Google Sheets integration
 export const GSHEET_SPREADSHEET_ID = '14TjFIFtzMPcHgxr1NAtdfrYNmgFRz53XpmYwPQpeA_U';

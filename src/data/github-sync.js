@@ -3,6 +3,7 @@
 // ============================================================================
 
 import { state } from '../state.js';
+import { buildEncryptedCredentials, restoreEncryptedCredentials } from './credential-sync.js';
 import {
   GITHUB_TOKEN_KEY,
   GITHUB_OWNER,
@@ -633,6 +634,7 @@ export async function saveToGithub(options = {}) {
       homeWidgets: state.homeWidgets,
       meetingNotesByEvent: state.meetingNotesByEvent || {},
       triggers: state.triggers || [],
+      encryptedCredentials: await buildEncryptedCredentials(),
       xp: state.xp,
       streak: state.streak,
       achievements: state.achievements
@@ -839,6 +841,16 @@ export async function loadCloudData() {
         mergeSingletonIfNewer('streak', cloudData.streak, STREAK_KEY);
         mergeSingletonIfNewer('achievements', cloudData.achievements, ACHIEVEMENTS_KEY);
         // Triggers are now properly merged inside mergeTaskCollectionsFromCloud() above
+
+        // Restore encrypted credentials (gap-fill: only writes where local is empty)
+        if (cloudData.encryptedCredentials) {
+          try {
+            await restoreEncryptedCredentials(cloudData.encryptedCredentials);
+          } catch (e) {
+            console.warn('Credential restore skipped:', e.message);
+          }
+        }
+
         console.log('Loaded from GitHub');
         updateSyncStatus('success', 'Loaded from GitHub');
         return;

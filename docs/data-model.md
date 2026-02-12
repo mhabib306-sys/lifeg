@@ -86,6 +86,35 @@
 - `lastUpdated` — Last local update timestamp
 - `nucleusMeetingNotes` — Meeting notes keyed by eventKey
 
+## Encrypted Credentials (`encryptedCredentials`)
+
+Optional field in `data.json` payload. Contains AES-GCM encrypted integration credentials, envelope-wrapped with a PBKDF2-derived key from the Firebase UID.
+
+```
+{
+  version: 1,
+  salt: base64,           // 16-byte PBKDF2 salt
+  wrapIv: base64,         // 12-byte IV for key wrapping
+  wrappedKey: base64,     // AES-GCM encrypted data key
+  dataIv: base64,         // 12-byte IV for data encryption
+  data: base64,           // AES-GCM encrypted credential JSON
+  updatedAt: ISO string
+}
+```
+
+Decrypted payload structure:
+```
+{
+  anthropicKey?: string,
+  whoopWorkerUrl?: string,
+  whoopApiKey?: string,
+  libreWorkerUrl?: string,
+  libreApiKey?: string
+}
+```
+
+See `docs/sync.md` § "Credential Sync (Encrypted)" for conflict policy and failure states.
+
 ## Data Integrity Requirements
 - `tasks[].id` is globally unique.
 - `tasks[].updatedAt` must be refreshed on every mutation.

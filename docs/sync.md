@@ -27,6 +27,7 @@
 - `customPerspectives`
 - `homeWidgets`
 - `meetingNotesByEvent`
+- `encryptedCredentials` (optional, AES-GCM encrypted)
 
 ## Conflict Resolution Rules
 
@@ -85,6 +86,36 @@
 Deleted tasks and entities are tracked via tombstone records with ISO timestamps. Tombstones are pruned during sync when older than **180 days**.
 
 **Known limitation:** If device A deletes an entity and creates a tombstone, but does not sync with device B for more than 180 days, the tombstone expires. When device B (which still has the entity) eventually syncs, the entity will be resurrected because no tombstone exists to suppress it. This is an accepted trade-off — 180 days without syncing is an extreme edge case, and indefinite tombstone retention would cause unbounded growth.
+
+## Credential Sync (Encrypted)
+
+Integration credentials (API keys, worker URLs) are encrypted and included in the `data.json` payload so they travel across devices automatically after signing in with Google.
+
+### What syncs
+| Credential | localStorage Key | ID |
+|---|---|---|
+| Anthropic API Key | `lifeGamificationAnthropicKey` | `anthropicKey` |
+| WHOOP Worker URL | `nucleusWhoopWorkerUrl` | `whoopWorkerUrl` |
+| WHOOP API Key | `nucleusWhoopApiKey` | `whoopApiKey` |
+| Libre Worker URL | `nucleusLibreWorkerUrl` | `libreWorkerUrl` |
+| Libre API Key | `nucleusLibreApiKey` | `libreApiKey` |
+
+**Not synced:** GitHub token (bootstrap credential), Google Calendar tokens (short-lived OAuth).
+
+### Encryption scheme
+- **Algorithm:** AES-GCM (256-bit key, 96-bit IV) via Web Crypto API
+- **Key derivation:** PBKDF2-SHA256, 100k iterations
+- **Key input:** `Firebase currentUser.uid` + Firebase project ID (`homebase-880f0`)
+- **Architecture:** Two-layer envelope — a random data key encrypts the credentials, a UID-derived wrapping key encrypts the data key
+
+### Conflict policy
+- **Local-wins with gap-fill:** On restore, each credential is only written to localStorage if the local value is empty. A device that already has a credential keeps its own value.
+
+### Failure states
+- **No Firebase user signed in:** `buildEncryptedCredentials()` returns `null`, field omitted from payload
+- **SubtleCrypto unavailable:** Returns `null` / `false`, no crash
+- **Decryption fails (wrong user / corrupt data):** AES-GCM throws, caught gracefully, app continues
+- **Credential rotation:** The device where you rotated keeps the new value; other devices keep theirs unless they have no value
 
 ## Idempotency Expectations
 - Replaying the same cloud payload should not duplicate entities.
