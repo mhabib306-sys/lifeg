@@ -441,6 +441,11 @@ export const state = {
   globalSearchActiveIndex: -1,
   globalSearchTypeFilter: null,   // null=all, or 'task'|'note'|'area'|'category'|'label'|'person'|'perspective'|'trigger'
 
+  // ---- Settings details open state ----
+  settingsIntegrationsOpen: false,
+  settingsScoringOpen: false,
+  settingsDevToolsOpen: false,
+
   // ---- Responsive ----
   _lastRenderWasMobile: false,
 };
