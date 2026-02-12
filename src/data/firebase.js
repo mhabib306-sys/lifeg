@@ -77,6 +77,9 @@ export function signInWithGoogle() {
 }
 
 export function signOutUser() {
+  // Stop integration sync timers to prevent orphaned intervals after logout
+  window.stopWhoopSyncTimers?.();
+  window.stopGCalSyncTimers?.();
   signOut(auth).catch(err => {
     console.error('Sign out failed:', err);
   });

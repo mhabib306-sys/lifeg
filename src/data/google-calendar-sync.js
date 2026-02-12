@@ -663,6 +663,13 @@ export async function connectGCal() {
   window.render();
 }
 
+/** Stop all GCal sync timers without removing credentials (used on logout). */
+export function stopGCalSyncTimers() {
+  if (syncIntervalId) { clearInterval(syncIntervalId); syncIntervalId = null; }
+  if (tokenRefreshIntervalId) { clearInterval(tokenRefreshIntervalId); tokenRefreshIntervalId = null; }
+  clearScheduledRetry();
+}
+
 export function disconnectGCal() {
   localStorage.removeItem(GCAL_CONNECTED_KEY);
   localStorage.removeItem(GCAL_ACCESS_TOKEN_KEY);

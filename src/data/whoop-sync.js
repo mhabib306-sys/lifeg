@@ -25,6 +25,9 @@ const SYNC_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
 let syncIntervalId = null;
 let endOfDayTimeoutId = null;
 let morningTimeoutId = null;
+let retryTimeoutId = null;
+
+const RETRY_DELAY_MS = 60 * 1000; // Retry once after 60 seconds on failure
 
 const MORNING_HOUR = 11; // First sync at 11:00 AM (new cycle likely started)
 
@@ -134,9 +137,23 @@ function writeWhoopToDate(dateKey, data) {
   state.allData[dateKey]._lastModified = new Date().toISOString();
 }
 
-export async function syncWhoopNow() {
+export async function syncWhoopNow({ isRetry = false } = {}) {
   const data = await fetchWhoopData();
-  if (!data) return;
+  if (!data) {
+    // Schedule a single retry on failure (unless this is already a retry)
+    if (!isRetry && isWhoopConnected()) {
+      if (retryTimeoutId) clearTimeout(retryTimeoutId);
+      retryTimeoutId = setTimeout(() => {
+        retryTimeoutId = null;
+        console.log('WHOOP retry sync triggered');
+        syncWhoopNow({ isRetry: true });
+      }, RETRY_DELAY_MS);
+    }
+    return;
+  }
+
+  // Success — cancel any pending retry
+  if (retryTimeoutId) { clearTimeout(retryTimeoutId); retryTimeoutId = null; }
 
   const today = getLocalDateString();
   writeWhoopToDate(today, data);
@@ -207,10 +224,11 @@ function startSyncInterval() {
   syncIntervalId = setInterval(checkAndSyncWhoop, SYNC_INTERVAL_MS);
 }
 
-function stopSyncTimers() {
+export function stopSyncTimers() {
   if (syncIntervalId) { clearInterval(syncIntervalId); syncIntervalId = null; }
   if (endOfDayTimeoutId) { clearTimeout(endOfDayTimeoutId); endOfDayTimeoutId = null; }
   if (morningTimeoutId) { clearTimeout(morningTimeoutId); morningTimeoutId = null; }
+  if (retryTimeoutId) { clearTimeout(retryTimeoutId); retryTimeoutId = null; }
 }
 
 // ---- Connect / Disconnect ----

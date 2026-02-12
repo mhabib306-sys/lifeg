@@ -881,6 +881,10 @@ export function processGamification(dateStr) {
   // Check achievements
   const newAchievements = checkAchievements(dateStr, scores);
 
+  // Ensure gamification state is synced to cloud (saveXP/saveStreak/saveAchievements
+  // only write to localStorage — this ensures cloud gets the update too)
+  window.debouncedSaveToGithub?.();
+
   return { xpResult, newAchievements };
 }
 
@@ -970,4 +974,5 @@ export function rebuildGamification() {
   saveXP();
   saveStreak();
   saveAchievements();
+  window.debouncedSaveToGithub?.();
 }

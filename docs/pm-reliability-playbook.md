@@ -39,11 +39,20 @@ Use this checklist for any feature that mutates user data, spans multiple views,
 6. Meeting notes create/edit/open behavior is deterministic.
 
 ## 6) Observability Requirements
-- Console or telemetry event on:
-- cloud save attempt/success/failure
-- merge conflict decision path (entity + winner)
-- token refresh failure
-- release smoke test failures
+- Sync health metrics tracked in `state.syncHealth` (persisted to localStorage):
+  - Save/load success/failure counts and rates
+  - Average save latency
+  - Last error with timestamp
+  - Rolling log of last 20 sync events (type, status, latency, details)
+- Visible in Settings > Sync Health section with Force Push/Pull buttons
+- Console logging on:
+  - cloud save attempt/success/failure with latency and payload size
+  - merge conflict decision path (entity + winner)
+  - token refresh failure
+  - checksum mismatch / schema version mismatch
+  - dirty flag set/cleared
+  - periodic sync pulls
+  - release smoke test failures
 
 ## 7) Release Governance
 - Feature flag risky sync logic when possible.

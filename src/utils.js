@@ -49,8 +49,11 @@ export function fmt(num) {
  * @returns {string} Unique task identifier
  */
 export function generateTaskId() {
-  // Note: Using .slice() instead of deprecated .substr()
-  return 'task_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+  const timestamp = Date.now();
+  const randomBytes = new Uint8Array(8);
+  crypto.getRandomValues(randomBytes);
+  const randomStr = Array.from(randomBytes, b => b.toString(36).padStart(2, '0')).join('').slice(0, 12);
+  return `task_${timestamp}_${randomStr}`;
 }
 
 /**

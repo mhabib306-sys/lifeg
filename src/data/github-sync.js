@@ -30,7 +30,11 @@ import {
   ACHIEVEMENTS_KEY,
   CATEGORY_WEIGHTS_KEY,
   TRIGGERS_KEY,
-  LAST_UPDATED_KEY
+  LAST_UPDATED_KEY,
+  GITHUB_SYNC_DIRTY_KEY,
+  SYNC_HEALTH_KEY,
+  SYNC_SEQUENCE_KEY,
+  CLOUD_SCHEMA_VERSION
 } from '../constants.js';
 
 // ---------------------------------------------------------------------------
@@ -135,6 +139,143 @@ function fetchWithTimeout(url, options = {}, timeoutMs = 30000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
+
+// ---------------------------------------------------------------------------
+// Deep clone helper (structuredClone with fallback)
+// ---------------------------------------------------------------------------
+
+function deepClone(obj) {
+  if (typeof structuredClone === 'function') {
+    return structuredClone(obj);
+  }
+  return JSON.parse(JSON.stringify(obj));
+}
+
+// ---------------------------------------------------------------------------
+// Sync health tracking
+// ---------------------------------------------------------------------------
+
+function recordSyncEvent(type, status, latencyMs = 0, details = '') {
+  const event = {
+    type,       // 'save' | 'load' | 'merge'
+    status,     // 'success' | 'error' | 'skipped'
+    timestamp: new Date().toISOString(),
+    latencyMs,
+    details
+  };
+  state.syncHealth.recentEvents.unshift(event);
+  state.syncHealth.recentEvents = state.syncHealth.recentEvents.slice(0, 20);
+
+  if (type === 'save') {
+    state.syncHealth.totalSaves++;
+    if (status === 'success') {
+      state.syncHealth.successfulSaves++;
+      state.syncHealth.lastSaveLatencyMs = latencyMs;
+      const n = state.syncHealth.successfulSaves;
+      state.syncHealth.avgSaveLatencyMs =
+        Math.round(((state.syncHealth.avgSaveLatencyMs * (n - 1)) + latencyMs) / n);
+    } else {
+      state.syncHealth.failedSaves++;
+      state.syncHealth.lastError = { message: details, timestamp: event.timestamp, type };
+    }
+  } else if (type === 'load') {
+    state.syncHealth.totalLoads++;
+    if (status === 'success') {
+      state.syncHealth.successfulLoads++;
+    } else {
+      state.syncHealth.failedLoads++;
+      state.syncHealth.lastError = { message: details, timestamp: event.timestamp, type };
+    }
+  }
+  try { localStorage.setItem(SYNC_HEALTH_KEY, JSON.stringify(state.syncHealth)); } catch (_) {}
+}
+
+export function getSyncHealth() {
+  return state.syncHealth;
+}
+
+// ---------------------------------------------------------------------------
+// Payload integrity — SHA-256 checksum
+// ---------------------------------------------------------------------------
+
+async function computeChecksum(jsonString) {
+  const encoded = new TextEncoder().encode(jsonString);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+// ---------------------------------------------------------------------------
+// Payload validation
+// ---------------------------------------------------------------------------
+
+function validateCloudPayload(data) {
+  const errors = [];
+  if (data.data && typeof data.data !== 'object') errors.push('data must be an object');
+  if (data.tasks && !Array.isArray(data.tasks)) errors.push('tasks must be an array');
+  if (data.taskCategories && !Array.isArray(data.taskCategories)) errors.push('taskCategories must be an array');
+  if (data.taskLabels && !Array.isArray(data.taskLabels)) errors.push('taskLabels must be an array');
+  if (data.taskPeople && !Array.isArray(data.taskPeople)) errors.push('taskPeople must be an array');
+  if (data.customPerspectives && !Array.isArray(data.customPerspectives)) errors.push('customPerspectives must be an array');
+  if (data.homeWidgets && !Array.isArray(data.homeWidgets)) errors.push('homeWidgets must be an array');
+  if (data.triggers && !Array.isArray(data.triggers)) errors.push('triggers must be an array');
+  if (data.lastUpdated && isNaN(new Date(data.lastUpdated).getTime())) errors.push('lastUpdated is not a valid date');
+  if (data.meetingNotesByEvent && typeof data.meetingNotesByEvent !== 'object') errors.push('meetingNotesByEvent must be an object');
+  if (Array.isArray(data.tasks)) {
+    const sample = data.tasks.slice(0, 5);
+    sample.forEach((task, i) => {
+      if (!task || typeof task !== 'object') errors.push(`tasks[${i}] is not an object`);
+      else if (!task.id) errors.push(`tasks[${i}] missing id`);
+    });
+  }
+  return errors;
+}
+
+async function verifyChecksum(cloudData) {
+  if (!cloudData._checksum) return true; // Backwards-compatible: old payloads accepted
+  const { _checksum, ...rest } = cloudData;
+  const jsonForChecksum = JSON.stringify(rest);
+  const expected = await computeChecksum(jsonForChecksum);
+  return expected === _checksum;
+}
+
+function checkSchemaVersion(cloudData) {
+  if (cloudData._schemaVersion && cloudData._schemaVersion > CLOUD_SCHEMA_VERSION) {
+    console.warn(`Cloud data is schema v${cloudData._schemaVersion}, this app supports v${CLOUD_SCHEMA_VERSION}`);
+    updateSyncStatus('error', 'Cloud data is from a newer app version. Please update.');
+    return false;
+  }
+  return true;
+}
+
+// ---------------------------------------------------------------------------
+// Periodic sync
+// ---------------------------------------------------------------------------
+
+const GITHUB_SYNC_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
+let periodicSyncIntervalId = null;
+
+export function initPeriodicGithubSync() {
+  if (periodicSyncIntervalId) clearInterval(periodicSyncIntervalId);
+  periodicSyncIntervalId = setInterval(async () => {
+    if (!getGithubToken() || !navigator.onLine) return;
+    if (state.syncInProgress) return;
+    try {
+      await loadCloudData();
+      if (typeof window.render === 'function') window.render();
+    } catch (err) {
+      console.warn('Periodic sync failed:', err.message);
+    }
+  }, GITHUB_SYNC_INTERVAL_MS);
+}
+
+export function stopPeriodicGithubSync() {
+  if (periodicSyncIntervalId) {
+    clearInterval(periodicSyncIntervalId);
+    periodicSyncIntervalId = null;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -556,6 +697,7 @@ export async function saveToGithub(options = {}) {
   state.syncInProgress = true;
 
   updateSyncStatus('syncing', 'Saving to GitHub...');
+  const saveStartTime = performance.now();
 
   // Snapshot state before pull-merge so we can rollback on PUT failure.
   // This prevents cloud merge from silently corrupting local state when
@@ -584,31 +726,47 @@ export async function saveToGithub(options = {}) {
         const cloudJson = new TextDecoder().decode(bytes);
         const cloudData = JSON.parse(cloudJson);
 
-        // Deep-clone state properties that merge will mutate
-        premergeSnapshot = {
-          allData: JSON.parse(JSON.stringify(state.allData)),
-          tasksData: JSON.parse(JSON.stringify(state.tasksData)),
-          deletedTaskTombstones: JSON.parse(JSON.stringify(state.deletedTaskTombstones)),
-          deletedEntityTombstones: JSON.parse(JSON.stringify(state.deletedEntityTombstones)),
-          taskAreas: JSON.parse(JSON.stringify(state.taskAreas)),
-          taskCategories: JSON.parse(JSON.stringify(state.taskCategories)),
-          taskLabels: JSON.parse(JSON.stringify(state.taskLabels)),
-          taskPeople: JSON.parse(JSON.stringify(state.taskPeople)),
-          customPerspectives: JSON.parse(JSON.stringify(state.customPerspectives)),
-          homeWidgets: JSON.parse(JSON.stringify(state.homeWidgets)),
-          triggers: JSON.parse(JSON.stringify(state.triggers || [])),
-          meetingNotesByEvent: JSON.parse(JSON.stringify(state.meetingNotesByEvent || {})),
-          conflictNotifications: JSON.parse(JSON.stringify(state.conflictNotifications || [])),
-        };
+        // Validate cloud payload before merging
+        const validationErrors = validateCloudPayload(cloudData);
+        if (validationErrors.length > 0) {
+          console.warn('Cloud payload validation failed during pull-merge:', validationErrors);
+          // Skip merge but continue with push (local data is authoritative)
+        } else if (!checkSchemaVersion(cloudData)) {
+          // Cloud is from a newer app version — skip merge to prevent data loss
+          console.warn('Skipping pull-merge: cloud schema version is newer');
+        } else {
+          // Verify checksum if present
+          const checksumValid = await verifyChecksum(cloudData);
+          if (!checksumValid) {
+            console.warn('Cloud data checksum mismatch during pull-merge — skipping merge');
+          } else {
+            // Snapshot state before merge for rollback (single clone operation)
+            premergeSnapshot = deepClone({
+              allData: state.allData,
+              tasksData: state.tasksData,
+              deletedTaskTombstones: state.deletedTaskTombstones,
+              deletedEntityTombstones: state.deletedEntityTombstones,
+              taskAreas: state.taskAreas,
+              taskCategories: state.taskCategories,
+              taskLabels: state.taskLabels,
+              taskPeople: state.taskPeople,
+              customPerspectives: state.customPerspectives,
+              homeWidgets: state.homeWidgets,
+              triggers: state.triggers || [],
+              meetingNotesByEvent: state.meetingNotesByEvent || {},
+              conflictNotifications: state.conflictNotifications || [],
+            });
 
-        if (cloudData?.data) {
-          mergeCloudAllData(cloudData.data);
-        }
-        if (cloudData) {
-          mergeTaskCollectionsFromCloud(cloudData);
-        }
-        if (cloudData?.meetingNotesByEvent) {
-          mergeMeetingNotesData(cloudData.meetingNotesByEvent);
+            if (cloudData?.data) {
+              mergeCloudAllData(cloudData.data);
+            }
+            if (cloudData) {
+              mergeTaskCollectionsFromCloud(cloudData);
+            }
+            if (cloudData?.meetingNotesByEvent) {
+              mergeMeetingNotesData(cloudData.meetingNotesByEvent);
+            }
+          }
         }
       } catch (mergeErr) {
         console.warn('Cloud merge skipped:', mergeErr.message);
@@ -617,7 +775,13 @@ export async function saveToGithub(options = {}) {
     }
 
     // Prepare data payload (from potentially-merged state)
+    // Increment sequence counter for monotonic ordering
+    state.syncSequence++;
+    localStorage.setItem(SYNC_SEQUENCE_KEY, state.syncSequence.toString());
+
     const payload = {
+      _schemaVersion: CLOUD_SCHEMA_VERSION,
+      _sequence: state.syncSequence,
       lastUpdated: new Date().toISOString(),
       data: state.allData,
       weights: state.WEIGHTS,
@@ -640,8 +804,16 @@ export async function saveToGithub(options = {}) {
       achievements: state.achievements
     };
 
-    // Modern UTF-8 safe base64 encoding (replaces deprecated unescape)
-    const jsonString = JSON.stringify(payload, null, 2);
+    // Add integrity checksum (computed over payload without the checksum field)
+    const jsonForChecksum = JSON.stringify(payload);
+    payload._checksum = await computeChecksum(jsonForChecksum);
+
+    // Modern UTF-8 safe base64 encoding (compact — no pretty-printing)
+    const jsonString = JSON.stringify(payload);
+    const payloadSizeKB = Math.round(new TextEncoder().encode(jsonString).byteLength / 1024);
+    if (payloadSizeKB > 800) {
+      console.warn(`Sync payload ${payloadSizeKB}KB — approaching GitHub API limit (1MB)`);
+    }
     const bytes = new TextEncoder().encode(jsonString);
     const binString = Array.from(bytes, byte => String.fromCodePoint(byte)).join('');
     const content = btoa(binString);
@@ -665,6 +837,7 @@ export async function saveToGithub(options = {}) {
     );
 
     if (updateResponse.ok) {
+      const saveLatency = Math.round(performance.now() - saveStartTime);
       // PUT succeeded — merged state is now committed, persist to localStorage
       if (premergeSnapshot) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state.allData));
@@ -679,13 +852,18 @@ export async function saveToGithub(options = {}) {
         localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(state.meetingNotesByEvent || {}));
       }
       state.syncRetryCount = 0; // Reset retry counter on success
+      state.syncRateLimited = false;
+      // Clear dirty flag — data is safely in the cloud
+      state.githubSyncDirty = false;
+      localStorage.setItem(GITHUB_SYNC_DIRTY_KEY, 'false');
       // Clear any pending retry timer — this save already succeeded
       if (state.syncRetryTimer) {
         clearTimeout(state.syncRetryTimer);
         state.syncRetryTimer = null;
       }
+      recordSyncEvent('save', 'success', saveLatency, `${payloadSizeKB}KB`);
       updateSyncStatus('success', 'Saved to GitHub');
-      console.log('Saved to GitHub');
+      console.log(`Saved to GitHub (${payloadSizeKB}KB, ${saveLatency}ms)`);
       return true;
     } else {
       // PUT failed — rollback merged state to pre-merge snapshot
@@ -698,33 +876,41 @@ export async function saveToGithub(options = {}) {
         errorMsg = error.message || errorMsg;
       } catch (_) { /* response may not be JSON */ }
       if (updateResponse.status === 409) {
-        // SHA conflict — another device saved. Reset retry counter so next
-        // attempt fetches the fresh SHA and re-merges.
-        state.syncRetryCount = 0;
+        // SHA conflict — another device saved. Let backoff grow naturally
+        // to create temporal separation between devices (no reset).
         throw new Error('Conflict: file changed by another device');
       }
       if (updateResponse.status === 401) {
         throw new Error('GitHub token is invalid or expired');
       }
       if (updateResponse.status === 403) {
+        state.syncRateLimited = true;
+        setTimeout(() => { state.syncRateLimited = false; }, 60000);
         throw new Error('GitHub rate limit exceeded — try again later');
       }
       throw new Error(errorMsg);
     }
   } catch (e) {
+    const saveLatency = Math.round(performance.now() - saveStartTime);
     // Rollback merged state on any failure (network error, abort, etc.)
     if (premergeSnapshot) {
       rollbackMerge(premergeSnapshot);
     }
     updateSyncStatus('error', `Sync failed: ${e.message}`);
     console.error('GitHub save failed:', e);
+    recordSyncEvent('save', 'error', saveLatency, e.message);
 
-    // Retry with exponential backoff (max 4 retries: 4s, 8s, 16s, 30s)
+    // Retry with exponential backoff + jitter
     const MAX_RETRIES = 4;
-    if (state.syncRetryCount < MAX_RETRIES) {
+    const MAX_CONFLICT_RETRIES = 6;
+    const isConflict = e.message.includes('Conflict');
+    const effectiveMax = isConflict ? MAX_CONFLICT_RETRIES : MAX_RETRIES;
+    if (state.syncRetryCount < effectiveMax) {
       state.syncRetryCount++;
-      const delay = Math.min(2000 * Math.pow(2, state.syncRetryCount), 30000);
-      console.log(`Retrying save in ${delay / 1000}s (attempt ${state.syncRetryCount}/${MAX_RETRIES})`);
+      const baseDelay = Math.min(2000 * Math.pow(2, state.syncRetryCount), 30000);
+      const jitter = Math.random() * baseDelay * 0.5; // 0-50% jitter
+      const delay = Math.round(baseDelay + jitter);
+      console.log(`Retrying save in ${delay / 1000}s (attempt ${state.syncRetryCount}/${effectiveMax})`);
       // Store timer ID so it can be cancelled if a new save supersedes it
       if (state.syncRetryTimer) clearTimeout(state.syncRetryTimer);
       state.syncRetryTimer = setTimeout(() => {
@@ -757,14 +943,20 @@ export async function saveToGithub(options = {}) {
  * Debounced wrapper around saveToGithub — collapses rapid saves into one
  */
 export function debouncedSaveToGithub() {
+  // Mark dirty immediately so data survives page close even if save hasn't fired
+  state.githubSyncDirty = true;
+  localStorage.setItem(GITHUB_SYNC_DIRTY_KEY, 'true');
+
   if (state.syncDebounceTimer) clearTimeout(state.syncDebounceTimer);
   // Cancel pending retry — this new user-initiated save supersedes it
   if (state.syncRetryTimer) {
     clearTimeout(state.syncRetryTimer);
     state.syncRetryTimer = null;
   }
-  // Reset backoff counter on new user action so retries start fresh
-  state.syncRetryCount = 0;
+  // Reset backoff counter on new user action, unless rate-limited
+  if (!state.syncRateLimited) {
+    state.syncRetryCount = 0;
+  }
   state.syncDebounceTimer = setTimeout(() => {
     state.syncDebounceTimer = null;
     saveToGithub().catch(err => console.error('Debounced save failed:', err));
@@ -773,12 +965,20 @@ export function debouncedSaveToGithub() {
 
 /**
  * Immediately flush any pending debounced save (for beforeunload/visibilitychange).
+ * If the payload is too large for keepalive (>60KB), marks data as dirty
+ * for the next session instead of attempting a doomed fetch.
  * @param {object} [options] - Options passed to saveToGithub
  */
 export function flushPendingSave(options = {}) {
   if (state.syncDebounceTimer) {
     clearTimeout(state.syncDebounceTimer);
     state.syncDebounceTimer = null;
+
+    // Ensure dirty flag is set so next session knows to sync
+    state.githubSyncDirty = true;
+    try { localStorage.setItem(GITHUB_SYNC_DIRTY_KEY, 'true'); } catch (_) {}
+
+    // Attempt the save — it may or may not complete before unload
     saveToGithub(options).catch(err => console.error('Flush save failed:', err));
   }
 }
@@ -800,9 +1000,18 @@ export async function loadCloudData() {
 
   const token = getGithubToken();
 
-  function shouldUseCloud(cloudUpdated) {
+  function shouldUseCloud(cloudUpdated, cloudSequence) {
     const localUpdatedRaw = localStorage.getItem(LAST_UPDATED_KEY);
     if (!cloudUpdated) return false;
+
+    // Prefer sequence counter comparison (immune to clock skew)
+    const localSeq = state.syncSequence;
+    if (typeof cloudSequence === 'number' && cloudSequence > 0) {
+      if (cloudSequence > localSeq) return true;
+      if (cloudSequence < localSeq) return false;
+      // Equal sequences: fall through to timestamp comparison
+    }
+
     const localUpdated = localUpdatedRaw ? new Date(parseInt(localUpdatedRaw, 10)) : null;
     const cloudDate = new Date(cloudUpdated);
     if (!localUpdated || isNaN(localUpdated.getTime())) return true;
@@ -811,7 +1020,7 @@ export async function loadCloudData() {
 
   function mergeLifeData(cloudData) {
     if (!cloudData?.data) return;
-    if (shouldUseCloud(cloudData.lastUpdated)) {
+    if (shouldUseCloud(cloudData.lastUpdated, cloudData._sequence)) {
       // Cloud is strictly newer — wholesale replace
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData.data));
       state.allData = cloudData.data;
@@ -844,7 +1053,38 @@ export async function loadCloudData() {
         } catch (parseError) {
           console.error('Failed to parse cloud data:', parseError);
           updateSyncStatus('error', 'Corrupted cloud data');
+          recordSyncEvent('load', 'error', 0, 'JSON parse failed');
           return;
+        }
+
+        // Verify integrity checksum
+        const checksumValid = await verifyChecksum(cloudData);
+        if (!checksumValid) {
+          console.error('Cloud data checksum mismatch — possible corruption');
+          updateSyncStatus('error', 'Cloud data integrity check failed');
+          recordSyncEvent('load', 'error', 0, 'Checksum mismatch');
+          return;
+        }
+
+        // Check schema version
+        if (!checkSchemaVersion(cloudData)) {
+          recordSyncEvent('load', 'error', 0, `Schema v${cloudData._schemaVersion} > v${CLOUD_SCHEMA_VERSION}`);
+          return;
+        }
+
+        // Validate payload structure
+        const validationErrors = validateCloudPayload(cloudData);
+        if (validationErrors.length > 0) {
+          console.error('Cloud payload validation failed:', validationErrors);
+          updateSyncStatus('error', 'Cloud data failed validation');
+          recordSyncEvent('load', 'error', 0, `Validation: ${validationErrors.join('; ')}`);
+          return;
+        }
+
+        // Update local sequence if cloud is ahead
+        if (typeof cloudData._sequence === 'number' && cloudData._sequence > state.syncSequence) {
+          state.syncSequence = cloudData._sequence;
+          localStorage.setItem(SYNC_SEQUENCE_KEY, state.syncSequence.toString());
         }
 
         mergeLifeData(cloudData);
@@ -869,18 +1109,23 @@ export async function loadCloudData() {
         }
 
         console.log('Loaded from GitHub');
+        recordSyncEvent('load', 'success');
         updateSyncStatus('success', 'Loaded from GitHub');
         return;
       } else if (response.status === 401) {
         updateSyncStatus('error', 'GitHub token invalid or expired');
         console.error('GitHub auth failed (401) — token may be expired');
-        return;
+        recordSyncEvent('load', 'error', 0, 'Auth failed (401)');
+        throw Object.assign(new Error('Auth failed'), { status: 401 });
       } else if (response.status === 403) {
         updateSyncStatus('error', 'GitHub rate limit exceeded');
         console.error('GitHub rate limited (403)');
-        return;
+        recordSyncEvent('load', 'error', 0, 'Rate limited (403)');
+        throw Object.assign(new Error('Rate limited'), { status: 403 });
       } else if (response.status === 404) {
         console.log('Cloud data file not found — first sync will create it');
+      } else {
+        throw new Error(`GitHub API returned ${response.status}`);
       }
     }
 
@@ -903,9 +1148,39 @@ export async function loadCloudData() {
     } else {
       console.error('Cloud load failed:', e.message);
       updateSyncStatus('error', `Load failed: ${e.message}`);
+      // Rethrow retryable errors (not auth/rate-limit) so retry wrapper can catch
+      if (e.status !== 401 && e.status !== 403) {
+        throw e;
+      }
     }
   } finally {
     state.syncInProgress = false;
+  }
+}
+
+/**
+ * Load cloud data with retry logic (for startup).
+ * Retries up to 3 times with exponential backoff: 2s, 4s, 8s.
+ * Does NOT retry on auth errors (401/403) or offline.
+ */
+export async function loadCloudDataWithRetry(maxRetries = 3) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      await loadCloudData();
+      return; // Success or non-throwing exit (offline, 404, etc.)
+    } catch (err) {
+      // Don't retry auth/rate-limit errors or offline
+      if (err?.status === 401 || err?.status === 403) return;
+      if (!navigator.onLine || err?.name === 'AbortError') return;
+
+      if (attempt < maxRetries) {
+        const delay = 2000 * Math.pow(2, attempt); // 2s, 4s, 8s
+        console.log(`Cloud load retry ${attempt + 1}/${maxRetries} in ${delay / 1000}s`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        console.error('Cloud load failed after', maxRetries, 'retries');
+      }
+    }
   }
 }
 

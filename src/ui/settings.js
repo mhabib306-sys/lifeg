@@ -7,7 +7,7 @@
 import { state } from '../state.js';
 import { escapeHtml } from '../utils.js';
 import { THEMES } from '../constants.js';
-import { getGithubToken, setGithubToken, getTheme, setTheme } from '../data/github-sync.js';
+import { getGithubToken, setGithubToken, getTheme, setTheme, getSyncHealth } from '../data/github-sync.js';
 import { updateWeight, resetWeights, updateMaxScore, resetMaxScores } from '../features/scoring.js';
 import {
   isWhoopConnected, getWhoopWorkerUrl, getWhoopApiKey, getWhoopLastSync
@@ -34,6 +34,81 @@ function formatSyncTime(ts) {
 
 function statusDot(on) {
   return `<span class="w-2 h-2 rounded-full flex-shrink-0 ${on ? 'bg-green-500' : 'bg-[var(--text-muted)]/40'}"></span>`;
+}
+
+// ============================================================================
+// Sync Health Section
+// ============================================================================
+function renderSyncHealthSection() {
+  const health = getSyncHealth();
+  const saveSuccessRate = health.totalSaves > 0
+    ? ((health.successfulSaves / health.totalSaves) * 100).toFixed(0)
+    : '--';
+  const loadSuccessRate = health.totalLoads > 0
+    ? ((health.successfulLoads / health.totalLoads) * 100).toFixed(0)
+    : '--';
+  const dirtyFlag = state.githubSyncDirty ? '<span class="text-amber-500">Unsaved changes</span>' : '<span class="text-green-600">Clean</span>';
+  const lastError = health.lastError
+    ? `<span class="text-red-500 text-[10px]">${escapeHtml(health.lastError.message)} (${formatSyncTime(health.lastError.timestamp)})</span>`
+    : '<span class="text-[var(--text-muted)]">None</span>';
+  const recentEvents = (health.recentEvents || []).slice(0, 10);
+
+  return `
+    <details class="sb-card rounded-lg bg-[var(--bg-card)] group">
+      <summary class="px-5 py-4 cursor-pointer select-none list-none flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <h3 class="font-semibold text-[var(--text-primary)] text-sm">Sync Health</h3>
+          <span class="text-xs text-[var(--text-muted)]">${saveSuccessRate}% save success</span>
+        </div>
+        <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="px-5 pb-4 border-t border-[var(--border-light)] space-y-3">
+        <div class="grid grid-cols-2 gap-3 text-xs mt-3">
+          <div class="p-2 rounded bg-[var(--bg-secondary)]">
+            <div class="text-[var(--text-muted)] mb-0.5">Saves</div>
+            <div class="font-medium">${health.successfulSaves}/${health.totalSaves} (${saveSuccessRate}%)</div>
+          </div>
+          <div class="p-2 rounded bg-[var(--bg-secondary)]">
+            <div class="text-[var(--text-muted)] mb-0.5">Loads</div>
+            <div class="font-medium">${health.successfulLoads}/${health.totalLoads} (${loadSuccessRate}%)</div>
+          </div>
+          <div class="p-2 rounded bg-[var(--bg-secondary)]">
+            <div class="text-[var(--text-muted)] mb-0.5">Avg Latency</div>
+            <div class="font-medium">${health.avgSaveLatencyMs || 0}ms</div>
+          </div>
+          <div class="p-2 rounded bg-[var(--bg-secondary)]">
+            <div class="text-[var(--text-muted)] mb-0.5">Status</div>
+            <div class="font-medium">${dirtyFlag}</div>
+          </div>
+        </div>
+        <div class="text-xs">
+          <span class="text-[var(--text-muted)]">Last error:</span> ${lastError}
+        </div>
+        ${recentEvents.length > 0 ? `
+          <div class="text-xs">
+            <div class="text-[var(--text-muted)] mb-1.5">Recent sync events:</div>
+            <div class="space-y-1 max-h-40 overflow-y-auto">
+              ${recentEvents.map(evt => {
+                const statusColor = evt.status === 'success' ? 'text-green-600' : 'text-red-500';
+                const time = new Date(evt.timestamp).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+                return `<div class="flex items-center gap-2 py-0.5">
+                  <span class="w-1.5 h-1.5 rounded-full flex-shrink-0 ${evt.status === 'success' ? 'bg-green-500' : 'bg-red-500'}"></span>
+                  <span class="${statusColor} font-medium">${escapeHtml(evt.type)}</span>
+                  <span class="text-[var(--text-muted)] flex-1">${evt.details ? escapeHtml(evt.details) : ''}</span>
+                  <span class="text-[var(--text-muted)]">${time}</span>
+                  ${evt.latencyMs ? `<span class="text-[var(--text-muted)]">${evt.latencyMs}ms</span>` : ''}
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
+        ` : ''}
+        <div class="flex gap-2 pt-2 border-t border-[var(--border-light)]">
+          <button onclick="window.saveToGithub().then(() => window.render())" class="px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--accent-dark)] transition">Force Push</button>
+          <button onclick="window.loadCloudData().then(() => window.render())" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Force Pull</button>
+        </div>
+      </div>
+    </details>
+  `;
 }
 
 // ============================================================================
@@ -499,6 +574,9 @@ export function renderSettingsTab() {
           </div>`;
         })()}
       </div>
+
+      <!-- Sync Health -->
+      ${renderSyncHealthSection()}
 
       <!-- Integrations -->
       <details ${state.settingsIntegrationsOpen ? 'open' : ''} ontoggle="window.settingsIntegrationsOpen = this.open" class="sb-card rounded-lg bg-[var(--bg-card)] group">

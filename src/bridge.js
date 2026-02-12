@@ -27,7 +27,8 @@ import {
   getGithubToken, setGithubToken, getTheme, setTheme,
   applyStoredTheme, getAccentColor, getThemeColors,
   updateSyncStatus, saveToGithub, debouncedSaveToGithub, loadCloudData,
-  dismissConflictNotification, clearConflictNotifications
+  dismissConflictNotification, clearConflictNotifications,
+  getSyncHealth, loadCloudDataWithRetry
 } from './data/github-sync.js';
 
 import { exportData, importData } from './data/export-import.js';
@@ -39,7 +40,8 @@ import { signInWithGoogle, signOutUser, getCurrentUser, initAuth, signInWithGoog
 import {
   getWhoopWorkerUrl, setWhoopWorkerUrl, getWhoopApiKey, setWhoopApiKey,
   getWhoopLastSync, isWhoopConnected, fetchWhoopData, syncWhoopNow,
-  checkAndSyncWhoop, connectWhoop, disconnectWhoop, checkWhoopStatus, initWhoopSync
+  checkAndSyncWhoop, connectWhoop, disconnectWhoop, checkWhoopStatus, initWhoopSync,
+  stopSyncTimers as stopWhoopSyncTimers
 } from './data/whoop-sync.js';
 
 import {
@@ -54,7 +56,7 @@ import {
   getGCalEventsForDate, pushTaskToGCalIfConnected, deleteGCalEventIfConnected,
   rescheduleGCalEventIfConnected, getGCalOfflineQueue, retryGCalOfflineQueue, clearGCalOfflineQueue, removeGCalOfflineQueueItem,
   syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
-  initGCalSync, toggleCalendarSelection
+  initGCalSync, toggleCalendarSelection, stopGCalSyncTimers
 } from './data/google-calendar-sync.js';
 import {
   syncGoogleContactsNow, initGoogleContactsSync
@@ -271,6 +273,7 @@ Object.assign(window, {
   applyStoredTheme, getAccentColor, getThemeColors,
   updateSyncStatus, saveToGithub, debouncedSaveToGithub, loadCloudData,
   dismissConflictNotification, clearConflictNotifications,
+  getSyncHealth, loadCloudDataWithRetry,
 
   // Export/Import
   exportData, importData,
@@ -287,7 +290,7 @@ Object.assign(window, {
   // WHOOP Sync
   getWhoopWorkerUrl, setWhoopWorkerUrl, getWhoopApiKey, setWhoopApiKey,
   getWhoopLastSync, isWhoopConnected, fetchWhoopData, syncWhoopNow,
-  checkAndSyncWhoop, connectWhoop, disconnectWhoop, checkWhoopStatus, initWhoopSync,
+  checkAndSyncWhoop, connectWhoop, disconnectWhoop, checkWhoopStatus, initWhoopSync, stopWhoopSyncTimers,
 
   // Libre CGM Sync
   getLibreWorkerUrl, setLibreWorkerUrl, getLibreApiKey, setLibreApiKey,
@@ -300,7 +303,7 @@ Object.assign(window, {
   getGCalEventsForDate, pushTaskToGCalIfConnected, deleteGCalEventIfConnected,
   rescheduleGCalEventIfConnected, getGCalOfflineQueue, retryGCalOfflineQueue, clearGCalOfflineQueue, removeGCalOfflineQueueItem,
   syncGCalNow, connectGCal, disconnectGCal, reconnectGCal,
-  initGCalSync, toggleCalendarSelection,
+  initGCalSync, toggleCalendarSelection, stopGCalSyncTimers,
   syncGoogleContactsNow, initGoogleContactsSync,
   syncGSheetNow, initGSheetSync, askGSheet,
   openCalendarEventActions, closeCalendarEventActions,

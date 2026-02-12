@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.37.1 - Homebase';
+export const APP_VERSION = '4.38.0 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -137,6 +137,10 @@ export const NOTE_LOCAL_BACKUP_KEY = 'nucleusNoteLocalBackup';
 // Shared keys
 export const LAST_UPDATED_KEY = 'lastUpdated';
 export const COLLAPSED_NOTES_KEY = 'collapsedNotes';
+export const GITHUB_SYNC_DIRTY_KEY = 'nucleusGithubSyncDirty';
+export const SYNC_HEALTH_KEY = 'nucleusSyncHealth';
+export const SYNC_SEQUENCE_KEY = 'nucleusSyncSequence';
+export const CLOUD_SCHEMA_VERSION = 1;
 
 // localStorage key prefix convention:
 // - lifeGamification* — app data (tasks, scores, settings, XP, streaks, etc.)

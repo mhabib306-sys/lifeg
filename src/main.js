@@ -24,7 +24,7 @@ import { initLibreSync } from './data/libre-sync.js';
 import { initGCalSync } from './data/google-calendar-sync.js';
 import { initGoogleContactsSync } from './data/google-contacts-sync.js';
 import { initGSheetSync } from './data/google-sheets-sync.js';
-import { applyStoredTheme, loadCloudData, debouncedSaveToGithub, flushPendingSave } from './data/github-sync.js';
+import { applyStoredTheme, loadCloudDataWithRetry, debouncedSaveToGithub, flushPendingSave, saveToGithub, initPeriodicGithubSync, stopPeriodicGithubSync, loadCloudData } from './data/github-sync.js';
 import { initAuth, preloadGoogleIdentityServices } from './data/firebase.js';
 import { render } from './ui/render.js';
 import { migrateTodayFlag } from './features/tasks.js';
@@ -112,14 +112,22 @@ function initApp() {
   // Initial render
   render();
 
-  // Load cloud data, then initialize WHOOP sync
+  // Load cloud data with retry, then initialize integrations.
   // WHOOP sync must wait for cloud data to avoid race condition:
   // without this, WHOOP sync bumps lastUpdated before cloud loads,
   // causing shouldUseCloud() to skip cloud data from other devices.
-  loadCloudData()
+  loadCloudDataWithRetry()
     .then(() => {
+      // Re-run order initialization for cloud-merged items that may lack order fields
+      initializeTaskOrders();
+      initializeNoteOrders();
       ensureHomeWidgets();
       render();
+      // If previous session had unsaved changes, sync now
+      if (state.githubSyncDirty && navigator.onLine) {
+        saveToGithub().catch(() => {});
+      }
+      initPeriodicGithubSync();
       initWhoopSync();
       initLibreSync();
       initGCalSync();
@@ -128,6 +136,11 @@ function initApp() {
     })
     .catch(err => {
       console.warn('Cloud data load failed (will use local):', err.message);
+      // Still check dirty flag on failure path
+      if (state.githubSyncDirty && navigator.onLine) {
+        saveToGithub().catch(() => {});
+      }
+      initPeriodicGithubSync();
       initWhoopSync();
       initLibreSync();
       initGCalSync();
@@ -186,7 +199,12 @@ function initApp() {
   // Online/offline indicator
   window.addEventListener('online', () => {
     console.log('Back online — syncing...');
-    debouncedSaveToGithub();
+    // Always attempt sync if dirty (covers offline changes)
+    if (state.githubSyncDirty) {
+      saveToGithub().catch(err => console.error('Online sync failed:', err));
+    } else {
+      debouncedSaveToGithub();
+    }
     window.retryGCalOfflineQueue?.();
   });
 
@@ -194,15 +212,25 @@ function initApp() {
     console.log('Offline — changes saved locally');
   });
 
-  // Flush pending saves when user leaves or hides tab
+  // Flush pending saves when user leaves or hides tab.
+  // Debounce the "visible" pull to avoid rapid-fire toggles.
+  let visibilityPullTimer = null;
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
+      stopPeriodicGithubSync();
       flushPendingSave({ keepalive: true });
+      if (visibilityPullTimer) {
+        clearTimeout(visibilityPullTimer);
+        visibilityPullTimer = null;
+      }
     } else if (document.visibilityState === 'visible') {
-      // Pull latest cloud data when user returns to tab
-      loadCloudData().then(() => {
-        render();
-      }).catch(() => {});
+      initPeriodicGithubSync();
+      // Debounce the pull to avoid rapid tab-switching storms
+      if (visibilityPullTimer) clearTimeout(visibilityPullTimer);
+      visibilityPullTimer = setTimeout(() => {
+        visibilityPullTimer = null;
+        loadCloudData().then(() => render()).catch(() => {});
+      }, 1000);
     }
   });
   window.addEventListener('beforeunload', () => {

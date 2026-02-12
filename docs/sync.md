@@ -16,18 +16,27 @@
 - `taskCategories`, `taskLabels`, `taskPeople`, `customPerspectives`, `homeWidgets`: merged by ID, local wins on same-ID conflicts unless explicit timestamp policy exists.
 
 ## Payload Contract (`data.json`)
+- `_schemaVersion` — Integer, current version: 1. If cloud > local, merge is refused.
+- `_sequence` — Monotonically increasing counter, immune to clock skew. Used as tiebreaker in `shouldUseCloud()`.
+- `_checksum` — SHA-256 hex digest of the payload (without the `_checksum` field). Verified on load; mismatches reject the payload.
 - `lastUpdated`
 - `data`
 - `weights`
 - `maxScores`
+- `categoryWeights`
 - `tasks`
+- `deletedTaskTombstones`
+- `deletedEntityTombstones`
 - `taskCategories`
+- `categories`
 - `taskLabels`
 - `taskPeople`
 - `customPerspectives`
 - `homeWidgets`
 - `meetingNotesByEvent`
+- `triggers`
 - `encryptedCredentials` (optional, AES-GCM encrypted)
+- `xp`, `streak`, `achievements`
 
 ## Conflict Resolution Rules
 
@@ -59,7 +68,30 @@
 - On cloud write failure:
 1. Keep local data authoritative.
 2. Expose sync error state (`updateSyncStatus('error', ...)`).
-3. Retry on next mutation or when network returns (`online` event).
+3. Retry with exponential backoff + jitter (up to 6 retries for 409 conflicts, 4 for other errors).
+4. On page close, dirty flag persists to localStorage so next session retries.
+
+## Offline Dirty Flag
+- `debouncedSaveToGithub()` sets `nucleusGithubSyncDirty` in localStorage immediately.
+- Cleared only after a successful PUT to GitHub.
+- On app startup: if dirty + online, triggers sync automatically.
+- On `online` event: if dirty, triggers immediate sync (not just debounced).
+- On `beforeunload`/`visibilitychange`: sets dirty flag as fallback for failed keepalive.
+
+## Startup Load Retry
+- `loadCloudDataWithRetry()` retries up to 3 times with exponential backoff (2s, 4s, 8s).
+- Does NOT retry on 401/403 (auth errors) or when offline.
+- After load, re-runs `initializeTaskOrders()` and `initializeNoteOrders()` to handle cloud-merged items.
+
+## Periodic Background Sync
+- Every 15 minutes, pulls cloud changes (read-only, no push).
+- Pauses when tab is hidden, resumes when visible.
+- Skips if sync is already in progress or offline.
+
+## Rate Limit Awareness
+- On 403 response, sets `syncRateLimited` flag for 60 seconds.
+- While rate-limited, `debouncedSaveToGithub()` does NOT reset the backoff counter.
+- Prevents retry storms during GitHub API rate limit windows.
 
 ## Session/Integration State Model
 
@@ -116,6 +148,17 @@ Integration credentials (API keys, worker URLs) are encrypted and included in th
 - **SubtleCrypto unavailable:** Returns `null` / `false`, no crash
 - **Decryption fails (wrong user / corrupt data):** AES-GCM throws, caught gracefully, app continues
 - **Credential rotation:** The device where you rotated keeps the new value; other devices keep theirs unless they have no value
+
+## Payload Integrity & Validation
+- **Checksum:** SHA-256 computed over the full payload (excluding `_checksum` field) using Web Crypto API. Verified on load and during pull-merge. Backwards-compatible — old payloads without checksum are accepted.
+- **Schema version:** Integer `_schemaVersion` field. If cloud version > app's `CLOUD_SCHEMA_VERSION`, merge is refused with "Please update" error.
+- **Structural validation:** `validateCloudPayload()` checks type invariants (tasks is array, data is object, etc.) before merge. Invalid payloads are rejected.
+- **Compact encoding:** Payload uses `JSON.stringify(payload)` (no pretty-printing) to reduce size ~30-40%.
+
+## Sync Health Metrics
+- Tracked in `state.syncHealth` and persisted to `nucleusSyncHealth` localStorage key.
+- Metrics: total/successful/failed saves and loads, average save latency, last error, recent 20 events.
+- Visible in Settings > Sync Health section with Force Push/Pull buttons.
 
 ## Idempotency Expectations
 - Replaying the same cloud payload should not duplicate entities.

@@ -85,6 +85,9 @@
 - `lifeGamificationTheme` — Theme name
 - `lastUpdated` — Last local update timestamp
 - `nucleusMeetingNotes` — Meeting notes keyed by eventKey
+- `nucleusGithubSyncDirty` — Dirty flag for offline sync recovery
+- `nucleusSyncHealth` — Sync health metrics (success/failure counts, latency)
+- `nucleusSyncSequence` — Monotonic sequence counter for clock-skew immunity
 
 ## Encrypted Credentials (`encryptedCredentials`)
 
@@ -115,9 +118,21 @@ Decrypted payload structure:
 
 See `docs/sync.md` § "Credential Sync (Encrypted)" for conflict policy and failure states.
 
+## Payload Envelope Fields (`data.json`)
+```
+{
+  _schemaVersion: number,    // Current: 1. Reject merge if cloud > local.
+  _sequence: number,         // Monotonic counter. Tiebreaker for shouldUseCloud().
+  _checksum: string,         // SHA-256 hex of payload (excluding this field).
+  lastUpdated: ISO string,   // Timestamp of the save.
+  ...                        // All data fields (tasks, data, weights, etc.)
+}
+```
+
 ## Data Integrity Requirements
-- `tasks[].id` is globally unique.
+- `tasks[].id` is globally unique (crypto-quality randomness via `crypto.getRandomValues`).
 - `tasks[].updatedAt` must be refreshed on every mutation.
 - Completed tasks set `completedAt`; incomplete tasks clear `completedAt`.
 - Collection IDs (`cat_*`, `label_*`, `person_*`, etc.) are immutable after creation.
 - `meetingNotesByEvent[eventKey]` keys are deterministic and stable.
+- Cloud payload checksum must verify before merge; mismatches are rejected.

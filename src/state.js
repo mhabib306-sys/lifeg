@@ -46,6 +46,9 @@ import {
   COLLAPSED_NOTES_KEY,
   TRIGGERS_KEY,
   COLLAPSED_TRIGGERS_KEY,
+  GITHUB_SYNC_DIRTY_KEY,
+  SYNC_HEALTH_KEY,
+  SYNC_SEQUENCE_KEY,
 } from './constants.js';
 
 // ---------------------------------------------------------------------------
@@ -221,6 +224,25 @@ export const state = {
   syncRetryCount: 0,                  // Exponential backoff counter
   syncRetryTimer: null,               // setTimeout ID for exponential backoff retry
   cloudPullPending: false,            // Deferred cloud pull after save completes
+  githubSyncDirty: localStorage.getItem(GITHUB_SYNC_DIRTY_KEY) === 'true',
+  syncRateLimited: false,             // True when GitHub API returns 403 (rate limit)
+  syncSequence: parseInt(localStorage.getItem(SYNC_SEQUENCE_KEY) || '0', 10),
+  syncHealth: (() => {
+    try {
+      const stored = localStorage.getItem(SYNC_HEALTH_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        parsed.recentEvents = Array.isArray(parsed.recentEvents) ? parsed.recentEvents.slice(0, 20) : [];
+        return parsed;
+      }
+    } catch (_) {}
+    return {
+      totalSaves: 0, successfulSaves: 0, failedSaves: 0,
+      totalLoads: 0, successfulLoads: 0, failedLoads: 0,
+      lastSaveLatencyMs: 0, avgSaveLatencyMs: 0,
+      lastError: null, recentEvents: [],
+    };
+  })(),
   weatherData: null,
   weatherLocation: { lat: 30.0291, lon: 31.4975, city: 'New Cairo' },
 
