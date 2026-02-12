@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T13:47:34.493Z",
+  "lastUpdated": "2026-02-12T13:48:20.453Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3577,6 +3577,57 @@
       "order": 45000,
       "createdAt": "2026-02-12T13:46:42.701Z",
       "updatedAt": "2026-02-12T13:46:42.701Z"
+    },
+    {
+      "id": "task_1770904096235_85jzx1xxn",
+      "title": "Focus on supermarket revenue",
+      "notes": "",
+      "status": "inbox",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "areaId": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": "2026-02-12",
+      "dueDate": "2026-02-16",
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": null,
+      "lastReviewedAt": null,
+      "order": 46000,
+      "createdAt": "2026-02-12T13:48:16.235Z",
+      "updatedAt": "2026-02-12T13:48:17.416Z",
+      "gcalEventId": "u4rsvudg1fub1u45jrt273gkck"
+    },
+    {
+      "id": "task_1770904096237_5djbkske8",
+      "title": "Review the supermarket instructions",
+      "notes": "",
+      "status": "inbox",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "areaId": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": null,
+      "lastReviewedAt": null,
+      "order": 47000,
+      "createdAt": "2026-02-12T13:48:16.237Z",
+      "updatedAt": "2026-02-12T13:48:16.237Z"
     }
   ],
   "deletedTaskTombstones": {
@@ -10978,12 +11029,12 @@
   ],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "JJhlpcyanyScEJ02xteA9Q==",
-    "wrapIv": "U9RwDBng3xWu5jnf",
-    "wrappedKey": "qbbG+Ge/JkVstDM01VCROpaVcIHFHSUjmGiYCQNlMgSu/KZ96yIfCcU0Qn9yZ4Zn",
-    "dataIv": "YzvPvzY96ZifCHAP",
-    "data": "19zygac0Nk5IeDbl2dlKnPWvW2Ra6pot+zx5ZtdZZzVCGNNq5ZF1dL4e3eoYisBkX91DaHdgNJiMOO+zg9G2iZCOejYQrNn7sgbZbmKlAKJKwUOrHm+AeXlny/MTxesw0JfbRI2wOxl4Qcs5B/7bS/opwjNpVQAJ+uKmbIp4lbliDUsDGPKUcLTfmiLePm85C2PhospOqAy+4NiJUOUam8fcy0nsTAA0+yTQmaPH6ICQKn4l6b4AR3nbta9tONNcOjIIvl8cN/Ea9gw+AAffIwk9Maht2DWn83RXZTDn9kmbVU87VqXl8xksQDvTukwDj6h2D3e2hmAHg5E70pWwoqgkoz2ifXbCe5m+IrBZlcryOFGd1NF+92o0iA6A16oxCltbm6y50IbV/sugJvCRrgfE6BmFl+ee70QdPYQULEp5k9ciQ0mdnrtmoePGxOgJzasdYx0HNvsIwlKtffPE9UXmFH0BdS3fyI5Ri5Ptq3fHNbD3XGVX9TNaunmijcaeGTumoOxUEcgrSz0s3hQWfX574DQmXFGDX3UH",
-    "updatedAt": "2026-02-12T13:47:34.501Z"
+    "salt": "y8L915Y2gfFUvmL5lYHgeA==",
+    "wrapIv": "LOYGVVlB7tFaOhFd",
+    "wrappedKey": "yxwKxBKyZ/m8At8Gd9FM3UwlGzufzWZk/881QW9e4gV7MjX6S5ip7R9MuAh2FFU4",
+    "dataIv": "aTScIizosHuK2Mda",
+    "data": "uBfddZE6I2BJSmxmKxALqWbV6yL+VLVsVguRQsh5jsZAORXeKPHf+z5HDmcPLxuW1RSXg0olsc2jKWIhXPJhl1uabaRyRItbJeGTES4vvvEgqsMlQUEjT7A6zrUHc3n9nuOJ0v8UiG+GGcpNlK27UOOW3QnBuIkSRA4i6Airt2i40bUERaQqGhFeqUMHv74ezj7kE0k5BDhuPOcCa3S9vnvVF0XKH9DFyGCUPZmIoBmBKX3jxL7rwDDht1Uw6nYhMZZUQu1PozP3BEbSCOcGbI80g5jj5z8MMc/OKXyHoqnZL5O6+Zeqzm2kZwyNRIAN8y7XDSNvMA2tjZc5Atzw8ojTMNk4S5MMTyIx2PpNxQkSmCDbxIyES5b2EwWP+alYzFD9DJkEpgMXLlhp7Na4NDdrdfZGEv+J1sIwZ8IEMPS+F6ykUGJizSCEuzkjdDhM0TfVLOE9xBNhyeI4wGgcH7TnFOkhMTYqYsA52avOfgbqgYuYXs5TYiLfSH/+z3jdU8CQiHv+o+q1b4ApoJ88r1Gri2M8seRp2U+b",
+    "updatedAt": "2026-02-12T13:48:20.462Z"
   },
   "xp": {
     "total": 1937,
