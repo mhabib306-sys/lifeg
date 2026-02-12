@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T08:54:43.310Z",
+  "lastUpdated": "2026-02-12T08:57:21.616Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3605,6 +3605,15 @@
       "emoji": "",
       "createdAt": "2026-02-11T10:35:05.077Z",
       "updatedAt": "2026-02-11T10:35:05.077Z"
+    },
+    {
+      "id": "subcat_1770886639578",
+      "name": "QHSE",
+      "areaId": "work",
+      "color": "#ea34b0",
+      "emoji": "",
+      "createdAt": "2026-02-12T08:57:19.578Z",
+      "updatedAt": "2026-02-12T08:57:19.578Z"
     }
   ],
   "taskLabels": [
@@ -10857,12 +10866,12 @@
   "triggers": [],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "xG305ghaJVdI2hflZnwj6Q==",
-    "wrapIv": "nUFCuuheZfFv9gYG",
-    "wrappedKey": "dihETDlupY04sNYhof464kKBAnSZ9iFdHOQ/peUFGUfBQJC+p6UiJ8FoEWIQmIP7",
-    "dataIv": "XcQka1ujJtss5IWX",
-    "data": "Fnes1BXP3m2ki3cRH0dfzSnhXJ7S3q+MA4EcYq6Ud5I7LPZ1rMmcLCBuPQ2otOm9a0pHFXBIDEHJMAWJiOgJjfqb4IY2W1nZW2qHOvnAI2sTR8yav+jXD6KRUjg+JYaoTWxWq70DRdf2cOoE2PBvwIC1o9ak9U/v/XKQP9InNv0zVKdxtc+2EH6b10bwovM+BerRPRQP6yQZdoOBTWndK7EMXbkxKAOhrQFwMxGsukyiijuk0Ex/ZG9KSiCU/I8obwZ0OoYZUYdrxZp+eAF47OROkvOP07NtQGmP+Uv3o9TG53bNamffOn9R8nIsadvF3cBmTmES4ZFNA6zjPDdX2ReuX5jMJD7/pXSzhBYLcgcQ99dZyXTSXoEjB+iRwvIUIyeXgKcOoEYepq5u0tRysYAvjjUtmamJ8ioAWwD4Bd2D6NpMr2egIxA5R0UGCInkbd0gi+xYzehu+h9nqY1FbWT4ByooKk9FH2Sod/hE0s3igsfR5LxTaOwQQR3mzCkFCa90ICQaUVzqV0wsfGGq6kfu/ChgXCyivxru",
-    "updatedAt": "2026-02-12T08:54:43.320Z"
+    "salt": "xfZYp+C6BsMyi4skLvIrBg==",
+    "wrapIv": "MN9rpsghX2VyGkVd",
+    "wrappedKey": "NK2EM6DhYAYEz4UYOV5eNBo0nel030TqboM3fiZmf0NXPw3wKZ7ugt/aek9jPTGk",
+    "dataIv": "6683ZQApASEDdF6d",
+    "data": "Kurk3TavrvVszyfzilpsRD2hnR0o2W/bxoatxrnrdIbwHpU+wsmDp3eaNqDqMMWnfdQ9uF7Zejf7k3crmL5D8DEXliX8lECCx4/81+PhUKXJAfCxZywXl5LGB0JgPGk454uvhRqvuFTSYLgTAiCyR+U2be0haRtnpG9mG5RP9n/lawlQkzr/55Mow6d8nxvv3LsEEVFjRLu1iUpYaDHed9tFtQsrZokVqieEiB76tqBmqCQcqN72vrHFR/vvvasBpOc8y9dedAgnmVqnrTiMJ3cPuH/aEm2ujzKcJ9x6IWkaT++ZqV2wbx25do8XFNnh/3yJfisU2JXQ4mR0y7PbBZCB+rdigsLAMV2CQ9ZykCkOHJZVeX30v/thOTqyBjkjtI8OeyIT2GbMil5cWF/kQdEkkuvVPMy4P4BRx/ITLYg+lqLEsPWliTAZ/CT9EOkzoCF1934WctkVEpIXH1ngYR5vEeewhQ+XI8TcLMaAGXG3nnnv8k4vDOh9j6eNq4WNrcwt+C2d3JWCvALIe/kBKDYfpVLZuPn/Qbox",
+    "updatedAt": "2026-02-12T08:57:21.626Z"
   },
   "xp": {
     "total": 1937,
