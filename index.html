@@ -36,6 +36,30 @@
     </div>
     <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
   </div>
+  <script>
+    // One-time cache nuke: if SW is serving stale code, clear everything and reload.
+    // Uses a localStorage flag so it only runs once per version.
+    (function(){
+      var v='4.38.5';
+      var key='_hb_sw_clear';
+      if(localStorage.getItem(key)===v)return;
+      if('serviceWorker' in navigator){
+        navigator.serviceWorker.getRegistrations().then(function(regs){
+          regs.forEach(function(r){r.unregister()});
+        });
+        if('caches' in window){
+          caches.keys().then(function(names){
+            names.forEach(function(n){caches.delete(n)});
+          });
+        }
+        localStorage.setItem(key,v);
+        // Give unregister a moment, then hard-reload from network
+        setTimeout(function(){location.reload()},300);
+      } else {
+        localStorage.setItem(key,v);
+      }
+    })();
+  </script>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
