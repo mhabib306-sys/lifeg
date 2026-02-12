@@ -17,13 +17,30 @@ Today implies availability; setting Today moves Inbox items to Anytime.
 - **Due** is a deadline signal, not availability.
 
 ## Perspective Rules
+
+**Implementation:** All perspective filters live in `getFilteredTasks()` inside
+`src/features/task-filter.js`. Cross-cutting predicates (like the "next" label
+check) use shared helpers at the top of that file so the logic can't drift
+between perspectives.
+
 ### Today
-Includes:
-- today = `true`
+Includes (any of):
+- `today = true`
 - due today
-- overdue
-- defer date <= today
-Also includes tasks tagged with label `Next` (OmniFocus influence).
+- overdue (due date in the past)
+- defer date ≤ today
+- **carries the "next" label** (case-insensitive match via `isNextTaggedTask()`)
+
+Excludes: tasks deferred to the future (`deferDate > today`).
+
+### Next
+Includes (any of):
+- **carries the "next" label** (same `isNextTaggedTask()` helper as Today)
+- status = `anytime` AND no due date AND not future-deferred
+
+> The "next" label is the **shared concept** between Today and Next. Both
+> perspectives use the single `isNextTaggedTask()` predicate so adding or
+> renaming this label only requires one code change.
 
 ### Flagged
 Includes tasks with `flagged = true` (non-exclusive of status).
@@ -31,8 +48,8 @@ Includes tasks with `flagged = true` (non-exclusive of status).
 ### Anytime
 Includes tasks with:
 - status = `anytime` (today flag does not exclude)
-- no future due date
-- defer date <= today
+- no future due date (`dueDate <= today` or no due date)
+- defer date ≤ today (or no defer date)
 
 ### Upcoming
 Includes tasks with a future due date (strictly after today).
@@ -41,13 +58,20 @@ Includes tasks with a future due date (strictly after today).
 Includes tasks where status = `someday`.
 
 ### Inbox
-Includes tasks where status = `inbox` **and** category is not set.
+Includes tasks where status = `inbox` **and** area is not set.
 
-### Next (OmniFocus-style)
-Includes tasks with:
-- status = `anytime`
-- no due date
-- defer date <= today
+### Logbook
+Includes all tasks where `completed = true`.
+
+## Cross-Perspective Predicates
+
+| Predicate | Helper | Used by |
+|---|---|---|
+| "next" label | `isNextTaggedTask()` | Today, Next |
+
+When adding a new cross-cutting concept (e.g., a "blocked" label), follow this
+pattern: define one predicate function, reference it from every perspective that
+needs it, and add a row to this table.
 
 ## Notes vs Tasks
 Notes are stored in the same array but use `isNote = true` and do not appear

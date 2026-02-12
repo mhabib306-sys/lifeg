@@ -4,6 +4,15 @@ import { getLocalDateString } from '../utils.js';
 import { BUILTIN_PERSPECTIVES } from '../constants.js';
 import { getTasksByPerson, getAreaById, getLabelById, getPersonById, getCategoryById } from './areas.js';
 
+/**
+ * Single source of truth: does this task carry the "next" label?
+ * Used by both Today and Next perspectives so the check can't drift.
+ */
+function isNextTaggedTask(task) {
+  const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
+  return !!(nextLabel && (task.labels || []).includes(nextLabel.id));
+}
+
 export function applyWorkspaceContentMode(items, mode = 'both') {
   if (!Array.isArray(items)) return [];
   if (mode === 'tasks') return items.filter(item => !item?.isNote);
@@ -34,12 +43,16 @@ export function initializeTaskOrders() {
  *
  * PERSPECTIVE RULES:
  * - inbox: status='inbox' AND no areaId
- * - today: today=true OR dueDate=today OR overdue OR deferDate<=today
+ * - today: today=true OR dueDate=today OR overdue OR deferDate<=today OR nextLabel
+ * - next: nextLabel OR (status='anytime' AND no dueDate AND not future-deferred)
  * - flagged: flagged=true
  * - upcoming: has future dueDate
  * - anytime: status='anytime' (today flag does not exclude) AND no future dueDate
  * - someday: status='someday'
  * - logbook: completed=true
+ *
+ * "nextLabel" = task carries a label named "next" (case-insensitive).
+ * Checked via shared isNextTaggedTask() — single source of truth.
  *
  * @param {string} perspectiveId - Perspective to filter by
  * @returns {Task[]} Filtered and sorted task array
@@ -95,11 +108,7 @@ export function getFilteredTasks(perspectiveId) {
       const isScheduledForToday = task.deferDate && task.deferDate <= today;
       const isTodayTask = task.today || isDueToday || isOverdue || isScheduledForToday;
 
-      // Include tasks tagged with "next" label
-      const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
-      const isNextTask = nextLabel && (task.labels || []).includes(nextLabel.id);
-
-      return isTodayTask || isNextTask;
+      return isTodayTask || isNextTaggedTask(task);
     }
 
     // Upcoming: Tasks with future due dates (not today, not overdue)
@@ -130,9 +139,7 @@ export function getFilteredTasks(perspectiveId) {
     // Also includes any task explicitly tagged with a "next" label
     if (perspectiveId === 'next') {
       // Tasks tagged with "next" label always appear here
-      const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
-      const isNextTagged = nextLabel && (task.labels || []).includes(nextLabel.id);
-      if (isNextTagged) return true;
+      if (isNextTaggedTask(task)) return true;
       // Must be in anytime status (not inbox, someday, or today)
       if (task.status !== 'anytime') return false;
       // Must NOT have a due date (no deadline pressure)
