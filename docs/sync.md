@@ -80,6 +80,12 @@
 - Moving a task between areas updates a single task record (no duplicates).
 - Any action path (workspace, calendar sidebar, mobile) must hit the same domain mutation function.
 
+## Tombstone TTL & Deletion Propagation
+
+Deleted tasks and entities are tracked via tombstone records with ISO timestamps. Tombstones are pruned during sync when older than **180 days**.
+
+**Known limitation:** If device A deletes an entity and creates a tombstone, but does not sync with device B for more than 180 days, the tombstone expires. When device B (which still has the entity) eventually syncs, the entity will be resurrected because no tombstone exists to suppress it. This is an accepted trade-off — 180 days without syncing is an extreme edge case, and indefinite tombstone retention would cause unbounded growth.
+
 ## Idempotency Expectations
 - Replaying the same cloud payload should not duplicate entities.
 - Re-running merges with unchanged data should produce stable state.

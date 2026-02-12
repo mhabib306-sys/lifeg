@@ -219,6 +219,8 @@ export const state = {
   syncInProgress: false,              // Lock to prevent concurrent save/load
   syncPendingRetry: false,            // Queue retry after current sync completes
   syncRetryCount: 0,                  // Exponential backoff counter
+  syncRetryTimer: null,               // setTimeout ID for exponential backoff retry
+  cloudPullPending: false,            // Deferred cloud pull after save completes
   weatherData: null,
   weatherLocation: { lat: 30.0291, lon: 31.4975, city: 'New Cairo' },
 

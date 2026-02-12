@@ -123,6 +123,20 @@ export function getThemeColors() {
 }
 
 // ---------------------------------------------------------------------------
+// Fetch with timeout (AbortController)
+// ---------------------------------------------------------------------------
+
+/**
+ * Wrapper around fetch that aborts after a timeout (default 30s).
+ * Prevents sync lock from being held indefinitely on network stalls.
+ */
+function fetchWithTimeout(url, options = {}, timeoutMs = 30000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
+
+// ---------------------------------------------------------------------------
 // Sync status indicator
 // ---------------------------------------------------------------------------
 
@@ -477,6 +491,46 @@ function mergeTaskCollectionsFromCloud(cloudData = {}) {
 }
 
 // ---------------------------------------------------------------------------
+// Pre-merge rollback helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Restore state + localStorage from a pre-merge snapshot.
+ * Called when a PUT fails after pull-merge has already mutated state.
+ */
+function rollbackMerge(snapshot) {
+  state.allData = snapshot.allData;
+  state.tasksData = snapshot.tasksData;
+  state.deletedTaskTombstones = snapshot.deletedTaskTombstones;
+  state.deletedEntityTombstones = snapshot.deletedEntityTombstones;
+  state.taskAreas = snapshot.taskAreas;
+  state.taskCategories = snapshot.taskCategories;
+  state.taskLabels = snapshot.taskLabels;
+  state.taskPeople = snapshot.taskPeople;
+  state.customPerspectives = snapshot.customPerspectives;
+  state.homeWidgets = snapshot.homeWidgets;
+  state.triggers = snapshot.triggers;
+  state.meetingNotesByEvent = snapshot.meetingNotesByEvent;
+  state.conflictNotifications = snapshot.conflictNotifications;
+
+  // Restore localStorage to match rolled-back state
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot.allData));
+  localStorage.setItem(TASKS_KEY, JSON.stringify(snapshot.tasksData));
+  localStorage.setItem(DELETED_TASK_TOMBSTONES_KEY, JSON.stringify(snapshot.deletedTaskTombstones));
+  localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(snapshot.deletedEntityTombstones));
+  localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(snapshot.taskAreas));
+  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(snapshot.taskCategories));
+  localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(snapshot.taskLabels));
+  localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(snapshot.taskPeople));
+  localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(snapshot.customPerspectives));
+  localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(snapshot.homeWidgets));
+  localStorage.setItem(TRIGGERS_KEY, JSON.stringify(snapshot.triggers));
+  localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(snapshot.meetingNotesByEvent));
+  localStorage.setItem(CONFLICT_NOTIFICATIONS_KEY, JSON.stringify(snapshot.conflictNotifications));
+  console.log('Rolled back pull-merge after PUT failure');
+}
+
+// ---------------------------------------------------------------------------
 // Save to GitHub
 // ---------------------------------------------------------------------------
 
@@ -502,14 +556,20 @@ export async function saveToGithub(options = {}) {
 
   updateSyncStatus('syncing', 'Saving to GitHub...');
 
+  // Snapshot state before pull-merge so we can rollback on PUT failure.
+  // This prevents cloud merge from silently corrupting local state when
+  // the subsequent PUT fails (409 conflict, network error, rate limit).
+  let premergeSnapshot = null;
+
   try {
     // Get current file SHA + content (needed for merge + update)
-    const getResponse = await fetch(
+    const getResponse = await fetchWithTimeout(
       `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`,
       { headers: { 'Authorization': `token ${token}` } }
     );
 
     let sha = null;
+
     if (getResponse.ok) {
       const fileData = await getResponse.json();
       sha = fileData.sha;
@@ -522,6 +582,24 @@ export async function saveToGithub(options = {}) {
         const bytes = Uint8Array.from(binString, char => char.codePointAt(0));
         const cloudJson = new TextDecoder().decode(bytes);
         const cloudData = JSON.parse(cloudJson);
+
+        // Deep-clone state properties that merge will mutate
+        premergeSnapshot = {
+          allData: JSON.parse(JSON.stringify(state.allData)),
+          tasksData: JSON.parse(JSON.stringify(state.tasksData)),
+          deletedTaskTombstones: JSON.parse(JSON.stringify(state.deletedTaskTombstones)),
+          deletedEntityTombstones: JSON.parse(JSON.stringify(state.deletedEntityTombstones)),
+          taskAreas: JSON.parse(JSON.stringify(state.taskAreas)),
+          taskCategories: JSON.parse(JSON.stringify(state.taskCategories)),
+          taskLabels: JSON.parse(JSON.stringify(state.taskLabels)),
+          taskPeople: JSON.parse(JSON.stringify(state.taskPeople)),
+          customPerspectives: JSON.parse(JSON.stringify(state.customPerspectives)),
+          homeWidgets: JSON.parse(JSON.stringify(state.homeWidgets)),
+          triggers: JSON.parse(JSON.stringify(state.triggers || [])),
+          meetingNotesByEvent: JSON.parse(JSON.stringify(state.meetingNotesByEvent || {})),
+          conflictNotifications: JSON.parse(JSON.stringify(state.conflictNotifications || [])),
+        };
+
         if (cloudData?.data) {
           mergeCloudAllData(cloudData.data);
         }
@@ -533,10 +611,11 @@ export async function saveToGithub(options = {}) {
         }
       } catch (mergeErr) {
         console.warn('Cloud merge skipped:', mergeErr.message);
+        premergeSnapshot = null; // No merge happened, nothing to rollback
       }
     }
 
-    // Prepare data payload
+    // Prepare data payload (from potentially-merged state)
     const payload = {
       lastUpdated: new Date().toISOString(),
       data: state.allData,
@@ -566,7 +645,7 @@ export async function saveToGithub(options = {}) {
     const content = btoa(binString);
 
     // Update file via GitHub API
-    const updateResponse = await fetch(
+    const updateResponse = await fetchWithTimeout(
       `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`,
       {
         method: 'PUT',
@@ -584,15 +663,41 @@ export async function saveToGithub(options = {}) {
     );
 
     if (updateResponse.ok) {
+      // PUT succeeded — merged state is now committed, persist to localStorage
+      if (premergeSnapshot) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.allData));
+        localStorage.setItem(TASKS_KEY, JSON.stringify(state.tasksData));
+        localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
+        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(state.taskCategories));
+        localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
+        localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
+        localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(state.customPerspectives));
+        localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+        localStorage.setItem(TRIGGERS_KEY, JSON.stringify(state.triggers));
+        localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(state.meetingNotesByEvent || {}));
+      }
       state.syncRetryCount = 0; // Reset retry counter on success
+      // Clear any pending retry timer — this save already succeeded
+      if (state.syncRetryTimer) {
+        clearTimeout(state.syncRetryTimer);
+        state.syncRetryTimer = null;
+      }
       updateSyncStatus('success', 'Saved to GitHub');
       console.log('Saved to GitHub');
       return true;
     } else {
+      // PUT failed — rollback merged state to pre-merge snapshot
+      if (premergeSnapshot) {
+        rollbackMerge(premergeSnapshot);
+      }
       const error = await updateResponse.json();
       throw new Error(error.message || 'Failed to save');
     }
   } catch (e) {
+    // Rollback merged state on any failure (network error, abort, etc.)
+    if (premergeSnapshot) {
+      rollbackMerge(premergeSnapshot);
+    }
     updateSyncStatus('error', `Sync failed: ${e.message}`);
     console.error('GitHub save failed:', e);
 
@@ -602,7 +707,10 @@ export async function saveToGithub(options = {}) {
       state.syncRetryCount++;
       const delay = Math.min(2000 * Math.pow(2, state.syncRetryCount), 30000);
       console.log(`Retrying save in ${delay / 1000}s (attempt ${state.syncRetryCount}/${MAX_RETRIES})`);
-      setTimeout(() => {
+      // Store timer ID so it can be cancelled if a new save supersedes it
+      if (state.syncRetryTimer) clearTimeout(state.syncRetryTimer);
+      state.syncRetryTimer = setTimeout(() => {
+        state.syncRetryTimer = null;
         saveToGithub().catch(err => console.error('Retry save failed:', err));
       }, delay);
     }
@@ -612,6 +720,13 @@ export async function saveToGithub(options = {}) {
     if (state.syncPendingRetry) {
       state.syncPendingRetry = false;
       debouncedSaveToGithub();
+    }
+    // Deferred cloud pull: if loadCloudData was blocked during save, run it now
+    if (state.cloudPullPending) {
+      state.cloudPullPending = false;
+      loadCloudData().then(() => {
+        if (typeof window.render === 'function') window.render();
+      }).catch(() => {});
     }
   }
 }
@@ -625,6 +740,11 @@ export async function saveToGithub(options = {}) {
  */
 export function debouncedSaveToGithub() {
   if (state.syncDebounceTimer) clearTimeout(state.syncDebounceTimer);
+  // Cancel pending retry — this new user-initiated save supersedes it
+  if (state.syncRetryTimer) {
+    clearTimeout(state.syncRetryTimer);
+    state.syncRetryTimer = null;
+  }
   state.syncDebounceTimer = setTimeout(() => {
     state.syncDebounceTimer = null;
     saveToGithub().catch(err => console.error('Debounced save failed:', err));
@@ -652,7 +772,10 @@ export function flushPendingSave(options = {}) {
  */
 export async function loadCloudData() {
   // Sync lock — prevent concurrent save/load operations
-  if (state.syncInProgress) return;
+  if (state.syncInProgress) {
+    state.cloudPullPending = true; // Will be picked up after current save completes
+    return;
+  }
   state.syncInProgress = true;
 
   const token = getGithubToken();
@@ -684,7 +807,7 @@ export async function loadCloudData() {
   try {
     // Try GitHub API first if token exists
     if (token) {
-      const response = await fetch(
+      const response = await fetchWithTimeout(
         `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`,
         { headers: { 'Authorization': `token ${token}` } }
       );
@@ -723,7 +846,7 @@ export async function loadCloudData() {
     }
 
     // Fallback to static file fetch
-    const response = await fetch(DATA_URL + '?t=' + Date.now());
+    const response = await fetchWithTimeout(DATA_URL + '?t=' + Date.now());
     if (response.ok) {
       const cloudData = await response.json();
       mergeLifeData(cloudData);

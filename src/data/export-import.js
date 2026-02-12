@@ -9,7 +9,12 @@ import {
   TASK_LABELS_KEY,
   TASK_PEOPLE_KEY,
   CATEGORIES_KEY,
-  PERSPECTIVES_KEY
+  PERSPECTIVES_KEY,
+  MAX_SCORES_KEY,
+  CATEGORY_WEIGHTS_KEY,
+  XP_KEY,
+  STREAK_KEY,
+  ACHIEVEMENTS_KEY
 } from '../constants.js';
 import { getLocalDateString } from '../utils.js';
 import { saveData, saveWeights } from './storage.js';
@@ -64,8 +69,28 @@ export function importData(event) {
         saveData();
       }
       if (imported.weights) {
-        state.WEIGHTS = imported.weights;
+        state.WEIGHTS = { ...imported.weights, _updatedAt: new Date().toISOString() };
         saveWeights();
+      }
+      if (imported.maxScores) {
+        state.MAX_SCORES = { ...imported.maxScores, _updatedAt: new Date().toISOString() };
+        localStorage.setItem(MAX_SCORES_KEY, JSON.stringify(state.MAX_SCORES));
+      }
+      if (imported.categoryWeights) {
+        state.CATEGORY_WEIGHTS = { ...imported.categoryWeights, _updatedAt: new Date().toISOString() };
+        localStorage.setItem(CATEGORY_WEIGHTS_KEY, JSON.stringify(state.CATEGORY_WEIGHTS));
+      }
+      if (imported.xp) {
+        state.xp = { ...imported.xp, _updatedAt: new Date().toISOString() };
+        localStorage.setItem(XP_KEY, JSON.stringify(state.xp));
+      }
+      if (imported.streak) {
+        state.streak = { ...imported.streak, _updatedAt: new Date().toISOString() };
+        localStorage.setItem(STREAK_KEY, JSON.stringify(state.streak));
+      }
+      if (imported.achievements) {
+        state.achievements = { ...imported.achievements, _updatedAt: new Date().toISOString() };
+        localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(state.achievements));
       }
       if (imported.tasks) {
         state.tasksData = imported.tasks;
