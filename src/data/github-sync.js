@@ -5,6 +5,15 @@
 import { state } from '../state.js';
 import { buildEncryptedCredentials, restoreEncryptedCredentials } from './credential-sync.js';
 import {
+  validateCloudPayload as _validateCloudPayload,
+  normalizeDeletedTaskTombstones as _normalizeDeletedTaskTombstones,
+  normalizeDeletedEntityTombstones as _normalizeDeletedEntityTombstones,
+  mergeCloudAllData as _mergeCloudAllData,
+  mergeEntityCollection as _mergeEntityCollection,
+  parseTimestamp,
+  isObjectRecord,
+} from './sync-helpers.js';
+import {
   GITHUB_TOKEN_KEY,
   GITHUB_OWNER,
   GITHUB_REPO,
@@ -212,25 +221,7 @@ async function computeChecksum(jsonString) {
 // ---------------------------------------------------------------------------
 
 function validateCloudPayload(data) {
-  const errors = [];
-  if (data.data && typeof data.data !== 'object') errors.push('data must be an object');
-  if (data.tasks && !Array.isArray(data.tasks)) errors.push('tasks must be an array');
-  if (data.taskCategories && !Array.isArray(data.taskCategories)) errors.push('taskCategories must be an array');
-  if (data.taskLabels && !Array.isArray(data.taskLabels)) errors.push('taskLabels must be an array');
-  if (data.taskPeople && !Array.isArray(data.taskPeople)) errors.push('taskPeople must be an array');
-  if (data.customPerspectives && !Array.isArray(data.customPerspectives)) errors.push('customPerspectives must be an array');
-  if (data.homeWidgets && !Array.isArray(data.homeWidgets)) errors.push('homeWidgets must be an array');
-  if (data.triggers && !Array.isArray(data.triggers)) errors.push('triggers must be an array');
-  if (data.lastUpdated && isNaN(new Date(data.lastUpdated).getTime())) errors.push('lastUpdated is not a valid date');
-  if (data.meetingNotesByEvent && typeof data.meetingNotesByEvent !== 'object') errors.push('meetingNotesByEvent must be an object');
-  if (Array.isArray(data.tasks)) {
-    const sample = data.tasks.slice(0, 5);
-    sample.forEach((task, i) => {
-      if (!task || typeof task !== 'object') errors.push(`tasks[${i}] is not an object`);
-      else if (!task.id) errors.push(`tasks[${i}] missing id`);
-    });
-  }
-  return errors;
+  return _validateCloudPayload(data);
 }
 
 async function verifyChecksum(cloudData) {
@@ -319,45 +310,10 @@ export function updateSyncStatus(status, message = '') {
  * devices without overwriting local changes.
  */
 function mergeCloudAllData(cloudAllData) {
-  const categories = ['prayers', 'glucose', 'whoop', 'libre', 'family', 'habits'];
-
-  function isEmptyVal(v) {
-    return v === '' || v === null || v === undefined;
-  }
-
-  Object.keys(cloudAllData).forEach(date => {
-    if (!state.allData[date]) {
-      // Date only exists in cloud — adopt it wholesale
-      state.allData[date] = cloudAllData[date];
-      return;
-    }
-
-    const local = state.allData[date];
-    const cloud = cloudAllData[date];
-
-    categories.forEach(cat => {
-      if (!cloud[cat]) return;
-
-      if (!local[cat]) {
-        // Category only in cloud — adopt it
-        local[cat] = cloud[cat];
-        return;
-      }
-
-      // Per-field merge: cloud fills gaps in local
-      Object.keys(cloud[cat]).forEach(field => {
-        if (isEmptyVal(local[cat][field]) && !isEmptyVal(cloud[cat][field])) {
-          local[cat][field] = cloud[cat][field];
-        }
-      });
-    });
-  });
+  _mergeCloudAllData(state.allData, cloudAllData);
 }
 
-function parseTimestamp(value) {
-  const ts = value ? new Date(value).getTime() : 0;
-  return Number.isFinite(ts) ? ts : 0;
-}
+// parseTimestamp imported from sync-helpers.js
 
 /**
  * Merge a singleton value (weights, xp, streak, etc.) using _updatedAt timestamps.
@@ -423,33 +379,14 @@ function mergeMeetingNotesData(cloudMeetingNotes = {}) {
   localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(merged));
 }
 
-function isObjectRecord(value) {
-  return !!value && typeof value === 'object' && !Array.isArray(value);
-}
+// isObjectRecord imported from sync-helpers.js
 
 function normalizeDeletedTaskTombstones(raw) {
-  if (!raw || typeof raw !== 'object') return {};
-  const now = Date.now();
-  const ttlMs = 180 * 24 * 60 * 60 * 1000; // 180 days
-  const normalized = {};
-  Object.entries(raw).forEach(([id, ts]) => {
-    if (!id) return;
-    const parsed = parseTimestamp(ts);
-    if (!parsed) return;
-    if (now - parsed > ttlMs) return;
-    normalized[String(id)] = new Date(parsed).toISOString();
-  });
-  return normalized;
+  return _normalizeDeletedTaskTombstones(raw);
 }
 
 function normalizeDeletedEntityTombstones(raw) {
-  if (!raw || typeof raw !== 'object') return {};
-  const out = {};
-  Object.entries(raw).forEach(([collection, ids]) => {
-    if (!ids || typeof ids !== 'object') return;
-    out[collection] = normalizeDeletedTaskTombstones(ids);
-  });
-  return out;
+  return _normalizeDeletedEntityTombstones(raw);
 }
 
 function mergeDeletedEntityTombstones(cloudTombstones) {
@@ -531,21 +468,23 @@ function pruneDeletedTasksFromState() {
 }
 
 function mergeEntityCollection(localItems = [], cloudItems = [], timestampFields = [], collectionType = '') {
-  const localList = Array.isArray(localItems) ? localItems : [];
-  const cloudList = Array.isArray(cloudItems) ? cloudItems.filter(item => !isEntityDeleted(collectionType, item?.id)) : [];
-  const byId = new Map();
+  // Wrap the isDeleted check for the shared helper
+  const isDeletedFn = collectionType
+    ? (id) => isEntityDeleted(collectionType, id)
+    : null;
 
-  localList.forEach(item => {
-    if (isObjectRecord(item) && item.id && !isEntityDeleted(collectionType, item.id)) byId.set(item.id, item);
+  // Use shared merge logic (handles newest-wins, gap-fill)
+  const merged = _mergeEntityCollection(localItems, cloudItems, timestampFields, isDeletedFn);
+
+  // Conflict notifications (specific to github-sync, not in shared helper)
+  const localMap = new Map();
+  (Array.isArray(localItems) ? localItems : []).forEach(item => {
+    if (isObjectRecord(item) && item.id) localMap.set(item.id, item);
   });
-
-  cloudList.forEach(cloudItem => {
+  (Array.isArray(cloudItems) ? cloudItems : []).forEach(cloudItem => {
     if (!isObjectRecord(cloudItem) || !cloudItem.id) return;
-    const localItem = byId.get(cloudItem.id);
-    if (!localItem) {
-      byId.set(cloudItem.id, cloudItem);
-      return;
-    }
+    const localItem = localMap.get(cloudItem.id);
+    if (!localItem) return;
     if (!timestampFields.length) {
       if (JSON.stringify(localItem) !== JSON.stringify(cloudItem)) {
         pushConflictNotification({
@@ -555,27 +494,21 @@ function mergeEntityCollection(localItems = [], cloudItems = [], timestampFields
           reason: 'No timestamp field for deterministic newest-wins merge',
         });
       }
-      return; // Keep local on conflict when no timestamp exists.
-    }
-    const localTs = parseTimestamp(timestampFields.map(field => localItem[field]).find(Boolean));
-    const cloudTs = parseTimestamp(timestampFields.map(field => cloudItem[field]).find(Boolean));
-    if (cloudTs > localTs) byId.set(cloudItem.id, cloudItem);
-    else if (cloudTs === localTs && JSON.stringify(localItem) !== JSON.stringify(cloudItem)) {
-      pushConflictNotification({
-        entity: 'timestamped_collection',
-        mode: 'local_wins_tie',
-        itemId: String(cloudItem.id),
-        reason: 'Tied timestamps with different payloads',
-      });
+    } else {
+      const localTs = parseTimestamp(timestampFields.map(f => localItem[f]).find(Boolean));
+      const cloudTs = parseTimestamp(timestampFields.map(f => cloudItem[f]).find(Boolean));
+      if (cloudTs === localTs && JSON.stringify(localItem) !== JSON.stringify(cloudItem)) {
+        pushConflictNotification({
+          entity: 'timestamped_collection',
+          mode: 'local_wins_tie',
+          itemId: String(cloudItem.id),
+          reason: 'Tied timestamps with different payloads',
+        });
+      }
     }
   });
 
-  localList.forEach(item => {
-    if (!isObjectRecord(item) || !item.id || byId.has(item.id)) return;
-    byId.set(item.id, item);
-  });
-
-  return Array.from(byId.values());
+  return merged;
 }
 
 function mergeTaskCollectionsFromCloud(cloudData = {}) {

@@ -8,9 +8,60 @@ import { getTasksByPerson, getAreaById, getLabelById, getPersonById, getCategory
  * Single source of truth: does this task carry the "next" label?
  * Used by both Today and Next perspectives so the check can't drift.
  */
-function isNextTaggedTask(task) {
-  const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
+export function isNextTaggedTask(task, taskLabels = state.taskLabels) {
+  const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
   return !!(nextLabel && (task.labels || []).includes(nextLabel.id));
+}
+
+// ============================================================================
+// Perspective Predicates — pure functions for each builtin perspective.
+// Each returns true if `task` belongs in that perspective.
+// `today` param is a YYYY-MM-DD string for the current date.
+// ============================================================================
+
+export function matchesInboxPerspective(task) {
+  return task.status === 'inbox' && !task.areaId;
+}
+
+export function matchesTodayPerspective(task, today, taskLabels = state.taskLabels) {
+  if (task.deferDate && task.deferDate > today) return false;
+  const isDueToday = task.dueDate === today;
+  const isOverdue = task.dueDate && task.dueDate < today;
+  const isScheduledForToday = task.deferDate && task.deferDate <= today;
+  const isTodayTask = task.today || isDueToday || isOverdue || isScheduledForToday;
+  return isTodayTask || isNextTaggedTask(task, taskLabels);
+}
+
+export function matchesFlaggedPerspective(task) {
+  return !!task.flagged;
+}
+
+export function matchesUpcomingPerspective(task, today) {
+  if (!task.dueDate) return false;
+  return task.dueDate > today;
+}
+
+export function matchesAnytimePerspective(task, today) {
+  if (task.status !== 'anytime') return false;
+  if (task.dueDate && task.dueDate > today) return false;
+  if (task.deferDate && task.deferDate > today) return false;
+  return true;
+}
+
+export function matchesSomedayPerspective(task) {
+  return task.status === 'someday';
+}
+
+export function matchesNextPerspective(task, today, taskLabels = state.taskLabels) {
+  if (isNextTaggedTask(task, taskLabels)) return true;
+  if (task.status !== 'anytime') return false;
+  if (task.dueDate) return false;
+  if (task.deferDate && task.deferDate > today) return false;
+  return true;
+}
+
+export function matchesLogbookPerspective(task) {
+  return task.completed;
 }
 
 export function applyWorkspaceContentMode(items, mode = 'both') {
@@ -94,71 +145,14 @@ export function getFilteredTasks(perspectiveId) {
       return false;
     }
 
-    // OmniFocus model for Today:
-    // - Tasks flagged for today
-    // - Tasks with today's due date
-    // - Overdue tasks (due date in the past)
-    // - "Next" tasks: tasks tagged with a "next" label
-    // Note: Defer date controls availability, NOT perspective membership
-    if (perspectiveId === 'today') {
-      // Deferred tasks are not yet available
-      if (task.deferDate && task.deferDate > today) return false;
-      const isDueToday = task.dueDate === today;
-      const isOverdue = task.dueDate && task.dueDate < today;
-      const isScheduledForToday = task.deferDate && task.deferDate <= today;
-      const isTodayTask = task.today || isDueToday || isOverdue || isScheduledForToday;
-
-      return isTodayTask || isNextTaggedTask(task);
-    }
-
-    // Upcoming: Tasks with future due dates (not today, not overdue)
-    // Shows tasks from Anytime or Someday that have scheduled due dates
-    if (perspectiveId === 'upcoming') {
-      if (!task.dueDate) return false;
-      return task.dueDate > today;
-    }
-
-    // Anytime: Tasks available to do anytime (no specific schedule)
-    // Today flag does not exclude tasks from Anytime
-    if (perspectiveId === 'anytime') {
-      if (task.status !== 'anytime') return false;
-      // If it has a due date in the future, it shows in Upcoming instead
-      if (task.dueDate && task.dueDate > today) return false;
-      // Deferred tasks are not yet available
-      if (task.deferDate && task.deferDate > today) return false;
-      return true;
-    }
-
-    // Someday: Tasks for later consideration
-    if (perspectiveId === 'someday') {
-      return task.status === 'someday';
-    }
-
-    // Next: Available tasks without deadlines (OmniFocus-style)
-    // Shows tasks you can work on right now with no time pressure
-    // Also includes any task explicitly tagged with a "next" label
-    if (perspectiveId === 'next') {
-      // Tasks tagged with "next" label always appear here
-      if (isNextTaggedTask(task)) return true;
-      // Must be in anytime status (not inbox, someday, or today)
-      if (task.status !== 'anytime') return false;
-      // Must NOT have a due date (no deadline pressure)
-      if (task.dueDate) return false;
-      // Must be available now (not deferred to future)
-      if (task.deferDate && task.deferDate > today) return false;
-      return true;
-    }
-
-    // Inbox: Unprocessed tasks (no area assigned)
-    // Things 3 logic: Inbox and Areas are mutually exclusive
-    if (perspectiveId === 'inbox') {
-      return task.status === 'inbox' && !task.areaId;
-    }
-
-    // Flagged: OmniFocus-style flagged items
-    if (perspectiveId === 'flagged') {
-      return !!task.flagged;
-    }
+    // Dispatch to extracted predicate functions (single source of truth)
+    if (perspectiveId === 'today') return matchesTodayPerspective(task, today);
+    if (perspectiveId === 'upcoming') return matchesUpcomingPerspective(task, today);
+    if (perspectiveId === 'anytime') return matchesAnytimePerspective(task, today);
+    if (perspectiveId === 'someday') return matchesSomedayPerspective(task);
+    if (perspectiveId === 'next') return matchesNextPerspective(task, today);
+    if (perspectiveId === 'inbox') return matchesInboxPerspective(task);
+    if (perspectiveId === 'flagged') return matchesFlaggedPerspective(task);
 
     // Custom perspectives
     if (isCustom) {

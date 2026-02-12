@@ -6,8 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "node scripts/validate-build.js",
     "preview": "vite preview",
-    "deploy": "vite build && cd dist && rm -f .DS_Store && touch .nojekyll && git init && git checkout -b gh-pages && git add -A && git commit -m Deploy && ORIGIN_URL=$(git -C .. remote get-url origin) && git remote add origin \"$ORIGIN_URL\" && git push -f origin gh-pages && rm -rf .git",
+    "predeploy": "node scripts/check-version.js",
+    "deploy": "vite build && node scripts/validate-build.js && cd dist && rm -f .DS_Store && touch .nojekyll && git init && git checkout -b gh-pages && git add -A && git commit -m Deploy && ORIGIN_URL=$(git -C .. remote get-url origin) && git remote add origin \"$ORIGIN_URL\" && git push -f origin gh-pages && rm -rf .git",
+    "test": "vitest run",
+    "lint": "eslint src/ && node scripts/check-xss.js",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
@@ -27,12 +31,15 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
     "@tauri-apps/cli": "^2.10.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "autoprefixer": "^10.4.24",
+    "jsdom": "^28.0.0",
     "postcss": "^8.5.6",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.1.18",
     "vite": "^7.3.1",
-    "vite-plugin-pwa": "^1.2.0"
+    "vite-plugin-pwa": "^1.2.0",
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "chart.js": "^4.5.1",
