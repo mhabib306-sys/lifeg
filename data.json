@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T13:41:12.207Z",
+  "lastUpdated": "2026-02-12T13:41:17.970Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1754,7 +1754,7 @@
         "quran": 0
       },
       "glucose": {
-        "avg": "141",
+        "avg": "142",
         "tir": "87",
         "insulin": ""
       },
@@ -1765,10 +1765,10 @@
         "whoopAge": ""
       },
       "libre": {
-        "currentGlucose": 163,
+        "currentGlucose": 170,
         "trend": "↘",
         "readingsCount": 47,
-        "lastReading": "2/12/2026 3:24:39 PM"
+        "lastReading": "2/12/2026 3:40:46 PM"
       },
       "family": {
         "mom": false,
@@ -1787,7 +1787,7 @@
         "brushTeeth": 0,
         "nop": ""
       },
-      "_lastModified": "2026-02-12T13:27:16.842Z"
+      "_lastModified": "2026-02-12T13:41:15.300Z"
     }
   },
   "weights": {
@@ -10924,12 +10924,12 @@
   ],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "bH8mKaMBMg5g6KPWYkJ4TA==",
-    "wrapIv": "ZAO83CW0Ax0cX2T7",
-    "wrappedKey": "Fi5sl4ZVwteJe9b+dp0tsI+/L31Cr6HZI+nuUf1oZVKNmRrNsreH5BUACYIbwoMs",
-    "dataIv": "K9YLm87/4CO0BmEt",
-    "data": "JfvLnfpZqqA4WLgCQPij4Na7uv+l4cYIYSy6I2kzCRfocd1bR06lX7A0IwkNcECb2nukRyh+5NdcCKEiN+1/qvAGVneHeporHzzZFhu1UYc30pSjUNsjkSW2V0TWLO5Sttq6m+EBFa8tal0msDvyh2/WfWQbn/7ucDfi4zbBvMR4M8Nyzz0pIP0Ac6Bq02NUqTJP7XYpbU45TcQadjv+AR4zyyqJVXlrkcT/CQVCVlNOLVJCUJvm3GcvsTq56Q0x6E8xsfUieWfLugeC1ULnkrnP0I980jiYMkXZOD7ccc+xVgk07dGm9kIDxYjZNKiW7jCG0JAZ5MuZrkZ1m1ybdapU2gr8N1og47lWlaeHksTkq43G6DTuFqQZXOdvRW8uBwaBIfhL4QzJ9DRfvl5X9RXSG81t1o+3nPcc1eJoAy99xjiymH+p69aJJj3FEUwUZUyQevz+prENJ7S8zXGX0XQLPCeJvLT4fpBoDdhW/tAZIA5Gy8MPEbYpVEM26SxxDxyQDtAMsw164Y5eRgoM97FHxA9bzU4ZjKi3",
-    "updatedAt": "2026-02-12T13:41:12.216Z"
+    "salt": "qEzbYHUNj4aJFCi8k2Pz3w==",
+    "wrapIv": "DlieCWvy1Kow8b92",
+    "wrappedKey": "TCwLzF7vZMNxcsoLm2sweuEt/KhE32UyaWKCjPgkxOQ+de2tFNXPf4Ad/deA0kcl",
+    "dataIv": "PiBKCRbRS8xAw3R/",
+    "data": "kFwwHwVTP3/93it5cdVPoGk8lc1i78lpHg6yZzXr+oANILJ2vKkkn1kNA/ZITJI+3SnmNA0NPXBFI44NfIcaY0uQyETPHa7nUeJ2H5AWqjb0bUp3chqXSTbYHRIwbaX4rU91GMBt0FswCe7mGsiq7E6APyPxVwAskUUxpIhv7fUXrYpAOpV/AQTxOLGy79MDX2Gx3glm4O+Yq+WMBc5TzGxHCymjT+z9d72zLLrBrqo65bZ/IaK2vrp4rpDAWDSrypbiGD0VKhP7kBTU9a0wO4Hi1Q9NOAd3C5de835x9s4GhBIH1t5MRfaZmB3S9C8+/YRg5A1hd4y15XD/1hZM+28/GiSJy5naz1hyK3C3wfvs+URU5p+wUxVWSql3g8hPwCc4jldETDp9NkODMLb6DtEwEwT3ofMx7n5MNXCsUi9uQSI9A78LyD9CrzINYUUbbXyw68m8wxMKGJPc1eCKeKIajEO5El2io3lyBRG9xs3zAMSXxD2prk7Q36CxKWfwnQJRbS/mKJaOk6g3Oov85JSNSnVmIl8aUrDG",
+    "updatedAt": "2026-02-12T13:41:17.981Z"
   },
   "xp": {
     "total": 1937,
