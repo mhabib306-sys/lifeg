@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T13:41:24.192Z",
+  "lastUpdated": "2026-02-12T13:41:44.627Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1787,7 +1787,7 @@
         "brushTeeth": 0,
         "nop": ""
       },
-      "_lastModified": "2026-02-12T13:41:20.679Z"
+      "_lastModified": "2026-02-12T13:41:41.874Z"
     }
   },
   "weights": {
@@ -10924,12 +10924,12 @@
   ],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "8Ye/6VtbmYtIgfa69WaCJw==",
-    "wrapIv": "6PBHk1tm/7J/5ROm",
-    "wrappedKey": "+CT0gh0z+oouge/tb+2D3HdJmtlFe9/8/JZt5Kw7hckZEpWikF5FiGxyTsz7rp3/",
-    "dataIv": "ZGzMhZ+eitdHWfnR",
-    "data": "mtVEnwRlgXR4Z52vq0TAKZeVHFPGu6LQVe0+KhwQDZbQGvaG84jo7sLKJdoez+dHrmsuNZCj9RI50dgzC+Ze/ksEBxNrazRJjIstBF44AOEqXdlnlFurYo7MtlAvbnwBSHlklJFvxK2tJbqj7r2micaUSvtcYvO+ZumO2AFI82vTuZCopZGVR3/hhHRUEBuJj4eWw6MdPxAX8S/1cFpY4ARUTKrsfJm4usjDBq8xhXlJyOCnTqU2ofG0VeOCpY+d8jrJBDGJg76HLt4GAW/vjsnBZsGTo4VgewKJ6ol6lPC5a4Gi2GXPNuZC+2VEcEZDbEVJd5w5I1vpSflgo+ZQj229NEYDxiE2nn/6PYU0MZxzEMv5J/SXAmTKxUb4f67Wkc+8sPSOu2gi1R+rjpJ9z1U/IbTIsSj87obrUUcIxakJ7iyilz7GljQQtF2sMX/xuSia4K1rLxgAOTJ9S+STBm/drC9RU6KX6s5vidxzb71nwjAr+sPkCpPq7KkKDr+bJsbUHW5WcYEZlVgmxSNEtVgkWcxi1yI4XbsO",
-    "updatedAt": "2026-02-12T13:41:24.202Z"
+    "salt": "BIgQOPHWeaWgnIQigMaEeg==",
+    "wrapIv": "qxnhmBtFRUOVA8yf",
+    "wrappedKey": "bNJOgMRid6AaawnRlnvEmJwGncl+yyAyW/F1cgQHUsi5KhMfCRLp/L+Bx6p1P4ec",
+    "dataIv": "FVXPmCU6ZMjBp6gi",
+    "data": "kmD1U0HTsUGv83d+xqN+UCO0aUYY8LY3pmLho6l8OJ9AEBwb/gJWVf7Ti6Ma1nMWtRlR1Su2c7HBnP9mZ9DQ3IPnbPh5AlIP4Fvod96ywsZIG+hoBqS8ssN/gVdOmKAlun6PfgsXclhjnqtN8P7WosNT6VkIka6Xrv2rtUF00Q4CI5Y+3V8VDEdb1GIxPCLx5TE91B7GFAxGnIYVsN6t4nJGT1TewkCEmQ85CCMK6typCgfIco82oh2GExrVdaeiGMTgqXWhLtCs7hH0F9lMPs5M6G2N23wZ2VfV4xk3hVRZdld8YEMTjzJnhkND+1O4P+44Sc4VtL788aKmlM4RewEDOMMpmRc6SGvj8aiJZ0iwiDPO8/QcX1koBu6BV292CkultHolRIVYmuSioEjNn/yfbnTUT0yncqQjDM13pu09LuhXQpuMmV0gIFt6ANL3YKWoyDVL8qzZq7Lo2mRExdaoRgd2hKUqGQsWdTY4BMPZ6nvnrL630jT+iDiKbHbk0/k/X7KGI5iI12w/HXPw7qZzHTaUT/W5t+7A",
+    "updatedAt": "2026-02-12T13:41:44.637Z"
   },
   "xp": {
     "total": 1937,
