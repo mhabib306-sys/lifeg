@@ -563,16 +563,14 @@ img.twemoji {
   border-color: color-mix(in srgb, var(--accent) 35%, var(--border-light));
 }
 
-/* Nav tab hover */
+/* Nav tab — Geist-style pill tabs */
 .nav-tab {
   position: relative;
-  min-height: 44px;
-}
-.nav-tab:hover {
-  background: var(--sidebar-hover, rgba(0, 0, 0, 0.04));
+  min-height: 32px;
+  border: none;
 }
 .nav-tab:active {
-  background: var(--sidebar-active, rgba(0, 0, 0, 0.06));
+  transform: scale(0.97);
 }
 .drag-handle {
   opacity: 0;

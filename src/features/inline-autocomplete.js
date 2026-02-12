@@ -163,6 +163,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
   if (!isModal && !state.inlineAutocompleteMeta.has(inputId)) {
     state.inlineAutocompleteMeta.set(inputId, {
       areaId: config.initialMeta?.areaId || null,
+      categoryId: config.initialMeta?.categoryId || null,
       labels: config.initialMeta?.labels ? [...config.initialMeta.labels] : [],
       people: config.initialMeta?.people ? [...config.initialMeta.people] : [],
       deferDate: config.initialMeta?.deferDate || null,
@@ -176,14 +177,15 @@ export function setupInlineAutocomplete(inputId, config = {}) {
   let triggerPos = -1;
 
   function getMeta() {
-    if (isModal) return { areaId: state.modalSelectedArea, labels: state.modalSelectedTags, people: state.modalSelectedPeople, deferDate: document.getElementById('task-defer')?.value || null, dueDate: document.getElementById('task-due')?.value || null };
-    return state.inlineAutocompleteMeta.get(inputId) || { areaId: null, labels: [], people: [], deferDate: null, dueDate: null };
+    if (isModal) return { areaId: state.modalSelectedArea, categoryId: state.modalSelectedCategory, labels: state.modalSelectedTags, people: state.modalSelectedPeople, deferDate: document.getElementById('task-defer')?.value || null, dueDate: document.getElementById('task-due')?.value || null };
+    return state.inlineAutocompleteMeta.get(inputId) || { areaId: null, categoryId: null, labels: [], people: [], deferDate: null, dueDate: null };
   }
 
   function setMeta(key, value) {
     if (isModal) {
       // Use window.* bridge to call task-modal functions (avoids circular imports)
-      if (key === 'areaId') { state.modalSelectedArea = value; window.renderAreaInput(); }
+      if (key === 'areaId') { state.modalSelectedArea = value; window.renderAreaInput(); window.renderCategoryInput(); }
+      else if (key === 'categoryId') { state.modalSelectedCategory = value; window.renderCategoryInput(); }
       else if (key === 'labels') { state.modalSelectedTags = value; window.renderTagsInput(); }
       else if (key === 'people') { state.modalSelectedPeople = value; window.renderPeopleInput(); }
       else if (key === 'deferDate') {
@@ -204,7 +206,12 @@ export function setupInlineAutocomplete(inputId, config = {}) {
 
   function getItems(query) {
     const meta = getMeta();
-    if (triggerChar === '#') return state.taskAreas;
+    if (triggerChar === '#') {
+      // Show both areas and categories, with categories grouped under their area
+      const areas = state.taskAreas.map(a => ({ ...a, _acType: 'area' }));
+      const categories = (state.taskCategories || []).map(c => ({ ...c, _acType: 'category' }));
+      return [...areas, ...categories];
+    }
     if (triggerChar === '@') return state.taskLabels.filter(l => !(meta.labels || []).includes(l.id));
     if (triggerChar === '&') return state.taskPeople.filter(p => !(meta.people || []).includes(p.id));
     if (triggerChar === '!' || triggerChar === '!!') return parseDateQuery(query || '');
@@ -217,7 +224,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
       state.taskAreas.push(c);
       localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
       debouncedSaveToGithub();
-      return c;
+      return { ...c, _acType: 'area' };
     };
     if (triggerChar === '@') return (name) => {
       const colors = ['#ef4444','#f59e0b','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
@@ -250,7 +257,14 @@ export function setupInlineAutocomplete(inputId, config = {}) {
 
     // Apply metadata
     if (triggerChar === '#') {
-      setMeta('areaId', item.id);
+      if (item._acType === 'category') {
+        // Category selected — set both area (parent) and category
+        if (item.areaId) setMeta('areaId', item.areaId);
+        setMeta('categoryId', item.id);
+      } else {
+        // Area selected
+        setMeta('areaId', item.id);
+      }
     } else if (triggerChar === '@') {
       const meta = getMeta();
       const labels = [...(meta.labels || [])];
@@ -325,7 +339,13 @@ export function setupInlineAutocomplete(inputId, config = {}) {
         icon = `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">\uD83D\uDC64</span>`;
       }
       const dateLabel = isDate ? `<span style="margin-left:auto;font-size:11px;color:var(--text-muted)">${formatSmartDate(item.date)}</span>` : '';
-      html += `<div class="inline-ac-option${isActive}" data-idx="${idx}" style="${isDate ? 'justify-content:space-between' : ''}">${icon}<span>${escapeHtml(item.name)}</span>${dateLabel}</div>`;
+      // For categories, show parent area name as a subtle label
+      let nameHtml = escapeHtml(item.name);
+      if (triggerChar === '#' && item._acType === 'category' && item.areaId) {
+        const parentArea = state.taskAreas.find(a => a.id === item.areaId);
+        if (parentArea) nameHtml += `<span style="margin-left:6px;font-size:11px;color:var(--text-muted)">${escapeHtml(parentArea.name)}</span>`;
+      }
+      html += `<div class="inline-ac-option${isActive}" data-idx="${idx}" style="${isDate ? 'justify-content:space-between' : ''}">${icon}<span>${nameHtml}</span>${dateLabel}</div>`;
     });
     if (showCreate) {
       const createIdx = filtered.length;

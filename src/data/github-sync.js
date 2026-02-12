@@ -323,6 +323,9 @@ function pruneDeletedEntitiesFromState() {
 
   state.homeWidgets = (state.homeWidgets || []).filter(item => !isEntityDeleted('homeWidgets', item?.id));
   localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+
+  state.triggers = (state.triggers || []).filter(item => !isEntityDeleted('triggers', item?.id));
+  localStorage.setItem(TRIGGERS_KEY, JSON.stringify(state.triggers));
 }
 
 function mergeDeletedTaskTombstones(cloudTombstones) {
@@ -445,6 +448,13 @@ function mergeTaskCollectionsFromCloud(cloudData = {}) {
   const mergedWidgets = mergeEntityCollection(state.homeWidgets, cloudData.homeWidgets, ['updatedAt', 'createdAt'], 'homeWidgets');
   state.homeWidgets = mergedWidgets;
   localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+
+  // Merge triggers (newest-wins by updatedAt/createdAt)
+  if (Array.isArray(cloudData.triggers)) {
+    const mergedTriggers = mergeEntityCollection(state.triggers, cloudData.triggers, ['updatedAt', 'createdAt'], 'triggers');
+    state.triggers = mergedTriggers;
+    localStorage.setItem(TRIGGERS_KEY, JSON.stringify(state.triggers));
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -660,10 +670,7 @@ export async function loadCloudData() {
           state.achievements = cloudData.achievements;
           localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(state.achievements));
         }
-        if (cloudData.triggers && Array.isArray(cloudData.triggers)) {
-          state.triggers = cloudData.triggers;
-          localStorage.setItem(TRIGGERS_KEY, JSON.stringify(state.triggers));
-        }
+        // Triggers are now properly merged inside mergeTaskCollectionsFromCloud() above
         console.log('Loaded from GitHub');
         updateSyncStatus('success', 'Loaded from GitHub');
         return;

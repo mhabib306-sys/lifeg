@@ -1549,14 +1549,14 @@ export function renderTasksTab() {
                 draggable="true"
                 data-id="${cat.id}"
                 data-type="area">
-                ${hasSubcats ? `
-                  <span onclick="event.stopPropagation(); window.toggleSidebarAreaCollapse('${cat.id}')"
-                    class="w-4 h-4 flex items-center justify-center flex-shrink-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded transition -ml-0.5">
-                    <svg class="w-3 h-3 transition-transform ${isCollapsed ? '' : 'rotate-90'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                  </span>
-                ` : `<span class="w-4 h-4 flex-shrink-0 -ml-0.5"></span>`}
-                <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style="background: ${cat.color}20; color: ${cat.color}">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm relative" style="background: ${cat.color}20; color: ${cat.color}">
                   ${areaEmoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'}
+                  ${hasSubcats ? `
+                    <span onclick="event.stopPropagation(); window.toggleSidebarAreaCollapse('${cat.id}')"
+                      class="absolute inset-0 flex items-center justify-center rounded-lg bg-[var(--bg-secondary)] opacity-0 group-hover:opacity-100 transition-opacity text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                      <svg class="w-3.5 h-3.5 transition-transform ${isCollapsed ? '' : 'rotate-90'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
+                  ` : ''}
                 </span>
                 <span class="flex-1 text-[14px] truncate ${isAreaActive(cat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(cat.name)}</span>
                 <span class="min-w-[20px] text-right text-[12px] group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${categoryCounts[cat.id] || ''}</span>

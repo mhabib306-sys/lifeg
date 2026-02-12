@@ -122,7 +122,11 @@ function setCaretOffset(el, offset) {
 
 function noteAcGetItems(query) {
   const note = noteAcNoteId ? state.tasksData.find(t => t.id === noteAcNoteId && isActiveNote(t)) : null;
-  if (noteAcTriggerChar === '#') return state.taskAreas;
+  if (noteAcTriggerChar === '#') {
+    const areas = state.taskAreas.map(a => ({ ...a, _acType: 'area' }));
+    const categories = (state.taskCategories || []).map(c => ({ ...c, _acType: 'category' }));
+    return [...areas, ...categories];
+  }
   if (noteAcTriggerChar === '@') {
     const existing = note?.labels || [];
     return state.taskLabels.filter(l => !existing.includes(l.id));
@@ -144,7 +148,7 @@ function noteAcGetCreateFn() {
     state.taskAreas.push(c);
     localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
     debouncedSaveToGithubSafe();
-    return c;
+    return { ...c, _acType: 'area' };
   };
   if (noteAcTriggerChar === '@') return (name) => {
     const colors = ['#ef4444','#f59e0b','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
@@ -186,7 +190,12 @@ function noteAcSelectItem(item) {
 
   // Apply metadata to note
   if (noteAcTriggerChar === '#') {
-    note.areaId = item.id;
+    if (item._acType === 'category') {
+      if (item.areaId) note.areaId = item.areaId;
+      note.categoryId = item.id;
+    } else {
+      note.areaId = item.id;
+    }
   } else if (noteAcTriggerChar === '@') {
     if (!note.labels) note.labels = [];
     if (!note.labels.includes(item.id)) note.labels.push(item.id);
@@ -261,7 +270,12 @@ function noteAcRenderPopup(items, query, el) {
       icon = `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">\uD83D\uDC64</span>`;
     }
     const dateLabel = isDate ? `<span style="margin-left:auto;font-size:11px;color:var(--text-muted)">${formatSmartDate(item.date)}</span>` : '';
-    html += `<div class="inline-ac-option${isActive}" data-idx="${idx}" style="${isDate ? 'justify-content:space-between' : ''}">${icon}<span>${escapeHtml(item.name)}</span>${dateLabel}</div>`;
+    let nameHtml = escapeHtml(item.name);
+    if (noteAcTriggerChar === '#' && item._acType === 'category' && item.areaId) {
+      const parentArea = state.taskAreas.find(a => a.id === item.areaId);
+      if (parentArea) nameHtml += `<span style="margin-left:6px;font-size:11px;color:var(--text-muted)">${escapeHtml(parentArea.name)}</span>`;
+    }
+    html += `<div class="inline-ac-option${isActive}" data-idx="${idx}" style="${isDate ? 'justify-content:space-between' : ''}">${icon}<span>${nameHtml}</span>${dateLabel}</div>`;
   });
   if (showCreate) {
     const createIdx = filtered.length;

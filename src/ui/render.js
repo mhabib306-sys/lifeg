@@ -301,20 +301,20 @@ export function render() {
       <!-- Main Navigation - Desktop only -->
       <nav class="desktop-nav border-b border-[var(--border-light)] bg-[var(--bg-card)]">
         <div class="max-w-6xl mx-auto px-6">
-          <div class="flex gap-0">
-            <button type="button" onclick="switchTab('home')" aria-label="Go to Home tab" aria-current="${state.activeTab === 'home' ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'home' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+          <div class="flex items-center gap-1 py-2">
+            <button type="button" onclick="switchTab('home')" aria-label="Go to Home tab" aria-current="${state.activeTab === 'home' ? 'page' : 'false'}" class="nav-tab px-3.5 py-1.5 text-[13px] font-medium transition-all rounded-lg flex items-center gap-2 ${state.activeTab === 'home' ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/50'}">
               ${getActiveIcons().home.replace('w-5 h-5', 'w-4 h-4')} Home
             </button>
-            <button type="button" onclick="switchTab('tasks')" aria-label="Go to Workspace tab" aria-current="${state.activeTab === 'tasks' ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'tasks' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+            <button type="button" onclick="switchTab('tasks')" aria-label="Go to Workspace tab" aria-current="${state.activeTab === 'tasks' ? 'page' : 'false'}" class="nav-tab px-3.5 py-1.5 text-[13px] font-medium transition-all rounded-lg flex items-center gap-2 ${state.activeTab === 'tasks' ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/50'}">
               ${getActiveIcons().workspace} Workspace
             </button>
-            <button type="button" onclick="switchTab('life')" aria-label="Go to Life Score tab" aria-current="${state.activeTab === 'life' ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'life' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+            <button type="button" onclick="switchTab('life')" aria-label="Go to Life Score tab" aria-current="${state.activeTab === 'life' ? 'page' : 'false'}" class="nav-tab px-3.5 py-1.5 text-[13px] font-medium transition-all rounded-lg flex items-center gap-2 ${state.activeTab === 'life' ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/50'}">
               ${getActiveIcons().lifeScore} Life Score
             </button>
-            <button type="button" onclick="switchTab('calendar')" aria-label="Go to Calendar tab" aria-current="${isCalendarTabActive ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${isCalendarTabActive ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+            <button type="button" onclick="switchTab('calendar')" aria-label="Go to Calendar tab" aria-current="${isCalendarTabActive ? 'page' : 'false'}" class="nav-tab px-3.5 py-1.5 text-[13px] font-medium transition-all rounded-lg flex items-center gap-2 ${isCalendarTabActive ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/50'}">
               ${getActiveIcons().calendar} Calendar
             </button>
-            <button type="button" onclick="switchTab('settings')" aria-label="Go to Settings tab" aria-current="${state.activeTab === 'settings' ? 'page' : 'false'}" class="nav-tab py-3 px-5 text-sm font-medium transition-all border-b-2 flex items-center gap-2 ${state.activeTab === 'settings' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-charcoal/50 hover:text-charcoal hover:bg-black/[0.04]'}">
+            <button type="button" onclick="switchTab('settings')" aria-label="Go to Settings tab" aria-current="${state.activeTab === 'settings' ? 'page' : 'false'}" class="nav-tab px-3.5 py-1.5 text-[13px] font-medium transition-all rounded-lg flex items-center gap-2 ${state.activeTab === 'settings' ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/50'}">
               ${getActiveIcons().settings} Settings
             </button>
           </div>

@@ -260,6 +260,7 @@ export function quickAddTask(inputElement) {
   const inlineMeta = state.inlineAutocompleteMeta.get('quick-add-input');
   if (inlineMeta) {
     if (inlineMeta.areaId) options.areaId = inlineMeta.areaId;
+    if (inlineMeta.categoryId) options.categoryId = inlineMeta.categoryId;
     if (inlineMeta.labels && inlineMeta.labels.length) options.labels = [...(options.labels || []), ...inlineMeta.labels.filter(l => !(options.labels || []).includes(l))];
     if (inlineMeta.people && inlineMeta.people.length) options.people = [...(options.people || []), ...inlineMeta.people.filter(p => !(options.people || []).includes(p))];
     if (inlineMeta.deferDate) options.deferDate = inlineMeta.deferDate;
@@ -444,6 +445,15 @@ export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDispl
 
   let highlightedIndex = -1;
 
+  function highlightOption(idx) {
+    highlightedIndex = idx;
+    const options = dropdown.querySelectorAll('.autocomplete-option');
+    options.forEach((o, i) => o.classList.toggle('highlighted', i === highlightedIndex));
+    if (highlightedIndex >= 0 && options[highlightedIndex]) {
+      options[highlightedIndex].scrollIntoView({ block: 'nearest' });
+    }
+  }
+
   function renderOptions(filter = '') {
     const filtered = items.filter(item =>
       getDisplayFn(item).toLowerCase().includes(filter.toLowerCase())
@@ -454,8 +464,7 @@ export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDispl
     } else {
       dropdown.innerHTML = filtered.map((item, idx) => `
         <div class="autocomplete-option ${idx === highlightedIndex ? 'highlighted' : ''}"
-             data-id="${item.id}"
-             onmouseenter="this.classList.add('highlighted'); document.querySelectorAll('#${dropdownId} .autocomplete-option').forEach((o,i) => { if(o !== this) o.classList.remove('highlighted'); })">
+             data-id="${item.id}" data-idx="${idx}">
           ${getIconFn ? getIconFn(item) : ''}
           <span>${escapeHtml(getDisplayFn(item))}</span>
         </div>
@@ -471,7 +480,7 @@ export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDispl
       }
     }
 
-    // Add click handlers
+    // Add click + mouseenter handlers (synced with highlightedIndex)
     dropdown.querySelectorAll('.autocomplete-option').forEach(opt => {
       opt.addEventListener('click', () => {
         const item = items.find(i => i.id === opt.dataset.id);
@@ -480,6 +489,9 @@ export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDispl
           dropdown.classList.remove('show');
           input.value = '';
         }
+      });
+      opt.addEventListener('mouseenter', () => {
+        highlightOption(parseInt(opt.dataset.idx, 10));
       });
     });
 
@@ -509,12 +521,10 @@ export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDispl
     const options = dropdown.querySelectorAll('.autocomplete-option');
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      highlightedIndex = Math.min(highlightedIndex + 1, options.length - 1);
-      options.forEach((o, i) => o.classList.toggle('highlighted', i === highlightedIndex));
+      highlightOption(Math.min(highlightedIndex + 1, options.length - 1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      highlightedIndex = Math.max(highlightedIndex - 1, 0);
-      options.forEach((o, i) => o.classList.toggle('highlighted', i === highlightedIndex));
+      highlightOption(Math.max(highlightedIndex - 1, 0));
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (highlightedIndex >= 0 && options[highlightedIndex]) {
