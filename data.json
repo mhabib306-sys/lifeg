@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T13:59:51.613Z",
+  "lastUpdated": "2026-02-12T14:05:51.490Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3576,7 +3576,10 @@
       "lastReviewedAt": null,
       "order": 4000,
       "createdAt": "2026-02-12T13:46:42.701Z",
-      "updatedAt": "2026-02-12T13:46:42.701Z"
+      "updatedAt": "2026-02-12T13:46:42.701Z",
+      "noteLifecycleState": "active",
+      "noteHistory": [],
+      "noteOrder": 11000
     },
     {
       "id": "task_1770904096235_85jzx1xxn",
@@ -3627,7 +3630,10 @@
       "lastReviewedAt": null,
       "order": 5000,
       "createdAt": "2026-02-12T13:48:16.237Z",
-      "updatedAt": "2026-02-12T13:48:16.237Z"
+      "updatedAt": "2026-02-12T13:48:16.237Z",
+      "noteLifecycleState": "active",
+      "noteHistory": [],
+      "noteOrder": 12000
     }
   ],
   "deletedTaskTombstones": {
@@ -11029,12 +11035,12 @@
   ],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "C1zzHjf22VmD1Sb4F0R47g==",
-    "wrapIv": "LXCrsHgpMv/qX3my",
-    "wrappedKey": "ubpTN53YCQI19s/GglNdX/hGbEkvnw5q0kTF8WEcJnrXP8vfvalXryt04elZ8FdN",
-    "dataIv": "q/d1Du8JUkP2Sb4L",
-    "data": "+R14UYJDyreXiPgr36gIEobzBx4ptAfLUl8zSMOlQoFiYMxMJU2XjJ/ElKIgXa76Fytc50O/SDXKz4v+FTvDKMSb6DC5+vL8vPaTrO1OfF/SmbJFFXMzQdJzpe6o/tPDmPw3zd7b4DugC5WEj14r7XZC3U3PJXjOOePyue8d6LwcVrlxkIzfUztP+wuv6a0OUDA+mEWmQwnVOiR+9BoFvh30/40tKanEz+sAPDg8N/HGb+pH0lRIUqLBZLNiTmmzUqWwtiRPVbgpW5KYgQhr8umaq0P8u/ApVwdRe9a0BRSKohmu9noL5PQa4imCCoIeUOMFNTXqFcomWUG/MNMc1VaYGqTbTKwoduQsnhhDtPEn1Dbxs6p1EhT6Pium0jeX1G77H/GxtmZZcFVkJXgaQARwd0b9renaNmdGrmZD2SrWlqtnj2FA2cMKCkSaGEFkQG6q7tj1S/ulF98RThK82wkP3FgqUfeG1ZGflljBAdsi1Jwv2PlZo/Q8GKxxSUCQnGvvtIedH155d5Mcn8sBQ3y4RqY1y5mK8Q3W",
-    "updatedAt": "2026-02-12T13:59:51.623Z"
+    "salt": "ZES7FKo7vBq6VFN9T2+pmw==",
+    "wrapIv": "RzrTbIBrlTehTKJn",
+    "wrappedKey": "KtZT6Fg+2lvuMWRqlBgeNUSdUO26lkmY/rWNFIYgyTZGAO3TqpYcSzAOC3W2QNhf",
+    "dataIv": "HC5v3tfow9zDN3wq",
+    "data": "3gFJ4mq7BEUzgCZ6i3qyKlazyS4pKKp7x3zR5s7KbhtYrx5Spbo5tQ6eKEBC149V04Iyf7VGioUPGoLUgUXWrbxs7D7/xPJImqYh35IJdqObtrQr9574NW0m3L/K5bFY3fJNcDFD6fCyyPexkN8zuh5Ex0F8TZ1iVw/xFVPd7xcN1Aq6OoZMn703UBZDB+meKAY1zO3Q2oflr56qv2nxFFB0ZCEOxw+nxRneE62QVcmf8+wkkNFwJ1ns9ZXGd2gsT6dDoLh2QAnAzzuPpJmMOADlw69EdD5S34jflNZK2i99neG5HflLMSc/9wb/5MIbOC6Wz3xJRAH80CLZPfa3K92n0q4swwXwi/CFrb7G6Vfl49OxGvLQ/lNAcV4OhvSGII4yvV/lnNaFpAp9iAB9qT35Wjr6H8gy0ZYNhvplok5L8wRR5Tsyj58hFfAYGeRuWvsEZ7HWH76AFde5v8m5W29raDb3Oyb+vOg0wU1nlmfAWOjuXVjPDhFTUVHJpAG5TcKUR7bqYgtXWwhichakcPqBwHqmyq+Qevbm",
+    "updatedAt": "2026-02-12T14:05:51.498Z"
   },
   "xp": {
     "total": 1937,
@@ -11291,7 +11297,7 @@
       "lastUsed": "2026-02-02"
     },
     "multiplier": 1.2,
-    "_updatedAt": "2026-02-12T13:41:10.119Z"
+    "_updatedAt": "2026-02-12T14:05:49.412Z"
   },
   "achievements": {
     "unlocked": {
