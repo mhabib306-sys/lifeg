@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T13:45:40.522Z",
+  "lastUpdated": "2026-02-12T13:46:45.676Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3548,6 +3548,35 @@
       "order": 44000,
       "createdAt": "2026-02-12T13:43:22.244Z",
       "updatedAt": "2026-02-12T13:43:22.244Z"
+    },
+    {
+      "id": "task_1770904002701_ia6wc9lcn",
+      "title": "Note with Abdallah on Breadfast",
+      "notes": "",
+      "status": "inbox",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "areaId": "work",
+      "categoryId": null,
+      "labels": [
+        "urgent"
+      ],
+      "people": [
+        "person_1770729991351_qckxm"
+      ],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": true,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": null,
+      "lastReviewedAt": null,
+      "order": 45000,
+      "createdAt": "2026-02-12T13:46:42.701Z",
+      "updatedAt": "2026-02-12T13:46:42.701Z"
     }
   ],
   "deletedTaskTombstones": {
@@ -10949,12 +10978,12 @@
   ],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "ByXdkmeMt+lasYDak3iVhA==",
-    "wrapIv": "GcIY6x9uT5F7w+sl",
-    "wrappedKey": "g2Bf0RbN2REMiKbx0pnmV/QLbxg4K+SRcbkcwW5iUKT84yUKbsi9ss3MJd7BtfkD",
-    "dataIv": "maokeD4qS/KYibDJ",
-    "data": "k4bDzXHNnsa3VUwFopW07N/T9gaT1AyCliqqrql/q1p007N/1ECpDXplGDPDN+rThzR4zcA9XV2VTMZ/1Hj3kskjJ9F8qX41GIa0LBym0jACeXwLv3fzV7IfZsCLjscV1dZ86EKSXs7Z3K/jYuhwX7/mR6sKXYY9NQ4mU1qWzSLe5MI7V7dGTISblBT1DOiDxWRYmzK1auphq052lkx20nDbz2HElub3BQ9hn0dHcYYVQlISJFGT+DIsiJ8Pc2d5HKKnKMhCi5cH/lPTstbC/g8h51moar7u93zGr/6+YWncjp09oOgxxeLseUqKJ0/QfJyL0l5fWAzvMrqa3lQCfmxtoG+FL6/FXMHZDj8srsZb5yUKHgH7dg4LxczfrZYUXc/vzL1c/yLxdHJ1Dksq21xBnrwI8y7mds4rA/PWXygdc4YetEhrOJPVQouKvZfrJeqyt+0hQbThiyv8W5CVkAUyqGvJqhg7LGF2nmQuZwBrdMHeE/E3qlriGPbkxtgzyIXVhO54p837b4cdOpUXEnkWdPFpm64VAM4B",
-    "updatedAt": "2026-02-12T13:45:40.532Z"
+    "salt": "dLlrRJ8wYRsh/NyGt+bZLQ==",
+    "wrapIv": "1YJC6GsMgmdDjbIT",
+    "wrappedKey": "yv9LRerFT3X7UpldM98gZ2l7lTSzGL77LNSCq0StTy1p1jqczkrhvUGW59N04BxK",
+    "dataIv": "T2QcP+FkZR2Y+skl",
+    "data": "god5QH0iPpp59ugqffivNgrreiF/8NzKwGKqxrOCrxDu1idYGtA9/YqgJXA8Wy7XhMo/G2RzxwV/mHYuZpnC9a/RVc4/o+mlzP3CVBs8L/rl41+f7OJQksQ2yM+0ZmbbVM7JvPRQgquGG2KQO4LnxgXSleVoVge7mugQ1REAA4VhfpzLREcz1ybyPBrgxbKiskgajUD7plP8VG8i8SDmd+0N5ODOS01anEFEoGYLbgqe067Giky6XzqavtAEMub4vcUzosyY1MFO7arUqsJbEQlwqh7tVIOhxWUFpFt8eRx2n1azOk6b6vypJRrq1e4Q7wNqKJMPCKk5ov+jxZbMP8AWyzWqK3oten64sj+aXpKCI7GUstFgjKYXUJwEy4DEKBnmDJPOVQZA99gLaJMAEIGbphH57LlZTaZXwymJQhc8qsqcN5RXz5h8a3VGzS8WHujY4x6G6us6t2xlckyiULUmuey6gSsMExprVo8wVPUCejXCiDq3JHCGWR4kB3EwQEnkpkmBMygBFS3Mb322w1pzel8xPoK+UKxM",
+    "updatedAt": "2026-02-12T13:46:45.686Z"
   },
   "xp": {
     "total": 1937,
