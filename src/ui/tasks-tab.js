@@ -440,7 +440,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl" style="background: color-mix(in srgb, ${categoryColor} 12%, transparent); color: ${categoryColor}">
-              ${currentCategory.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V5a2 2 0 012-2h4.586a1 1 0 01.707.293L12 5h7a2 2 0 012 2v2"/><rect x="2" y="9" width="20" height="12" rx="2"/></svg>'}
+              ${currentCategory.emoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>'}
             </div>
             <div class="flex-1 min-w-0">
               <h1 class="text-xl font-bold text-[var(--text-primary)] leading-tight">${escapeHtml(currentCategory.name)}</h1>
@@ -584,7 +584,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] py-16">
             <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
               <div class="w-20 h-20 rounded-lg flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${categoryColor} 6%, transparent)">
-                <svg class="w-10 h-10" style="color: ${categoryColor}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+                <svg class="w-10 h-10" style="color: ${categoryColor}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
               </div>
               <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No items yet</p>
               <p class="text-sm text-[var(--text-muted)] mb-4">Add your first task or note to ${escapeHtml(currentCategory.name)}</p>
@@ -1827,8 +1827,7 @@ export function renderTasksTab() {
             // Next tasks: tasks tagged with "next" label (not already in dated)
             const nextTasks = nextLabel ? filteredTasks.filter(t => {
               const isNextTagged = (t.labels || []).includes(nextLabel.id);
-            const isScheduledForToday = t.deferDate && t.deferDate <= today;
-            const isDatedTask = t.today || t.dueDate === today || (t.dueDate && t.dueDate < today) || isScheduledForToday;
+              const isDatedTask = t.today || t.dueDate === today || (t.dueDate && t.dueDate < today);
               return isNextTagged && !isDatedTask;
             }) : [];
 

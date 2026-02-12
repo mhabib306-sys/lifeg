@@ -89,7 +89,7 @@ export function renderStatsWidget(today) {
     if (t.completed || t.isNote) return false;
     const isNextTagged = (t.labels || []).includes(nextLabel.id);
     if (!isNextTagged) return false;
-    const isDatedTask = t.today || t.dueDate === today || (t.dueDate && t.dueDate < today) || (t.deferDate && t.deferDate <= today);
+    const isDatedTask = t.today || t.dueDate === today || (t.dueDate && t.dueDate < today);
     return !isDatedTask;
   }).length : 0;
   const completedToday = state.tasksData.filter(t => t.completed && t.completedAt && t.completedAt.startsWith(today)).length;
@@ -195,7 +195,9 @@ export function renderNextTasksWidget(today) {
     if (t.completed || t.isNote) return false;
     const isNextTagged = (t.labels || []).includes(nextLabel.id);
     if (!isNextTagged) return false;
-    const isDatedTask = t.today || t.dueDate === today || (t.dueDate && t.dueDate < today) || (t.deferDate && t.deferDate <= today);
+    // Exclude tasks already surfaced in Today widget (today flag, due today, overdue)
+    // but NOT tasks with a past deferDate — that just means "available now"
+    const isDatedTask = t.today || t.dueDate === today || (t.dueDate && t.dueDate < today);
     return !isDatedTask;
   }) : [];
 
