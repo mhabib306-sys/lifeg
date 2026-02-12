@@ -25,6 +25,7 @@ import {
 
 import {
   getGithubToken, setGithubToken, getTheme, setTheme,
+  getColorMode, setColorMode, toggleColorMode,
   applyStoredTheme, getAccentColor, getThemeColors,
   updateSyncStatus, saveToGithub, debouncedSaveToGithub, loadCloudData,
   dismissConflictNotification, clearConflictNotifications,
@@ -270,6 +271,7 @@ Object.assign(window, {
 
   // GitHub Sync
   getGithubToken, setGithubToken, getTheme, setTheme,
+  getColorMode, setColorMode, toggleColorMode,
   applyStoredTheme, getAccentColor, getThemeColors,
   updateSyncStatus, saveToGithub, debouncedSaveToGithub, loadCloudData,
   dismissConflictNotification, clearConflictNotifications,

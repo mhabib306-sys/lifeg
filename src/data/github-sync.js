@@ -19,6 +19,7 @@ import {
   GITHUB_REPO,
   GITHUB_FILE_PATH,
   THEME_KEY,
+  COLOR_MODE_KEY,
   DATA_URL,
   STORAGE_KEY,
   WEIGHTS_KEY,
@@ -95,8 +96,40 @@ export function setTheme(themeName) {
  */
 export function applyStoredTheme() {
   const theme = getTheme();
+  const mode = getColorMode();
   document.documentElement.setAttribute('data-theme', theme);
+  document.documentElement.setAttribute('data-mode', mode);
   syncThemeColorMeta();
+}
+
+// ---------------------------------------------------------------------------
+// Color mode (light / dark)
+// ---------------------------------------------------------------------------
+
+/**
+ * Get the stored color mode
+ * @returns {'light'|'dark'} Color mode
+ */
+export function getColorMode() {
+  return localStorage.getItem(COLOR_MODE_KEY) || 'light';
+}
+
+/**
+ * Set color mode, apply to document, and re-render
+ * @param {'light'|'dark'} mode
+ */
+export function setColorMode(mode) {
+  localStorage.setItem(COLOR_MODE_KEY, mode);
+  document.documentElement.setAttribute('data-mode', mode);
+  syncThemeColorMeta();
+  window.render();
+}
+
+/**
+ * Toggle between light and dark mode
+ */
+export function toggleColorMode() {
+  setColorMode(getColorMode() === 'light' ? 'dark' : 'light');
 }
 
 /**

@@ -7,7 +7,7 @@
 import { state } from '../state.js';
 import { escapeHtml } from '../utils.js';
 import { THEMES } from '../constants.js';
-import { getGithubToken, setGithubToken, getTheme, setTheme, getSyncHealth } from '../data/github-sync.js';
+import { getGithubToken, setGithubToken, getTheme, setTheme, getColorMode, toggleColorMode, getSyncHealth } from '../data/github-sync.js';
 import { updateWeight, resetWeights, updateMaxScore, resetMaxScores } from '../features/scoring.js';
 import {
   isWhoopConnected, getWhoopWorkerUrl, getWhoopApiKey, getWhoopLastSync
@@ -516,9 +516,29 @@ export function renderSettingsTab() {
       </div>
       ` : ''}
 
-      <!-- Theme -->
+      <!-- Appearance -->
       <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
-        <h3 class="font-semibold text-[var(--text-primary)] text-sm mb-3">Theme</h3>
+        <h3 class="font-semibold text-[var(--text-primary)] text-sm mb-3">Appearance</h3>
+
+        <!-- Light / Dark toggle — Geist segmented control -->
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-sm text-[var(--text-secondary)]">Color mode</span>
+          <div class="inline-flex rounded-lg border border-[var(--border)] overflow-hidden">
+            <button onclick="window.setColorMode('light')"
+              class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-all ${getColorMode() === 'light' ? 'bg-[var(--bg-primary)] text-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+              Light
+            </button>
+            <button onclick="window.setColorMode('dark')"
+              class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-all ${getColorMode() === 'dark' ? 'bg-[var(--bg-primary)] text-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+              Dark
+            </button>
+          </div>
+        </div>
+
+        <!-- Theme selector -->
+        <span class="text-sm text-[var(--text-secondary)] block mb-2">Theme</span>
         <div class="flex gap-3">
           ${Object.entries(THEMES).map(([key, theme]) => `
             <button onclick="window.setTheme('${key}')"

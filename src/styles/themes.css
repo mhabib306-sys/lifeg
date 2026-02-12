@@ -220,3 +220,134 @@
   --geist-border-focus: #0070F3;
   --geist-bg-code: #F2F2F2;
 }
+
+/* =========================================================================
+   DARK MODE VARIANTS
+   Activated by data-mode="dark" alongside data-theme.
+   ========================================================================= */
+
+/* Dark mode button text fix — btn-bg inverts so text must too */
+[data-mode="dark"] .sb-btn { color: #0A0A0A; }
+[data-theme="things3"][data-mode="dark"] .sb-btn { color: white; }
+
+/* SimpleBits — Dark */
+[data-theme="simplebits"][data-mode="dark"] {
+  --bg-primary: #1A1916;
+  --bg-secondary: #242220;
+  --bg-card: #242220;
+  --bg-input: #2C2A27;
+  --bg-hover: #2C2A27;
+  --bg-tertiary: #333130;
+  --text-primary: #F0EEE9;
+  --text-secondary: #A8A5A0;
+  --text-muted: #7A7672;
+  --accent: #E5533D;
+  --accent-dark: #F06B57;
+  --accent-light: rgba(229, 83, 61, 0.15);
+  --accent-hover: rgba(229, 83, 61, 0.1);
+  --border: #333130;
+  --border-light: #2C2A27;
+  --btn-bg: #F0EEE9;
+  --btn-hover: #D8D5D0;
+  --sidebar-bg: #1A1916;
+  --sidebar-active: rgba(229, 83, 61, 0.15);
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --modal-bg: #242220;
+  --modal-overlay: rgba(0, 0, 0, 0.6);
+  --toggle-off: #4A4845;
+  --toggle-off-hover: #5A5855;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.15);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.25);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+/* Things 3 — Dark (iOS system dark) */
+[data-theme="things3"][data-mode="dark"] {
+  --bg-primary: #1C1C1E;
+  --bg-secondary: #2C2C2E;
+  --bg-card: #2C2C2E;
+  --bg-input: #3A3A3C;
+  --bg-hover: #3A3A3C;
+  --bg-tertiary: #3A3A3C;
+  --text-primary: #FFFFFF;
+  --text-secondary: #8E8E93;
+  --text-muted: #636366;
+  --accent: #147EFB;
+  --accent-dark: #3A9BFF;
+  --accent-light: rgba(20, 126, 251, 0.15);
+  --accent-hover: rgba(255, 255, 255, 0.05);
+  --border: #38383A;
+  --border-light: #2C2C2E;
+  --success: #30D158;
+  --warning: #FF9F0A;
+  --danger: #FF453A;
+  --btn-bg: #147EFB;
+  --btn-hover: #3A9BFF;
+  --sidebar-bg: #1C1C1E;
+  --sidebar-active: rgba(20, 126, 251, 0.15);
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --modal-bg: #2C2C2E;
+  --modal-overlay: rgba(0, 0, 0, 0.6);
+  --toggle-off: #48484A;
+  --toggle-off-hover: #5A5A5C;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.15);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.25);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+  --shadow-modal: 0 20px 40px rgba(0,0,0,0.6);
+}
+
+/* Geist — Dark (official Geist dark tokens) */
+[data-theme="geist"][data-mode="dark"] {
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #111111;
+  --bg-card: #111111;
+  --bg-input: #1A1A1A;
+  --bg-hover: #1A1A1A;
+  --bg-tertiary: #222222;
+  --text-primary: #EDEDED;
+  --text-secondary: #A1A1A1;
+  --text-muted: #707070;
+  --accent: #3291FF;
+  --accent-dark: #52A8FF;
+  --accent-light: rgba(50, 145, 255, 0.12);
+  --accent-hover: rgba(255, 255, 255, 0.06);
+  --notes-accent: #BF7AF0;
+  --flagged-color: #FFD074;
+  --overdue-color: #FF6166;
+  --deferred-color: #707070;
+  --notes-color: #BF7AF0;
+  --success: #3CCF4E;
+  --warning: #FFD074;
+  --danger: #FF6166;
+  --inbox-color: #3291FF;
+  --today-color: #FFD074;
+  --upcoming-color: #FF6166;
+  --anytime-color: #3291FF;
+  --someday-color: #707070;
+  --logbook-color: #3CCF4E;
+  --trigger-color: #FFD074;
+  --border: #333333;
+  --border-light: #222222;
+  --btn-bg: #EDEDED;
+  --btn-hover: #D4D4D4;
+  --sidebar-bg: #0A0A0A;
+  --sidebar-active: rgba(50, 145, 255, 0.12);
+  --sidebar-hover: rgba(255, 255, 255, 0.06);
+  --modal-bg: #111111;
+  --modal-overlay: rgba(0, 0, 0, 0.7);
+  --toggle-off: #333333;
+  --toggle-off-hover: #444444;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-modal: 0 16px 48px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --geist-glow: 0 0 0 2px rgba(50, 145, 255, 0.3);
+  --geist-border-focus: #3291FF;
+  --geist-bg-code: #1A1A1A;
+}
