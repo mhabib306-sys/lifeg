@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T09:50:24.787Z",
+  "lastUpdated": "2026-02-12T09:50:29.402Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -10896,12 +10896,12 @@
   ],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "iTxKTOaMx6ypBtJtl50MKw==",
-    "wrapIv": "P55S5zgmMwA/cdwi",
-    "wrappedKey": "gzpnJNBZj3vfd2TgsPJNlXspv7FY4qOwAETQ9YJiY9LWOLlx+2/+YRoc/8I86u0n",
-    "dataIv": "lhRyrPmH8GMRhWPT",
-    "data": "Sjjj7iQY6zla8UG3Nso0Bhm+GvOOupAq3eihZEe5ks87VNwUtw4zT5X+LFDp5B0+5TcSANifdw9F7opOa7B2861tewov37vysyp8/OHoqD09TUqC0Sr/ZchZItF1sYFYqKS0kHvtNZ1s4nWsbRndo93X5yiddmIDh5zjdvwfkty/JrLuhlVwownrYd8YTOzoPDfraRCVp5Trbxp7uqBfPS+HrpVR4EW19VD7KM4aHgTzS+c5Rw3dfaO0mEGV8OTtprLLVKaCKnqaTIVqcg6OwVjb0ANCUewqlUbw2/j1guevGWB4EFjGh+Qgt6pZ3SyCNG8sVL7g7o3gCt+i6Rxb1gA7uc5E/ujafo3H9kJp27pdkXTEchAV0KeqTozKas7r8pQGcxhZIlUvfrM0jRVb5rEVcptCDipvOIwGuyzO6DXCUZ/4Be91l0ciXG0NRyyZKKEjUFptVx2kn0qKCqiWXG9WtPLkxrDlieMlnnLIiCbElKuHYhR1chccKY/KUrgxrtjEkL1rmIeWbju3EFdr12cdux3R/bTekUpl",
-    "updatedAt": "2026-02-12T09:50:24.796Z"
+    "salt": "Z4pPk/m0del8zUmTy3Ha7A==",
+    "wrapIv": "6U0BfVQx4+h9gs5p",
+    "wrappedKey": "BYRsjqICWLAQhojeWlvtyZFusdCwrlBeyCozqBP8QsP1eEcFfRP6oKvpKenYhySS",
+    "dataIv": "m9reJsolLjmfUJLE",
+    "data": "gMDyP+V9n/JY9TbwNEsrRk/IijNi8GMrJDk1b+EZCFgn195KLwXNBwv6HdF7KwZBQYKdwl+aRTjIG0F6Ig9ZTpu+a7zpkgIMhcIrziL+cmNlaS9HKHVKAyxh8vMdimyDBMOk5qywGzBOX3IzDLaBUd3dxt+LTCKtGcHMGlNQ+NZLmyB1yLHvE3YYZ5HGXm5CDJ939I+3khP4c3G4rd31C1a/kpL1P94ilT+hOGUCfoJNFiRsyBqn+Le7N+5auolwo7iAywgRXRKGKJ962xx89zoppd1rRxjTNaJAlSUn7YM576IWrSDaxnaeA6JOqa6xenlslL1QdYDn9Hjub3e5UDzF/9ZXffdPkzYpIZO+2gD0VdDjFrrFk8UHz/JccDoJFYbazoDd2kjMaxKGVLtUkvJdURqIyo+cHH8RFAEt1Fa4rcfQAfOKc1k1+TLp18yYc/sWoW20Fdv6Kdc6lsW9SukcRCLmtUWHg6jbs25Ua4bXgzesJEzhJgWO+5uSX9h6orpmSKwxG/KYDOfqMsdrjUEP5byNaDS/MNGb",
+    "updatedAt": "2026-02-12T09:50:29.409Z"
   },
   "xp": {
     "total": 1937,
@@ -11158,7 +11158,7 @@
       "lastUsed": "2026-02-02"
     },
     "multiplier": 1.2,
-    "_updatedAt": "2026-02-12T09:50:06.342Z"
+    "_updatedAt": "2026-02-12T09:50:27.342Z"
   },
   "achievements": {
     "unlocked": {
