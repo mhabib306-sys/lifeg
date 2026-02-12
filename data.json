@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T10:54:10.631Z",
+  "lastUpdated": "2026-02-12T10:54:34.537Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3446,12 +3446,12 @@
       "id": "task_1770871541437_gidq5jgzs",
       "title": "We still don’t have fresh meat",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "today": false,
       "flagged": false,
       "completed": false,
       "completedAt": null,
-      "areaId": null,
+      "areaId": "work",
       "categoryId": null,
       "labels": [],
       "people": [
@@ -3467,7 +3467,7 @@
       "lastReviewedAt": null,
       "order": 41000,
       "createdAt": "2026-02-12T04:45:41.437Z",
-      "updatedAt": "2026-02-12T07:43:41.119Z"
+      "updatedAt": "2026-02-12T10:54:31.925Z"
     },
     {
       "id": "task_1770886480375_2gz1nfbkx",
@@ -10921,12 +10921,12 @@
   ],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "aphjueR7fQRq+UyvL9ZUeQ==",
-    "wrapIv": "MQjkujLMApMMHR0v",
-    "wrappedKey": "WlE4c4boCQORsCSo89l7rV4xA3BYxvs/3SvCU/e2YfBT4xnu+pfj2i7Q04qydUIR",
-    "dataIv": "YKtk9lpwFSc15nlU",
-    "data": "exfFgXIo7OyXkGDOYLaRuI1QPvv+RgzUFvXtRfK6Hct57AymuWmBAqTnUkct+iNboMfLrUaVIoh1Jz1k1qZxU84d/Cv86fRVZtbb/6K31jEXSeueaOK+pLc/hnbJNtXoKW5NMW7+m8gacMUOi4GOb6tyAEvdEhZYHKAMu84P5cczaVP+ix533YnFzsED4hncNRNXQrNNq13PlW0mlBs62Zlzpet9WXpuP+1FcUu07VUIbJE0BPkPj8PucCNmAjxIXuPSeBQ2HvsqJN2OEeOZXwUKtsS96UjVnU4XmvLt0G5X/rp8RpzSRbuJ9TMCWDokuXXU0rzArnBWvhHTLVXbE6+o5c7OA3tD0FFZE7oCRCN7u7V+DE5KtXIf1MjvgMWfYNIdTzitpbznUZ+YGnQtcNNNf0sR35B6Y2k05sNXrALTZrqDAzIkzkxd2J4CmsfWaLo6a/ryM4XBo+C24lzvcLpSt7oETU0VMZNDi1FJN2Z4ALmYbiGMMZV8x1DEvJcg7EdNWAhDpyCaq6gAHKKwaM2tvPIVRN8pPp04",
-    "updatedAt": "2026-02-12T10:54:10.639Z"
+    "salt": "P7gsyqdIp3RqMeN9vybcwA==",
+    "wrapIv": "DBv6Nw5sUyRRBxN0",
+    "wrappedKey": "zSNPVu9c8Bws0Zmb/WHVAe+kb1SSUDFURI1S8JnkHnw4khvDOczpoAjzZwWKgSSn",
+    "dataIv": "sjydXCFWigMfASv7",
+    "data": "bqjPvvhctmG84sTNTqf+x0WOEbuUxhziPFvsVXR6pQ8/Yk2YmFsKUx4kU1IGYkG8y6fRw9ve0G4TBDfKw8A+u5AsFseuWQs8IWH4zkJeoJpT84+nTFLU8zO2tSYcbERpyaCtWutHkPruJepwOU3UEQuN5HJd4SV1e0n2nR00v5+xJ5iXRrFq0/DK7M6//s/XAKrAGxcs4iI7XJsN7CuXgE25AiGvLjmpiXCYrz8OrBh36FG4mFK8I0SR0bEABr8fKG+pTKYfQpQcgPIkJbwHOfA5klWJKgbhW4zKkbCJ1mrN9dStst6clSNUXDe7q0l8VMd2YIq8f/+fetbXqHw1fZMXQ5wIi7Fgfv92dWUCvRRBovuAJWrZDZ+m9eyuBFm7wuT5pxkY1XOnvp8+xuVeEW2ogBShQb6bwONMkK372QcSqElzUcaKRhY5XGpYLih0jQTiup2z3r77klYdWPLUMhV/YkKVaiXu46Wm7cKILcHeMu6za7HxrP4zCIE9+pku0o92IUVZ02NINn44okYLRUUkh0u2EO5b+mxa",
+    "updatedAt": "2026-02-12T10:54:34.546Z"
   },
   "xp": {
     "total": 1937,
