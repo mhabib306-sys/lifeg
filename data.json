@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T10:54:34.537Z",
+  "lastUpdated": "2026-02-12T10:54:51.571Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3500,17 +3500,19 @@
       "id": "task_1770890638491_lfalzay3g",
       "title": "Block time Nadine headed to review all the one pager documents",
       "notes": "",
-      "status": "inbox",
+      "status": "anytime",
       "today": false,
       "flagged": false,
       "completed": false,
       "completedAt": null,
-      "areaId": null,
+      "areaId": "work",
       "categoryId": null,
       "labels": [],
-      "people": [],
+      "people": [
+        "person_1770591589441"
+      ],
       "deferDate": null,
-      "dueDate": null,
+      "dueDate": "2026-02-12",
       "repeat": null,
       "isNote": false,
       "parentId": null,
@@ -3519,7 +3521,8 @@
       "lastReviewedAt": null,
       "order": 43000,
       "createdAt": "2026-02-12T10:03:58.491Z",
-      "updatedAt": "2026-02-12T10:03:58.491Z"
+      "updatedAt": "2026-02-12T10:54:48.753Z",
+      "gcalEventId": "3hfokpbklf9lmbj3684atgocr8"
     }
   ],
   "deletedTaskTombstones": {
@@ -10921,12 +10924,12 @@
   ],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "P7gsyqdIp3RqMeN9vybcwA==",
-    "wrapIv": "DBv6Nw5sUyRRBxN0",
-    "wrappedKey": "zSNPVu9c8Bws0Zmb/WHVAe+kb1SSUDFURI1S8JnkHnw4khvDOczpoAjzZwWKgSSn",
-    "dataIv": "sjydXCFWigMfASv7",
-    "data": "bqjPvvhctmG84sTNTqf+x0WOEbuUxhziPFvsVXR6pQ8/Yk2YmFsKUx4kU1IGYkG8y6fRw9ve0G4TBDfKw8A+u5AsFseuWQs8IWH4zkJeoJpT84+nTFLU8zO2tSYcbERpyaCtWutHkPruJepwOU3UEQuN5HJd4SV1e0n2nR00v5+xJ5iXRrFq0/DK7M6//s/XAKrAGxcs4iI7XJsN7CuXgE25AiGvLjmpiXCYrz8OrBh36FG4mFK8I0SR0bEABr8fKG+pTKYfQpQcgPIkJbwHOfA5klWJKgbhW4zKkbCJ1mrN9dStst6clSNUXDe7q0l8VMd2YIq8f/+fetbXqHw1fZMXQ5wIi7Fgfv92dWUCvRRBovuAJWrZDZ+m9eyuBFm7wuT5pxkY1XOnvp8+xuVeEW2ogBShQb6bwONMkK372QcSqElzUcaKRhY5XGpYLih0jQTiup2z3r77klYdWPLUMhV/YkKVaiXu46Wm7cKILcHeMu6za7HxrP4zCIE9+pku0o92IUVZ02NINn44okYLRUUkh0u2EO5b+mxa",
-    "updatedAt": "2026-02-12T10:54:34.546Z"
+    "salt": "OMj5V9xRKlLiQKPM6kw8hw==",
+    "wrapIv": "UAhFLW1Db7TlIu0D",
+    "wrappedKey": "/P0KhFVInJFxt8pcZK9O+JcQB+qTQHVS5o49ZEncE7nWreDxEtozt+aKW5ueY/wg",
+    "dataIv": "jVd6zXFIgQBOIv1u",
+    "data": "vPgeUNuClI7UPMJfk0s3cD07HI5o4VvMy9j61mVa/Zjo0Edr9Ij8XV5qrex1K3tcDK0LQXB/zO+kJklFl2iWvgnVjKm4yvEw0uhQXQR7q1PFgtFUlcGCKjEPdiF8kozw+3eyq03x5mCIQo5pRyze5ukejFIwlZjnYXwXewfBJ1Y+OhHn7fZ3yg26lTKA9TcsjdneB7Z+RaIpTUP/fXJpCWfRN1N6rvuXn1KeUKhIEFVbiwJ38WkO6l9YtHsVElqp51CcaBjIbks+eNxqirR3KpzQB2hs4+XpdkBl7ccuCdnBR+KgoRTCOtdC0I1FSGEl5csZCQs4/xEXQiBDXppFP9R+vA1CDOYRA+u3UkuqcenHobHfKxcyMk/Zby51ozpQBVzZJT9smcl3QToaFwKrS2SOTepkFX0NpMztNYD55aSpBD9BfAgeOHYiR6zu9NXIPsPo1b4oO5xbl4Cozd3tJxzlLVLuTvYw0po3TNROxSnZPAMghxJDpRXc/YVaRxAVV7meWUMh3YPRZZn9kPPmDTbooWDCbj+5Atmm",
+    "updatedAt": "2026-02-12T10:54:51.577Z"
   },
   "xp": {
     "total": 1937,
