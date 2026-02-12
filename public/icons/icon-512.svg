@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 100 100">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#F59E0B"/>
-      <stop offset="100%" stop-color="#D97706"/>
+      <stop offset="0%" stop-color="#FF9500"/>
+      <stop offset="100%" stop-color="#0066DC"/>
     </linearGradient>
   </defs>
-  <!-- Warm amber rounded square -->
+  <!-- Orange-to-blue gradient rounded square -->
   <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#bg)"/>
   <!-- House -->
   <path d="M50 26 L72 44 V74 H28 V44 Z" fill="white"/>
   <!-- Door -->
-  <rect x="43" y="55" width="14" height="19" rx="2" fill="#D97706"/>
+  <rect x="43" y="55" width="14" height="19" rx="2" fill="#0066DC"/>
 </svg>
