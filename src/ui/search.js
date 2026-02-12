@@ -15,7 +15,7 @@ import { BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
 const SEARCH_TYPES = [
   { key: 'task',        label: 'Tasks',        icon: '☑️',  prefix: null },
   { key: 'note',        label: 'Notes',        icon: '📝', prefix: null },
-  { key: 'area',        label: 'Areas',        icon: '📦', prefix: '#' },
+  { key: 'area',        label: 'Areas',        icon: '🗂️', prefix: '#' },
   { key: 'category',    label: 'Categories',   icon: '📂', prefix: null },
   { key: 'label',       label: 'Labels',       icon: '🏷️',  prefix: '@' },
   { key: 'person',      label: 'People',       icon: '👤', prefix: '&' },

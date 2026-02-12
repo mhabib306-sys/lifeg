@@ -652,7 +652,7 @@ export function renderAreaModalHtml() {
               <button type="button" onclick="event.stopPropagation(); toggleEmojiPicker('area')"
                 id="area-folder-preview"
                 class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl cursor-pointer hover:ring-2 hover:ring-[var(--accent)]/40 transition" style="background: ${areaColor}20; color: ${areaColor}">
-                ${areaEmoji || '<svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}
+                ${areaEmoji || '<svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M2 17l10 5 10-5-10-5-10 5z" opacity="0.35"/><path d="M2 12l10 5 10-5-10-5-10 5z" opacity="0.6"/><path d="M12 2L2 7l10 5 10-5L12 2z"/></svg>'}
               </button>
             </div>
             <div class="flex-1 space-y-3 pt-1">

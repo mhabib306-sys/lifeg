@@ -380,7 +380,7 @@ export function getCurrentFilteredTasks() {
 export function getCurrentViewInfo() {
   if (state.activeFilterType === 'area' && state.activeAreaFilter) {
     const cat = getAreaById(state.activeAreaFilter);
-    return { icon: '\u{1F4C1}', name: cat?.name || 'Area', color: cat?.color };
+    return { icon: '\u{1F5C2}\uFE0F', name: cat?.name || 'Area', color: cat?.color };
   } else if (state.activeFilterType === 'label' && state.activeLabelFilter) {
     const label = getLabelById(state.activeLabelFilter);
     return { icon: '\u{1F3F7}\uFE0F', name: label?.name || 'Tag', color: label?.color };

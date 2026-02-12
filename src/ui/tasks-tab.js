@@ -1393,7 +1393,7 @@ export function renderTasksTab() {
           </button>
           ${state.taskAreas.map(area => `
             <button onclick="window.showAreaTasks('${area.id}')" class="workspace-area-chip ${isAreaActive(area.id) || selectedAreaId === area.id ? 'active' : ''}" style="--area-color:${area.color || 'var(--accent)'}">
-              <span class="workspace-area-emoji">${area.emoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}</span>
+              <span class="workspace-area-emoji">${area.emoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M2 17l10 5 10-5-10-5-10 5z" opacity="0.35"/><path d="M2 12l10 5 10-5-10-5-10 5z" opacity="0.6"/><path d="M12 2L2 7l10 5 10-5L12 2z"/></svg>'}</span>
               <span class="workspace-area-name">${escapeHtml(area.name)}</span>
               <span class="workspace-area-count">${categoryCounts[area.id] || ''}</span>
             </button>
@@ -1550,7 +1550,7 @@ export function renderTasksTab() {
                 data-id="${cat.id}"
                 data-type="area">
                 <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm relative" style="background: ${cat.color}20; color: ${cat.color}">
-                  ${areaEmoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'}
+                  ${areaEmoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>'}
                   ${hasSubcats ? `
                     <span onclick="event.stopPropagation(); window.toggleSidebarAreaCollapse('${cat.id}')"
                       class="absolute inset-0 flex items-center justify-center rounded-lg bg-[var(--bg-secondary)] opacity-0 group-hover:opacity-100 transition-opacity text-[var(--text-muted)] hover:text-[var(--text-primary)]">
