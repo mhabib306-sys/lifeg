@@ -73,6 +73,7 @@ export function closeBraindump() {
 // ============================================================================
 
 export async function processBraindump() {
+  if (state.braindumpProcessing) return; // guard against double-click
   const ta = document.getElementById('braindump-textarea');
   if (ta) state.braindumpRawText = ta.value;
   if (!state.braindumpRawText.trim()) return;
@@ -87,12 +88,17 @@ export async function processBraindump() {
 
   try {
     state.braindumpParsedItems = await parseBraindump(state.braindumpRawText);
+    state.braindumpStep = 'review';
+    state.braindumpEditingIndex = null;
+  } catch (err) {
+    console.error('Braindump processing failed:', err);
+    state.braindumpAIError = err.message || 'Processing failed unexpectedly';
+    state.braindumpParsedItems = [];
+    state.braindumpStep = 'input';
   } finally {
     state.braindumpProcessing = false;
   }
 
-  state.braindumpStep = 'review';
-  state.braindumpEditingIndex = null;
   window.render();
 }
 

@@ -13,7 +13,6 @@
 
 import { state } from '../state.js';
 import { createTask } from './tasks.js';
-import { saveTasksData } from '../data/storage.js';
 import { BRAINDUMP_ACTION_VERBS, ANTHROPIC_KEY } from '../constants.js';
 
 // ============================================================================
@@ -169,8 +168,10 @@ Respond with ONLY valid JSON — no markdown, no explanation. The JSON must be a
     const items = JSON.parse(jsonStr);
     if (!Array.isArray(items)) throw new Error('Response is not an array');
 
-    // Map AI results to our item shape
-    return items.map((item, index) => {
+    const isValidDate = (d) => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d);
+
+    // Map AI results to our item shape, filtering out empty titles
+    return items.filter(item => (item.title || '').trim()).map((item, index) => {
       // Resolve area name to ID
       let areaId = null;
       if (item.area) {
@@ -210,8 +211,8 @@ Respond with ONLY valid JSON — no markdown, no explanation. The JSON must be a
         areaId,
         labels: labelIds,
         people: personIds,
-        deferDate: item.deferDate || null,
-        dueDate: item.dueDate || null,
+        deferDate: isValidDate(item.deferDate) ? item.deferDate : null,
+        dueDate: isValidDate(item.dueDate) ? item.dueDate : null,
         included: true,
       };
     });
@@ -522,7 +523,7 @@ export function submitBraindumpItems(items) {
 
   for (const item of included) {
     const isNote = item.type === 'note';
-    createTask(item.title, {
+    const task = createTask(item.title, {
       isNote,
       areaId: item.areaId,
       labels: item.labels,
@@ -531,6 +532,11 @@ export function submitBraindumpItems(items) {
       dueDate: item.dueDate,
       status: item.areaId ? 'anytime' : 'inbox',
     });
+    // Enrich notes with outliner lifecycle metadata
+    if (isNote && task) {
+      task.noteLifecycleState = 'active';
+      task.noteHistory = [{ action: 'created', source: 'braindump', at: task.createdAt }];
+    }
     if (isNote) noteCount++;
     else taskCount++;
   }
