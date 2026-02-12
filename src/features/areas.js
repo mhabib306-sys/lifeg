@@ -66,13 +66,20 @@ export function deleteArea(areaId) {
   const orphanedCatIds = state.taskCategories
     .filter(c => c.areaId === areaId)
     .map(c => c.id);
+  // Tombstone each orphaned sub-category individually (prevents cloud resurrection)
+  orphanedCatIds.forEach(catId => {
+    const tombstones = ensureEntityTombstones();
+    if (!tombstones['categories'] || typeof tombstones['categories'] !== 'object') tombstones['categories'] = {};
+    tombstones['categories'][String(catId)] = new Date().toISOString();
+  });
+  persistEntityTombstones();
   // Remove orphaned sub-categories
   state.taskCategories = state.taskCategories.filter(c => c.areaId !== areaId);
   state.taskAreas = state.taskAreas.filter(c => c.id !== areaId);
-  // Remove area and orphaned categoryId from tasks
-  state.tasksData.forEach(task => {
-    if (task.areaId === areaId) task.areaId = null;
-    if (orphanedCatIds.includes(task.categoryId)) task.categoryId = null;
+  // Remove area and orphaned categoryId from tasks AND notes
+  state.tasksData.forEach(item => {
+    if (item.areaId === areaId) item.areaId = null;
+    if (orphanedCatIds.includes(item.categoryId)) item.categoryId = null;
   });
   saveTasksData();
 }

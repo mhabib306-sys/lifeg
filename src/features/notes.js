@@ -877,9 +877,9 @@ export function indentNote(noteId) {
   const nextIndent = Math.min((prev.indent || 0) + 1, maxIndent);
   if ((note.indent || 0) >= maxIndent || (nextIndent === (note.indent || 0) && note.parentId === prev.id)) return;
 
-  // Get new siblings for ordering
+  // Get new siblings for ordering (filter by area for consistency with outdent/createNoteAfter)
   const newSiblings = state.tasksData
-    .filter(t => isActiveNote(t) && t.parentId === prev.id)
+    .filter(t => isActiveNote(t) && t.parentId === prev.id && t.areaId === note.areaId)
     .sort(compareNotes);
 
   note.parentId = prev.id;
@@ -900,7 +900,7 @@ export function outdentNote(noteId) {
   const note = getActiveNoteById(noteId);
   if (!note || (note.indent || 0) <= 0) return;
 
-  const parent = note.parentId ? state.tasksData.find(t => t.id === note.parentId) : null;
+  const parent = note.parentId ? state.tasksData.find(t => t.id === note.parentId && isActiveNote(t)) : null;
   const newParentId = parent ? parent.parentId || null : null;
 
   // Get new siblings for ordering

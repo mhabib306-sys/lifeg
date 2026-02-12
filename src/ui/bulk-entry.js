@@ -50,8 +50,11 @@ export function updateBulkData(dateStr, category, field, value) {
   if (category === 'family') {
     state.allData[dateStr][category][field] = value === '1' || value === true;
   } else {
-    state.allData[dateStr][category][field] = value;
+    // Parse numeric values for consistency with updateDailyField (storage.js)
+    const parsed = parseFloat(value);
+    state.allData[dateStr][category][field] = value === '' ? null : (Number.isNaN(parsed) ? value : parsed);
   }
+  state.allData[dateStr]._lastModified = new Date().toISOString();
   invalidateScoresCache();
   saveData();
   window.debouncedSaveToGithub(); // Auto-save to GitHub

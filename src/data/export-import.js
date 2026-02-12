@@ -189,7 +189,11 @@ export function importData(event) {
       if (!confirmed) return;
 
       // Auto-backup current state before overwriting
-      createPreImportBackup();
+      const backupOk = createPreImportBackup();
+      if (!backupOk) {
+        const proceed = confirm('Warning: Could not create a safety backup (storage may be full).\nContinue import anyway? Data cannot be recovered if something goes wrong.');
+        if (!proceed) return;
+      }
 
       if (imported.data) {
         state.allData = imported.data;
@@ -258,15 +262,21 @@ export function importData(event) {
         state.meetingNotesByEvent = imported.meetingNotesByEvent;
         localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(state.meetingNotesByEvent));
       }
-      // Restore tombstones to prevent deleted items from resurrecting on cloud sync
+      // Merge tombstones (keep existing + add imported) to prevent deleted items resurrecting
       if (imported.deletedTaskTombstones) {
-        state.deletedTaskTombstones = imported.deletedTaskTombstones;
+        state.deletedTaskTombstones = { ...state.deletedTaskTombstones, ...imported.deletedTaskTombstones };
         localStorage.setItem(DELETED_TASK_TOMBSTONES_KEY, JSON.stringify(state.deletedTaskTombstones));
       }
       if (imported.deletedEntityTombstones) {
-        state.deletedEntityTombstones = imported.deletedEntityTombstones;
+        const merged = { ...state.deletedEntityTombstones };
+        for (const [type, entries] of Object.entries(imported.deletedEntityTombstones)) {
+          merged[type] = { ...(merged[type] || {}), ...entries };
+        }
+        state.deletedEntityTombstones = merged;
         localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(state.deletedEntityTombstones));
       }
+      // Invalidate scores cache since tracking data may have changed
+      if (typeof window.invalidateScoresCache === 'function') window.invalidateScoresCache();
       alert('Data imported successfully!');
       window.debouncedSaveToGithub();
       window.render();

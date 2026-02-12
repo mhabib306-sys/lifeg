@@ -193,6 +193,7 @@ export function formatSmartDate(dateStr) {
   if (diffDays === 1) return 'Tomorrow';
   if (diffDays === -1) return 'Yesterday';
   if (diffDays > 1 && diffDays <= 6) return targetDate.toLocaleDateString('en-US', { weekday: 'long' });
+  if (diffDays >= -6 && diffDays < -1) return targetDate.toLocaleDateString('en-US', { weekday: 'long' });
   if (targetDate.getFullYear() === todayDate.getFullYear()) return targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   return targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }

@@ -78,6 +78,7 @@ export function saveInlineEdit(taskId) {
       const inlineMeta = state.inlineAutocompleteMeta.get('inline-edit-input');
       if (inlineMeta) {
         if (inlineMeta.areaId !== undefined) updates.areaId = inlineMeta.areaId;
+        if (inlineMeta.categoryId !== undefined) updates.categoryId = inlineMeta.categoryId;
         if (inlineMeta.labels) updates.labels = inlineMeta.labels;
         if (inlineMeta.people) updates.people = inlineMeta.people;
         if (inlineMeta.deferDate) updates.deferDate = inlineMeta.deferDate;
@@ -247,7 +248,7 @@ export function quickAddTask(inputElement) {
       if (customPerspective.filter.statusRule === 'flagged') options.flagged = true;
     } else {
       // Built-in perspective - set status based on perspective
-      const statusMap = { inbox: 'inbox', today: 'anytime', anytime: 'anytime', someday: 'someday' };
+      const statusMap = { inbox: 'inbox', today: 'anytime', anytime: 'anytime', someday: 'someday', flagged: 'anytime' };
       if (statusMap[state.activePerspective]) {
         options.status = statusMap[state.activePerspective];
         if (state.activePerspective === 'today') options.today = true;

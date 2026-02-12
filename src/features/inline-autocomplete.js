@@ -438,7 +438,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
     if (!popup) return;
     const val = input.value;
     const caret = input.selectionStart;
-    const query = val.substring(triggerPos + 1, caret);
+    const query = val.substring(triggerPos + triggerChar.length, caret);
     const isDate = triggerChar === '!' || triggerChar === '!!';
     const items = getItems(query);
     const filtered = isDate ? items : items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));

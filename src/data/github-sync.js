@@ -735,8 +735,9 @@ export async function saveToGithub(options = {}) {
           }
         }
       } catch (mergeErr) {
-        console.warn('Cloud merge skipped:', mergeErr.message);
-        premergeSnapshot = null; // No merge happened, nothing to rollback
+        console.warn('Cloud merge error:', mergeErr.message);
+        // Keep premergeSnapshot if it was set — merge may have partially modified state
+        // before throwing, so we need the snapshot for rollback on PUT failure
       }
     }
 
@@ -805,21 +806,27 @@ export async function saveToGithub(options = {}) {
     if (updateResponse.ok) {
       const saveLatency = Math.round(performance.now() - saveStartTime);
       // PUT succeeded — merged state is now committed, persist to localStorage
-      // All keys must mirror rollbackMerge() to prevent state divergence
+      // All keys must mirror rollbackMerge() to prevent state divergence.
+      // Wrap in try-catch: if quota exceeded mid-way, dirty flag stays true
+      // and partial writes are acceptable (cloud has full state for recovery).
       if (premergeSnapshot) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.allData));
-        localStorage.setItem(TASKS_KEY, JSON.stringify(state.tasksData));
-        localStorage.setItem(DELETED_TASK_TOMBSTONES_KEY, JSON.stringify(state.deletedTaskTombstones));
-        localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(state.deletedEntityTombstones));
-        localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
-        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(state.taskCategories));
-        localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
-        localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
-        localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(state.customPerspectives));
-        localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
-        localStorage.setItem(TRIGGERS_KEY, JSON.stringify(state.triggers));
-        localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(state.meetingNotesByEvent || {}));
-        localStorage.setItem(CONFLICT_NOTIFICATIONS_KEY, JSON.stringify(state.conflictNotifications || []));
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state.allData));
+          localStorage.setItem(TASKS_KEY, JSON.stringify(state.tasksData));
+          localStorage.setItem(DELETED_TASK_TOMBSTONES_KEY, JSON.stringify(state.deletedTaskTombstones));
+          localStorage.setItem(DELETED_ENTITY_TOMBSTONES_KEY, JSON.stringify(state.deletedEntityTombstones));
+          localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
+          localStorage.setItem(CATEGORIES_KEY, JSON.stringify(state.taskCategories));
+          localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
+          localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
+          localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(state.customPerspectives));
+          localStorage.setItem(HOME_WIDGETS_KEY, JSON.stringify(state.homeWidgets));
+          localStorage.setItem(TRIGGERS_KEY, JSON.stringify(state.triggers));
+          localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(state.meetingNotesByEvent || {}));
+          localStorage.setItem(CONFLICT_NOTIFICATIONS_KEY, JSON.stringify(state.conflictNotifications || []));
+        } catch (storageErr) {
+          console.warn('localStorage quota exceeded during sync persist — cloud has full state, dirty flag preserved:', storageErr.message);
+        }
       }
       state.syncRetryCount = 0; // Reset retry counter on success
       state.syncRateLimited = false;

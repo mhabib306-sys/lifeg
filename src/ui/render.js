@@ -495,8 +495,9 @@ export function dismissCacheRefreshPrompt() {
 export function switchTab(tab) {
   const validTabs = ['home', 'tasks', 'life', 'calendar', 'settings'];
   if (!validTabs.includes(tab)) return;
-  // Cleanup any open inline autocomplete popups
+  // Cleanup any open inline autocomplete popups and stale metadata
   document.querySelectorAll('.inline-autocomplete-popup').forEach(p => p.remove());
+  state.inlineAutocompleteMeta.clear();
   if (state.mobileDrawerOpen) {
     state.mobileDrawerOpen = false;
     document.body.style.overflow = '';

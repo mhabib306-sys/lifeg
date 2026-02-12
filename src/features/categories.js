@@ -62,9 +62,9 @@ export function updateCategory(categoryId, updates) {
 export function deleteCategory(categoryId) {
   markEntityDeleted('taskCategories', categoryId);
   state.taskCategories = state.taskCategories.filter(c => c.id !== categoryId);
-  // Remove category from tasks that use it
-  state.tasksData.forEach(task => {
-    if (task.categoryId === categoryId) task.categoryId = null;
+  // Remove category from tasks and notes that use it
+  state.tasksData.forEach(item => {
+    if (item.categoryId === categoryId) item.categoryId = null;
   });
   saveTasksData();
 }
@@ -101,10 +101,10 @@ export function updateLabel(labelId, updates) {
 export function deleteLabel(labelId) {
   markEntityDeleted('taskLabels', labelId);
   state.taskLabels = state.taskLabels.filter(l => l.id !== labelId);
-  // Remove label from tasks that use it
-  state.tasksData.forEach(task => {
-    if (task.labels) {
-      task.labels = task.labels.filter(l => l !== labelId);
+  // Remove label from tasks and notes that use it
+  state.tasksData.forEach(item => {
+    if (item.labels) {
+      item.labels = item.labels.filter(l => l !== labelId);
     }
   });
   saveTasksData();
@@ -141,10 +141,10 @@ export function updatePerson(personId, updates) {
 export function deletePerson(personId) {
   markEntityDeleted('taskPeople', personId);
   state.taskPeople = state.taskPeople.filter(p => p.id !== personId);
-  // Remove person from tasks that use it
-  state.tasksData.forEach(task => {
-    if (task.people) {
-      task.people = task.people.filter(p => p !== personId);
+  // Remove person from tasks and notes that use it
+  state.tasksData.forEach(item => {
+    if (item.people) {
+      item.people = item.people.filter(p => p !== personId);
     }
   });
   saveTasksData();
