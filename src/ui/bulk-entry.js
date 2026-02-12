@@ -295,7 +295,7 @@ export function renderBulkEntryTab() {
       prayerHint + familyHint +
     '</div>' +
     // Data table
-    '<div class="rounded-xl border border-[var(--border-light)] overflow-hidden bg-[var(--bg-card)]">' +
+    '<div class="rounded-lg border border-[var(--border-light)] overflow-hidden bg-[var(--bg-card)]">' +
       '<div class="overflow-x-auto">' +
         '<table class="w-full text-sm">' +
           '<thead>' +
@@ -312,19 +312,19 @@ export function renderBulkEntryTab() {
     '</div>' +
     // Summary
     '<div class="grid grid-cols-2 md:grid-cols-4 gap-3">' +
-      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+      '<div class="bg-[var(--bg-secondary)] rounded-lg p-4 text-center border border-[var(--border-light)]">' +
         '<div id="bulk-days-logged" class="text-2xl font-bold text-[var(--text-primary)]">' + fmt(daysWithData) + '</div>' +
         '<div class="text-xs text-[var(--text-muted)] mt-1">Days Logged</div>' +
       '</div>' +
-      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+      '<div class="bg-[var(--bg-secondary)] rounded-lg p-4 text-center border border-[var(--border-light)]">' +
         '<div id="bulk-total-score" class="text-2xl font-bold text-[var(--accent)]">' + fmt(totalScore) + '</div>' +
         '<div class="text-xs text-[var(--text-muted)] mt-1">Total Score</div>' +
       '</div>' +
-      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+      '<div class="bg-[var(--bg-secondary)] rounded-lg p-4 text-center border border-[var(--border-light)]">' +
         '<div id="bulk-avg-score" class="text-2xl font-bold text-[var(--text-primary)]">' + fmt(avgScore) + '</div>' +
         '<div class="text-xs text-[var(--text-muted)] mt-1">Avg Daily Score</div>' +
       '</div>' +
-      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+      '<div class="bg-[var(--bg-secondary)] rounded-lg p-4 text-center border border-[var(--border-light)]">' +
         '<div id="bulk-completion" class="text-2xl font-bold text-[var(--text-primary)]">' + completionRate + '%</div>' +
         '<div class="text-xs text-[var(--text-muted)] mt-1">Completion Rate</div>' +
       '</div>' +
@@ -382,19 +382,19 @@ function renderBulkShell(monthName, categoryColors, categories, allCategories, a
     '</div>' +
     autoSyncNote +
     '<div class="grid grid-cols-2 md:grid-cols-4 gap-3">' +
-      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+      '<div class="bg-[var(--bg-secondary)] rounded-lg p-4 text-center border border-[var(--border-light)]">' +
         '<div id="bulk-days-logged" class="text-2xl font-bold text-[var(--text-primary)]">' + fmt(daysWithData) + '</div>' +
         '<div class="text-xs text-[var(--text-muted)] mt-1">Days Logged</div>' +
       '</div>' +
-      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+      '<div class="bg-[var(--bg-secondary)] rounded-lg p-4 text-center border border-[var(--border-light)]">' +
         '<div id="bulk-total-score" class="text-2xl font-bold text-[var(--accent)]">' + fmt(totalScore) + '</div>' +
         '<div class="text-xs text-[var(--text-muted)] mt-1">Total Score</div>' +
       '</div>' +
-      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+      '<div class="bg-[var(--bg-secondary)] rounded-lg p-4 text-center border border-[var(--border-light)]">' +
         '<div id="bulk-avg-score" class="text-2xl font-bold text-[var(--text-primary)]">' + fmt(avgScore) + '</div>' +
         '<div class="text-xs text-[var(--text-muted)] mt-1">Avg Daily Score</div>' +
       '</div>' +
-      '<div class="bg-[var(--bg-secondary)] rounded-xl p-4 text-center border border-[var(--border-light)]">' +
+      '<div class="bg-[var(--bg-secondary)] rounded-lg p-4 text-center border border-[var(--border-light)]">' +
         '<div id="bulk-completion" class="text-2xl font-bold text-[var(--text-primary)]">' + completionRate + '%</div>' +
         '<div class="text-xs text-[var(--text-muted)] mt-1">Completion Rate</div>' +
       '</div>' +

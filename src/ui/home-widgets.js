@@ -19,7 +19,7 @@ function calculateScores(data) {
 
 function renderTaskItem(task, showDueDate, compact) {
   if (typeof window.renderTaskItem === 'function') return window.renderTaskItem(task, showDueDate, compact);
-  return `<div class="py-2 px-3 text-sm text-charcoal">${task.title || 'Untitled'}</div>`;
+  return `<div class="py-2 px-3 text-sm text-[var(--text-primary)]">${task.title || 'Untitled'}</div>`;
 }
 
 function getFilteredTasks(perspectiveId) {
@@ -97,19 +97,19 @@ export function renderStatsWidget(today) {
 
   return `
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-      <button type="button" class="quick-stat-item bg-[var(--bg-secondary)] rounded-xl p-3 text-center active:bg-[var(--bg-tertiary)] transition-all" onclick="showPerspectiveTasks('inbox')">
+      <button type="button" class="quick-stat-item bg-[var(--bg-secondary)] rounded-lg p-3 text-center active:bg-[var(--bg-tertiary)] transition-all" onclick="showPerspectiveTasks('inbox')">
         <div class="text-xl sm:text-2xl font-bold ${inboxCount > 0 ? 'text-[var(--inbox-color)]' : 'text-[var(--text-primary)]'}">${inboxCount}</div>
         <div class="text-xs text-[var(--text-muted)] mt-1">In Inbox</div>
       </button>
-      <button type="button" class="quick-stat-item bg-[var(--bg-secondary)] rounded-xl p-3 text-center active:bg-[var(--bg-tertiary)] transition-all" onclick="showPerspectiveTasks('today')">
+      <button type="button" class="quick-stat-item bg-[var(--bg-secondary)] rounded-lg p-3 text-center active:bg-[var(--bg-tertiary)] transition-all" onclick="showPerspectiveTasks('today')">
         <div class="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">${todayTasksCount}</div>
         <div class="text-xs text-[var(--text-muted)] mt-1">Due Today</div>
       </button>
-      <button type="button" class="quick-stat-item bg-[var(--bg-secondary)] rounded-xl p-3 text-center active:bg-[var(--bg-tertiary)] transition-all" onclick="${nextLabel ? `showLabelTasks('${nextLabel.id}')` : 'void(0)'}">
+      <button type="button" class="quick-stat-item bg-[var(--bg-secondary)] rounded-lg p-3 text-center active:bg-[var(--bg-tertiary)] transition-all" onclick="${nextLabel ? `showLabelTasks('${nextLabel.id}')` : 'void(0)'}">
         <div class="text-xl sm:text-2xl font-bold text-[var(--notes-accent)]">${nextTasksCount}</div>
         <div class="text-xs text-[var(--text-muted)] mt-1">Tagged Next</div>
       </button>
-      <button type="button" class="quick-stat-item bg-[var(--bg-secondary)] rounded-xl p-3 text-center active:bg-[var(--bg-tertiary)] transition-all" onclick="showPerspectiveTasks('logbook')">
+      <button type="button" class="quick-stat-item bg-[var(--bg-secondary)] rounded-lg p-3 text-center active:bg-[var(--bg-tertiary)] transition-all" onclick="showPerspectiveTasks('logbook')">
         <div class="text-xl sm:text-2xl font-bold text-[var(--success)]">${completedToday}</div>
         <div class="text-xs text-[var(--text-muted)] mt-1">Done Today</div>
       </button>

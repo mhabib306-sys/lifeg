@@ -72,7 +72,7 @@ function renderWorkerIntegration(name, {
             <span class="text-xs text-[var(--text-muted)]">${lastSyncText}</span>
           </div>
           <div class="flex items-center gap-1.5 flex-shrink-0">
-            <button onclick="window.${syncFn}()" class="px-2.5 py-1 bg-coral text-white rounded text-xs font-medium hover:bg-coralDark transition">Sync</button>
+            <button onclick="window.${syncFn}()" class="px-2.5 py-1 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition">Sync</button>
             <button onclick="window.${disconnectFn}(); window.render()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Disconnect</button>
           </div>
         </div>
@@ -122,7 +122,7 @@ function renderWorkerIntegration(name, {
         </div>
       </div>
       <div class="flex items-center gap-2 pl-4">
-        <button onclick="window.${connectFn}()" class="px-3 py-1.5 bg-coral text-white rounded text-xs font-medium hover:bg-coralDark transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>Connect</button>
+        <button onclick="window.${connectFn}()" class="px-3 py-1.5 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>Connect</button>
         ${checkStatusFn ? `<button onclick="window.${checkStatusFn}()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-xs font-medium hover:bg-[var(--bg-tertiary)] transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>Check Status</button>` : ''}
       </div>
     </div>
@@ -157,7 +157,7 @@ function renderGCalIntegration() {
             <span class="text-sm font-medium text-[var(--text-primary)]">Google Calendar</span>
             <span class="text-xs text-[var(--text-muted)]">Not connected</span>
           </div>
-          <button onclick="window.connectGCal()" class="px-3 py-1.5 bg-coral text-white rounded text-xs font-medium hover:bg-coralDark transition">Connect</button>
+          <button onclick="window.connectGCal()" class="px-3 py-1.5 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition">Connect</button>
         </div>
       </div>
     `;
@@ -173,7 +173,7 @@ function renderGCalIntegration() {
             <span class="text-xs text-amber-600">Session expired</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <button onclick="window.reconnectGCal()" class="px-2.5 py-1 bg-coral text-white rounded text-xs font-medium hover:bg-coralDark transition">Reconnect</button>
+            <button onclick="window.reconnectGCal()" class="px-2.5 py-1 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition">Reconnect</button>
             <button onclick="window.disconnectGCal()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Disconnect</button>
           </div>
         </div>
@@ -191,7 +191,7 @@ function renderGCalIntegration() {
           <span class="text-xs text-[var(--text-muted)]">${lastSyncText}</span>
         </div>
         <div class="flex items-center gap-1.5 flex-shrink-0">
-          <button onclick="window.syncGCalNow()" class="px-2.5 py-1 bg-coral text-white rounded text-xs font-medium hover:bg-coralDark transition">Sync</button>
+          <button onclick="window.syncGCalNow()" class="px-2.5 py-1 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition">Sync</button>
           <button onclick="window.disconnectGCal()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Disconnect</button>
         </div>
       </div>
@@ -213,7 +213,7 @@ function renderGCalIntegration() {
                 <label class="flex items-center gap-2 px-1.5 py-0.5 rounded hover:bg-[var(--bg-secondary)] cursor-pointer">
                   <input type="checkbox" ${selected.includes(c.id) ? 'checked' : ''}
                     onchange="window.toggleCalendarSelection('${c.id.replace(/'/g, "\\'")}')"
-                    class="rounded text-[var(--accent)] focus:ring-coral">
+                    class="rounded text-[var(--accent)] focus:ring-[var(--accent)]">
                   <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background: ${c.backgroundColor}"></span>
                   <span class="text-xs text-[var(--text-primary)] truncate">${escapeHtml(c.summary)}</span>
                 </label>
@@ -268,7 +268,7 @@ function renderAIIntegration() {
               placeholder="sk-ant-..."
               class="flex-1 px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none">
             <button onclick="window.setAnthropicKey(document.getElementById('anthropic-key-input').value); window.render()"
-              class="px-3 py-1.5 bg-coral text-white rounded text-xs font-medium hover:bg-coralDark transition">Save</button>
+              class="px-3 py-1.5 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition">Save</button>
           </div>
           <p class="text-[11px] text-[var(--text-muted)]">
             Get a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" class="sb-link text-[11px]">console.anthropic.com</a>. Uses Claude Haiku 4.5.
@@ -293,7 +293,7 @@ function renderDataManagementSection() {
           Import
           <input type="file" accept=".json" class="hidden" onchange="window.importData(event)">
         </label>
-        <button onclick="window.forceHardRefresh()" class="px-3 py-1.5 bg-coral/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-coral/20 transition">Force Refresh</button>
+        <button onclick="window.forceHardRefresh()" class="px-3 py-1.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-[var(--accent)]/20 transition">Force Refresh</button>
       </div>
     </div>
   `;
@@ -323,9 +323,9 @@ function renderNoteSafetySection() {
         <button onclick="(() => { const rows = window.getDeletedNotes(20); alert(rows.length ? rows.map(r => (r.title + ' · deleted ' + new Date(r.deletedAt).toLocaleString() + ' · id=' + r.id)).join('\\n') : 'Trash is empty.'); })()"
           class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition">Deleted</button>
         <button onclick="(() => { const latest = window.getDeletedNotes(1)[0]; if (!latest) { alert('No deleted note to restore.'); return; } const ok = window.restoreDeletedNote(latest.id, true); alert(ok ? ('Restored: ' + latest.title) : 'Could not restore note.'); })()"
-          class="px-2.5 py-1 bg-coral/10 text-[var(--accent)] rounded text-[11px] font-medium hover:bg-coral/20 transition">Restore Latest</button>
+          class="px-2.5 py-1 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-[11px] font-medium hover:bg-[var(--accent)]/20 transition">Restore Latest</button>
         <button onclick="(() => { const info = window.createNoteLocalBackup(); alert('Backup saved locally: ' + info.noteCount + ' notes at ' + new Date(info.createdAt).toLocaleString()); })()"
-          class="px-2.5 py-1 bg-coral text-white rounded text-[11px] font-medium hover:bg-coralDark transition">Backup</button>
+          class="px-2.5 py-1 bg-[var(--accent)] text-white rounded text-[11px] font-medium hover:bg-[var(--accent-dark)] transition">Backup</button>
       </div>
     </div>
   `;
@@ -340,7 +340,7 @@ function renderOfflineQueueSection() {
         <span class="text-[11px] text-[var(--text-muted)]">${queue.length} queued</span>
       </div>
       <div class="flex items-center gap-2 mb-2">
-        <button onclick="window.retryGCalOfflineQueue()" class="px-2.5 py-1 bg-coral text-white rounded text-[11px] font-medium hover:bg-coralDark transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Retry All</button>
+        <button onclick="window.retryGCalOfflineQueue()" class="px-2.5 py-1 bg-[var(--accent)] text-white rounded text-[11px] font-medium hover:bg-[var(--accent-dark)] transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Retry All</button>
         <button onclick="window.clearGCalOfflineQueue()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Clear</button>
       </div>
       ${queue.length ? `
@@ -447,10 +447,10 @@ export function renderSettingsTab() {
         <div class="flex gap-3">
           ${Object.entries(THEMES).map(([key, theme]) => `
             <button onclick="window.setTheme('${key}')"
-              class="flex-1 p-3 rounded-lg border-2 text-left transition-all ${getTheme() === key ? 'border-coral bg-coral/5' : 'border-[var(--border)] hover:border-coral/50'}">
+              class="flex-1 p-3 rounded-lg border-2 text-left transition-all ${getTheme() === key ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border)] hover:border-[var(--accent)]/50'}">
               <div class="flex items-center gap-2 mb-1.5">
                 <span class="text-sm font-semibold text-[var(--text-primary)]">${theme.name}</span>
-                ${getTheme() === key ? '<span class="text-[10px] bg-coral text-white px-1.5 py-0.5 rounded-full">Active</span>' : ''}
+                ${getTheme() === key ? '<span class="text-[10px] bg-[var(--accent)] text-white px-1.5 py-0.5 rounded-full">Active</span>' : ''}
               </div>
               <div class="flex gap-1.5">
                 ${key === 'simplebits' ? `
@@ -488,7 +488,7 @@ export function renderSettingsTab() {
             class="sb-btn px-3 py-1.5 rounded text-xs font-medium">Save</button>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button onclick="window.saveToGithub()" class="px-3 py-1.5 bg-coral text-white rounded-lg text-xs font-medium hover:bg-coralDark transition ${getGithubToken() ? '' : 'opacity-50 cursor-not-allowed'}" ${getGithubToken() ? '' : 'disabled'}>Sync Now</button>
+          <button onclick="window.saveToGithub()" class="px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--accent-dark)] transition ${getGithubToken() ? '' : 'opacity-50 cursor-not-allowed'}" ${getGithubToken() ? '' : 'disabled'}>Sync Now</button>
           <button onclick="window.loadCloudData().then(() => window.render())" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Pull from Cloud</button>
         </div>
         ${(() => {
@@ -552,7 +552,7 @@ export function renderSettingsTab() {
           <div>
             <div class="flex justify-between items-center mb-3">
               <h4 class="text-sm font-medium text-[var(--text-primary)]">Scoring Weights</h4>
-              <button onclick="window.resetWeights()" class="px-3 py-1 bg-coral/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-coral/20 transition">Reset</button>
+              <button onclick="window.resetWeights()" class="px-3 py-1 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-[var(--accent)]/20 transition">Reset</button>
             </div>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div class="bg-[var(--bg-secondary)] rounded-lg p-3 border border-[var(--border)]">
@@ -606,7 +606,7 @@ export function renderSettingsTab() {
           <div>
             <div class="flex justify-between items-center mb-3">
               <h4 class="text-sm font-medium text-[var(--text-primary)]">Perfect Day Targets</h4>
-              <button onclick="window.resetMaxScores()" class="px-3 py-1 bg-coral/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-coral/20 transition">Reset</button>
+              <button onclick="window.resetMaxScores()" class="px-3 py-1 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-[var(--accent)]/20 transition">Reset</button>
             </div>
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
               ${['prayer', 'diabetes', 'whoop', 'family', 'habits', 'total'].map(key => `

@@ -188,7 +188,7 @@ export function renderReviewMode() {
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
-          <span class="w-10 h-10 flex items-center justify-center rounded-xl" style="background: ${areaColor}15; color: ${areaColor}">
+          <span class="w-10 h-10 flex items-center justify-center rounded-lg" style="background: ${areaColor}15; color: ${areaColor}">
             ${getActiveIcons().review}
           </span>
           <div>
@@ -220,10 +220,10 @@ export function renderReviewMode() {
       </div>
 
       <!-- Current Area Header -->
-      <div class="review-area-header rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-5 mb-4">
+      <div class="review-area-header rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] p-5 mb-4">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <span class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background: ${areaColor}15">
+            <span class="w-10 h-10 rounded-lg flex items-center justify-center text-lg" style="background: ${areaColor}15">
               ${currentArea.emoji || getActiveIcons().area.replace('w-5 h-5', 'w-6 h-6')}
             </span>
             <div>
@@ -247,7 +247,7 @@ export function renderReviewMode() {
       </div>
 
       <!-- Step 1: Triggers Section -->
-      <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
+      <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between" style="background: #FFCC0008">
           <div class="flex items-center gap-2">
             <span class="review-step-badge" style="background: ${areaColor}; color: white">1</span>
@@ -272,7 +272,7 @@ export function renderReviewMode() {
       </div>
 
       <!-- Step 2: Capture Tasks -->
-      <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
+      <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
         <div class="px-4 py-3 border-b border-[var(--border-light)]" style="background: ${areaColor}06">
           <div class="flex items-center gap-2 mb-2">
             <span class="review-step-badge" style="background: ${areaColor}; color: white">2</span>
@@ -307,7 +307,7 @@ export function renderReviewMode() {
       </div>
 
       <!-- Stale Tasks Section -->
-      <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
+      <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
           <svg class="w-4 h-4 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Tasks to Review</span>
@@ -350,7 +350,7 @@ export function renderReviewMode() {
       <div class="flex items-center justify-center gap-3">
         ${!isCurrentCompleted ? `
           <button onclick="reviewMarkAreaDone()"
-            class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-sm hover:opacity-90 transition" style="background: ${areaColor}">
+            class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white shadow-sm hover:opacity-90 transition" style="background: ${areaColor}">
             <span class="flex items-center gap-2">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
               Mark Area Reviewed
@@ -366,11 +366,11 @@ export function renderReviewMode() {
 
       <!-- Review Complete -->
       ${completedCount === totalAreas ? `
-        <div class="mt-8 text-center bg-[#34C759]/10 rounded-xl p-6">
+        <div class="mt-8 text-center bg-[#34C759]/10 rounded-lg p-6">
           <svg class="w-12 h-12 mx-auto mb-3 text-[#34C759]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
           <h3 class="text-lg font-bold text-[#34C759] mb-1">Review Complete!</h3>
           <p class="text-sm text-[var(--text-muted)] mb-4">All ${totalAreas} areas have been reviewed</p>
-          <button onclick="exitReview()" class="px-5 py-2.5 bg-[#34C759] text-white rounded-xl text-sm font-semibold hover:opacity-90 transition">
+          <button onclick="exitReview()" class="px-5 py-2.5 bg-[#34C759] text-white rounded-lg text-sm font-semibold hover:opacity-90 transition">
             Done
           </button>
         </div>

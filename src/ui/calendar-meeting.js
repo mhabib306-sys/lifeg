@@ -457,7 +457,7 @@ export function renderMeetingNotesPage() {
   const event = getMeetingNotesEvent();
   if (!event) {
     return `
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-8 text-center">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] p-8 text-center">
         <p class="text-sm text-[var(--text-muted)] mb-4">This event is no longer in the current sync window.</p>
         <button onclick="closeCalendarMeetingNotes()" class="px-4 py-2 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] text-sm font-medium">Back to Calendar</button>
       </div>
@@ -492,7 +492,7 @@ export function renderMeetingNotesPage() {
     : '<div class="text-sm text-[var(--text-muted)] px-1 py-2">No bullet points yet.</div>';
 
   return `
-    <div class="calendar-meeting-notes-page bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+    <div class="calendar-meeting-notes-page bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
       <div class="calendar-meeting-notes-header px-5 py-4 border-b border-[var(--border-light)] flex flex-wrap items-center justify-between gap-3">
         <div class="min-w-0">
           <div class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Meeting Notes</div>
@@ -518,7 +518,7 @@ export function renderMeetingNotesPage() {
 
       <div class="calendar-meeting-notes-body p-5 grid grid-cols-1 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] gap-5">
         <div class="space-y-3">
-          <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
+          <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
             <div class="flex items-center justify-between mb-2">
               <h3 class="text-sm font-semibold text-[var(--text-primary)]">Meeting Notes & Tasks</h3>
               <span class="text-xs text-[var(--text-muted)]">${linkedItems.length} linked</span>
@@ -551,7 +551,7 @@ export function renderMeetingNotesPage() {
         </div>
 
         <div class="space-y-3">
-          <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3 discussion-pool-card">
+          <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] p-3 discussion-pool-card">
             <div class="flex items-center justify-between gap-3 mb-2">
               <div>
                 <h3 class="text-sm font-semibold text-[var(--text-primary)]">Discussion Pool</h3>
@@ -618,7 +618,7 @@ export function renderMeetingNotesPage() {
             `}
           </div>
 
-          <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
+          <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
             <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-2">Attendees</h3>
             ${attendees.length > 0 ? `
               <div class="flex flex-wrap gap-1.5">
@@ -637,14 +637,14 @@ export function renderMeetingNotesPage() {
           </div>
 
           ${event.description ? `
-            <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
+            <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
               <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-2">Original Event Note</h3>
               <div class="text-sm text-[var(--text-secondary)] leading-relaxed max-h-[260px] overflow-auto">${renderSafeEventHtml(event.description)}</div>
             </div>
           ` : ''}
 
           ${legacyNotes ? `
-            <div class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
+            <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] p-3">
               <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-2">Legacy Internal Notes</h3>
               <div class="text-sm text-[var(--text-secondary)] leading-relaxed max-h-[220px] overflow-auto">${renderMultilineText(legacyNotes)}</div>
             </div>
@@ -668,7 +668,7 @@ export function renderEventActionsModal(event) {
         <div class="modal-header-enhanced">
           <div class="flex items-center gap-3 min-w-0">
             <div class="calendar-event-modal-header-icon">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 15H5V10h14v9zM7 12h5v5H7z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             </div>
             <div class="min-w-0">
               <h3 class="text-lg font-semibold text-[var(--text-primary)] truncate">${escapeHtml(event.summary || 'Event')}</h3>
@@ -678,7 +678,7 @@ export function renderEventActionsModal(event) {
           <div class="flex items-center gap-2">
             ${event.meetingProvider ? `<span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-[color-mix(in_srgb,var(--success)_15%,transparent)] text-[var(--success)]">${escapeHtml(event.meetingProvider)}</span>` : ''}
             <button onclick="closeCalendarEventActions()" class="w-8 h-8 rounded-lg hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]" aria-label="Close">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
         </div>
@@ -687,13 +687,13 @@ export function renderEventActionsModal(event) {
           <div class="calendar-event-quick-actions">
             <button onclick="window.open('${q(event.htmlLink)}', '_blank'); closeCalendarEventActions()" class="calendar-icon-action ${event.htmlLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.htmlLink ? '' : 'disabled'}>
               <span class="calendar-icon-action-glyph">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 15H5V10h14v9zM7 12h5v5H7z"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
               </span>
               <span class="calendar-icon-action-label">Google Calendar</span>
             </button>
             <button onclick="window.open('${q(event.meetingLink)}', '_blank'); closeCalendarEventActions()" class="calendar-icon-action ${event.meetingLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.meetingLink ? '' : 'disabled'}>
               <span class="calendar-icon-action-glyph">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-3.5l4 4v-11l-4 4z"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
               </span>
               <span class="calendar-icon-action-label">${meetingActionLabel}</span>
               <span class="calendar-icon-action-sub">${meetingSubLabel}</span>
@@ -702,7 +702,7 @@ export function renderEventActionsModal(event) {
 
           <button onclick="openCalendarMeetingNotes('${q(event.calendarId)}','${q(event.id)}')" class="calendar-event-action">
             <span class="calendar-event-action-icon">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
             </span>
             <span class="calendar-event-action-text">
               <span class="calendar-event-action-title">Create Meeting Notes</span>

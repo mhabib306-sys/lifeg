@@ -113,13 +113,13 @@ function renderGuide() {
   ).join('');
 
   return `
-    <details class="sb-card rounded-xl bg-[var(--bg-card)] border border-[var(--border-light)] group">
+    <details class="sb-card rounded-lg bg-[var(--bg-card)] border border-[var(--border-light)] group">
       <summary class="px-6 py-4 cursor-pointer select-none list-none flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <svg class="w-5 h-5 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           <span class="font-semibold text-[var(--text-primary)]">How Life Score Works</span>
         </div>
-        <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        <svg class="w-4 h-4 text-[var(--text-muted)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </summary>
       <div class="px-6 pb-6 space-y-6 text-sm text-[var(--text-secondary)] border-t border-[var(--border-light)] pt-5">
 
@@ -244,7 +244,7 @@ export function renderDashboardTab() {
   return `
     <div class="space-y-6">
       <!-- Level + XP + Streak banner -->
-      <div class="sb-card rounded-xl p-5 bg-[var(--bg-card)] border border-[var(--border-light)]">
+      <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)] border border-[var(--border-light)]">
         <div class="flex items-center justify-between flex-wrap gap-4">
           <div class="flex items-center gap-4">
             <div class="w-14 h-14 rounded-full bg-[var(--warning)] flex items-center justify-center text-white text-lg font-bold">
@@ -275,7 +275,7 @@ export function renderDashboardTab() {
       </div>
 
       <!-- 30-Day Heatmap -->
-      <div class="sb-card rounded-xl p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
+      <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
         <h3 class="font-semibold text-[var(--text-primary)] mb-4">Last 30 Days</h3>
         ${renderHeatmap(last30Data)}
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 pt-4 border-t border-[var(--border-light)]">
@@ -299,20 +299,20 @@ export function renderDashboardTab() {
       </div>
 
       <!-- Category Breakdown (Percentages) -->
-      <div class="sb-card rounded-xl p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
+      <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
         <h3 class="font-semibold text-[var(--text-primary)] mb-4">Category Trends (%)</h3>
         <div class="h-72"><canvas id="breakdownChart"></canvas></div>
       </div>
 
       <!-- Achievements Gallery -->
-      <div class="sb-card rounded-xl p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
+      <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
         <h3 class="font-semibold text-[var(--text-primary)] mb-4">Achievements <span class="text-sm font-normal text-[var(--text-muted)]">${unlockedCount}/${totalAchievements}</span></h3>
         ${renderAchievementsGallery()}
       </div>
 
       <!-- Personal Bests Section -->
       ${bests ? `
-      <div class="sb-card rounded-xl p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
+      <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
         <h3 class="font-semibold text-[var(--text-primary)] mb-4">Personal Bests</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div class="bg-[var(--bg-secondary)] rounded-lg p-4">
@@ -338,7 +338,7 @@ export function renderDashboardTab() {
         </div>
       </div>
       ` : `
-      <div class="sb-card rounded-xl p-8 bg-[var(--bg-card)] border border-[var(--border-light)] text-center">
+      <div class="sb-card rounded-lg p-8 bg-[var(--bg-card)] border border-[var(--border-light)] text-center">
         <div class="mb-4 flex justify-center"><svg class="w-10 h-10 text-[var(--accent)] opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="9" y1="21" x2="9" y2="10"/><line x1="14" y1="21" x2="14" y2="6"/><line x1="19" y1="21" x2="19" y2="14"/></svg></div>
         <h3 class="font-semibold text-[var(--text-primary)] mb-2">Start Your Journey!</h3>
         <p class="text-[var(--text-muted)] text-sm">Log your first day to start tracking personal bests.</p>

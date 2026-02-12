@@ -151,7 +151,7 @@ export function updateSyncStatus(status, message = '') {
   const indicator = document.getElementById('sync-indicator');
   if (indicator) {
     const colors = {
-      idle: 'bg-charcoal/30',
+      idle: 'bg-[var(--text-muted)]',
       syncing: 'bg-amber-400 animate-pulse',
       success: 'bg-green-500',
       error: 'bg-red-500'

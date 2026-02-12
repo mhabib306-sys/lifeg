@@ -263,12 +263,12 @@ export function renderCalendarView() {
     }
     const hours = Array.from({ length: 18 }, (_, i) => i + 6);
     return `
-      <div class="overflow-auto border border-[var(--border-light)] rounded-xl">
+      <div class="overflow-auto border border-[var(--border-light)] rounded-lg">
         <div class="grid ${dayDates.length === 1 ? 'grid-cols-[56px_1fr]' : 'grid-cols-[56px_repeat(7,minmax(160px,1fr))] min-w-[840px]'}">
           <div class="sticky top-0 z-10 bg-[var(--bg-card)] border-b border-r border-[var(--border-light)]"></div>
           ${dayDates.map(d => {
             const ds = dateToStr(d);
-            return `<div class="sticky top-0 z-10 bg-[var(--bg-card)] border-b border-r border-[var(--border-light)] px-2 py-2 text-xs font-semibold text-[var(--text-primary)] ${ds === today ? 'text-coral' : ''}">
+            return `<div class="sticky top-0 z-10 bg-[var(--bg-card)] border-b border-r border-[var(--border-light)] px-2 py-2 text-xs font-semibold text-[var(--text-primary)] ${ds === today ? 'text-[var(--accent)]' : ''}">
               ${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
             </div>`;
           }).join('')}
@@ -343,13 +343,13 @@ export function renderCalendarView() {
   return `
     <div class="flex-1">
       <div class="calendar-page-grid">
-        <section class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
+        <section class="bg-[var(--bg-card)] rounded-lg md:border md:border-[var(--border-light)]">
           <div class="px-5 py-4 flex items-center justify-between border-b border-[var(--border-light)]">
             <div class="flex items-center gap-3">
               <span class="text-2xl text-[var(--accent)]">${getActiveIcons().calendar}</span>
               <h2 class="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
             </div>
-            <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Task">
+            <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center hover:bg-[var(--accent-dark)] transition shadow-sm" title="Add Task">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             </button>
           </div>
@@ -389,7 +389,7 @@ export function renderCalendarView() {
         </section>
 
         <aside class="space-y-3">
-          <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)] overflow-hidden">
+          <div class="bg-[var(--bg-card)] rounded-lg md:border md:border-[var(--border-light)] overflow-hidden">
             <button onclick="toggleCalendarMobilePanel('today')" class="calendar-mobile-panel-toggle px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between w-full text-left" aria-expanded="${state.calendarMobileShowToday ? 'true' : 'false'}">
               <h4 class="text-sm font-semibold text-[var(--text-primary)]">Today</h4>
               <span class="flex items-center gap-2">
@@ -400,7 +400,7 @@ export function renderCalendarView() {
             <div class="calendar-side-list ${isMobile && !state.calendarMobileShowToday ? 'calendar-panel-collapsed' : ''}">${todayListHtml}</div>
           </div>
 
-          <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)] overflow-hidden">
+          <div class="bg-[var(--bg-card)] rounded-lg md:border md:border-[var(--border-light)] overflow-hidden">
             <button onclick="toggleCalendarMobilePanel('events')" class="calendar-mobile-panel-toggle px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between w-full text-left" aria-expanded="${state.calendarMobileShowEvents ? 'true' : 'false'}">
               <h4 class="text-sm font-semibold text-[var(--text-primary)]">Events</h4>
               <span class="flex items-center gap-2">
@@ -412,7 +412,7 @@ export function renderCalendarView() {
           </div>
 
           ${(dueTasks.length > 0 || deferTasks.length > 0) ? `
-            <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)] overflow-hidden">
+            <div class="bg-[var(--bg-card)] rounded-lg md:border md:border-[var(--border-light)] overflow-hidden">
               <button onclick="toggleCalendarMobilePanel('scheduled')" class="calendar-mobile-panel-toggle px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between w-full text-left" aria-expanded="${state.calendarMobileShowScheduled ? 'true' : 'false'}">
                 <h4 class="text-sm font-semibold text-[var(--text-primary)]">Scheduled</h4>
                 <span class="flex items-center gap-2">

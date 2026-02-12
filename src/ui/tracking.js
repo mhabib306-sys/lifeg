@@ -68,7 +68,7 @@ export function renderTrackingTab() {
 
   return `
     <!-- Score Cards Row -->
-    <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8">
       ${createScoreCard('Prayer', scores.prayer, state.MAX_SCORES.prayer, 'bg-blue-500')}
       ${createScoreCard('Diabetes', scores.diabetes, state.MAX_SCORES.diabetes, 'bg-green-500')}
       ${createScoreCard('Whoop', scores.whoop, state.MAX_SCORES.whoop, 'bg-purple-500')}

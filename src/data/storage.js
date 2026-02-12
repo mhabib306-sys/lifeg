@@ -82,6 +82,23 @@ export function updateData(category, field, value) {
   }
   window.debouncedSaveToGithub(); // Auto-save to GitHub
   window.render();
+  // Brief save feedback
+  showSaveIndicator();
+}
+
+/** Show a brief "Saved" indicator that fades out automatically. */
+function showSaveIndicator() {
+  let el = document.getElementById('save-indicator');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'save-indicator';
+    el.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:6px 14px;border-radius:var(--border-radius,6px);background:var(--bg-card,#fff);border:1px solid var(--border,#e6e6e6);color:var(--text-secondary,#666);font-size:12px;font-weight:500;z-index:9999;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:var(--font-family,system-ui);box-shadow:var(--shadow-sm,0 1px 2px rgba(0,0,0,0.04))';
+    document.body.appendChild(el);
+  }
+  el.textContent = '\u2713 Saved';
+  el.style.opacity = '1';
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => { el.style.opacity = '0'; }, 1200);
 }
 
 /**

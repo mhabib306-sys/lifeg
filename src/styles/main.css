@@ -102,7 +102,7 @@ input[type="number"]:focus, input[type="text"]:focus, textarea:focus, select:foc
   box-shadow: none;
 }
 [data-theme="things3"] .sb-btn {
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   font-weight: 600;
   box-shadow: none;
   transform: none;
@@ -207,7 +207,7 @@ input[type="checkbox"]:focus {
 .task-item {
   transition: background 0.15s ease, border-radius 0.15s ease;
   border-left: none;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   margin: 0 4px;
   border-bottom: 1px solid var(--border-light);
   min-height: 40px;
@@ -289,7 +289,7 @@ img.twemoji {
 /* Sidebar item interactions - Things 3 style */
 .sidebar-item {
   transition: background 0.1s ease-out, transform 0.1s ease-out;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   min-height: 36px;
 }
 .sidebar-item:hover {
@@ -316,7 +316,7 @@ img.twemoji {
   display: inline-flex;
   align-items: center;
   padding: 3px;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   border: 1px solid var(--border-light);
   background: var(--bg-secondary);
   gap: 2px;
@@ -330,7 +330,7 @@ img.twemoji {
   font-weight: 600;
   line-height: 1;
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   transition: all 0.15s ease;
 }
 
@@ -370,7 +370,7 @@ img.twemoji {
   border: 1px solid var(--border-light);
   background: var(--bg-card);
   color: var(--text-secondary);
-  border-radius: 999px;
+  border-radius: var(--border-radius);
   padding: 7px 12px;
   font-size: 12px;
   font-weight: 600;
@@ -418,7 +418,7 @@ img.twemoji {
   border: 1px solid var(--border-light);
   background: var(--bg-card);
   min-width: 140px;
-  border-radius: 12px;
+  border-radius: var(--border-radius-lg);
   padding: 9px 10px;
   display: inline-flex;
   align-items: center;
@@ -549,7 +549,7 @@ img.twemoji {
   border: 1px solid var(--border-light);
   background: var(--bg-card);
   color: var(--text-secondary);
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
@@ -697,6 +697,9 @@ img.twemoji {
   position: relative;
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--border-light);
+  box-shadow: none;
+}
+.widget:hover {
   box-shadow: var(--shadow-sm);
 }
 .quick-add-widget {
@@ -707,7 +710,7 @@ img.twemoji {
 .widget.dragging {
   opacity: 0.4;
   transform: scale(0.98);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-md);
   z-index: 1000;
 }
 .widget.drag-over {
@@ -719,7 +722,7 @@ img.twemoji {
   inset: 0;
   background: color-mix(in srgb, var(--accent) 15%, transparent);
   border: 3px dashed var(--accent);
-  border-radius: 12px;
+  border-radius: var(--border-radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -746,7 +749,7 @@ img.twemoji {
 .widget-placeholder {
   background: var(--accent-light);
   border: 2px dashed var(--accent);
-  border-radius: 12px;
+  border-radius: var(--border-radius-lg);
   min-height: 100px;
   display: flex;
   align-items: center;
@@ -777,7 +780,7 @@ img.twemoji {
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: var(--border-radius);
   background: var(--bg-secondary);
   border: 1px solid var(--border-light);
   color: var(--text-secondary);
@@ -1002,7 +1005,7 @@ img.twemoji {
   padding: 12px 16px 14px;
   border-bottom: 1px solid var(--border-light);
   background: var(--bg-secondary);
-  border-radius: 12px 12px 0 0;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
   margin: -8px -2px 8px;
 }
 .notes-back-btn {
@@ -1298,7 +1301,7 @@ img.twemoji {
   z-index: 100;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
 .mobile-bottom-nav-inner {
@@ -1322,7 +1325,7 @@ img.twemoji {
   gap: 4px;
   padding: 8px 6px;
   min-height: 58px;
-  border-radius: 12px;
+  border-radius: var(--border-radius-lg);
   color: var(--text-muted);
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
@@ -1640,7 +1643,7 @@ img.twemoji {
     max-height: calc(100dvh - env(safe-area-inset-top) - 8px) !important;
     width: 100% !important;
     max-width: 100% !important;
-    border-radius: 18px 18px 0 0 !important;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0 !important;
     animation: slideUpModal 0.3s ease;
   }
 
@@ -1657,13 +1660,13 @@ img.twemoji {
   select {
     font-size: 16px !important; /* Prevents iOS zoom */
     padding: 14px 16px !important;
-    border-radius: 12px !important;
+    border-radius: var(--border-radius-lg) !important;
   }
 
   /* Weather widget compact */
   .weather-widget-mobile {
     padding: 8px 12px !important;
-    border-radius: 10px !important;
+    border-radius: var(--border-radius) !important;
   }
 
   .weather-widget-mobile .text-3xl {
@@ -1973,7 +1976,7 @@ img.twemoji {
 @media (min-width: 390px) and (max-width: 768px) {
   /* Generous spacing for large screens */
   .widget {
-    border-radius: 20px;
+    border-radius: var(--border-radius-lg);
   }
 
   /* Today/Next widgets side by side */
@@ -2223,7 +2226,7 @@ body.mobile-keyboard-open .main-content {
   width: 100%;
   padding: 12px 36px 12px 14px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   font-size: 16px;
   background: var(--bg-input);
   color: var(--text-primary);
@@ -2252,8 +2255,8 @@ body.mobile-keyboard-open .main-content {
   right: 0;
   background: var(--modal-bg);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: var(--shadow-lg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 0 0 1px var(--border-light), var(--shadow-sm);
   max-height: 200px;
   overflow-y: auto;
   z-index: 300;
@@ -2276,13 +2279,13 @@ body.mobile-keyboard-open .main-content {
   transition: background 0.15s ease;
 }
 .autocomplete-option:first-child {
-  border-radius: 10px 10px 0 0;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 .autocomplete-option:last-child {
-  border-radius: 0 0 10px 10px;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
 .autocomplete-option:only-child {
-  border-radius: 10px;
+  border-radius: var(--border-radius);
 }
 .autocomplete-option:hover, .autocomplete-option.highlighted {
   background: var(--accent-light);
@@ -2327,8 +2330,8 @@ body.mobile-keyboard-open .main-content {
   z-index: 10000;
   background: var(--modal-bg, var(--bg-card));
   border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
   max-height: 220px;
   overflow-y: auto;
   min-width: 200px;
@@ -2443,7 +2446,7 @@ body.mobile-keyboard-open .main-content {
   align-items: center;
   gap: 2px;
   padding: 2px;
-  border-radius: 999px;
+  border-radius: var(--border-radius);
   background: var(--bg-secondary);
   max-width: 100%;
   overflow-x: auto;
@@ -2462,7 +2465,7 @@ body.mobile-keyboard-open .main-content {
   padding: 7px 10px;
   min-height: 36px;
   white-space: nowrap;
-  border-radius: 999px;
+  border-radius: var(--border-radius-sm);
   transition: all 0.14s ease;
 }
 .calendar-view-toggle-btn.active {
@@ -2839,7 +2842,7 @@ body.mobile-keyboard-open .main-content {
   color: var(--text-primary);
   background: color-mix(in srgb, var(--accent) 10%, var(--bg-secondary));
   border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
-  border-radius: 999px;
+  border-radius: var(--border-radius);
   padding: 4px 8px;
 }
 .discussion-pool-person-email {
@@ -2904,7 +2907,7 @@ body.mobile-keyboard-open .main-content {
   font-size: 10px;
   line-height: 1;
   padding: 4px 6px;
-  border-radius: 999px;
+  border-radius: var(--border-radius-sm);
   color: color-mix(in srgb, var(--warning) 80%, #000);
   background: color-mix(in srgb, var(--warning) 8%, var(--bg-card));
   border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent);
@@ -3055,7 +3058,7 @@ body.mobile-keyboard-open .main-content {
   }
   .calendar-event-modal {
     max-height: calc(100vh - 18px);
-    border-radius: 18px;
+    border-radius: var(--border-radius-lg);
   }
   .calendar-event-modal .modal-header-enhanced {
     padding: 14px 14px 12px;
@@ -3074,7 +3077,7 @@ body.mobile-keyboard-open .main-content {
   .calendar-event-action {
     padding: 11px;
     gap: 10px;
-    border-radius: 10px;
+    border-radius: var(--border-radius);
   }
   .calendar-event-quick-actions {
     gap: 8px;
@@ -3082,7 +3085,7 @@ body.mobile-keyboard-open .main-content {
   .calendar-icon-action {
     min-height: 84px;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: var(--border-radius);
   }
   .calendar-icon-action-glyph {
     width: 26px;
@@ -3209,7 +3212,7 @@ body.mobile-keyboard-open .main-content {
 }
 .modal-token-shell {
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   background: var(--bg-input);
   padding: 6px 10px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -3248,7 +3251,7 @@ body.mobile-keyboard-open .main-content {
   gap: 6px;
   padding: 8px 10px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   background: var(--bg-input);
   min-height: 44px;
   cursor: text;
@@ -3311,8 +3314,8 @@ body.mobile-keyboard-open .main-content {
 /* Enhanced modal styles */
 .modal-enhanced {
   background: var(--modal-bg);
-  border-radius: 18px;
-  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.34);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-modal, 0 16px 48px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05));
   border: 1px solid var(--border-light);
   overflow: hidden;
   max-height: calc(100vh - 32px);
@@ -3320,7 +3323,7 @@ body.mobile-keyboard-open .main-content {
   flex-direction: column;
 }
 .modal-header-enhanced {
-  padding: 18px 22px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border-light);
   display: flex;
   align-items: center;
@@ -3328,14 +3331,14 @@ body.mobile-keyboard-open .main-content {
   background: var(--modal-bg);
 }
 .modal-body-enhanced {
-  padding: 18px 22px 22px;
+  padding: 16px 20px 20px;
   overflow-y: auto;
   flex: 1;
   min-height: 0;
   overscroll-behavior: contain;
 }
 .modal-footer-enhanced {
-  padding: 16px 22px;
+  padding: 14px 20px;
   border-top: 1px solid var(--border-light);
   display: flex;
   justify-content: flex-end;
@@ -3368,7 +3371,7 @@ body.mobile-keyboard-open .main-content {
   min-height: 42px;
   padding: 10px 14px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   font-size: 15px;
   background: var(--bg-input);
   color: var(--text-primary);
@@ -3398,7 +3401,7 @@ body.mobile-keyboard-open .main-content {
   letter-spacing: 0.06em;
   color: var(--text-muted);
   padding: 4px 8px;
-  border-radius: 999px;
+  border-radius: var(--border-radius-sm);
   background: transparent;
   border: 1px solid var(--border-light);
 }
@@ -3410,7 +3413,7 @@ body.mobile-keyboard-open .main-content {
   width: 100%;
   padding: 12px 14px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   font-size: 14px;
   background: var(--bg-input);
   color: var(--text-primary);
@@ -3521,13 +3524,13 @@ body.mobile-keyboard-open .main-content {
 .type-switcher {
   display: inline-flex;
   background: var(--bg-secondary);
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   padding: 4px;
   gap: 4px;
 }
 .type-option {
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: var(--border-radius-sm);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -3554,7 +3557,7 @@ body.mobile-keyboard-open .main-content {
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  border-radius: 20px;
+  border-radius: var(--border-radius-lg);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -3586,7 +3589,7 @@ body.mobile-keyboard-open .main-content {
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   border: 1px solid var(--border);
   cursor: pointer;
   transition: background 0.15s;
@@ -3598,7 +3601,7 @@ body.mobile-keyboard-open .main-content {
 }
 .date-quick-pill {
   padding: 6px 12px;
-  border-radius: 999px;
+  border-radius: var(--border-radius);
   font-size: 12px;
   font-weight: 600;
   border: 1px solid var(--border);
@@ -3649,7 +3652,7 @@ body.mobile-keyboard-open .main-content {
   align-items: center;
   gap: 10px;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   background: var(--bg-input);
   border: 1px solid var(--border);
   cursor: pointer;
@@ -3669,7 +3672,7 @@ body.mobile-keyboard-open .main-content {
 .repeat-config {
   margin-top: 12px;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   background: var(--bg-secondary);
   display: none;
 }
@@ -3703,7 +3706,7 @@ body.mobile-keyboard-open .main-content {
   padding: 10px 16px;
   background: #1a1a2e;
   border-radius: 50px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  box-shadow: var(--shadow-lg);
   min-width: 260px;
 }
 .undo-countdown-ring {
@@ -3840,7 +3843,7 @@ body.mobile-keyboard-open .main-content {
 .braindump-icon {
   width: 36px;
   height: 36px;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   background: var(--btn-bg);
   color: white;
   display: flex;
@@ -3888,7 +3891,7 @@ body.mobile-keyboard-open .main-content {
   width: 100%;
   min-height: 300px;
   padding: 16px;
-  border-radius: 12px;
+  border-radius: var(--border-radius-lg);
   border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text-primary);
@@ -3914,7 +3917,7 @@ body.mobile-keyboard-open .main-content {
 .braindump-tip {
   font-size: 11px;
   padding: 3px 10px;
-  border-radius: 20px;
+  border-radius: var(--border-radius);
   background: var(--bg-secondary);
   color: var(--text-muted);
   font-weight: 500;
@@ -3941,7 +3944,7 @@ body.mobile-keyboard-open .main-content {
   align-items: center;
   gap: 6px;
   padding: 10px 20px;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   font-size: 14px;
   font-weight: 600;
   border: none;
@@ -3965,7 +3968,7 @@ body.mobile-keyboard-open .main-content {
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text-secondary);
@@ -4054,7 +4057,7 @@ body.mobile-keyboard-open .main-content {
 .braindump-item {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--border-radius-lg);
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -4186,7 +4189,7 @@ body.mobile-keyboard-open .main-content {
   font-size: 11px;
   font-weight: 500;
   padding: 2px 8px;
-  border-radius: 20px;
+  border-radius: var(--border-radius);
   background: color-mix(in srgb, var(--pill-color, var(--accent)) 12%, transparent);
   color: var(--pill-color, var(--accent));
   white-space: nowrap;
@@ -4211,7 +4214,7 @@ body.mobile-keyboard-open .main-content {
   font-size: 11px;
   padding: 2px 6px;
   border: 1px dashed var(--border);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
@@ -4392,7 +4395,7 @@ body.mobile-keyboard-open .main-content {
   font-size: 12px;
   font-weight: 500;
   padding: 4px 10px;
-  border-radius: 20px;
+  border-radius: var(--border-radius);
   border: 1px solid var(--border);
   background: var(--bg-secondary);
   color: var(--text-secondary);
@@ -4779,7 +4782,7 @@ mark.global-search-highlight {
   color: var(--text-muted);
   background: var(--bg-secondary);
   padding: 1px 6px;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   margin-top: 4px;
   flex-shrink: 0;
 }
@@ -5061,48 +5064,9 @@ mark.global-search-highlight {
   border-radius: var(--border-radius-sm);
 }
 
-/* --- Utility normalization for legacy class names still used in templates --- */
-[data-theme="geist"] .text-charcoal,
-[data-theme="geist"] .text-charcoal\/70,
-[data-theme="geist"] .text-charcoal\/60,
-[data-theme="geist"] .text-charcoal\/50,
-[data-theme="geist"] .text-charcoal\/40 {
-  color: var(--text-primary) !important;
-}
-[data-theme="geist"] .text-coral {
-  color: var(--accent) !important;
-}
-[data-theme="geist"] .bg-coral {
-  background: var(--accent) !important;
-}
-[data-theme="geist"] .bg-coral\/10,
-[data-theme="geist"] .bg-coral\/5 {
-  background: color-mix(in srgb, var(--accent) 10%, transparent) !important;
-}
-[data-theme="geist"] .hover\:bg-coralDark:hover {
-  background: var(--accent-dark) !important;
-}
-[data-theme="geist"] .hover\:bg-coral\/20:hover,
-[data-theme="geist"] .hover\:bg-coral\/10:hover {
-  background: color-mix(in srgb, var(--accent) 20%, transparent) !important;
-}
-[data-theme="geist"] .bg-warmgray,
-[data-theme="geist"] .bg-warmgray\/30,
-[data-theme="geist"] .bg-warmgray\/25 {
-  background: var(--bg-secondary) !important;
-}
-[data-theme="geist"] .border-softborder {
-  border-color: var(--border) !important;
-}
-[data-theme="geist"] .focus\:border-coral:focus,
-[data-theme="geist"] .focus\:ring-coral:focus {
-  border-color: var(--accent) !important;
-  box-shadow: var(--geist-glow) !important;
-}
-
 /* --- Radius/spacing strictness (tight Geist geometry) --- */
 [data-theme="geist"] .rounded-2xl,
-[data-theme="geist"] .rounded-xl {
+[data-theme="geist"] .rounded-lg {
   border-radius: var(--border-radius-lg) !important;
 }
 [data-theme="geist"] .rounded-lg {

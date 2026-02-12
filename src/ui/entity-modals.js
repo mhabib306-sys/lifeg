@@ -388,7 +388,7 @@ function renderEmojiPicker(selectFnName = 'selectPerspectiveEmoji') {
   const emojiGridHtml = buildEmojiGridHtml(searchQuery, selectFnName);
 
   return `
-    <div class="emoji-picker-dropdown absolute top-full left-0 mt-1 z-[400] w-72 bg-[var(--modal-bg)] rounded-xl border border-[var(--border-light)] shadow-xl overflow-hidden" onclick="event.stopPropagation()">
+    <div class="emoji-picker-dropdown absolute top-full left-0 mt-1 z-[400] w-72 bg-[var(--modal-bg)] rounded-lg border border-[var(--border-light)] shadow-xl overflow-hidden" onclick="event.stopPropagation()">
       <div class="p-2 border-b border-[var(--border-light)]">
         <input type="text" id="emoji-search-input" placeholder="Search emojis..." value="${escapeHtml(searchQuery)}"
           oninput="updateEmojiGrid(this.value)"
@@ -463,7 +463,7 @@ export function renderPerspectiveModalHtml() {
             <div class="flex items-start gap-3">
               <div class="relative">
                 <button type="button" onclick="event.stopPropagation(); toggleEmojiPicker('perspective')"
-                  class="w-12 h-12 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-center text-2xl hover:border-[var(--accent)] transition cursor-pointer" title="Pick icon">
+                  class="w-12 h-12 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-center text-2xl hover:border-[var(--accent)] transition cursor-pointer" title="Pick icon">
                   <span id="perspective-icon-display">${currentIcon}</span>
                 </button>
                 <input type="hidden" id="perspective-icon" value="${currentIcon}">
@@ -710,7 +710,7 @@ export function renderCategoryModalHtml() {
               <input type="hidden" id="category-emoji" value="${catEmoji}">
               <button type="button" onclick="event.stopPropagation(); toggleEmojiPicker('category')"
                 id="cat-folder-preview"
-                class="w-14 h-14 rounded-xl flex items-center justify-center text-xl cursor-pointer hover:ring-2 hover:ring-[var(--accent)]/40 transition" style="background: ${defaultColor}20; color: ${defaultColor}">
+                class="w-14 h-14 rounded-lg flex items-center justify-center text-xl cursor-pointer hover:ring-2 hover:ring-[var(--accent)]/40 transition" style="background: ${defaultColor}20; color: ${defaultColor}">
                 ${catEmoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}
               </button>
             </div>

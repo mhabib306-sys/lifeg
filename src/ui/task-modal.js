@@ -307,13 +307,13 @@ export function toggleInlineTagInput() {
   if (container) {
     if (state.showInlineTagInput) {
       container.innerHTML = `
-        <div class="modal-inline-form flex items-center gap-2 mt-2 p-2 bg-warmgray/30 rounded-lg">
+        <div class="modal-inline-form flex items-center gap-2 mt-2 p-2 bg-[var(--bg-secondary)]/30 rounded-lg">
           <input type="text" id="inline-tag-name" placeholder="Tag name"
-            class="modal-inline-input flex-1 px-2 py-1.5 text-sm border border-softborder rounded focus:border-coral focus:outline-none"
+            class="modal-inline-input flex-1 px-2 py-1.5 text-sm border border-[var(--border-light)] rounded focus:border-[var(--accent)] focus:outline-none"
             onkeydown="if(event.key==='Enter'){event.preventDefault();addInlineTag();}">
           <input type="color" id="inline-tag-color" value="#6B7280" class="w-8 h-8 rounded cursor-pointer border-0">
-          <button type="button" onclick="addInlineTag()" class="px-3 py-1.5 text-sm bg-coral text-white rounded hover:bg-coralDark">Add</button>
-          <button type="button" onclick="toggleInlineTagInput()" class="px-2 py-1.5 text-sm text-charcoal/50 hover:text-charcoal">&times;</button>
+          <button type="button" onclick="addInlineTag()" class="px-3 py-1.5 text-sm bg-[var(--accent)] text-white rounded hover:bg-[var(--accent-dark)]">Add</button>
+          <button type="button" onclick="toggleInlineTagInput()" class="px-2 py-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)]">&times;</button>
         </div>
       `;
       setTimeout(() => document.getElementById('inline-tag-name')?.focus(), 50);
@@ -344,13 +344,13 @@ export function addInlineTag() {
       labelsContainer.innerHTML = state.taskLabels.map(label => {
         const isSelected = selectedTags.includes(label.id);
         return `
-          <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition ${isSelected ? 'bg-warmgray' : 'hover:bg-warmgray/50'}" style="border-color: ${label.color}">
+          <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition ${isSelected ? 'bg-[var(--bg-secondary)]' : 'hover:bg-[var(--bg-secondary)]/50'}" style="border-color: ${label.color}">
             <input type="checkbox" value="${label.id}" ${isSelected ? 'checked' : ''} class="task-label-checkbox rounded" style="accent-color: ${label.color}">
             <span class="text-sm" style="color: ${label.color}">${escapeHtml(label.name)}</span>
           </label>
         `;
       }).join('') + `
-        <button onclick="toggleInlineTagInput()" class="flex items-center gap-1 px-2 py-1 text-sm text-charcoal/50 hover:text-charcoal hover:bg-warmgray/50 rounded border border-dashed border-charcoal/20">
+        <button onclick="toggleInlineTagInput()" class="flex items-center gap-1 px-2 py-1 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/50 rounded border border-dashed border-[var(--border-light)]">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
           New
         </button>
@@ -369,12 +369,12 @@ export function toggleInlinePersonInput() {
   if (container) {
     if (state.showInlinePersonInput) {
       container.innerHTML = `
-        <div class="modal-inline-form flex items-center gap-2 mt-2 p-2 bg-warmgray/30 rounded-lg">
+        <div class="modal-inline-form flex items-center gap-2 mt-2 p-2 bg-[var(--bg-secondary)]/30 rounded-lg">
           <input type="text" id="inline-person-name" placeholder="Person name"
-            class="modal-inline-input flex-1 px-2 py-1.5 text-sm border border-softborder rounded focus:border-coral focus:outline-none"
+            class="modal-inline-input flex-1 px-2 py-1.5 text-sm border border-[var(--border-light)] rounded focus:border-[var(--accent)] focus:outline-none"
             onkeydown="if(event.key==='Enter'){event.preventDefault();addInlinePerson();}">
-          <button type="button" onclick="addInlinePerson()" class="px-3 py-1.5 text-sm bg-coral text-white rounded hover:bg-coralDark">Add</button>
-          <button type="button" onclick="toggleInlinePersonInput()" class="px-2 py-1.5 text-sm text-charcoal/50 hover:text-charcoal">&times;</button>
+          <button type="button" onclick="addInlinePerson()" class="px-3 py-1.5 text-sm bg-[var(--accent)] text-white rounded hover:bg-[var(--accent-dark)]">Add</button>
+          <button type="button" onclick="toggleInlinePersonInput()" class="px-2 py-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)]">&times;</button>
         </div>
       `;
       setTimeout(() => document.getElementById('inline-person-name')?.focus(), 50);
@@ -404,13 +404,13 @@ export function addInlinePerson() {
       peopleContainer.innerHTML = state.taskPeople.map(person => {
         const isSelected = selectedPeople.includes(person.id);
         return `
-          <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border border-charcoal/20 cursor-pointer transition ${isSelected ? 'bg-warmgray border-charcoal/40' : 'hover:bg-warmgray/50'}">
+          <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded border border-[var(--border-light)] cursor-pointer transition ${isSelected ? 'bg-[var(--bg-secondary)] border-[var(--border)]' : 'hover:bg-[var(--bg-secondary)]/50'}">
             <input type="checkbox" value="${person.id}" ${isSelected ? 'checked' : ''} class="task-person-checkbox rounded">
-            <span class="text-sm text-charcoal/70">${escapeHtml(person.name)}</span>
+            <span class="text-sm text-[var(--text-secondary)]">${escapeHtml(person.name)}</span>
           </label>
         `;
       }).join('') + `
-        <button onclick="toggleInlinePersonInput()" class="flex items-center gap-1 px-2 py-1 text-sm text-charcoal/50 hover:text-charcoal hover:bg-warmgray/50 rounded border border-dashed border-charcoal/20">
+        <button onclick="toggleInlinePersonInput()" class="flex items-center gap-1 px-2 py-1 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/50 rounded border border-dashed border-[var(--border-light)]">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
           New
         </button>
@@ -1323,7 +1323,7 @@ export function renderTaskModalHtml() {
             <button
               onclick="closeTaskModal(); openCalendarMeetingNotesByEventKey('${String(editingTask.meetingEventKey).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}')"
               class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition">
-              <svg class="w-4 h-4 text-coral" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 15H5V10h14v9zM7 12h5v5H7z"/></svg>
+              <svg class="w-4 h-4 text-[var(--accent)]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 15H5V10h14v9zM7 12h5v5H7z"/></svg>
               Back To Meeting Notes
             </button>
           </div>

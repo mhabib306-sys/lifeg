@@ -639,18 +639,18 @@ export function renderTriggersOutliner(filter = null) {
 
   if (visibleTriggers.length === 0 && !state.zoomedTriggerId) {
     return `
-      <div class="text-center py-8 text-charcoal/40">
+      <div class="text-center py-8 text-[var(--text-muted)]">
         <p class="text-sm font-medium mb-1">No triggers yet</p>
-        <p class="text-xs text-charcoal/30 mb-3">Add prompts to spark your GTD review</p>
+        <p class="text-xs text-[var(--text-muted)] mb-3">Add prompts to spark your GTD review</p>
       </div>
     `;
   }
 
   if (visibleTriggers.length === 0 && state.zoomedTriggerId) {
     return `
-      <div class="text-center py-8 text-charcoal/40">
+      <div class="text-center py-8 text-[var(--text-muted)]">
         <p class="text-sm font-medium mb-1">No sub-triggers</p>
-        <p class="text-xs text-charcoal/30">Press Enter to create one</p>
+        <p class="text-xs text-[var(--text-muted)]">Press Enter to create one</p>
       </div>
     `;
   }

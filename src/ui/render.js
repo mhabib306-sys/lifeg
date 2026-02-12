@@ -190,7 +190,7 @@ export function render() {
           <p class="text-sm text-[var(--text-muted)] mb-8">Your life, all in one place</p>
           ${state.authError ? `<p class="text-sm text-[var(--danger)] mb-4">${escapeHtml(state.authError)}</p>` : ''}
           <button type="button" onclick="signInWithGoogle()"
-            class="flex items-center gap-3 px-6 py-3 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-sm hover:shadow-md transition text-sm font-medium text-[var(--text-primary)]">
+            class="flex items-center gap-3 px-6 py-3 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm hover:shadow-md transition text-sm font-medium text-[var(--text-primary)]">
             <svg class="w-5 h-5" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -207,7 +207,7 @@ export function render() {
     // ---- Authenticated: render full app ----
     const cachePromptHtml = state.showCacheRefreshPrompt ? `
       <div class="max-w-6xl mx-auto px-6 pt-4">
-        <div class="rounded-xl border px-4 py-3 flex items-center justify-between gap-3" style="border-color: color-mix(in srgb, var(--warning) 25%, transparent); background: color-mix(in srgb, var(--warning) 8%, transparent)">
+        <div class="rounded-lg border px-4 py-3 flex items-center justify-between gap-3" style="border-color: color-mix(in srgb, var(--warning) 25%, transparent); background: color-mix(in srgb, var(--warning) 8%, transparent)">
           <div>
             <p class="text-sm font-semibold" style="color: var(--warning)">New app update available</p>
             <p class="text-xs" style="color: var(--warning)">${escapeHtml(state.cacheRefreshPromptMessage || `Version ${APP_VERSION} is available. Refresh recommended to avoid stale cache.`)}</p>
@@ -261,7 +261,7 @@ export function render() {
       </header>
 
       <!-- Desktop Header - hidden on mobile -->
-      <header class="border-b border-softborder desktop-header-content" style="background: var(--bg-primary);">
+      <header class="border-b border-[var(--border-light)] desktop-header-content" style="background: var(--bg-primary);">
         <div class="max-w-6xl mx-auto px-6 py-6">
           <div class="flex items-center justify-between">
             <a href="javascript:void(0)" onclick="switchTab('home')" class="flex items-center gap-4 no-underline cursor-pointer hover:opacity-80 transition">
@@ -278,20 +278,20 @@ export function render() {
               </svg>
               <div>
                 <div class="flex items-center gap-2">
-                  <h1 class="text-2xl font-bold tracking-tight text-charcoal">Homebase</h1>
-                  <span class="text-[11px] font-medium text-charcoal/40 bg-charcoal/5 px-1.5 py-0.5 rounded">v${APP_VERSION}</span>
+                  <h1 class="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Homebase</h1>
+                  <span class="text-[11px] font-medium text-[var(--text-muted)] bg-[var(--bg-secondary)] px-1.5 py-0.5 rounded">v${APP_VERSION}</span>
                 </div>
-                <p class="text-sm text-charcoal/60 mt-0.5">Your life, all in one place <span class="text-coral">\u2022</span> habits, health, productivity</p>
+                <p class="text-sm text-[var(--text-secondary)] mt-0.5">Your life, all in one place <span class="text-[var(--accent)]">\u2022</span> habits, health, productivity</p>
               </div>
             </a>
             <div class="flex items-center gap-4">
-              <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-warmgray border border-softborder" title="Cloud sync status">
+              <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-light)]" title="${getGithubToken() ? 'Data synced to GitHub cloud' : 'Data stored locally only — connect GitHub in Settings to sync'}">
                 <div id="sync-indicator" class="w-2 h-2 rounded-full" style="background: ${getGithubToken() ? 'var(--success)' : 'var(--text-muted)'}"></div>
-                <span class="text-xs text-charcoal/50">${getGithubToken() ? 'Synced' : 'Local'}</span>
+                <span class="text-xs text-[var(--text-muted)]">${getGithubToken() ? 'Synced' : 'Local'}</span>
               </div>
               <input type="date" id="dateInput" value="${state.currentDate}"
                 onclick="this.showPicker()"
-                class="px-3 py-2 rounded-lg text-sm border border-softborder bg-[var(--bg-input)] focus:border-coral focus:outline-none">
+                class="px-3 py-2 rounded-lg text-sm border border-[var(--border)] bg-[var(--bg-input)] focus:border-[var(--accent)] focus:outline-none">
               <button type="button" onclick="setToday()" class="sb-btn px-4 py-2 rounded-lg text-sm font-medium">Today</button>
             </div>
           </div>
@@ -350,13 +350,13 @@ export function render() {
           renderSettingsTab()}
       </main>
 
-      <footer class="border-t border-softborder py-8 mt-12">
+      <footer class="border-t border-[var(--border-light)] py-8 mt-12">
         <div class="flex flex-col items-center gap-3">
-          <button onclick="window.forceHardRefresh()" class="px-4 py-2 bg-coral/10 text-coral rounded-lg text-sm font-medium hover:bg-coral/20 transition inline-flex items-center gap-2">
+          <button onclick="window.forceHardRefresh()" class="px-4 py-2 bg-[var(--accent-light)] text-[var(--accent)] rounded-lg text-sm font-medium hover:bg-[var(--accent-light)] transition inline-flex items-center gap-2">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>
             Force Hard Refresh
           </button>
-          <p class="text-center text-charcoal/40 text-sm">${getGithubToken() ? 'Data synced to GitHub' : 'Data saved locally'} <span class="text-coral">\u2022</span> Homebase</p>
+          <p class="text-center text-[var(--text-muted)] text-sm">${getGithubToken() ? 'Data synced to GitHub' : 'Data saved locally'} <span class="text-[var(--accent)]">\u2022</span> Homebase</p>
         </div>
       </footer>
 
@@ -451,7 +451,19 @@ export function render() {
     state._lastRenderWasMobile = window.innerWidth <= 768;
   } catch (err) {
     console.error('Render error:', err);
-    document.getElementById('app').innerHTML = '<div style="padding:20px;color:red;font-family:monospace;">Render error: ' + escapeHtml(err.message) + '<br><br>Stack: ' + escapeHtml(err.stack || '') + '</div>';
+    document.getElementById('app').innerHTML = `
+      <div style="max-width:480px;margin:60px auto;padding:24px;font-family:var(--font-family,system-ui);color:var(--text-primary,#171717);">
+        <h2 style="font-size:18px;font-weight:600;margin:0 0 8px;">Something went wrong</h2>
+        <p style="font-size:14px;color:var(--text-secondary,#666);margin:0 0 16px;">An error occurred while rendering the app. Your data is safe.</p>
+        <details style="margin-bottom:16px;font-size:12px;color:var(--text-muted,#8f8f8f);">
+          <summary style="cursor:pointer;margin-bottom:4px;">Error details</summary>
+          <pre style="white-space:pre-wrap;word-break:break-word;background:var(--bg-secondary,#f2f2f2);padding:8px;border-radius:6px;margin-top:4px;">${escapeHtml(err.message)}\n${escapeHtml(err.stack || '')}</pre>
+        </details>
+        <div style="display:flex;gap:8px;">
+          <button onclick="location.reload()" style="padding:8px 16px;border-radius:6px;background:var(--btn-bg,#000);color:#fff;border:none;font-size:13px;font-weight:500;cursor:pointer;">Reload App</button>
+          <button onclick="try{window.exportData()}catch(e){}" style="padding:8px 16px;border-radius:6px;background:var(--bg-secondary,#f2f2f2);border:1px solid var(--border,#e6e6e6);font-size:13px;font-weight:500;cursor:pointer;">Export Data</button>
+        </div>
+      </div>`;
   }
 }
 

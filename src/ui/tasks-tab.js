@@ -91,7 +91,7 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
 
   return `
     ${overdueTasks.length > 0 ? `
-      <div class="bg-[var(--bg-card)] rounded-xl overflow-hidden" style="border: 1px solid color-mix(in srgb, var(--overdue-color) 12%, transparent)">
+      <div class="bg-[var(--bg-card)] rounded-lg overflow-hidden" style="border: 1px solid color-mix(in srgb, var(--overdue-color) 12%, transparent)">
         <div class="px-4 py-3 flex items-center gap-2" style="background: color-mix(in srgb, var(--overdue-color) 3%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--overdue-color) 12%, transparent)">
           <svg class="w-4 h-4" style="color: var(--overdue-color)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <span class="text-sm font-semibold" style="color: var(--overdue-color)">Overdue</span>
@@ -102,7 +102,7 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
     ` : ''}
 
     ${todayTasks.length > 0 ? `
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2" style="background: color-mix(in srgb, var(--today-color) 3%, transparent)">
           <svg class="w-4 h-4" style="color: var(--today-color)" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Today</span>
@@ -114,7 +114,7 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
     ` : ''}
 
     ${upcomingTasks.length > 0 ? `
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
           <svg class="w-4 h-4" style="color: var(--overdue-color)" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Upcoming</span>
@@ -125,7 +125,7 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
     ` : ''}
 
     ${deferredTasks.length > 0 ? `
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
           <svg class="w-4 h-4 text-[var(--text-muted)]" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           <span class="text-sm font-semibold text-[var(--text-muted)]">Deferred</span>
@@ -136,7 +136,7 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
     ` : ''}
 
     ${inboxTasks.length > 0 ? `
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
           <svg class="w-4 h-4" style="color: var(--inbox-color)" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Inbox</span>
@@ -148,7 +148,7 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
     ` : ''}
 
     ${anytimeTasks.length > 0 ? `
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
           <svg class="w-4 h-4" style="color: var(--anytime-color)" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Anytime</span>
@@ -160,7 +160,7 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
     ` : ''}
 
     ${somedayTasks.length > 0 ? `
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
         <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
           <svg class="w-4 h-4" style="color: var(--someday-color)" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
           <span class="text-sm font-semibold text-[var(--text-primary)]">Someday</span>
@@ -178,7 +178,7 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
 // ============================================================================
 function buildNotesSection(noteItems, filterArg, filterObj) {
   return `
-    <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+    <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
       <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 text-[var(--accent)]" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="4" cy="18" r="1.5"/></svg>
@@ -220,7 +220,7 @@ function buildNotesSection(noteItems, filterArg, filterObj) {
 // ============================================================================
 function buildTriggersSection(triggerItems, filterArg, filterObj) {
   return `
-    <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+    <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
       <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span style="color: var(--today-color)">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
@@ -436,7 +436,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
   return `
     <div class="flex-1 space-y-4">
       <!-- Area Hero Header -->
-      <div class="area-hero bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
+      <div class="area-hero bg-[var(--bg-card)] rounded-lg overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl" style="background: color-mix(in srgb, ${categoryColor} 12%, transparent); color: ${categoryColor}">
@@ -494,7 +494,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
       </div>
 
       <!-- Quick Add -->
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] px-4 py-3">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] px-4 py-3">
         <div class="flex items-center gap-3">
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
@@ -531,7 +531,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
         const subcats = getCategoriesByArea(currentCategory.id);
         if (subcats.length === 0) return '';
         return `
-        <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+        <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
           <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
             <div class="flex items-center gap-2">
               <svg class="w-4 h-4 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M2 8h20v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" opacity="0.85"/></svg>
@@ -581,9 +581,9 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
         )}
 
         ${totalTasks === 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
+          <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] py-16">
             <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
-              <div class="w-20 h-20 rounded-xl flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${categoryColor} 6%, transparent)">
+              <div class="w-20 h-20 rounded-lg flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${categoryColor} 6%, transparent)">
                 <svg class="w-10 h-10" style="color: ${categoryColor}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
               </div>
               <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No items yet</p>
@@ -635,7 +635,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
   return `
     <div class="flex-1 space-y-4">
       <!-- Category Hero Header -->
-      <div class="area-hero bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
+      <div class="area-hero bg-[var(--bg-card)] rounded-lg overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl" style="background: color-mix(in srgb, ${categoryColor} 12%, transparent); color: ${categoryColor}">
@@ -702,7 +702,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
       </div>
 
       <!-- Quick Add -->
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] px-4 py-3">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] px-4 py-3">
         <div class="flex items-center gap-3">
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
@@ -745,7 +745,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
         )}
 
         ${filteredTasks.length === 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+          <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
             <div class="empty-state flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
               <svg class="w-16 h-16 mb-4 opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
               <p class="text-[15px] font-medium">No tasks in ${escapeHtml(category.name)}</p>
@@ -784,7 +784,7 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
   return `
     <div class="flex-1 space-y-4">
       <!-- Label Hero Header -->
-      <div class="area-hero bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
+      <div class="area-hero bg-[var(--bg-card)] rounded-lg overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0" style="background: color-mix(in srgb, ${labelColor} 12%, transparent)">
@@ -842,7 +842,7 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
       </div>
 
       <!-- Quick Add -->
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] px-4 py-3">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] px-4 py-3">
         <div class="flex items-center gap-3">
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
@@ -880,9 +880,9 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
         ${showNotes ? buildNotesSection(noteItems, filterArg, filterObj) : ''}
 
         ${filteredTasks.length === 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
+          <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] py-16">
             <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
-              <div class="w-20 h-20 rounded-xl flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${labelColor} 6%, transparent)">
+              <div class="w-20 h-20 rounded-lg flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${labelColor} 6%, transparent)">
                 <span class="w-10 h-10 rounded-full" style="background: ${labelColor}"></span>
               </div>
               <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No items yet</p>
@@ -926,7 +926,7 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
   return `
     <div class="flex-1 space-y-4">
       <!-- Person Hero Header -->
-      <div class="area-hero bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
+      <div class="area-hero bg-[var(--bg-card)] rounded-lg overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
             ${person.photoData
@@ -989,7 +989,7 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
       </div>
 
       <!-- Quick Add -->
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] px-4 py-3">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] px-4 py-3">
         <div class="flex items-center gap-3">
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
@@ -1027,9 +1027,9 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
         ${showNotes ? buildNotesSection(noteItems, filterArg, filterObj) : ''}
 
         ${filteredTasks.length === 0 ? `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] py-16">
+          <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] py-16">
             <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
-              <div class="w-20 h-20 rounded-xl flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${personColor} 6%, transparent)">
+              <div class="w-20 h-20 rounded-lg flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${personColor} 6%, transparent)">
                 <svg class="w-10 h-10" style="color: ${personColor}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
               </div>
               <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No items yet</p>
@@ -1061,7 +1061,7 @@ export function buildAllLabelsHtml() {
 
   return `
     <div class="flex-1 space-y-4">
-      <div class="bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
+      <div class="bg-[var(--bg-card)] rounded-lg overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-[var(--bg-secondary)] text-[var(--text-muted)]">
@@ -1072,7 +1072,7 @@ export function buildAllLabelsHtml() {
               <p class="text-[var(--text-muted)] text-[13px] mt-1">${labels.length} tag${labels.length !== 1 ? 's' : ''}</p>
             </div>
             <button onclick="window.editingLabelId=null; window.showLabelModal=true; window.render()"
-              class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Tag">
+              class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center hover:bg-[var(--accent-dark)] transition shadow-sm" title="Add Tag">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             </button>
           </div>
@@ -1089,7 +1089,7 @@ export function buildAllLabelsHtml() {
           const color = label.color || 'var(--notes-color)';
           return `
             <button onclick="showLabelTasks('${label.id}')"
-              class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-4 text-left hover:border-[var(--border)] hover:shadow-sm transition group">
+              class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] p-4 text-left hover:border-[var(--border)] hover:shadow-sm transition group">
               <div class="flex items-center gap-3 mb-2">
                 <span class="w-4 h-4 rounded-full flex-shrink-0" style="background: ${color}"></span>
                 <span class="font-medium text-[var(--text-primary)] text-[14px] truncate">${escapeHtml(label.name)}</span>
@@ -1115,7 +1115,7 @@ export function buildAllPeopleHtml() {
 
   return `
     <div class="flex-1 space-y-4">
-      <div class="bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
+      <div class="bg-[var(--bg-card)] rounded-lg overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-[var(--bg-secondary)] text-[var(--text-muted)]">
@@ -1126,7 +1126,7 @@ export function buildAllPeopleHtml() {
               <p class="text-[var(--text-muted)] text-[13px] mt-1">${people.length} ${people.length !== 1 ? 'people' : 'person'}</p>
             </div>
             <button onclick="window.editingPersonId=null; window.showPersonModal=true; window.render()"
-              class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="Add Person">
+              class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center hover:bg-[var(--accent-dark)] transition shadow-sm" title="Add Person">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             </button>
           </div>
@@ -1142,7 +1142,7 @@ export function buildAllPeopleHtml() {
           const count = activeTasks.filter(t => (t.people || []).includes(person.id)).length;
           return `
             <button onclick="showPersonTasks('${person.id}')"
-              class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-4 text-left hover:border-[var(--border)] hover:shadow-sm transition group">
+              class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] p-4 text-left hover:border-[var(--border)] hover:shadow-sm transition group">
               <div class="flex items-center gap-3 mb-2">
                 ${renderPersonAvatar(person, 32)}
                 <div class="min-w-0">
@@ -1169,7 +1169,7 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
   return `
     <div class="flex-1 space-y-4">
       <!-- Perspective Hero Header -->
-      <div class="area-hero bg-[var(--bg-card)] rounded-xl overflow-hidden border border-[var(--border-light)]">
+      <div class="area-hero bg-[var(--bg-card)] rounded-lg overflow-hidden border border-[var(--border-light)]">
         <div class="px-6 pt-6 pb-5">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl" style="background: color-mix(in srgb, ${perspColor} 12%, transparent); color: ${perspColor}">
@@ -1193,7 +1193,7 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
       </div>
 
       <!-- Quick Add -->
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] px-4 py-3">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] px-4 py-3">
         <div class="flex items-center gap-3">
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
@@ -1214,13 +1214,13 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
       </div>
 
       <!-- Task List -->
-      <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden">
+      <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden">
         ${filteredTasks.length > 0 ? `
           <div class="task-list">${filteredTasks.map(task => renderTaskItem(task)).join('')}</div>
         ` : `
           <div class="py-16">
             <div class="flex flex-col items-center justify-center text-[var(--text-muted)]">
-              <div class="w-20 h-20 rounded-xl flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${perspColor} 6%, transparent); color: ${perspColor}">
+              <div class="w-20 h-20 rounded-lg flex items-center justify-center mb-4" style="background: color-mix(in srgb, ${perspColor} 6%, transparent); color: ${perspColor}">
                 <span class="text-4xl">${perspective.icon || '📌'}</span>
               </div>
               <p class="text-lg font-medium text-[var(--text-muted)] mb-1">No tasks</p>
@@ -1351,7 +1351,7 @@ export function renderTasksTab() {
   const selectedCategoryId = state.activeFilterType === 'subcategory' ? state.activeCategoryFilter : null;
 
   const workspaceTopRailHtml = `
-    <div class="workspace-shell bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] mb-4">
+    <div class="workspace-shell bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] mb-4">
       <div class="workspace-shell-header px-4 py-3 border-b border-[var(--border-light)] flex flex-wrap items-center gap-3 justify-between">
         <div class="min-w-0">
           <div class="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Workspace</div>
@@ -1456,7 +1456,7 @@ export function renderTasksTab() {
   const sidebarHtml = `
     <div class="w-full md:w-64 flex-shrink-0 space-y-3">
       <!-- Tasks Section -->
-      <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
+      <div class="bg-[var(--modal-bg)] rounded-lg border border-[var(--border)]">
         <div class="px-4 py-2.5 border-b border-[var(--border-light)]">
           <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">Tasks</h3>
         </div>
@@ -1473,7 +1473,7 @@ export function renderTasksTab() {
       </div>
 
       <!-- Notes Section -->
-      <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
+      <div class="bg-[var(--modal-bg)] rounded-lg border border-[var(--border)]">
         <div class="px-4 py-2.5 border-b border-[var(--border-light)]">
           <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">Notes</h3>
         </div>
@@ -1488,7 +1488,7 @@ export function renderTasksTab() {
       </div>
 
       <!-- Review -->
-      <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
+      <div class="bg-[var(--modal-bg)] rounded-lg border border-[var(--border)]">
         <div class="py-2 px-2">
           <button onclick="window.startReview()"
             class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg transition-all ${state.reviewMode ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
@@ -1500,7 +1500,7 @@ export function renderTasksTab() {
       </div>
 
       <!-- Custom Perspectives -->
-      <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
+      <div class="bg-[var(--modal-bg)] rounded-lg border border-[var(--border)]">
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
           <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">Custom Views</h3>
           <button onclick="window.showPerspectiveModal=true; window.render()" aria-label="Add new custom view" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition p-1.5 -mr-1 rounded-lg hover:bg-[var(--bg-secondary)]">
@@ -1526,7 +1526,7 @@ export function renderTasksTab() {
       </div>
 
       <!-- Areas -->
-      <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
+      <div class="bg-[var(--modal-bg)] rounded-lg border border-[var(--border)]">
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
           <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">Areas</h3>
           <button onclick="window.editingAreaId=null; window.showAreaModal=true; window.render()" aria-label="Add new area" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition p-1.5 -mr-1 rounded-lg hover:bg-[var(--bg-secondary)]">
@@ -1603,7 +1603,7 @@ export function renderTasksTab() {
         const displayLabels = showAllLabels ? [...labelsWithTasks, ...labelsWithoutTasks] : topLabels;
         const hiddenCount = labelsWithTasks.length + labelsWithoutTasks.length - topLabels.length;
         return `
-      <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
+      <div class="bg-[var(--modal-bg)] rounded-lg border border-[var(--border)]">
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
           <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">Tags${labelsWithTasks.length > 0 ? ` (${labelsWithTasks.length})` : ''}</h3>
           <button onclick="window.editingLabelId=null; window.showLabelModal=true; window.render()" aria-label="Add new tag" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition p-1.5 -mr-1 rounded-lg hover:bg-[var(--bg-secondary)]">
@@ -1653,7 +1653,7 @@ export function renderTasksTab() {
         const displayPeople = showAll ? [...peopleWithTasks, ...peopleWithoutTasks] : topPeople;
         const hiddenCount = peopleWithTasks.length + peopleWithoutTasks.length - topPeople.length;
         return `
-      <div class="bg-[var(--modal-bg)] rounded-xl border border-[var(--border)]">
+      <div class="bg-[var(--modal-bg)] rounded-lg border border-[var(--border)]">
         <div class="px-4 py-2.5 flex items-center justify-between border-b border-[var(--border-light)]">
           <h3 class="font-semibold text-[var(--text-muted)] text-[11px] uppercase tracking-wider">People${peopleWithTasks.length > 0 ? ` (${peopleWithTasks.length})` : ''}</h3>
           <button onclick="window.editingPersonId=null; window.showPersonModal=true; window.render()" aria-label="Add new person" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition p-1.5 -mr-1 rounded-lg hover:bg-[var(--bg-secondary)]">
@@ -1724,7 +1724,7 @@ export function renderTasksTab() {
   } else {
     taskListHtml = `
     <div class="flex-1">
-      <div class="bg-[var(--bg-card)] rounded-xl md:border md:border-[var(--border-light)]">
+      <div class="bg-[var(--bg-card)] rounded-lg md:border md:border-[var(--border-light)]">
         <div class="task-list-header-desktop px-5 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <span class="text-2xl" ${viewInfo.color ? `style="color: ${viewInfo.color}"` : ''}>${viewInfo.icon}</span>
@@ -1734,7 +1734,7 @@ export function renderTasksTab() {
             </div>
           </div>
           <button onclick="window.openNewTaskModal()"
-            class="w-8 h-8 rounded-full bg-coral text-white flex items-center justify-center hover:bg-coralDark transition shadow-sm" title="${isNotesLikeView ? 'Add Note' : 'Add Task'}">
+            class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center hover:bg-[var(--accent-dark)] transition shadow-sm" title="${isNotesLikeView ? 'Add Note' : 'Add Task'}">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         </div>

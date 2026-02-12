@@ -53,22 +53,22 @@ export function renderHomeWidget(widget, isEditing) {
   const editControls = isEditing ? `
     <div class="flex items-center gap-1 ml-auto">
       <button onclick="event.stopPropagation(); toggleWidgetSize('${widget.id}')"
-        class="widget-resize-btn flex items-center gap-1.5 px-2 py-1 text-charcoal/60 hover:text-coral rounded transition border border-charcoal/10 hover:border-coral/30"
+        class="widget-resize-btn flex items-center gap-1.5 px-2 py-1 text-[var(--text-secondary)] hover:text-[var(--accent)] rounded transition border border-[var(--border-light)] hover:border-[var(--accent)]"
         title="Click to resize">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           ${widget.size === 'full'
-            ? '<path d="M4 3h16a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z"/>'
-            : '<path d="M4 3h6a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3h6a1 1 0 011 1v16a1 1 0 01-1 1h-6a1 1 0 01-1-1V4a1 1 0 011-1z" opacity="0.3"/>'}
+            ? '<rect x="3" y="3" width="18" height="18" rx="2"/>'
+            : '<rect x="3" y="3" width="8" height="18" rx="1"/><rect x="13" y="3" width="8" height="18" rx="1" opacity="0.3"/>'}
         </svg>
         <span class="text-[11px] font-medium uppercase">${sizeLabels[widget.size] || 'Half'}</span>
       </button>
       ${isPerspectiveWidget ? `
-        <button onclick="event.stopPropagation(); removePerspectiveWidget('${widget.id}')" class="p-1.5 text-charcoal/40 hover:text-red-500 hover:bg-red-50 rounded transition" title="Remove widget">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        <button onclick="event.stopPropagation(); removePerspectiveWidget('${widget.id}')" class="p-1.5 text-[var(--text-muted)] hover:text-red-500 hover:bg-red-50 rounded transition" title="Remove widget">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       ` : `
-        <button onclick="event.stopPropagation(); toggleWidgetVisibility('${widget.id}')" class="p-1.5 text-charcoal/40 hover:text-red-500 hover:bg-red-50 rounded transition" title="Hide widget">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.8 11.8 0 0 0 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>
+        <button onclick="event.stopPropagation(); toggleWidgetVisibility('${widget.id}')" class="p-1.5 text-[var(--text-muted)] hover:text-red-500 hover:bg-red-50 rounded transition" title="Hide widget">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         </button>
       `}
     </div>
@@ -119,7 +119,7 @@ export function renderHomeWidget(widget, isEditing) {
   }
 
   return `
-    <div class="widget ${sizeClass} bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] overflow-hidden widget-drop-target ${isEditing ? 'cursor-grab' : ''}"
+    <div class="widget ${sizeClass} bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] overflow-hidden widget-drop-target ${isEditing ? 'cursor-grab' : ''}"
       ${isEditing ? `draggable="true" ondragstart="handleWidgetDragStart(event, '${widget.id}')" ondragend="handleWidgetDragEnd(event)" ondragover="handleWidgetDragOver(event, '${widget.id}')" ondragleave="handleWidgetDragLeave(event)" ondrop="handleWidgetDrop(event, '${widget.id}')"` : ''}>
       <div class="widget-header px-4 py-2 border-b border-[var(--border-light)] flex items-center gap-2">
         ${isEditing ? '<div class="text-[var(--text-muted)]/30 cursor-grab"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg></div>' : ''}
@@ -273,13 +273,13 @@ export function renderHomeTab() {
       <div class="flex items-start justify-between flex-wrap gap-4">
         <div>
           <div class="home-greeting-row flex items-center gap-3">
-            <h1 class="text-2xl font-bold text-charcoal">Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}</h1>
+            <h1 class="text-2xl font-bold text-[var(--text-primary)]">Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}</h1>
             ${state.weatherData ? `
-              <div class="weather-inline flex items-center gap-2 text-charcoal/70" title="${state.weatherData.city}">
+              <div class="weather-inline flex items-center gap-2 text-[var(--text-secondary)]" title="${state.weatherData.city}">
                 <span class="text-base">${WEATHER_ICONS[state.weatherData.weatherCode] || '\uD83C\uDF21\uFE0F'}</span>
                 <span class="text-sm font-semibold">${state.weatherData.temp}\u00B0</span>
-                <span class="text-[11px] text-charcoal/50 font-medium">\u2191${state.weatherData.tempMax}\u00B0 <span class="text-charcoal/30">${state.weatherData.maxHour || ''}</span></span>
-                <span class="text-[11px] text-charcoal/50 font-medium">\u2193${state.weatherData.tempMin}\u00B0 <span class="text-charcoal/30">${state.weatherData.minHour || ''}</span></span>
+                <span class="text-[11px] text-[var(--text-muted)] font-medium">\u2191${state.weatherData.tempMax}\u00B0 <span class="text-[var(--text-muted)]">${state.weatherData.maxHour || ''}</span></span>
+                <span class="text-[11px] text-[var(--text-muted)] font-medium">\u2193${state.weatherData.tempMin}\u00B0 <span class="text-[var(--text-muted)]">${state.weatherData.minHour || ''}</span></span>
               </div>
             ` : ''}
           </div>
@@ -291,15 +291,15 @@ export function renderHomeTab() {
         </div>
         <div class="home-header-actions flex items-center gap-3">
           ${state.editingHomeWidgets ? `
-            <button onclick="showAddWidgetPicker = !showAddWidgetPicker; render()" class="text-sm text-charcoal/50 hover:text-charcoal px-3 py-1.5 rounded-lg hover:bg-charcoal/5 transition flex items-center gap-1.5">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <button onclick="showAddWidgetPicker = !showAddWidgetPicker; render()" class="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] px-3 py-1.5 rounded-lg hover:bg-[var(--bg-secondary)] transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Add Widget
             </button>
-            <button onclick="resetHomeWidgets()" class="text-sm text-charcoal/50 hover:text-charcoal px-3 py-1.5 rounded-lg hover:bg-charcoal/5 transition">
+            <button onclick="resetHomeWidgets()" class="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] px-3 py-1.5 rounded-lg hover:bg-[var(--bg-secondary)] transition">
               Reset Layout
             </button>
           ` : ''}
-          <button onclick="toggleEditHomeWidgets()" class="text-sm px-3 py-1.5 rounded-lg transition ${state.editingHomeWidgets ? 'bg-coral text-white' : 'text-charcoal/50 hover:text-charcoal hover:bg-charcoal/5'}">
+          <button onclick="toggleEditHomeWidgets()" class="text-sm px-3 py-1.5 rounded-lg transition ${state.editingHomeWidgets ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]'}">
             ${state.editingHomeWidgets ? '\u2713 Done' : '<span class="inline-flex items-center gap-1">' + getActiveIcons().settings + ' Customize</span>'}
           </button>
         </div>
@@ -314,11 +314,11 @@ export function renderHomeTab() {
         ];
         const addedIds = new Set(state.homeWidgets.filter(w => w.type === 'perspective').map(w => w.perspectiveId));
         return `
-          <div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-4">
+          <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] p-4">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-sm font-semibold text-[var(--text-primary)]">Add Perspective Widget</h3>
               <button onclick="showAddWidgetPicker = false; render()" class="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded transition">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -331,7 +331,7 @@ export function renderHomeTab() {
                       : 'border-[var(--border-light)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 cursor-pointer'}">
                     <span style="color: ${p.color}">${p.icon || ''}</span>
                     <span class="text-sm text-[var(--text-primary)] truncate">${escapeHtml(p.name)}</span>
-                    ${isAdded ? '<svg class="w-3.5 h-3.5 text-green-500 ml-auto flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : ''}
+                    ${isAdded ? '<svg class="w-3.5 h-3.5 text-green-500 ml-auto flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
                   </button>
                 `;
               }).join('')}
@@ -342,15 +342,15 @@ export function renderHomeTab() {
 
       ${state.editingHomeWidgets && hiddenWidgets.length > 0 ? `
         <!-- Hidden Widgets -->
-        <div class="bg-[var(--bg-secondary)] rounded-xl p-4">
+        <div class="bg-[var(--bg-secondary)] rounded-lg p-4">
           <div class="flex items-center gap-2 mb-3">
-            <svg class="w-4 h-4 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.8 11.8 0 0 0 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>
+            <svg class="w-4 h-4 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             <span class="text-sm font-medium text-[var(--text-muted)]">Hidden Widgets</span>
           </div>
           <div class="flex flex-wrap gap-2">
             ${hiddenWidgets.map(w => `
               <button onclick="toggleWidgetVisibility('${w.id}')" class="text-sm px-3 py-1.5 rounded-lg border border-dashed border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition flex items-center gap-2">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 ${w.title}
               </button>
             `).join('')}
@@ -364,14 +364,14 @@ export function renderHomeTab() {
         const focus = typeof window.getDailyFocus === 'function' ? window.getDailyFocus() : null;
         if (!focus) return '';
         return `
-          <div class="daily-focus-card bg-[var(--bg-card)] rounded-xl border border-[var(--border-light)] p-4 flex items-start gap-3">
+          <div class="daily-focus-card bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] p-4 flex items-start gap-3">
             <span class="text-xl flex-shrink-0 mt-0.5">\uD83D\uDCCC</span>
             <div class="flex-1 min-w-0">
               <div class="text-sm font-semibold text-[var(--text-primary)]">Focus Today: ${focus.displayName}</div>
               <div class="text-xs text-[var(--text-muted)] mt-0.5">Your 7-day avg is ${focus.avgPercent}% \u2014 ${focus.tip}</div>
             </div>
             <button onclick="state.dailyFocusDismissed = '${today}'; render()" class="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded transition flex-shrink-0" title="Dismiss">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
         `;
