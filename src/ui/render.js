@@ -427,6 +427,17 @@ export function render() {
     if (anyModalOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = '';
 
+    // Auto-focus first [autofocus] element after DOM replacement.
+    // HTML autofocus only fires on page load, not on dynamic innerHTML.
+    // This makes it work for all modals (current and future) that mark
+    // their first input with the autofocus attribute.
+    if (anyModalOpen) {
+      setTimeout(() => {
+        const el = document.querySelector('[autofocus]');
+        if (el && document.activeElement !== el) el.focus();
+      }, 60);
+    }
+
     const renderMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - renderStart;
     const perf = state.renderPerf || { lastMs: 0, avgMs: 0, maxMs: 0, count: 0 };
     const count = (perf.count || 0) + 1;
