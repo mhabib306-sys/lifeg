@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T08:58:46.274Z",
+  "lastUpdated": "2026-02-12T09:00:05.456Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1759,9 +1759,9 @@
         "insulin": ""
       },
       "whoop": {
-        "sleepPerf": "",
-        "recovery": "",
-        "strain": "",
+        "sleepPerf": 78,
+        "recovery": 93,
+        "strain": 0.1,
         "whoopAge": ""
       },
       "libre": {
@@ -1787,7 +1787,7 @@
         "brushTeeth": 0,
         "nop": ""
       },
-      "_lastModified": "2026-02-12T08:54:00.681Z"
+      "_lastModified": "2026-02-12T09:00:02.739Z"
     }
   },
   "weights": {
@@ -10884,12 +10884,12 @@
   "triggers": [],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "DQAoQzNYMyiVNVTBdsQnSg==",
-    "wrapIv": "mD/Q2PmFjRs/u1os",
-    "wrappedKey": "vidCjn+Itdx6UbrJO6zM0V68BaJ0QShRlrHW+6WSVb8FxgoKNJfUtEdBN1Vh6PIP",
-    "dataIv": "MldircL7zuLIH1ZB",
-    "data": "6ymel15cYQ0b0biF29sVLFJKRuIQP6W+GlADWw3QL7sGoI73j0aYygQdnf36Rf+YmKvDMmVX/VqKoMMs0JcGZOs4C9iLTuULbOgxciF3fB2nu8HOY5rTaY1QOWg7lLX5Ytv9yktAg+w8Q59sO0AOW1guYlJYdJNJ35klkY506K4NVdCCFvc+Zv8E3Ik0NtDjFlxTEUGIe6pPN5TlU+8jd9ku87DrVNy3XvZm/OP3JjLBh1pS0/CSTalGqWsZ1vFkbfqCGFOwkgq0eojqsn4dtVhSaWRa3cwwpigWk57Z/HMJrHk6HtyXuO1AL6VWcj71iEaPq6TNVMCv0cfV2R2vCGVo14jRNyjWemvR3fCkgwjp/ugjRht60MVy0epRs8GPPRaUBqrXJmKeh8Dzn67cdqGKaCAcQ6R5OLfGa4vCIon643KUvfwVRjl33AiwFQ2uD16MKNNJPquMkFIf4IGQsqjUKTq51tV72mE6sqgTQSUtuEB4hBQYMVhOl0PQn2JS2JOXmRut/r+3gY5AZlzlp+jWpR9XjQm/dVKQ",
-    "updatedAt": "2026-02-12T08:58:46.283Z"
+    "salt": "6JheI4nFyIBKYQUE9WxGxA==",
+    "wrapIv": "lI0HlERKhJNplqC7",
+    "wrappedKey": "VZr1/5jG0Mtlmd7sHiizIGnyOBCSJwR3aB86zmQMJtmOWld+GPs5OqZxa2cFXljj",
+    "dataIv": "z6KXQuA5NsK4+1Yx",
+    "data": "Gpuk2HHu0LxkmI5DnvxqC7Xr/GL/lrrM1VBV8ZQXdz9o9ox2gVTuDVXlJXlTTSSnKh+WkKsidkZcnO5f5jIjIw8Df7hUWnm5cYYC09m8qRkb1iSCit/XeCCzFghfSHl9alFDBz3/Mm5oLKg6LP/85IqsXoCU6aTgDzdIvMb7FKYhvAAZOKCEhlbt2k5nSgSbTGNaYWkx8Ipj+z+hvttXIq2Lm5Dz0P0SXsC+rjGNS9qafzvlUy3dcE2eMGK2lY+0oxevpo7BGsrYKupVBE08iGKWuWXEx1DsG9+MmG/eKORfkabY0y8kLCksil+REH3cQD9cFUhChXm0CybNErnrZa7nS0v23ej9oG3N/YfpTmK99WeydTTKxOkQ+fcRIBq5u40Z/jpyi1b8115Yd/wHkqzdMElCWXJYbbwrclIGd6lFyg0gviw4QIUgl7Z5rBCU/l8NGX1zAhVEOAaD7mE6sOU+p4SWRdfQTqXAybQCq+be2aExFLPaMTUuLsa25jfocRXYOyHn6WedTyBWXRlVU9UoVw1lofFpGTO8",
+    "updatedAt": "2026-02-12T09:00:05.474Z"
   },
   "xp": {
     "total": 1937,
