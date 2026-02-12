@@ -110,7 +110,7 @@ export function createNumberInput(label, value, category, field, placeholder, un
   return `
     <div class="flex-1 text-center group relative">
       <input type="number" step="any" value="${value}" placeholder="${placeholder}"
-        class="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] outline-none mb-1"
+        class="input-field w-full text-center mb-1"
         onchange="updateData('${category}', '${field}', this.value)">
       <div class="text-xs font-medium text-[var(--text-secondary)] flex items-center justify-center gap-1">
         ${label}

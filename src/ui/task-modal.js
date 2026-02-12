@@ -1299,8 +1299,8 @@ export function renderTaskModalHtml() {
               <div class="flex items-center gap-3">
                 <span class="text-sm text-[var(--text-secondary)]">Every</span>
                 <input type="number" id="task-repeat-interval" min="1" value="${editingTask?.repeat?.interval || 1}"
-                  class="w-16 px-3 py-2 border border-[var(--border)] rounded-lg text-sm text-center bg-[var(--bg-input)]">
-                <select id="task-repeat-type" class="px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)]">
+                  class="input-field w-16 text-center">
+                <select id="task-repeat-type" class="input-field">
                   <option value="daily" ${editingTask?.repeat?.type === 'daily' ? 'selected' : ''}>days</option>
                   <option value="weekly" ${editingTask?.repeat?.type === 'weekly' ? 'selected' : ''}>weeks</option>
                   <option value="monthly" ${editingTask?.repeat?.type === 'monthly' ? 'selected' : ''}>months</option>

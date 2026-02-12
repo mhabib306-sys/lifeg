@@ -280,7 +280,7 @@ export function renderPrayersWidget(today) {
           '<input type="number" step="0.1" min="0" max="1" value="' + (prayerData[p] || '') + '" placeholder="0"' +
           ' autocomplete="off"' +
           ' onchange="updateDailyField(\'prayers\', \'' + p + '\', this.value)"' +
-          ' class="w-full px-2 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">' +
+          ' class="input-field w-full text-center font-medium">' +
           '</div>';
       }).join('')}
       <div class="text-center">
@@ -288,7 +288,7 @@ export function renderPrayersWidget(today) {
         <input type="number" step="0.1" value="${prayerData.quran || ''}" placeholder="0"
           autocomplete="off"
           onchange="updateDailyField('prayers', 'quran', this.value)"
-          class="w-full px-2 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+          class="input-field w-full text-center font-medium">
       </div>
     </div>
   `;
@@ -401,7 +401,7 @@ export function renderGlucoseWidget(today) {
           ? `<div class="text-sm font-semibold text-[var(--text-primary)]">${glucoseData.avg}</div>`
           : `<input type="number" value="${glucoseData.avg || ''}" placeholder="--" autocomplete="off"
               onchange="updateDailyField('glucose', 'avg', this.value)"
-              class="w-full px-2 py-1.5 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">`}
+              class="input-field w-full text-center font-medium">`}
       </div>
       <div class="text-center">
         <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">TIR</label>
@@ -409,13 +409,13 @@ export function renderGlucoseWidget(today) {
           ? `<div class="text-sm font-semibold ${Number(glucoseData.tir) >= 70 ? 'text-[var(--success)]' : Number(glucoseData.tir) >= 50 ? 'text-[var(--warning)]' : 'text-[var(--danger)]'}">${glucoseData.tir}%</div>`
           : `<input type="number" value="${glucoseData.tir || ''}" placeholder="--" autocomplete="off"
               onchange="updateDailyField('glucose', 'tir', this.value)"
-              class="w-full px-2 py-1.5 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">`}
+              class="input-field w-full text-center font-medium">`}
       </div>
       <div class="text-center">
         <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Insulin</label>
         <input type="number" value="${glucoseData.insulin || ''}" placeholder="--" autocomplete="off"
           onchange="updateDailyField('glucose', 'insulin', this.value)"
-          class="w-full px-2 py-1.5 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">
+          class="input-field w-full text-center font-medium">
       </div>
       ${eA1C ? `
         <div class="text-center">
@@ -445,7 +445,7 @@ export function renderWhoopWidget(today) {
           : `<input type="number" value="${whoopData.sleepPerf || ''}" placeholder="--"
           autocomplete="off"
           onchange="updateDailyField('whoop', 'sleepPerf', this.value)"
-          class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">`}
+          class="input-field w-full text-center font-medium">`}
       </div>
       <div class="text-center">
         <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Recovery</label>
@@ -454,7 +454,7 @@ export function renderWhoopWidget(today) {
           : `<input type="number" value="${whoopData.recovery || ''}" placeholder="--"
           autocomplete="off"
           onchange="updateDailyField('whoop', 'recovery', this.value)"
-          class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">`}
+          class="input-field w-full text-center font-medium">`}
       </div>
       <div class="text-center">
         <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Strain</label>
@@ -463,7 +463,7 @@ export function renderWhoopWidget(today) {
           : `<input type="number" value="${whoopData.strain || ''}" placeholder="--"
           autocomplete="off"
           onchange="updateDailyField('whoop', 'strain', this.value)"
-          class="w-full px-3 py-2 text-center text-sm font-medium bg-[var(--bg-input)] border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)]">`}
+          class="input-field w-full text-center font-medium">`}
       </div>
     </div>
     ${whoopConnected ? `
@@ -727,7 +727,7 @@ export function renderGSheetWidget(today) {
         <input id="gsheet-prompt-input" type="text" placeholder="e.g. Summarize my last 14 days..."
           value="${(savedPrompt).replace(/"/g, '&quot;')}"
           onkeydown="if(event.key==='Enter'){event.preventDefault();handleGSheetSavePrompt()}${editing ? ";if(event.key==='Escape'){event.preventDefault();handleGSheetCancelEdit()}" : ''}"
-          class="flex-1 text-sm px-3 py-2 bg-[var(--bg-input)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] transition"
+          class="input-field flex-1"
         />
         <button onclick="handleGSheetSavePrompt()" class="p-2 rounded-lg text-white bg-[var(--accent)] hover:opacity-90 transition flex-shrink-0" title="Save prompt">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>

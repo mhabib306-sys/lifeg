@@ -529,7 +529,7 @@ export function renderMeetingNotesPage() {
                 type="text"
                 placeholder="Add bullet point..."
                 onkeydown="handleMeetingItemInputKeydown(event, 'note')"
-                class="flex-1 min-w-0 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-light)] focus:border-[var(--accent)]"
+                class="input-field flex-1 min-w-0"
               />
               <button onclick="addMeetingLinkedItem('note')" class="calendar-meeting-btn calendar-meeting-btn-neutral px-3 py-2 rounded-lg text-xs font-semibold hover:opacity-90">Add Bullet</button>
               <button onclick="addMeetingLinkedItem('task')" class="calendar-meeting-btn calendar-meeting-btn-accent px-3 py-2 rounded-lg text-xs font-semibold hover:opacity-90">Add Task</button>

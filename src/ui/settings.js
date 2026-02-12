@@ -119,7 +119,7 @@ export function createWeightInput(label, value, category, field = null) {
     <div class="flex items-center justify-between py-2 border-b border-[var(--border-light)]">
       <span class="text-sm text-[var(--text-secondary)]">${label}</span>
       <input type="number" step="1" value="${value}"
-        class="w-20 px-2 py-1 border border-[var(--border)] rounded-lg text-center text-sm bg-[var(--bg-input)] focus:ring-1 focus:ring-[var(--accent-light)] focus:border-[var(--accent)] outline-none"
+        class="input-field-sm w-20 text-center"
         onchange="window.updateWeight('${category}', ${field ? `'${field}'` : 'null'}, this.value)">
     </div>
   `;
@@ -157,13 +157,13 @@ function renderWorkerIntegration(name, {
             <div>
               <label class="text-xs text-[var(--text-muted)] block mb-1">Worker URL</label>
               <input type="url" value="${workerUrl}" placeholder="https://..."
-                class="w-full px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none"
+                class="input-field-sm w-full"
                 onchange="window.${setUrlFn}(this.value)">
             </div>
             <div>
               <label class="text-xs text-[var(--text-muted)] block mb-1">API Key</label>
               <input type="password" value="${apiKey}" placeholder="Shared secret"
-                class="w-full px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none"
+                class="input-field-sm w-full"
                 onchange="window.${setKeyFn}(this.value)">
             </div>
           </div>
@@ -186,13 +186,13 @@ function renderWorkerIntegration(name, {
         <div>
           <label class="text-xs text-[var(--text-muted)] block mb-1">Worker URL</label>
           <input type="url" value="${workerUrl}" placeholder="https://..."
-            class="w-full px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none"
+            class="input-field-sm w-full"
             onchange="window.${setUrlFn}(this.value)">
         </div>
         <div>
           <label class="text-xs text-[var(--text-muted)] block mb-1">API Key</label>
           <input type="password" value="${apiKey}" placeholder="Shared secret"
-            class="w-full px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none"
+            class="input-field-sm w-full"
             onchange="window.${setKeyFn}(this.value)">
         </div>
       </div>
@@ -298,7 +298,7 @@ function renderGCalIntegration() {
           <div>
             <label class="text-xs text-[var(--text-muted)] block mb-1">Push tasks to</label>
             <select onchange="window.setTargetCalendar(this.value)"
-              class="w-full px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none">
+              class="input-field-sm w-full">
               ${writableCalendars.map(c => `
                 <option value="${escapeHtml(c.id)}" ${c.id === targetCal ? 'selected' : ''}>${escapeHtml(c.summary)}</option>
               `).join('')}
@@ -346,7 +346,7 @@ function renderAIIntegration() {
           <div class="flex gap-2 mb-1.5">
             <input type="password" id="anthropic-key-input" value="${apiKey}"
               placeholder="sk-ant-..."
-              class="flex-1 px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none">
+              class="input-field-sm flex-1">
             <button onclick="window.setAnthropicKey(document.getElementById('anthropic-key-input').value); window.render()"
               class="px-3 py-1.5 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition">Save</button>
           </div>
@@ -393,7 +393,7 @@ function renderNoteSafetySection() {
       </div>
       <div class="flex flex-wrap gap-2 mb-2">
         <input id="note-safety-search" type="text" placeholder="Search notes..."
-          class="flex-1 min-w-[140px] px-2.5 py-1.5 border border-[var(--border)] rounded text-xs bg-[var(--bg-input)] focus:border-[var(--accent)] outline-none">
+          class="input-field-sm flex-1 min-w-[140px]">
         <button onclick="(() => { const q = document.getElementById('note-safety-search')?.value || ''; const rows = window.findNotesByText(q, 20); alert(rows.length ? rows.map(r => (r.title + ' [' + r.state + '] · ' + new Date(r.updatedAt).toLocaleString())).join('\\n') : 'No matching notes found.'); })()"
           class="sb-btn px-2.5 py-1.5 rounded text-xs font-medium">Find</button>
       </div>
@@ -583,7 +583,7 @@ export function renderSettingsTab() {
         <div class="flex gap-2 mb-3">
           <input type="password" id="github-token-input" value="${getGithubToken()}"
             placeholder="ghp_xxxx or github_pat_xxxx"
-            class="flex-1 px-3 py-1.5 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-input)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-light)] focus:outline-none">
+            class="input-field flex-1">
           <button onclick="window.setGithubToken(document.getElementById('github-token-input').value)"
             class="sb-btn px-3 py-1.5 rounded text-xs font-medium">Save</button>
         </div>
@@ -715,7 +715,7 @@ export function renderSettingsTab() {
               ${['prayer', 'diabetes', 'whoop', 'family', 'habits', 'total'].map(key => `
                 <div class="text-center">
                   <input type="number" value="${state.MAX_SCORES[key]}"
-                    class="w-full px-2 py-1.5 border border-[var(--border)] rounded text-center text-sm bg-[var(--bg-input)] ${key === 'total' ? 'border-coral' : ''}"
+                    class="input-field-sm w-full text-center ${key === 'total' ? 'border-coral' : ''}"
                     onchange="window.updateMaxScore('${key}', this.value)">
                   <div class="text-[11px] font-medium ${key === 'total' ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)]'} mt-1">${key.charAt(0).toUpperCase() + key.slice(1)}</div>
                 </div>

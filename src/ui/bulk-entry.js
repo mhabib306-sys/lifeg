@@ -217,13 +217,13 @@ export function renderBulkEntryTab() {
       } else if (state.bulkCategory === 'prayers' && field !== 'quran') {
         cells += '<td class="border border-[var(--border)] px-1 py-1">' +
           '<input type="text" value="' + (value || '') + '" placeholder="X.Y"' +
-          ' class="w-full px-1 py-1 text-center text-sm font-mono border-0 focus:ring-2 focus:ring-[var(--accent)] rounded bg-[var(--bg-input)]"' +
+          ' class="input-field-sm w-full text-center font-mono border-0"' +
           ' onchange="updateBulkData(\'' + dateStr + '\', \'' + state.bulkCategory + '\', \'' + field + '\', this.value)">' +
           '</td>';
       } else {
         cells += '<td class="border border-[var(--border)] px-1 py-1">' +
           '<input type="number" step="any" value="' + (value || '') + '"' +
-          ' class="w-full px-1 py-1 text-center text-sm border-0 focus:ring-2 focus:ring-[var(--accent)] rounded bg-[var(--bg-input)]"' +
+          ' class="input-field-sm w-full text-center border-0"' +
           ' onchange="updateBulkData(\'' + dateStr + '\', \'' + state.bulkCategory + '\', \'' + field + '\', this.value)">' +
           '</td>';
       }
@@ -280,7 +280,7 @@ export function renderBulkEntryTab() {
     '<div class="flex flex-wrap items-end gap-4">' +
       '<div>' +
         '<label class="text-xs text-[var(--text-muted)] block mb-1.5">Month</label>' +
-        '<select onchange="const [m,y] = this.value.split(\'-\'); setBulkMonth(m, y)" class="px-3 py-2 border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--accent)] outline-none bg-[var(--bg-input)] text-[var(--text-primary)] text-sm">' +
+        '<select onchange="const [m,y] = this.value.split(\'-\'); setBulkMonth(m, y)" class="input-field">' +
           monthOptions +
         '</select>' +
       '</div>' +
@@ -374,7 +374,7 @@ function renderBulkShell(monthName, categoryColors, categories, allCategories, a
     '<div class="flex flex-wrap items-end gap-4">' +
       '<div>' +
         '<label class="text-xs text-[var(--text-muted)] block mb-1.5">Month</label>' +
-        '<select onchange="const [m,y] = this.value.split(\'-\'); setBulkMonth(m, y)" class="px-3 py-2 border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--accent)] outline-none bg-[var(--bg-input)] text-[var(--text-primary)] text-sm">' +
+        '<select onchange="const [m,y] = this.value.split(\'-\'); setBulkMonth(m, y)" class="input-field">' +
           monthOptions +
         '</select>' +
       '</div>' +

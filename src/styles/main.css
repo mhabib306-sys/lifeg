@@ -2235,7 +2235,7 @@ body.mobile-keyboard-open .main-content {
   padding: 12px 36px 12px 14px;
   border: 1px solid var(--border);
   border-radius: var(--border-radius);
-  font-size: 16px;
+  font-size: 15px;
   background: var(--bg-input);
   color: var(--text-primary);
   transition: all 0.2s ease;
@@ -3395,6 +3395,39 @@ body.mobile-keyboard-open .main-content {
   font-weight: 500;
   padding: 14px 16px;
 }
+
+/* --- Standard form inputs (tracking, home widgets, calendar, bulk-entry) --- */
+.input-field {
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+.input-field:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+/* --- Compact inputs (settings, integrations, API keys) --- */
+.input-field-sm {
+  padding: 6px 10px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius-sm);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+.input-field-sm:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
 .modal-hint-row {
   display: flex;
   flex-wrap: wrap;
@@ -5089,6 +5122,11 @@ mark.global-search-highlight {
 /* --- Active/focus glow for interactive elements --- */
 [data-theme="geist"] button:focus-visible {
   outline: none;
+  box-shadow: var(--geist-glow);
+}
+[data-theme="geist"] .input-field:focus,
+[data-theme="geist"] .input-field-sm:focus {
+  border-color: var(--geist-border-focus);
   box-shadow: var(--geist-glow);
 }
 

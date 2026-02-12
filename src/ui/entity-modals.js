@@ -392,7 +392,7 @@ function renderEmojiPicker(selectFnName = 'selectPerspectiveEmoji') {
       <div class="p-2 border-b border-[var(--border-light)]">
         <input type="text" id="emoji-search-input" placeholder="Search emojis..." value="${escapeHtml(searchQuery)}"
           oninput="updateEmojiGrid(this.value)"
-          class="w-full px-3 py-1.5 text-[13px] border border-[var(--border)] rounded-lg bg-[var(--bg-secondary)] focus:outline-none focus:border-[var(--accent)]">
+          class="input-field-sm w-full">
       </div>
       <div id="emoji-grid-content" class="p-2 max-h-52 overflow-y-auto">
         ${emojiGridHtml || '<p class="text-center text-[13px] text-[var(--text-muted)] py-4">No matches</p>'}

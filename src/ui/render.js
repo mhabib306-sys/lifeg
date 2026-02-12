@@ -294,7 +294,7 @@ export function render() {
               </div>
               <input type="date" id="dateInput" value="${state.currentDate}"
                 onclick="this.showPicker()"
-                class="px-3 py-2 rounded-lg text-sm border border-[var(--border)] bg-[var(--bg-input)] focus:border-[var(--accent)] focus:outline-none">
+                class="input-field">
               <button type="button" onclick="setToday()" class="sb-btn px-4 py-2 rounded-lg text-sm font-medium">Today</button>
             </div>
           </div>
