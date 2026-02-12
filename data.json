@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T13:41:44.627Z",
+  "lastUpdated": "2026-02-12T13:43:26.124Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -3523,6 +3523,31 @@
       "createdAt": "2026-02-12T10:03:58.491Z",
       "updatedAt": "2026-02-12T10:54:48.753Z",
       "gcalEventId": "3hfokpbklf9lmbj3684atgocr8"
+    },
+    {
+      "id": "task_1770903802244_ywbxivas8",
+      "title": "Talk to Abdallah",
+      "notes": "",
+      "status": "inbox",
+      "today": false,
+      "flagged": false,
+      "completed": false,
+      "completedAt": null,
+      "areaId": null,
+      "categoryId": null,
+      "labels": [],
+      "people": [],
+      "deferDate": null,
+      "dueDate": null,
+      "repeat": null,
+      "isNote": false,
+      "parentId": null,
+      "indent": 0,
+      "meetingEventKey": null,
+      "lastReviewedAt": null,
+      "order": 44000,
+      "createdAt": "2026-02-12T13:43:22.244Z",
+      "updatedAt": "2026-02-12T13:43:22.244Z"
     }
   ],
   "deletedTaskTombstones": {
@@ -10924,12 +10949,12 @@
   ],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "BIgQOPHWeaWgnIQigMaEeg==",
-    "wrapIv": "qxnhmBtFRUOVA8yf",
-    "wrappedKey": "bNJOgMRid6AaawnRlnvEmJwGncl+yyAyW/F1cgQHUsi5KhMfCRLp/L+Bx6p1P4ec",
-    "dataIv": "FVXPmCU6ZMjBp6gi",
-    "data": "kmD1U0HTsUGv83d+xqN+UCO0aUYY8LY3pmLho6l8OJ9AEBwb/gJWVf7Ti6Ma1nMWtRlR1Su2c7HBnP9mZ9DQ3IPnbPh5AlIP4Fvod96ywsZIG+hoBqS8ssN/gVdOmKAlun6PfgsXclhjnqtN8P7WosNT6VkIka6Xrv2rtUF00Q4CI5Y+3V8VDEdb1GIxPCLx5TE91B7GFAxGnIYVsN6t4nJGT1TewkCEmQ85CCMK6typCgfIco82oh2GExrVdaeiGMTgqXWhLtCs7hH0F9lMPs5M6G2N23wZ2VfV4xk3hVRZdld8YEMTjzJnhkND+1O4P+44Sc4VtL788aKmlM4RewEDOMMpmRc6SGvj8aiJZ0iwiDPO8/QcX1koBu6BV292CkultHolRIVYmuSioEjNn/yfbnTUT0yncqQjDM13pu09LuhXQpuMmV0gIFt6ANL3YKWoyDVL8qzZq7Lo2mRExdaoRgd2hKUqGQsWdTY4BMPZ6nvnrL630jT+iDiKbHbk0/k/X7KGI5iI12w/HXPw7qZzHTaUT/W5t+7A",
-    "updatedAt": "2026-02-12T13:41:44.637Z"
+    "salt": "PXRYfD+oE/5Nv6u5wX0Xtw==",
+    "wrapIv": "6bE71+LZx6VlfO/1",
+    "wrappedKey": "FZdfGfqRbVm+6aL3gbiSgynEf1DqmAz+Fk11K01BeG8myIk7urCiY6dgy7A+gK51",
+    "dataIv": "VCU5XF7487uZgEpQ",
+    "data": "vwet7Wpcu4DIdFRL+2ksn6acrMDlV5GYkYbMtPRQePSlJWs81nb/p2oZ99yhw8Z2wuUuwfXJFpg3HhhpBP9y6Jd6rkeDapAfGKWWLbyxhj93eo6midKybh9Tr0gTQxCDg36yAX6/31MocApfKB7z4m1Dg62Q/TGb4HHF3tn7YipzIor3bSLrHAPIBs2dl9nmjpiOcEA87SdufF4jkjiUq4aSs1VCX9Hpp5b2qmBl5guc2gAtpExCqb5FRV6oqUpIaGKltTyMuk91y3t9WgLG+VJ1w/ibfB0/JCtcDYJGgLnILvC/PZy3lwsBVxp41NGjheVlBA5IeSTX3Od50H2+CJprTH9HyO0maXopTUh2doij76nZvm4WpOiJq8ZZMweazTe85jqHURBnQ5BUjztc+96hgRJc0qHEkgheEwOqywlOHn6tyRfXF5XYygsHBgfAyvnIv+J3ob05QbgDMVsEC7EyODi9hK6dBQP3/FcTOIna/uXt8tDDbTb7ffhLc1rP+BEaH4K7ewHzEPql1o2FRR/UgF7C+VHdZVOY",
+    "updatedAt": "2026-02-12T13:43:26.134Z"
   },
   "xp": {
     "total": 1937,
