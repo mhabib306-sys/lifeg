@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T13:59:41.768Z",
+  "lastUpdated": "2026-02-12T13:59:44.456Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1963,7 +1963,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T22:21:44.582Z",
       "updatedAt": "2026-02-09T04:47:18.251Z",
-      "order": 12000,
+      "order": 10000,
       "today": false,
       "flagged": false
     },
@@ -1984,7 +1984,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:12:26.598Z",
       "updatedAt": "2026-02-06T14:53:30.380Z",
-      "order": 17000,
+      "order": 15000,
       "today": false,
       "flagged": false
     },
@@ -2043,7 +2043,7 @@
       "repeat": null,
       "createdAt": "2026-02-01T23:28:41.177Z",
       "updatedAt": "2026-02-10T01:48:34.446Z",
-      "order": 9000,
+      "order": 7000,
       "today": false,
       "flagged": false
     },
@@ -2104,7 +2104,7 @@
       "repeat": null,
       "createdAt": "2026-02-02T08:09:36.918Z",
       "updatedAt": "2026-02-02T08:09:52.631Z",
-      "order": 19000,
+      "order": 16000,
       "today": false,
       "flagged": false
     },
@@ -2123,7 +2123,7 @@
       "repeat": null,
       "createdAt": "2026-02-02T08:15:04.608Z",
       "updatedAt": "2026-02-10T01:48:44.269Z",
-      "order": 7000,
+      "order": 6000,
       "today": false,
       "flagged": false
     },
@@ -2186,7 +2186,7 @@
       "isNote": true,
       "createdAt": "2026-02-07T07:55:58.071Z",
       "updatedAt": "2026-02-07T07:55:58.071Z",
-      "order": 16000,
+      "order": 14000,
       "today": false,
       "flagged": false,
       "noteOrder": 5000,
@@ -2255,7 +2255,7 @@
       "indent": 0,
       "createdAt": "2026-02-07T10:01:53.599Z",
       "updatedAt": "2026-02-07T10:02:19.548Z",
-      "order": 20000,
+      "order": 17000,
       "today": false,
       "flagged": false,
       "noteOrder": 6000,
@@ -2308,7 +2308,7 @@
       "indent": 0,
       "createdAt": "2026-02-08T00:27:07.575Z",
       "updatedAt": "2026-02-08T00:27:07.575Z",
-      "order": 13000,
+      "order": 11000,
       "today": false,
       "flagged": false
     },
@@ -2379,7 +2379,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 6000,
+      "order": 5000,
       "createdAt": "2026-02-08T11:28:09.075Z",
       "updatedAt": "2026-02-10T14:22:56.595Z",
       "today": false,
@@ -2404,7 +2404,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 11000,
+      "order": 9000,
       "createdAt": "2026-02-08T15:19:35.208Z",
       "updatedAt": "2026-02-09T19:30:57.541Z",
       "today": false,
@@ -2433,7 +2433,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 14000,
+      "order": 12000,
       "createdAt": "2026-02-08T18:51:44.364Z",
       "updatedAt": "2026-02-12T13:45:38.480Z",
       "meetingEventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260212T083000Z"
@@ -2458,7 +2458,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 10000,
+      "order": 8000,
       "createdAt": "2026-02-08T22:09:22.749Z",
       "updatedAt": "2026-02-11T15:04:39.845Z"
     },
@@ -2480,7 +2480,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 15000,
+      "order": 13000,
       "createdAt": "2026-02-08T22:20:39.003Z",
       "updatedAt": "2026-02-08T23:03:23.038Z"
     },
@@ -2502,7 +2502,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 28000,
+      "order": 19000,
       "createdAt": "2026-02-08T23:00:08.748Z",
       "updatedAt": "2026-02-10T13:40:41.002Z"
     },
@@ -2526,7 +2526,7 @@
       "isNote": false,
       "parentId": null,
       "indent": 0,
-      "order": 29000,
+      "order": 20000,
       "createdAt": "2026-02-09T00:25:56.539Z",
       "updatedAt": "2026-02-09T00:25:56.539Z"
     },
@@ -2572,7 +2572,7 @@
       "isNote": true,
       "parentId": null,
       "indent": 0,
-      "order": 31000,
+      "order": 22000,
       "createdAt": "2026-02-09T18:13:38.521Z",
       "updatedAt": "2026-02-09T18:13:38.521Z",
       "noteOrder": 11000,
@@ -2722,7 +2722,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::8qa8p4v0rfbdrkuhh16ng1ugn0_20260205T083000Z",
-      "order": 30000,
+      "order": 21000,
       "createdAt": "2026-02-09T19:22:23.054Z",
       "updatedAt": "2026-02-09T19:22:23.054Z",
       "noteOrder": 12000,
@@ -2748,7 +2748,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260209T083000Z",
-      "order": 32000,
+      "order": 23000,
       "createdAt": "2026-02-09T19:28:37.331Z",
       "updatedAt": "2026-02-09T19:29:36.574Z",
       "noteOrder": 13000,
@@ -2771,7 +2771,7 @@
       "isNote": false,
       "createdAt": "2026-02-06T23:11:35.459Z",
       "updatedAt": "2026-02-08T00:16:12.198Z",
-      "order": 23000,
+      "order": 18000,
       "today": false,
       "flagged": false
     },
@@ -2796,7 +2796,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": null,
-      "order": 33000,
+      "order": 24000,
       "createdAt": "2026-02-10T01:29:01.852Z",
       "updatedAt": "2026-02-10T03:57:43.454Z"
     },
@@ -2819,7 +2819,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260209T083000Z",
-      "order": 34000,
+      "order": 25000,
       "createdAt": "2026-02-10T02:15:44.419Z",
       "updatedAt": "2026-02-10T02:15:44.419Z",
       "noteOrder": 14000,
@@ -2845,7 +2845,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260209T083000Z",
-      "order": 35000,
+      "order": 26000,
       "createdAt": "2026-02-10T02:15:55.718Z",
       "updatedAt": "2026-02-10T02:15:55.718Z"
     },
@@ -2868,7 +2868,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::series::8qa8p4v0rfbdrkuhh16ng1ugn0_R20260125T083000",
-      "order": 36000,
+      "order": 27000,
       "createdAt": "2026-02-10T03:23:25.552Z",
       "updatedAt": "2026-02-10T03:23:25.552Z",
       "noteOrder": 15000,
@@ -2894,7 +2894,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::series::8qa8p4v0rfbdrkuhh16ng1ugn0_R20260125T083000",
-      "order": 37000,
+      "order": 28000,
       "createdAt": "2026-02-10T03:23:34.605Z",
       "updatedAt": "2026-02-10T03:23:34.605Z"
     },
@@ -2942,7 +2942,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": null,
-      "order": 38000,
+      "order": 29000,
       "createdAt": "2026-02-10T20:55:25.894Z",
       "updatedAt": "2026-02-10T20:55:25.894Z",
       "noteOrder": 16000,
@@ -2969,7 +2969,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": null,
-      "order": 40000,
+      "order": 30000,
       "createdAt": "2026-02-10T21:11:52.678Z",
       "updatedAt": "2026-02-11T15:06:30.608Z",
       "gcalEventId": "ducvgs9jpbi8khrumd99anvk9s",
@@ -3049,7 +3049,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": "h@breadfast.com::instance::8qa8p4v0rfbdrkuhh16ng1ugn0_20260205T083000Z",
-      "order": 41000,
+      "order": 31000,
       "createdAt": "2026-02-11T09:11:14.299Z",
       "updatedAt": "2026-02-11T14:18:38.639Z"
     },
@@ -3073,7 +3073,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": null,
-      "order": 42000,
+      "order": 34000,
       "createdAt": "2026-02-11T08:34:03.221Z",
       "updatedAt": "2026-02-11T10:47:39.599Z",
       "gcalEventId": "un6n044njtktf94jal6a81dlnk"
@@ -3100,7 +3100,7 @@
       "updatedAt": "2026-02-11T09:28:05.602Z",
       "today": false,
       "flagged": false,
-      "order": 45000,
+      "order": 39000,
       "noteLifecycleState": "active",
       "noteHistory": []
     },
@@ -3125,7 +3125,7 @@
       "updatedAt": "2026-02-11T09:28:05.603Z",
       "today": false,
       "flagged": false,
-      "order": 46000,
+      "order": 40000,
       "noteLifecycleState": "active",
       "noteHistory": []
     },
@@ -3151,7 +3151,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": null,
-      "order": 43000,
+      "order": 36000,
       "createdAt": "2026-02-11T09:30:21.329Z",
       "updatedAt": "2026-02-11T09:30:21.329Z"
     },
@@ -3175,7 +3175,7 @@
       "parentId": null,
       "indent": 0,
       "meetingEventKey": null,
-      "order": 44000,
+      "order": 38000,
       "createdAt": "2026-02-11T10:31:45.339Z",
       "updatedAt": "2026-02-11T10:31:45.339Z"
     },
@@ -3199,7 +3199,7 @@
       "updatedAt": "2026-02-11T15:29:18.443Z",
       "today": false,
       "flagged": false,
-      "order": 58000,
+      "order": 41000,
       "noteLifecycleState": "active",
       "noteHistory": []
     },
@@ -3244,7 +3244,7 @@
       "updatedAt": "2026-02-11T15:38:17.078Z",
       "today": false,
       "flagged": false,
-      "order": 59000
+      "order": 42000
     },
     {
       "id": "task_1770824297080_yownm84vb",
@@ -3311,7 +3311,7 @@
       "indent": 0,
       "meetingEventKey": null,
       "lastReviewedAt": null,
-      "order": 40000,
+      "order": 1000,
       "createdAt": "2026-02-11T16:03:53.132Z",
       "updatedAt": "2026-02-11T16:03:53.132Z"
     },
@@ -3395,7 +3395,7 @@
       "indent": 0,
       "meetingEventKey": null,
       "lastReviewedAt": null,
-      "order": 41000,
+      "order": 32000,
       "createdAt": "2026-02-11T20:15:15.600Z",
       "updatedAt": "2026-02-11T20:15:15.600Z"
     },
@@ -3465,7 +3465,7 @@
       "indent": 0,
       "meetingEventKey": null,
       "lastReviewedAt": null,
-      "order": 41000,
+      "order": 33000,
       "createdAt": "2026-02-12T04:45:41.437Z",
       "updatedAt": "2026-02-12T10:54:31.925Z"
     },
@@ -3492,7 +3492,7 @@
       "indent": 0,
       "meetingEventKey": null,
       "lastReviewedAt": null,
-      "order": 42000,
+      "order": 35000,
       "createdAt": "2026-02-12T08:54:40.375Z",
       "updatedAt": "2026-02-12T08:54:40.375Z"
     },
@@ -3519,7 +3519,7 @@
       "indent": 0,
       "meetingEventKey": null,
       "lastReviewedAt": null,
-      "order": 43000,
+      "order": 37000,
       "createdAt": "2026-02-12T10:03:58.491Z",
       "updatedAt": "2026-02-12T10:54:48.753Z",
       "gcalEventId": "3hfokpbklf9lmbj3684atgocr8"
@@ -3545,7 +3545,7 @@
       "indent": 0,
       "meetingEventKey": null,
       "lastReviewedAt": null,
-      "order": 44000,
+      "order": 3000,
       "createdAt": "2026-02-12T13:43:22.244Z",
       "updatedAt": "2026-02-12T13:43:22.244Z"
     },
@@ -3574,7 +3574,7 @@
       "indent": 0,
       "meetingEventKey": null,
       "lastReviewedAt": null,
-      "order": 45000,
+      "order": 4000,
       "createdAt": "2026-02-12T13:46:42.701Z",
       "updatedAt": "2026-02-12T13:46:42.701Z"
     },
@@ -3599,9 +3599,9 @@
       "indent": 0,
       "meetingEventKey": null,
       "lastReviewedAt": null,
-      "order": 46000,
+      "order": 2000,
       "createdAt": "2026-02-12T13:48:16.235Z",
-      "updatedAt": "2026-02-12T13:59:41.592Z",
+      "updatedAt": "2026-02-12T13:59:44.022Z",
       "gcalEventId": "u4rsvudg1fub1u45jrt273gkck"
     },
     {
@@ -3625,7 +3625,7 @@
       "indent": 0,
       "meetingEventKey": null,
       "lastReviewedAt": null,
-      "order": 47000,
+      "order": 5000,
       "createdAt": "2026-02-12T13:48:16.237Z",
       "updatedAt": "2026-02-12T13:48:16.237Z"
     }
@@ -11029,12 +11029,12 @@
   ],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "FxHTl9FZmQT5b+XUKkwZ0Q==",
-    "wrapIv": "dOK7E4AVIMDFbgoI",
-    "wrappedKey": "icAt6N87idaD80MOOgOWPv7c/Q3eLAHYBrS43ye+oEf0cwd1152Yg8l+5DHAWWpy",
-    "dataIv": "6OrHdLgTNbxga2+P",
-    "data": "pHIwFm+iBMyOCsvB0TUtHHg+XImvB42dxF90GYB4/9uugMwvXfT186W//MVoKdDZA8YCuHwvH+X6748HcYcfOamqHoc/AgV4nor0yqCPxnrOwhgNjAleKI23UnUSgtwV1i3BhsBx+7hEkM0fs3/B1uW2G0Lp60cI6hBwUdMZgCsvrt646n1UuAqzKf3OvbuY0fNSNQ7TJVqQ9Pj8NRoq6thaq69Ob5PGtAVDkl0wL5SUfUUgHs4Rrh2zmzxoOjMZEs3z6CnBcbQvebWkYvBz6Slb+EMEIgMWFYPthOftIGD5d90btgkZcXBXGG7U9jRZTzfWcnEv7O2992klU9OxP5c6e54dfJVPNVzCntPQT6wHxBPcrqz5RK7F+tYDF+dpkMutMn7xBr6fQjstFMgkSb0L9j30VksCbfPekd6t7NL5v1l/aBwv6/DjvFt4Uh/q6e5m4LzG8f/GPd8Y9dF7BoBoMLBHVGV5YlsPRvMvxaYoKeJUM4MlTpXME6yPQy/kQxCSvQssIBm0Iwz3+dju1c+28UvMBRC1QkOV",
-    "updatedAt": "2026-02-12T13:59:41.777Z"
+    "salt": "fFxl/vEPrzDAOp8i7HYZRw==",
+    "wrapIv": "El6JegE+gBPotZxm",
+    "wrappedKey": "YJgBcp8fLYJIPuCDF8z6slw27voESmWA96bhx0kcOiXFUTy2LxBg2A4kcbd//OR2",
+    "dataIv": "MIa0PKKeCL5vqYyC",
+    "data": "RAJ56Q4De8eQyxX7vL6Y+ylyKj1roNC0q5MfOcCXvlboQDogsjjg4UayAmlMPGP9RTRbtv2NQJp5ez40C8HM55dZHxoD5fgvafoZGJiZLqZGtV/9GLlYjPsvU3apK3xtvszB3jnbvucYXZlyVPHJr4Lh+43SnKIC842bqmjOQEkBOUWTOsmrZ8aDK9uXa3d5q5GIbTSCFWHIhXRiSy2lTkJ3u2vcfdKdFvGH2FcVRIwWcMwMSquyzvhySECbdt3RFtYH3MnHoNy9pxF98pW7YJPMl/Yu68Vr9Hesya9gas2+wwBrf46YVpB1v5IxoPeB2r3a4uKShybrqIJQPIdr24mWTT5PYr4+lVbot3tHmSpFJsFsJFj0Y4IkR0lM7Y3bHVDXfM2yIXOInJg1IDVLAA7Xzw/LtBsIoL9Y2Ouoys466giNCATWxADPldyXr2MuOV6zdk8J7Z/VVSLjhGzlWHF32WGVB3wtrt/Qzsgmk1cUcum97w/Ft2Z9dbQlV4XOuYHKwCCDdZEINrbIwAF70yGc3K8PVoL46cda",
+    "updatedAt": "2026-02-12T13:59:44.466Z"
   },
   "xp": {
     "total": 1937,
