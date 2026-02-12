@@ -4750,7 +4750,7 @@ mark.global-search-highlight {
   cursor: pointer;
   transition: all 0.12s ease;
   color: color-mix(in srgb, var(--trigger-color) 70%, transparent);
-  margin-top: 3px;
+  margin-top: 5px;
 }
 .trigger-bullet:hover {
   background: color-mix(in srgb, var(--trigger-color) 12%, transparent);
