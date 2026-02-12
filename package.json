@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "vite build && cd dist && rm -f .DS_Store && touch .nojekyll && git init && git checkout -b gh-pages && git add -A && git commit -m Deploy && git remote add origin https://github.com/mhabib306-sys/lifeg.git && git push -f origin gh-pages && rm -rf .git",
+    "deploy": "vite build && cd dist && rm -f .DS_Store && touch .nojekyll && git init && git checkout -b gh-pages && git add -A && git commit -m Deploy && ORIGIN_URL=$(git -C .. remote get-url origin) && git remote add origin \"$ORIGIN_URL\" && git push -f origin gh-pages && rm -rf .git",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
