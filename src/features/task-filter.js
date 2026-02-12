@@ -127,7 +127,12 @@ export function getFilteredTasks(perspectiveId) {
 
     // Next: Available tasks without deadlines (OmniFocus-style)
     // Shows tasks you can work on right now with no time pressure
+    // Also includes any task explicitly tagged with a "next" label
     if (perspectiveId === 'next') {
+      // Tasks tagged with "next" label always appear here
+      const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
+      const isNextTagged = nextLabel && (task.labels || []).includes(nextLabel.id);
+      if (isNextTagged) return true;
       // Must be in anytime status (not inbox, someday, or today)
       if (task.status !== 'anytime') return false;
       // Must NOT have a due date (no deadline pressure)
