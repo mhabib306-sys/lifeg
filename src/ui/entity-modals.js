@@ -40,6 +40,7 @@ export function saveAreaFromModal() {
   }
   state.showAreaModal = false;
   state.editingAreaId = null;
+  state.pendingAreaEmoji = '';
   window.render();
 }
 
@@ -62,6 +63,7 @@ export function saveCategoryFromModal() {
   }
   state.showCategoryModal = false;
   state.editingCategoryId = null;
+  state.pendingCategoryEmoji = '';
   window.render();
 }
 
@@ -179,6 +181,7 @@ export function savePerspectiveFromModal() {
   }
   state.showPerspectiveModal = false;
   state.editingPerspectiveId = null;
+  state.pendingPerspectiveEmoji = '';
   window.render();
 }
 
@@ -190,50 +193,83 @@ export function savePerspectiveFromModal() {
  * Select an emoji for the perspective icon and close the picker.
  */
 export function selectPerspectiveEmoji(emoji) {
+  state.pendingPerspectiveEmoji = emoji;
+  state.perspectiveEmojiPickerOpen = false;
+  state.emojiSearchQuery = '';
+  // Update DOM directly to avoid flicker, then render to sync state
   const iconInput = document.getElementById('perspective-icon');
   const iconDisplay = document.getElementById('perspective-icon-display');
   if (iconInput) iconInput.value = emoji;
   if (iconDisplay) iconDisplay.textContent = emoji;
-  state.perspectiveEmojiPickerOpen = false;
-  state.emojiSearchQuery = '';
-  window.render();
+  const picker = document.querySelector('.emoji-picker-dropdown');
+  if (picker) picker.remove();
 }
 
 /**
  * Select an emoji for the area and close the picker.
  */
 export function selectAreaEmoji(emoji) {
+  state.pendingAreaEmoji = emoji;
+  state.areaEmojiPickerOpen = false;
+  state.emojiSearchQuery = '';
+  // Update DOM directly — no full render needed
   const input = document.getElementById('area-emoji');
   const preview = document.getElementById('area-folder-preview');
   if (input) input.value = emoji;
   if (preview) preview.innerHTML = emoji;
-  state.areaEmojiPickerOpen = false;
-  state.emojiSearchQuery = '';
-  window.render();
+  const picker = document.querySelector('.emoji-picker-dropdown');
+  if (picker) picker.remove();
 }
 
 /**
  * Select an emoji for the category and close the picker.
  */
 export function selectCategoryEmoji(emoji) {
+  state.pendingCategoryEmoji = emoji;
+  state.categoryEmojiPickerOpen = false;
+  state.emojiSearchQuery = '';
+  // Update DOM directly — no full render needed
   const input = document.getElementById('category-emoji');
   const preview = document.getElementById('cat-folder-preview');
   if (input) input.value = emoji;
   if (preview) preview.innerHTML = emoji;
-  state.categoryEmojiPickerOpen = false;
-  state.emojiSearchQuery = '';
-  window.render();
+  const picker = document.querySelector('.emoji-picker-dropdown');
+  if (picker) picker.remove();
 }
 
 // Emoji picker data — shared across all entity modals
 const EMOJI_CATEGORIES = {
-  'Smileys': '\uD83D\uDE00\uD83D\uDE03\uD83D\uDE04\uD83D\uDE01\uD83D\uDE06\uD83D\uDE05\uD83E\uDD23\uD83D\uDE02\uD83D\uDE42\uD83D\uDE09\uD83D\uDE0A\uD83D\uDE07\uD83E\uDD70\uD83D\uDE0D\uD83E\uDD29\uD83D\uDE18\uD83D\uDE1A\uD83E\uDD14\uD83E\uDD28\uD83D\uDE10\uD83D\uDE11\uD83D\uDE36\uD83D\uDE44\uD83D\uDE0F\uD83D\uDE12\uD83D\uDE1E\uD83D\uDE22\uD83D\uDE2D\uD83D\uDE24\uD83E\uDD2F\uD83D\uDE31\uD83D\uDE28\uD83E\uDD75\uD83E\uDD76',
-  'Objects': '\uD83D\uDCCC\uD83D\uDCCB\uD83D\uDCC5\uD83D\uDCCA\uD83D\uDD0D\uD83D\uDCA1\uD83D\uDD14\u2B50\uD83C\uDF1F\uD83D\uDD25\u2764\uFE0F\uD83D\uDC8E\uD83C\uDFC6\uD83C\uDF96\uFE0F\uD83C\uDFAF\uD83D\uDE80\u2708\uFE0F\uD83D\uDCE6\uD83D\uDCE7\u2709\uFE0F\uD83D\uDCDD\uD83D\uDCD3\uD83D\uDCD6\uD83D\uDCDA\uD83D\uDCBB\uD83D\uDCF1\u2328\uFE0F\uD83D\uDDA5\uFE0F\uD83C\uDFA8\uD83C\uDFB5\uD83C\uDFAC\uD83D\uDCF7\uD83C\uDFAE\u26BD\uD83C\uDFC0',
-  'Nature': '\uD83C\uDF33\uD83C\uDF32\uD83C\uDF3F\u2618\uFE0F\uD83C\uDF40\uD83C\uDF3A\uD83C\uDF39\uD83C\uDF3B\uD83C\uDF3C\uD83C\uDF37\uD83C\uDF1E\uD83C\uDF19\u2B50\u26A1\uD83C\uDF08\u2744\uFE0F\uD83D\uDCA7\uD83C\uDF0A\uD83D\uDD25\uD83C\uDF3E\uD83C\uDF43\uD83C\uDF42\uD83C\uDF41\uD83D\uDC1D\uD83E\uDD8B',
-  'Food': '\uD83C\uDF4E\uD83C\uDF4A\uD83C\uDF4B\uD83C\uDF4C\uD83C\uDF49\uD83C\uDF47\uD83C\uDF53\uD83E\uDED0\uD83C\uDF51\uD83C\uDF52\uD83E\uDD5D\uD83C\uDF45\uD83E\uDD51\uD83C\uDF55\uD83C\uDF54\uD83C\uDF2E\uD83C\uDF5C\uD83C\uDF63\uD83C\uDF70\u2615\uD83C\uDF7A\uD83E\uDD64\uD83C\uDF77',
-  'People': '\uD83D\uDC64\uD83D\uDC65\uD83D\uDC68\u200D\uD83D\uDCBB\uD83D\uDC69\u200D\uD83D\uDCBB\uD83D\uDC68\u200D\uD83D\uDD2C\uD83D\uDC69\u200D\uD83D\uDD2C\uD83D\uDC68\u200D\uD83C\uDFEB\uD83D\uDC69\u200D\uD83C\uDFEB\uD83E\uDDD1\u200D\uD83D\uDCBC\uD83E\uDDD1\u200D\uD83D\uDD27\uD83E\uDDD1\u200D\uD83C\uDFA8\uD83D\uDC77\uD83E\uDDB8\uD83E\uDDB9\uD83E\uDDD9',
-  'Places': '\uD83C\uDFE0\uD83C\uDFE2\uD83C\uDFED\uD83C\uDFEB\uD83C\uDFE5\uD83C\uDFEA\uD83C\uDFE8\u26EA\uD83D\uDD4C\uD83D\uDD4D\uD83C\uDFDF\uFE0F\uD83C\uDFD4\uFE0F\uD83C\uDFD6\uFE0F\uD83C\uDF05\uD83C\uDF04\uD83C\uDF03\u2708\uFE0F\uD83D\uDE80\uD83D\uDE82\uD83D\uDE97',
-  'Symbols': '\u2705\u274C\u2757\u2753\u26A0\uFE0F\u267B\uFE0F\uD83D\uDD04\u2195\uFE0F\u2194\uFE0F\u25B6\uFE0F\u23F8\uFE0F\u23F9\uFE0F\uD83D\uDD00\uD83D\uDD01\uD83D\uDD02\u2795\u2796\u2716\uFE0F\u2797\uD83D\uDFF0\uD83D\uDFF1\uD83D\uDFE2\uD83D\uDFE1\uD83D\uDFE0\uD83D\uDD34\uD83D\uDFE3\uD83D\uDFE4\u26AB\u26AA\uD83D\uDD35\uD83D\uDFE6'
+  'Smileys': '😀😃😄😁😆😅🤣😂🙂😉😊😇🥰😍🤩😘😚🤔🤨😐😑😶🙄😏😒😞😢😭😤🤯😱😨🥵🥶',
+  'Objects': '📌📋📅📊🔍💡🔔⭐🌟🔥❤️💎🏆🎖️🎯🚀✈️📦📧✉️📝📓📖📚💻📱⌨️🖥️🎨🎵🎬📷🎮⚽🏀',
+  'Nature': '🌳🌲🌿☘️🍀🌺🌹🌻🌼🌷🌞🌙⭐⚡🌈❄️💧🌊🔥🌾🍃🍂🍁🐝🦋',
+  'Food': '🍎🍊🍋🍌🍉🍇🍓🫐🍑🍒🥝🍅🥑🍕🍔🌮🍜🍣🍰☕🍺🥤🍷',
+  'People': '👤👥👨‍💻👩‍💻👨‍🔬👩‍🔬👨‍🏫👩‍🏫🧑‍💼🧑‍🔧🧑‍🎨👷🦸🦹🧙',
+  'Places': '🏠🏢🏭🏫🏥🏪🏨⛪🕌🕍🏟️🏔️🏖️🌅🌄🌃✈️🚀🚂🚗',
+  'Symbols': '✅❌❗❓⚠️♻️🔄↕️↔️▶️⏸️⏹️🔀🔁🔂➕➖✖️➗🟰🟱🟢🟡🟠🔴🟣🟤⚫⚪🔵🟦'
+};
+
+// Keyword map for emoji search — maps search terms to emoji characters
+const EMOJI_KEYWORDS = {
+  'happy': '😀😃😄😁😆😊', 'sad': '😞😢😭', 'angry': '😤', 'love': '🥰😍❤️', 'heart': '❤️🥰😍',
+  'star': '⭐🌟', 'fire': '🔥', 'sun': '🌞🌅🌄', 'moon': '🌙', 'rain': '💧🌊', 'snow': '❄️',
+  'tree': '🌳🌲', 'flower': '🌺🌹🌻🌼🌷', 'leaf': '🌿🍃🍂🍁☘️🍀',
+  'home': '🏠', 'house': '🏠', 'office': '🏢', 'school': '🏫', 'hospital': '🏥', 'church': '⛪', 'mosque': '🕌',
+  'car': '🚗', 'plane': '✈️', 'rocket': '🚀', 'train': '🚂',
+  'book': '📖📚📓', 'computer': '💻🖥️', 'phone': '📱', 'mail': '📧✉️', 'pen': '📝',
+  'music': '🎵', 'art': '🎨', 'film': '🎬', 'camera': '📷', 'game': '🎮',
+  'food': '🍕🍔🌮🍜🍣🍰', 'fruit': '🍎🍊🍋🍌🍉🍇🍓🍑🍒', 'drink': '☕🍺🥤🍷', 'coffee': '☕', 'beer': '🍺', 'wine': '🍷',
+  'check': '✅', 'cross': '❌', 'warning': '⚠️', 'question': '❓',
+  'red': '🔴🟥', 'green': '🟢🟩', 'blue': '🔵🟦', 'yellow': '🟡', 'orange': '🟠', 'purple': '🟣', 'black': '⚫', 'white': '⚪',
+  'pin': '📌', 'target': '🎯', 'trophy': '🏆', 'medal': '🎖️', 'gem': '💎', 'diamond': '💎',
+  'think': '🤔', 'wink': '😉', 'cool': '🤩', 'kiss': '😘', 'cry': '😢😭',
+  'work': '🧑‍💼💼💻', 'person': '👤👥', 'people': '👥👤',
+  'search': '🔍', 'light': '💡', 'bell': '🔔', 'calendar': '📅', 'chart': '📊',
+  'soccer': '⚽', 'basketball': '🏀', 'sport': '⚽🏀🏆',
+  'bug': '🐝🦋', 'butterfly': '🦋', 'bee': '🐝',
+  'hero': '🦸', 'wizard': '🧙', 'magic': '🧙',
+  'mountain': '🏔️', 'beach': '🏖️', 'city': '🌃',
+  'lightning': '⚡', 'rainbow': '🌈', 'wave': '🌊', 'water': '💧🌊',
+  'plus': '➕', 'minus': '➖', 'recycle': '♻️', 'refresh': '🔄'
 };
 
 /**
@@ -241,11 +277,28 @@ const EMOJI_CATEGORIES = {
  * Shared by both renderEmojiPicker (initial render) and updateEmojiGrid (live filter).
  */
 function buildEmojiGridHtml(searchQuery, selectFnName) {
+  const q = (searchQuery || '').toLowerCase().trim();
+  // Build a Set of emoji characters matching keyword search
+  let keywordMatches = null;
+  if (q) {
+    keywordMatches = new Set();
+    for (const [keyword, emojis] of Object.entries(EMOJI_KEYWORDS)) {
+      if (keyword.includes(q)) {
+        const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
+        for (const seg of segmenter.segment(emojis)) {
+          if (seg.segment.trim()) keywordMatches.add(seg.segment);
+        }
+      }
+    }
+  }
+
   let html = '';
   for (const [category, emojiStr] of Object.entries(EMOJI_CATEGORIES)) {
     const emojis = [...new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(emojiStr)].map(s => s.segment).filter(e => e.trim());
-    const filtered = searchQuery
-      ? emojis.filter(() => category.toLowerCase().includes(searchQuery.toLowerCase()))
+    const filtered = q
+      ? (category.toLowerCase().includes(q)
+          ? emojis  // Category name matches → show all emojis in it
+          : emojis.filter(e => keywordMatches && keywordMatches.has(e)))
       : emojis;
     if (filtered.length === 0) continue;
     html += `
@@ -256,6 +309,49 @@ function buildEmojiGridHtml(searchQuery, selectFnName) {
     `;
   }
   return html;
+}
+
+/**
+ * Toggle an emoji picker open/closed via DOM manipulation — avoids full render() flickering.
+ * @param {string} type - 'perspective' | 'area' | 'category'
+ */
+export function toggleEmojiPicker(type) {
+  const stateKey = `${type}EmojiPickerOpen`;
+  const isOpen = state[stateKey];
+  // Close all pickers first
+  state.perspectiveEmojiPickerOpen = false;
+  state.areaEmojiPickerOpen = false;
+  state.categoryEmojiPickerOpen = false;
+  state.emojiSearchQuery = '';
+
+  if (isOpen) {
+    // Was open → close it by removing the picker DOM
+    const existingPicker = document.querySelector('.emoji-picker-dropdown');
+    if (existingPicker) existingPicker.remove();
+    return;
+  }
+
+  // Open it
+  state[stateKey] = true;
+  const selectFnMap = { perspective: 'selectPerspectiveEmoji', area: 'selectAreaEmoji', category: 'selectCategoryEmoji' };
+  const selectFn = selectFnMap[type];
+  const pickerHtml = renderEmojiPicker(selectFn);
+
+  // Find the button's parent (relative-positioned container) and inject picker
+  const buttonIdMap = { perspective: 'perspective-icon-display', area: 'area-folder-preview', category: 'cat-folder-preview' };
+  const button = document.getElementById(buttonIdMap[type]);
+  if (button) {
+    const container = button.closest('.relative') || button.parentElement;
+    // Remove any existing picker first
+    const existing = container.querySelector('.emoji-picker-dropdown');
+    if (existing) existing.remove();
+    container.insertAdjacentHTML('beforeend', pickerHtml);
+    // Focus the search input
+    setTimeout(() => {
+      const searchInput = document.getElementById('emoji-search-input');
+      if (searchInput) searchInput.focus();
+    }, 50);
+  }
 }
 
 /**
@@ -292,7 +388,7 @@ function renderEmojiPicker(selectFnName = 'selectPerspectiveEmoji') {
   const emojiGridHtml = buildEmojiGridHtml(searchQuery, selectFnName);
 
   return `
-    <div class="absolute top-full left-0 mt-1 z-[400] w-72 bg-[var(--modal-bg)] rounded-xl border border-[var(--border-light)] shadow-xl overflow-hidden" onclick="event.stopPropagation()">
+    <div class="emoji-picker-dropdown absolute top-full left-0 mt-1 z-[400] w-72 bg-[var(--modal-bg)] rounded-xl border border-[var(--border-light)] shadow-xl overflow-hidden" onclick="event.stopPropagation()">
       <div class="p-2 border-b border-[var(--border-light)]">
         <input type="text" id="emoji-search-input" placeholder="Search emojis..." value="${escapeHtml(searchQuery)}"
           oninput="updateEmojiGrid(this.value)"
@@ -344,9 +440,9 @@ export function renderPerspectiveModalHtml() {
   const editingPerspective = state.editingPerspectiveId
     ? (state.customPerspectives || []).find(p => p.id === state.editingPerspectiveId)
     : null;
-  const currentIcon = editingPerspective?.icon || '\uD83D\uDCCC';
+  const currentIcon = state.pendingPerspectiveEmoji || editingPerspective?.icon || '📌';
   return `
-    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="perspective-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){pendingPerspectiveEmoji=''; showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="perspective-modal-title">
       <div class="modal-enhanced w-full max-w-lg mx-4" onclick="event.stopPropagation()">
         <!-- Mobile drag handle -->
         <div class="flex justify-center pt-3 pb-1 md:hidden">
@@ -355,7 +451,7 @@ export function renderPerspectiveModalHtml() {
         <!-- Header -->
         <div class="modal-header-enhanced">
           <h3 id="perspective-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingPerspective ? 'Edit Custom View' : 'New Custom View'}</h3>
-          <button onclick="showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
+          <button onclick="pendingPerspectiveEmoji=''; showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>
@@ -366,12 +462,11 @@ export function renderPerspectiveModalHtml() {
           <div class="modal-section">
             <div class="flex items-start gap-3">
               <div class="relative">
-                <button type="button" onclick="perspectiveEmojiPickerOpen=!perspectiveEmojiPickerOpen; render()"
+                <button type="button" onclick="event.stopPropagation(); toggleEmojiPicker('perspective')"
                   class="w-12 h-12 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-center text-2xl hover:border-[var(--accent)] transition cursor-pointer" title="Pick icon">
                   <span id="perspective-icon-display">${currentIcon}</span>
                 </button>
                 <input type="hidden" id="perspective-icon" value="${currentIcon}">
-                ${state.perspectiveEmojiPickerOpen ? renderEmojiPicker() : ''}
               </div>
               <div class="flex-1">
                 <input type="text" id="perspective-name" placeholder="View name, e.g. Work Projects" autofocus maxlength="100"
@@ -539,13 +634,13 @@ export function renderAreaModalHtml() {
     ? (state.taskAreas || []).find(c => c.id === state.editingAreaId)
     : null;
   const areaColor = editingArea?.color || '#6366F1';
-  const areaEmoji = editingArea?.emoji || '';
+  const areaEmoji = state.pendingAreaEmoji || editingArea?.emoji || '';
   return `
-    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){pendingAreaEmoji=''; showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
       <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
         <div class="modal-header-enhanced">
           <h3 id="area-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingArea ? 'Edit Area' : 'New Area'}</h3>
-          <button onclick="showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
+          <button onclick="pendingAreaEmoji=''; showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>
@@ -554,12 +649,11 @@ export function renderAreaModalHtml() {
           <div class="flex items-start gap-4">
             <div class="relative flex-shrink-0">
               <input type="hidden" id="area-emoji" value="${areaEmoji}">
-              <button type="button" onclick="event.stopPropagation(); areaEmojiPickerOpen=!areaEmojiPickerOpen; emojiSearchQuery=''; render()"
+              <button type="button" onclick="event.stopPropagation(); toggleEmojiPicker('area')"
                 id="area-folder-preview"
                 class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl cursor-pointer hover:ring-2 hover:ring-[var(--accent)]/40 transition" style="background: ${areaColor}20; color: ${areaColor}">
                 ${areaEmoji || '<svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}
               </button>
-              ${state.areaEmojiPickerOpen ? renderEmojiPicker('selectAreaEmoji') : ''}
             </div>
             <div class="flex-1 space-y-3 pt-1">
               <input type="text" id="area-name" value="${editingArea?.name ? escapeHtml(editingArea.name) : ''}"
@@ -598,14 +692,14 @@ export function renderCategoryModalHtml() {
   const defaultAreaId = editing ? editing.areaId : (state.modalSelectedArea || (state.taskAreas[0]?.id || ''));
   const defaultArea = state.taskAreas.find(a => a.id === defaultAreaId);
   const defaultColor = editing ? editing.color : (defaultArea ? defaultArea.color : '#6366F1');
-  const catEmoji = editing?.emoji || '';
+  const catEmoji = state.pendingCategoryEmoji || editing?.emoji || '';
 
   return `
-    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){pendingCategoryEmoji=''; showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
       <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
         <div class="modal-header-enhanced">
           <h3 id="category-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editing ? 'Edit' : 'New'} Category</h3>
-          <button onclick="showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
+          <button onclick="pendingCategoryEmoji=''; showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>
@@ -614,12 +708,11 @@ export function renderCategoryModalHtml() {
           <div class="flex items-start gap-4">
             <div class="relative flex-shrink-0">
               <input type="hidden" id="category-emoji" value="${catEmoji}">
-              <button type="button" onclick="event.stopPropagation(); categoryEmojiPickerOpen=!categoryEmojiPickerOpen; emojiSearchQuery=''; render()"
+              <button type="button" onclick="event.stopPropagation(); toggleEmojiPicker('category')"
                 id="cat-folder-preview"
                 class="w-14 h-14 rounded-xl flex items-center justify-center text-xl cursor-pointer hover:ring-2 hover:ring-[var(--accent)]/40 transition" style="background: ${defaultColor}20; color: ${defaultColor}">
                 ${catEmoji || '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}
               </button>
-              ${state.categoryEmojiPickerOpen ? renderEmojiPicker('selectCategoryEmoji') : ''}
             </div>
             <div class="flex-1 space-y-3 pt-1">
               <input type="text" id="category-name" value="${editing ? escapeHtml(editing.name) : ''}" placeholder="Category name"

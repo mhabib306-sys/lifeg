@@ -313,6 +313,9 @@ export const state = {
   areaEmojiPickerOpen: false,
   categoryEmojiPickerOpen: false,
   emojiSearchQuery: '',
+  pendingPerspectiveEmoji: '',
+  pendingAreaEmoji: '',
+  pendingCategoryEmoji: '',
 
   // ---- Sidebar collapse/expand ----
   collapsedSidebarAreas: new Set(),       // Set<areaId> — which areas have categories hidden
