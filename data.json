@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-12T08:53:59.382Z",
+  "lastUpdated": "2026-02-12T08:54:01.585Z",
   "data": {
     "2026-01-01": {
       "prayers": {
@@ -1746,7 +1746,7 @@
     },
     "2026-02-12": {
       "prayers": {
-        "fajr": "1",
+        "fajr": "1.1",
         "dhuhr": "",
         "asr": "",
         "maghrib": "",
@@ -1787,7 +1787,7 @@
         "brushTeeth": 0,
         "nop": ""
       },
-      "_lastModified": "2026-02-12T08:53:58.556Z"
+      "_lastModified": "2026-02-12T08:54:00.681Z"
     }
   },
   "weights": {
@@ -10830,12 +10830,12 @@
   "triggers": [],
   "encryptedCredentials": {
     "version": 1,
-    "salt": "8SCpQ6jfln73WLQ8S2YDzg==",
-    "wrapIv": "88dD/TJAW4s0RFmI",
-    "wrappedKey": "dZ8W+T6+kMITFOVYS/qSLLdTOgBxHT5C5fmCJncjjvJ+Q0ecJeineP3P5toXDwrm",
-    "dataIv": "twW3HZcTJqa/+iE0",
-    "data": "FFqVF2SAFYOtiHX5CSe/6+H9v0vggkIu3Aspp9BfJNxeVbodmlECM9iZKKxa5pMg7UG0eKLGdK/y1GfMf9GSiv6vMGL4mIfropiGnO1kHMuKYIvRy5V6aY1G9XPSNghFtUidD8K7Xu7FxFrPuVLCIleatm4w/9flicQ2Zkv9dhdDOO7x8sjE6ddFmdrr62hPBEs18uINhJvb+zKEmrrs0JF0XwNLn4pCBE0Qgf0d6rkVfucKWA4plh6fEvK9dLs/oxGXT1duaLEfvDSawizXQ7QAm1AoMxTrG+RsrAcHz5KSULlbvjVvHTEhOrsT6oan6pbKrdBNKscukp9JlmEYvp4WBhjPHAzykDxMD+rcM6pIaF8HZsjgotvO50gvZuVMRq/4L6197UPpCmTpPcjyG1XIcIgrjzkKvfNhEa0GwkqGXHk1RhIr0nQg66ZSSCh4VkCbfPy8KWnE6takQkIRjNypttMrNI0KNvZTuQBg++4Hj5Xsi0LwFI2TrdimUYHzElFNpZ6Qn5Cbo2kpXU/qaJtmiVX+fJB3e0AU",
-    "updatedAt": "2026-02-12T08:53:59.390Z"
+    "salt": "RmAJhRetjspo6LNzS0inpQ==",
+    "wrapIv": "RN3Sxr9s0AhF1w6N",
+    "wrappedKey": "X3oTuPswxCrWgliODdl75rocGPWi1gZ3B9V8EBMsi/rlatJNuzKhx2DMr8CfahNQ",
+    "dataIv": "IeiJ3+4dgGBg/0eI",
+    "data": "rgYX+TEVWV+wgHcKvx1n3dp9N//UML7QboNa/Ei+NBhvJxb6xq6E8Kc0yfjYUq4kFSsLccDAXrpZkrYXyiY/vvI607UkhbLAzxWoNuxLxykis6ADdn35vVHFo2tvM9wsYOy5RavHJ3TyWzZtSjIFqWqML0Z7TnyJQYSJsizqSKosoCG5FUy/bkIDZhqz83OgsvuJyQ7b2d/BfHLQfVeBWTk4EI7oHyy+IVDxlvGG3ellatsbOGEX1GZp55tzlgRaTpScSX0Dhwikm4DzegvEX8ZmaqYzgrrNQZKe0Ejsm+SzhDNKuTKkSljk74c7XEeViZg81A/c5umE8qcywlFy4nfk20SFpEz3gZnLqYgs0G/aSRjZGa+OVwDFxQAjnZCGdKLK3iKQ598V+VTc89BIaP0Yh29I8nxXck0LIzlh+fL28J8vO+yEUJjATHxSno1qWIJWLoLVw+mA974dEqN5xUsJxarxDQt5BHPLF7WKhechI8M063z2VT72GbJLNeKaHKteV0MdjSN0ZhHRQgc0CPt5tBl2p2C9EPWb",
+    "updatedAt": "2026-02-12T08:54:01.595Z"
   },
   "xp": {
     "total": 1937,
@@ -11092,7 +11092,7 @@
       "lastUsed": "2026-02-02"
     },
     "multiplier": 1.2,
-    "_updatedAt": "2026-02-12T08:53:56.269Z"
+    "_updatedAt": "2026-02-12T08:54:00.681Z"
   },
   "achievements": {
     "unlocked": {
