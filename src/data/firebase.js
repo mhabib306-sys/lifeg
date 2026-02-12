@@ -171,14 +171,20 @@ async function requestCalendarTokenWithGIS(mode = 'interactive') {
       resolve(token);
     };
 
-    // Some mismatch/popup failures never invoke callback; avoid hanging forever.
-    // 60s allows enough time for multi-scope consent screens (Calendar + Contacts).
-    const timeoutId = setTimeout(() => finalize(null), 60000);
+    // Silent refreshes should resolve in <5s; interactive consent screens need 60s.
+    const timeoutMs = mode === 'silent' ? 10000 : 60000;
+    const timeoutId = setTimeout(() => {
+      console.warn(`[GIS] Token request timed out (${mode}, ${timeoutMs}ms)`);
+      finalize(null);
+    }, timeoutMs);
 
     try {
       const tokenClient = window.google.accounts.oauth2.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
         scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly https://www.googleapis.com/auth/spreadsheets.readonly',
+        // FedCM: allows token refresh in browsers that block third-party cookies
+        // (Safari ITP, Chrome Privacy Sandbox). Falls back gracefully if unsupported.
+        use_fedcm_for_prompt: true,
         callback: (resp) => {
           clearTimeout(timeoutId);
           _lastGisErrorType = '';
@@ -193,7 +199,7 @@ async function requestCalendarTokenWithGIS(mode = 'interactive') {
         error_callback: (err) => {
           clearTimeout(timeoutId);
           _lastGisErrorType = err?.type || 'unknown';
-          console.warn('[GIS] Token request error:', _lastGisErrorType);
+          console.warn(`[GIS] Token request error (${mode}):`, _lastGisErrorType);
           finalize(null);
         },
       });

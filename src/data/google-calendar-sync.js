@@ -16,7 +16,7 @@ import {
 
 const GCAL_API = 'https://www.googleapis.com/calendar/v3';
 const TOKEN_MAX_AGE_MS_DEFAULT = 55 * 60 * 1000; // 55 minutes fallback (tokens last ~60 min)
-const TOKEN_REFRESH_BUFFER_MS = 10 * 60 * 1000; // Refresh 10 minutes before expiry
+const TOKEN_REFRESH_BUFFER_MS = 15 * 60 * 1000; // Refresh 15 minutes before expiry (aggressive)
 
 function getTokenMaxAgeMs() {
   const expiresIn = parseInt(localStorage.getItem('nucleusGCalExpiresIn') || '0', 10);
@@ -40,6 +40,9 @@ let silentRefreshFailedAt = 0; // Timestamp of last failed silent refresh
 let silentRefreshFailCount = 0; // Consecutive failure count for escalating backoff
 let scheduledRetryTimerId = null; // setTimeout ID for auto-retry after failure
 let visibilityChangeHandler = null;
+let onlineHandler = null;
+let heartbeatIntervalId = null;
+let lastHeartbeatTime = Date.now();
 
 function getSilentRefreshCooldownMs() {
   if (silentRefreshFailCount <= 1) return 1 * 60 * 1000;  // 1 min
@@ -242,6 +245,20 @@ async function refreshAccessTokenSilent({ bypassCooldown = false } = {}) {
         state.gcalTokenExpired = false;
         state.gcalError = null;
         return true;
+      }
+      // First failure: immediate single retry after a brief pause (handles GIS
+      // script race conditions and transient iframe failures)
+      if (silentRefreshFailCount === 0) {
+        await new Promise(r => setTimeout(r, 2000));
+        const retryToken = await window.signInWithGoogleCalendar?.({ mode: 'silent' });
+        if (retryToken) {
+          silentRefreshFailedAt = 0;
+          silentRefreshFailCount = 0;
+          clearScheduledRetry();
+          state.gcalTokenExpired = false;
+          state.gcalError = null;
+          return true;
+        }
       }
       silentRefreshFailCount++;
       silentRefreshFailedAt = Date.now();
@@ -667,6 +684,8 @@ export async function connectGCal() {
 export function stopGCalSyncTimers() {
   if (syncIntervalId) { clearInterval(syncIntervalId); syncIntervalId = null; }
   if (tokenRefreshIntervalId) { clearInterval(tokenRefreshIntervalId); tokenRefreshIntervalId = null; }
+  if (heartbeatIntervalId) { clearInterval(heartbeatIntervalId); heartbeatIntervalId = null; }
+  if (onlineHandler) { window.removeEventListener('online', onlineHandler); onlineHandler = null; }
   clearScheduledRetry();
 }
 
@@ -691,6 +710,8 @@ export function disconnectGCal() {
   state.gcontactsError = null;
   if (syncIntervalId) { clearInterval(syncIntervalId); syncIntervalId = null; }
   if (tokenRefreshIntervalId) { clearInterval(tokenRefreshIntervalId); tokenRefreshIntervalId = null; }
+  if (heartbeatIntervalId) { clearInterval(heartbeatIntervalId); heartbeatIntervalId = null; }
+  if (onlineHandler) { window.removeEventListener('online', onlineHandler); onlineHandler = null; }
   clearScheduledRetry();
   silentRefreshFailCount = 0;
   window.render();
@@ -765,7 +786,7 @@ export function initGCalSync() {
     if (await ensureValidToken()) syncGCalNow();
   }, SYNC_INTERVAL_MS);
 
-  // Proactive token refresh — refresh before expiry so session never lapses
+  // Proactive token refresh — check every 60s, refresh well before expiry
   if (tokenRefreshIntervalId) clearInterval(tokenRefreshIntervalId);
   tokenRefreshIntervalId = setInterval(async () => {
     if (!isGCalConnected()) return;
@@ -777,17 +798,64 @@ export function initGCalSync() {
         console.log('[GCal] Token proactively refreshed');
       }
     }
-  }, 2 * 60 * 1000); // Check every 2 minutes (tighter than before)
+  }, 60 * 1000); // Check every 60 seconds
+
+  // Sleep/wake heartbeat: detect when laptop resumes from sleep.
+  // setInterval timers freeze during sleep — if elapsed wall-clock time since
+  // last heartbeat exceeds 2 minutes, treat it as a wake event.
+  if (heartbeatIntervalId) clearInterval(heartbeatIntervalId);
+  lastHeartbeatTime = Date.now();
+  heartbeatIntervalId = setInterval(async () => {
+    const now = Date.now();
+    const elapsed = now - lastHeartbeatTime;
+    lastHeartbeatTime = now;
+    // If >2 min passed since last 30s tick, the system was asleep
+    if (elapsed > 2 * 60 * 1000) {
+      console.log(`[GCal] Wake detected (${Math.round(elapsed / 1000)}s elapsed)`);
+      if (!isGCalConnected()) return;
+      // Reset cooldown — fresh attempt after sleep
+      silentRefreshFailedAt = 0;
+      silentRefreshFailCount = 0;
+      if (!isTokenValid()) {
+        const refreshed = await refreshAccessTokenSilent({ bypassCooldown: true });
+        if (refreshed) {
+          console.log('[GCal] Token refreshed after wake');
+          window.render();
+        }
+      }
+    }
+  }, 30 * 1000); // Heartbeat every 30 seconds
+
+  // When device comes back online, try to refresh the token
+  if (onlineHandler) window.removeEventListener('online', onlineHandler);
+  onlineHandler = async () => {
+    if (!isGCalConnected()) return;
+    console.log('[GCal] Network restored, checking token');
+    // Brief delay — let network stabilize
+    await new Promise(r => setTimeout(r, 1500));
+    silentRefreshFailedAt = 0;
+    if (!isTokenValid()) {
+      const refreshed = await refreshAccessTokenSilent({ bypassCooldown: true });
+      if (refreshed) {
+        console.log('[GCal] Token refreshed after reconnect');
+        window.render();
+        // Also re-sync events since we may have missed updates
+        syncGCalNow();
+      }
+    }
+  };
+  window.addEventListener('online', onlineHandler);
 
   // When user returns to the tab, check token immediately
   if (visibilityChangeHandler) document.removeEventListener('visibilitychange', visibilityChangeHandler);
   visibilityChangeHandler = async () => {
     if (document.visibilityState !== 'visible') return;
     if (!isGCalConnected()) return;
+    // Always reset cooldown on tab focus — user is actively returning
+    silentRefreshFailedAt = 0;
+    silentRefreshFailCount = 0;
     if (!isTokenValid()) {
-      // Always attempt refresh on tab focus — bypass cooldown since user is actively returning
-      silentRefreshFailedAt = 0;
-      const refreshed = await refreshAccessTokenSilent();
+      const refreshed = await refreshAccessTokenSilent({ bypassCooldown: true });
       if (refreshed) {
         console.log('[GCal] Token refreshed on tab focus');
         window.render();
