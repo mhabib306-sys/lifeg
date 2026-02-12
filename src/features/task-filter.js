@@ -9,7 +9,7 @@ import { getTasksByPerson, getAreaById, getLabelById, getPersonById, getCategory
  * Used by both Today and Next perspectives so the check can't drift.
  */
 export function isNextTaggedTask(task, taskLabels = state.taskLabels) {
-  const nextLabel = taskLabels.find(l => l.name.toLowerCase() === 'next');
+  const nextLabel = taskLabels.find(l => l.name.trim().toLowerCase() === 'next');
   return !!(nextLabel && (task.labels || []).includes(nextLabel.id));
 }
 

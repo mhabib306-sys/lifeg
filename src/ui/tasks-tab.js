@@ -1804,7 +1804,7 @@ export function renderTasksTab() {
           ` : (state.activePerspective === 'today' ? (() => {
             // Today view: Split into Due, Today, Starting, and Next sections
             const today = getLocalDateString();
-            const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
+            const nextLabel = state.taskLabels.find(l => l.name.trim().toLowerCase() === 'next');
 
             // All dated tasks (not Next-only)
             const allDated = filteredTasks.filter(t => {

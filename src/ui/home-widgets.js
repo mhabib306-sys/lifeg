@@ -77,7 +77,7 @@ function normalizeGSheetResponseHtml(rawHtml) {
 // ---------------------------------------------------------------------------
 
 export function renderStatsWidget(today) {
-  const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
+  const nextLabel = state.taskLabels.find(l => l.name.trim().toLowerCase() === 'next');
   const todayTasksCount = state.tasksData.filter(t => {
     if (t.completed || t.isNote) return false;
     const isDueToday = t.dueDate === today;
@@ -190,7 +190,7 @@ export function renderTodayTasksWidget(today) {
 }
 
 export function renderNextTasksWidget(today) {
-  const nextLabel = state.taskLabels.find(l => l.name.toLowerCase() === 'next');
+  const nextLabel = state.taskLabels.find(l => l.name.trim().toLowerCase() === 'next');
   const nextTasks = nextLabel ? state.tasksData.filter(t => {
     if (t.completed || t.isNote) return false;
     const isNextTagged = (t.labels || []).includes(nextLabel.id);
