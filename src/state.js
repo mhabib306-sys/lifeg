@@ -216,6 +216,9 @@ export const state = {
   syncStatus: 'idle',                 // 'idle' | 'syncing' | 'success' | 'error'
   lastSyncTime: null,
   syncDebounceTimer: null,
+  syncInProgress: false,              // Lock to prevent concurrent save/load
+  syncPendingRetry: false,            // Queue retry after current sync completes
+  syncRetryCount: 0,                  // Exponential backoff counter
   weatherData: null,
   weatherLocation: { lat: 30.0291, lon: 31.4975, city: 'New Cairo' },
 

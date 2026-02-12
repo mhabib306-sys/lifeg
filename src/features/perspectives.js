@@ -27,12 +27,15 @@ function clearPerspectiveDeleted(id) {
  * @returns {object} The newly created perspective
  */
 export function createPerspective(name, icon, filter) {
+  const now = new Date().toISOString();
   const perspective = {
     id: 'custom_' + Date.now(),
     name: name,
     icon: icon || '\uD83D\uDCCC',
     filter: filter,
-    builtin: false
+    builtin: false,
+    createdAt: now,
+    updatedAt: now
   };
   clearPerspectiveDeleted(perspective.id);
   state.customPerspectives.push(perspective);

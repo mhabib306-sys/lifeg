@@ -220,23 +220,26 @@ export function setupInlineAutocomplete(inputId, config = {}) {
 
   function getCreateFn() {
     if (triggerChar === '#') return (name) => {
-      const c = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '\uD83D\uDCC1' };
+      const now = new Date().toISOString();
+      const c = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '\uD83D\uDCC1', createdAt: now, updatedAt: now };
       state.taskAreas.push(c);
       localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
       debouncedSaveToGithub();
       return { ...c, _acType: 'area' };
     };
     if (triggerChar === '@') return (name) => {
+      const now = new Date().toISOString();
       const colors = ['#ef4444','#f59e0b','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
-      const l = { id: 'label_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
+      const l = { id: 'label_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)], createdAt: now, updatedAt: now };
       state.taskLabels.push(l);
       localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
       debouncedSaveToGithub();
       return l;
     };
     if (triggerChar === '&') return (name) => {
+      const now = new Date().toISOString();
       const colors = ['#4A90A4','#6B8E5A','#E5533D','#C4943D','#7C6B8E'];
-      const p = { id: 'person_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)], email: '' };
+      const p = { id: 'person_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)], email: '', createdAt: now, updatedAt: now };
       state.taskPeople.push(p);
       localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
       debouncedSaveToGithub();

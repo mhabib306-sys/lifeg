@@ -169,7 +169,7 @@ export function savePerspectiveFromModal() {
     // Update existing perspective
     const idx = state.customPerspectives.findIndex(p => p.id === state.editingPerspectiveId);
     if (idx !== -1) {
-      state.customPerspectives[idx] = { ...state.customPerspectives[idx], name, icon, filter };
+      state.customPerspectives[idx] = { ...state.customPerspectives[idx], name, icon, filter, updatedAt: new Date().toISOString() };
       saveTasksData();
     }
     state.activePerspective = state.editingPerspectiveId;

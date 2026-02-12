@@ -766,7 +766,8 @@ export function renderAreaInput() {
     (item) => `<div class="autocomplete-option-icon" style="background: ${item.color}20; color: ${item.color}">${item.emoji || '<svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}</div>`,
     true,
     (name) => {
-      const newCat = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '\uD83D\uDCC1' };
+      const now = new Date().toISOString();
+      const newCat = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '\uD83D\uDCC1', createdAt: now, updatedAt: now };
       state.taskAreas.push(newCat);
       localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
       debouncedSaveToGithub();
@@ -907,7 +908,8 @@ export function renderTagsInput() {
     true,
     (name) => {
       const colors = [_css('--danger') || '#ef4444', _css('--warning') || '#f59e0b', _css('--success') || '#22c55e', _css('--accent') || '#3b82f6', _css('--notes-accent') || '#8b5cf6', '#ec4899'];
-      const newTag = { id: 'label_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)] };
+      const now = new Date().toISOString();
+      const newTag = { id: 'label_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)], createdAt: now, updatedAt: now };
       state.taskLabels.push(newTag);
       localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
       debouncedSaveToGithub();
@@ -976,7 +978,8 @@ export function renderPeopleInput() {
       : `<div class="autocomplete-option-icon bg-[var(--bg-secondary)]"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`,
     true,
     (name) => {
-      const newPerson = { id: 'person_' + Date.now(), name, email: '' };
+      const now = new Date().toISOString();
+      const newPerson = { id: 'person_' + Date.now(), name, email: '', createdAt: now, updatedAt: now };
       state.taskPeople.push(newPerson);
       localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
       debouncedSaveToGithub();

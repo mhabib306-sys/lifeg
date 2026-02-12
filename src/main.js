@@ -24,7 +24,7 @@ import { initLibreSync } from './data/libre-sync.js';
 import { initGCalSync } from './data/google-calendar-sync.js';
 import { initGoogleContactsSync } from './data/google-contacts-sync.js';
 import { initGSheetSync } from './data/google-sheets-sync.js';
-import { applyStoredTheme, loadCloudData, debouncedSaveToGithub } from './data/github-sync.js';
+import { applyStoredTheme, loadCloudData, debouncedSaveToGithub, flushPendingSave } from './data/github-sync.js';
 import { initAuth, preloadGoogleIdentityServices } from './data/firebase.js';
 import { render } from './ui/render.js';
 import { migrateTodayFlag } from './features/tasks.js';
@@ -192,6 +192,21 @@ function initApp() {
 
   window.addEventListener('offline', () => {
     console.log('Offline — changes saved locally');
+  });
+
+  // Flush pending saves when user leaves or hides tab
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      flushPendingSave({ keepalive: true });
+    } else if (document.visibilityState === 'visible') {
+      // Pull latest cloud data when user returns to tab
+      loadCloudData().then(() => {
+        render();
+      }).catch(() => {});
+    }
+  });
+  window.addEventListener('beforeunload', () => {
+    flushPendingSave({ keepalive: true });
   });
 
   // Improve mobile keyboard UX: hide fixed bottom nav while keyboard is open

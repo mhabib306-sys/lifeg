@@ -203,6 +203,23 @@ function parseTimestamp(value) {
   return Number.isFinite(ts) ? ts : 0;
 }
 
+/**
+ * Merge a singleton value (weights, xp, streak, etc.) using _updatedAt timestamps.
+ * Only accepts cloud version if its _updatedAt is strictly newer than local.
+ * Falls back to accepting cloud if local has no _updatedAt (migration path).
+ */
+function mergeSingletonIfNewer(stateKey, cloudValue, localStorageKey) {
+  if (!cloudValue) return;
+  const local = state[stateKey];
+  const cloudTs = parseTimestamp(cloudValue?._updatedAt);
+  const localTs = parseTimestamp(local?._updatedAt);
+  // Accept cloud if: local has no timestamp (migration), or cloud is strictly newer
+  if (!localTs || cloudTs > localTs) {
+    state[stateKey] = cloudValue;
+    localStorage.setItem(localStorageKey, JSON.stringify(cloudValue));
+  }
+}
+
 function pushConflictNotification(entry) {
   const list = Array.isArray(state.conflictNotifications) ? state.conflictNotifications : [];
   list.unshift({
@@ -419,19 +436,21 @@ function mergeTaskCollectionsFromCloud(cloudData = {}) {
   state.tasksData = mergedTasks;
   localStorage.setItem(TASKS_KEY, JSON.stringify(state.tasksData));
 
-  const mergedAreas = mergeEntityCollection(state.taskAreas, cloudData.taskCategories, [], 'taskCategories');
+  const TS = ['updatedAt', 'createdAt'];
+
+  const mergedAreas = mergeEntityCollection(state.taskAreas, cloudData.taskCategories, TS, 'taskCategories');
   state.taskAreas = mergedAreas;
   localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
 
-  const mergedCategories = mergeEntityCollection(state.taskCategories, cloudData.categories, [], 'categories');
+  const mergedCategories = mergeEntityCollection(state.taskCategories, cloudData.categories, TS, 'categories');
   state.taskCategories = mergedCategories;
   localStorage.setItem(CATEGORIES_KEY, JSON.stringify(state.taskCategories));
 
-  const mergedLabels = mergeEntityCollection(state.taskLabels, cloudData.taskLabels, [], 'taskLabels');
+  const mergedLabels = mergeEntityCollection(state.taskLabels, cloudData.taskLabels, TS, 'taskLabels');
   state.taskLabels = mergedLabels;
   localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
 
-  const mergedPeople = mergeEntityCollection(state.taskPeople, cloudData.taskPeople, [], 'taskPeople');
+  const mergedPeople = mergeEntityCollection(state.taskPeople, cloudData.taskPeople, TS, 'taskPeople');
   state.taskPeople = mergedPeople.map(person => ({
     ...person,
     email: typeof person?.email === 'string' ? person.email : '',
@@ -441,7 +460,7 @@ function mergeTaskCollectionsFromCloud(cloudData = {}) {
   }));
   localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
 
-  const mergedPerspectives = mergeEntityCollection(state.customPerspectives, cloudData.customPerspectives, [], 'customPerspectives');
+  const mergedPerspectives = mergeEntityCollection(state.customPerspectives, cloudData.customPerspectives, TS, 'customPerspectives');
   state.customPerspectives = mergedPerspectives;
   localStorage.setItem(PERSPECTIVES_KEY, JSON.stringify(state.customPerspectives));
 
@@ -463,14 +482,23 @@ function mergeTaskCollectionsFromCloud(cloudData = {}) {
 
 /**
  * Push all app data to the configured GitHub repo
+ * @param {object} [options] - Options
+ * @param {boolean} [options.keepalive] - Use keepalive on fetch (for beforeunload)
  * @returns {Promise<boolean>} true on success
  */
-export async function saveToGithub() {
+export async function saveToGithub(options = {}) {
   const token = getGithubToken();
   if (!token) {
     console.log('No GitHub token configured');
     return false;
   }
+
+  // Sync lock — prevent concurrent save/load operations
+  if (state.syncInProgress) {
+    state.syncPendingRetry = true;
+    return false;
+  }
+  state.syncInProgress = true;
 
   updateSyncStatus('syncing', 'Saving to GitHub...');
 
@@ -550,11 +578,13 @@ export async function saveToGithub() {
           message: `Auto-save: ${new Date().toLocaleString()}`,
           content: content,
           ...(sha ? { sha } : {})
-        })
+        }),
+        keepalive: !!options.keepalive
       }
     );
 
     if (updateResponse.ok) {
+      state.syncRetryCount = 0; // Reset retry counter on success
       updateSyncStatus('success', 'Saved to GitHub');
       console.log('Saved to GitHub');
       return true;
@@ -565,7 +595,24 @@ export async function saveToGithub() {
   } catch (e) {
     updateSyncStatus('error', `Sync failed: ${e.message}`);
     console.error('GitHub save failed:', e);
+
+    // Retry with exponential backoff (max 4 retries: 4s, 8s, 16s, 30s)
+    const MAX_RETRIES = 4;
+    if (state.syncRetryCount < MAX_RETRIES) {
+      state.syncRetryCount++;
+      const delay = Math.min(2000 * Math.pow(2, state.syncRetryCount), 30000);
+      console.log(`Retrying save in ${delay / 1000}s (attempt ${state.syncRetryCount}/${MAX_RETRIES})`);
+      setTimeout(() => {
+        saveToGithub().catch(err => console.error('Retry save failed:', err));
+      }, delay);
+    }
     return false;
+  } finally {
+    state.syncInProgress = false;
+    if (state.syncPendingRetry) {
+      state.syncPendingRetry = false;
+      debouncedSaveToGithub();
+    }
   }
 }
 
@@ -579,8 +626,21 @@ export async function saveToGithub() {
 export function debouncedSaveToGithub() {
   if (state.syncDebounceTimer) clearTimeout(state.syncDebounceTimer);
   state.syncDebounceTimer = setTimeout(() => {
+    state.syncDebounceTimer = null;
     saveToGithub().catch(err => console.error('Debounced save failed:', err));
   }, 2000);
+}
+
+/**
+ * Immediately flush any pending debounced save (for beforeunload/visibilitychange).
+ * @param {object} [options] - Options passed to saveToGithub
+ */
+export function flushPendingSave(options = {}) {
+  if (state.syncDebounceTimer) {
+    clearTimeout(state.syncDebounceTimer);
+    state.syncDebounceTimer = null;
+    saveToGithub(options).catch(err => console.error('Flush save failed:', err));
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -591,6 +651,10 @@ export function debouncedSaveToGithub() {
  * Fetch data from GitHub (or static fallback) and merge with local storage
  */
 export async function loadCloudData() {
+  // Sync lock — prevent concurrent save/load operations
+  if (state.syncInProgress) return;
+  state.syncInProgress = true;
+
   const token = getGithubToken();
 
   function shouldUseCloud(cloudUpdated) {
@@ -641,35 +705,16 @@ export async function loadCloudData() {
         }
 
         mergeLifeData(cloudData);
-        if (cloudData.weights) {
-          state.WEIGHTS = cloudData.weights;
-          localStorage.setItem(WEIGHTS_KEY, JSON.stringify(state.WEIGHTS));
-        }
-        if (cloudData.maxScores) {
-          state.MAX_SCORES = cloudData.maxScores;
-          localStorage.setItem(MAX_SCORES_KEY, JSON.stringify(state.MAX_SCORES));
-        }
+        mergeSingletonIfNewer('WEIGHTS', cloudData.weights, WEIGHTS_KEY);
+        mergeSingletonIfNewer('MAX_SCORES', cloudData.maxScores, MAX_SCORES_KEY);
         mergeTaskCollectionsFromCloud(cloudData);
         if (cloudData.meetingNotesByEvent) {
           mergeMeetingNotesData(cloudData.meetingNotesByEvent);
         }
-        // Restore gamification data
-        if (cloudData.categoryWeights) {
-          state.CATEGORY_WEIGHTS = cloudData.categoryWeights;
-          localStorage.setItem(CATEGORY_WEIGHTS_KEY, JSON.stringify(state.CATEGORY_WEIGHTS));
-        }
-        if (cloudData.xp) {
-          state.xp = cloudData.xp;
-          localStorage.setItem(XP_KEY, JSON.stringify(state.xp));
-        }
-        if (cloudData.streak) {
-          state.streak = cloudData.streak;
-          localStorage.setItem(STREAK_KEY, JSON.stringify(state.streak));
-        }
-        if (cloudData.achievements) {
-          state.achievements = cloudData.achievements;
-          localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(state.achievements));
-        }
+        mergeSingletonIfNewer('CATEGORY_WEIGHTS', cloudData.categoryWeights, CATEGORY_WEIGHTS_KEY);
+        mergeSingletonIfNewer('xp', cloudData.xp, XP_KEY);
+        mergeSingletonIfNewer('streak', cloudData.streak, STREAK_KEY);
+        mergeSingletonIfNewer('achievements', cloudData.achievements, ACHIEVEMENTS_KEY);
         // Triggers are now properly merged inside mergeTaskCollectionsFromCloud() above
         console.log('Loaded from GitHub');
         updateSyncStatus('success', 'Loaded from GitHub');
@@ -682,10 +727,7 @@ export async function loadCloudData() {
     if (response.ok) {
       const cloudData = await response.json();
       mergeLifeData(cloudData);
-      if (cloudData.weights) {
-        state.WEIGHTS = cloudData.weights;
-        localStorage.setItem(WEIGHTS_KEY, JSON.stringify(state.WEIGHTS));
-      }
+      mergeSingletonIfNewer('WEIGHTS', cloudData.weights, WEIGHTS_KEY);
       mergeTaskCollectionsFromCloud(cloudData);
       if (cloudData.meetingNotesByEvent) {
         mergeMeetingNotesData(cloudData.meetingNotesByEvent);
@@ -695,6 +737,8 @@ export async function loadCloudData() {
     }
   } catch (e) {
     console.log('Offline mode - using local data');
+  } finally {
+    state.syncInProgress = false;
   }
 }
 

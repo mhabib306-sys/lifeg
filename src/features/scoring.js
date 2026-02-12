@@ -489,10 +489,12 @@ export function loadMaxScores() {
 }
 
 function saveWeights() {
+  state.WEIGHTS._updatedAt = new Date().toISOString();
   localStorage.setItem(WEIGHTS_KEY, JSON.stringify(state.WEIGHTS));
 }
 
 function saveMaxScores() {
+  state.MAX_SCORES._updatedAt = new Date().toISOString();
   localStorage.setItem(MAX_SCORES_KEY, JSON.stringify(state.MAX_SCORES));
 }
 
@@ -887,18 +889,22 @@ export function processGamification(dateStr) {
 // ============================================================================
 
 export function saveXP() {
+  state.xp._updatedAt = new Date().toISOString();
   localStorage.setItem(XP_KEY, JSON.stringify(state.xp));
 }
 
 export function saveStreak() {
+  state.streak._updatedAt = new Date().toISOString();
   localStorage.setItem(STREAK_KEY, JSON.stringify(state.streak));
 }
 
 export function saveAchievements() {
+  state.achievements._updatedAt = new Date().toISOString();
   localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(state.achievements));
 }
 
 export function saveCategoryWeights() {
+  state.CATEGORY_WEIGHTS._updatedAt = new Date().toISOString();
   localStorage.setItem(CATEGORY_WEIGHTS_KEY, JSON.stringify(state.CATEGORY_WEIGHTS));
 }
 
