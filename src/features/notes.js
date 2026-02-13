@@ -1367,9 +1367,9 @@ export function handleNoteKeydown(event, noteId) {
     if (nextTitle !== (note.title || '')) {
       note.title = nextTitle;
       recordNoteChange(note, 'updated', { field: 'title' });
-      // No saveTasksData() here — createNoteAfter → persistAndRender handles it
+      // No saveTasksData() here — createChildNote → persistAndRender handles it
     }
-    createNoteAfter(noteId);
+    createChildNote(noteId);
     return;
   }
 
