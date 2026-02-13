@@ -1136,14 +1136,15 @@ export function toggleNoteTask(id) {
     if (!item.noteLifecycleState) item.noteLifecycleState = 'active';
     if (!item.noteHistory) item.noteHistory = [];
     if (item.noteOrder == null) item.noteOrder = item.order || Date.now();
-    if (item.parentId === undefined) item.parentId = null;
+    if (item.parentId == null) item.parentId = null;
     if (item.indent == null) item.indent = 0;
     // Clear task-only view flags (these views don't apply to notes)
     item.today = false;
     item.flagged = false;
   }
 
-  item.updatedAt = new Date().toISOString();
+  const wasNote = !item.isNote; // inverted because we already flipped it
+  recordNoteChange(item, 'toggled', { from: wasNote ? 'task' : 'note', to: wasNote ? 'note' : 'task' });
   saveTasksData();
   debouncedSaveToGithubSafe();
   window.render();
