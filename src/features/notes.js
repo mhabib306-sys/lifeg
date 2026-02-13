@@ -176,7 +176,9 @@ function noteAcSelectItem(item) {
   const note = state.tasksData.find(t => t.id === noteAcNoteId && isActiveNote(t));
   if (!note) { noteAcDismissPopup(); return; }
 
-  const el = document.querySelector(`[data-note-id="${noteAcNoteId}"] .note-input`);
+  // Find the active contenteditable element (could be .note-input or .note-page-title in page view)
+  const el = document.querySelector(`[data-note-id="${noteAcNoteId}"] .note-input`)
+    || document.querySelector('.note-page-title');
   if (!el) { noteAcDismissPopup(); return; }
 
   // Remove trigger + query text from contenteditable
@@ -218,6 +220,8 @@ function noteAcSelectItem(item) {
 
   // Re-render chips (without full render which would lose focus)
   renderNoteMetaChipsDOM(noteAcNoteId || note.id, note);
+  // Also update page view meta chips if in page view
+  renderPageMetaChipsDOM(noteAcNoteId || note.id, note);
 }
 
 function noteAcDismissPopup() {
@@ -361,7 +365,16 @@ export function handleNoteInput(event, noteId) {
 function renderNoteMetaChipsDOM(noteId, note) {
   const container = document.querySelector(`[data-note-id="${noteId}"] .note-meta-chips`);
   if (!container) return;
+  // Safe: buildNoteMetaChipsHtml uses escapeHtml on all user content
   container.innerHTML = buildNoteMetaChipsHtml(note);
+}
+
+/** Update page view meta chips DOM without full re-render (preserves focus). */
+function renderPageMetaChipsDOM(noteId, note) {
+  const container = document.querySelector('.note-page-meta');
+  if (!container || state.zoomedNoteId !== noteId) return;
+  // Safe: buildPageMetaChipsHtml uses escapeHtml on all user content
+  container.innerHTML = buildPageMetaChipsHtml(note);
 }
 
 /** Build HTML for note metadata (plain text with bullet separators, matching task style). */
@@ -1212,12 +1225,10 @@ export function handleNoteKeydown(event, noteId) {
     return;
   }
 
-  // Cmd/Ctrl+Enter = zoom into note
+  // Cmd/Ctrl+Enter = zoom into note (open as page)
   if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
     event.preventDefault();
-    if (noteHasChildren(noteId)) {
-      zoomIntoNote(noteId);
-    }
+    zoomIntoNote(noteId);
     return;
   }
 
@@ -1282,6 +1293,9 @@ export function handleNoteKeydown(event, noteId) {
     const idx = visible.findIndex(n => n.id === noteId);
     if (idx > 0) {
       focusNote(visible[idx - 1].id);
+    } else if (idx === 0 && state.zoomedNoteId) {
+      // At first child, navigate up to page description
+      focusPageDescription(state.zoomedNoteId);
     }
     return;
   }
@@ -1852,10 +1866,10 @@ export function renderNoteItem(note) {
       ondragleave="handleNoteDragLeave(event)"
       ondrop="handleNoteDrop(event)"` : ''}>
       <div class="note-row group">
-        <button onclick="event.stopPropagation(); ${hasChildren ? `toggleNoteCollapse('${note.id}')` : `createChildNote('${note.id}')`}"
+        <button onclick="event.stopPropagation(); zoomIntoNote('${note.id}')"
           class="note-bullet ${hasChildren ? 'has-children' : ''} ${isCollapsed ? 'collapsed' : ''}"
-          title="${hasChildren ? (isCollapsed ? 'Expand' : 'Collapse') : 'Add child note'}"
-          aria-label="${hasChildren ? (isCollapsed ? 'Expand note' : 'Collapse note') : 'Add child note'}">
+          title="Open as page"
+          aria-label="Open note as page">
           ${hasChildren
             ? `<span class="note-bullet-dot ${isCollapsed ? 'note-collapsed-ring' : ''}"></span>`
             : '<span class="note-bullet-dot"></span>'}
@@ -1876,12 +1890,10 @@ export function renderNoteItem(note) {
         ` : ''}
 
         <div class="note-actions md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
-          ${hasChildren ? `
-            <button onclick="event.stopPropagation(); zoomIntoNote('${note.id}')"
-              class="note-action-btn" title="Zoom in (Cmd+Enter)" aria-label="Zoom into note">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </button>
-          ` : ''}
+          <button onclick="event.stopPropagation(); zoomIntoNote('${note.id}')"
+            class="note-action-btn" title="Open as page (Cmd+Enter)" aria-label="Open note as page">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </button>
           <button onclick="event.stopPropagation(); createChildNote('${note.id}')"
             class="note-action-btn" title="Add child note (Enter)" aria-label="Add child note">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -1918,7 +1930,11 @@ export function renderNotesOutliner(filter = null) {
     return `
       <div class="text-center py-8 text-[var(--text-muted)]">
         <p class="text-sm font-medium mb-1">No child notes</p>
-        <p class="text-xs text-[var(--text-muted)]">Press Enter to create one</p>
+        <p class="text-xs text-[var(--text-muted)] mb-3">Press the button below to add one</p>
+        <button onclick="createRootNote()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-lg transition">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Add note
+        </button>
       </div>
     `;
   }

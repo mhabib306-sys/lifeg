@@ -114,7 +114,11 @@ import {
   zoomIntoNote, zoomOutOfNote, navigateToBreadcrumb, renderNotesBreadcrumb,
   handleNoteDragStart, handleNoteDragEnd, handleNoteDragOver,
   handleNoteDragLeave, handleNoteDrop, reorderNotes,
-  renderNoteItem, renderNotesOutliner
+  renderNoteItem, renderNotesOutliner,
+  handlePageTitleBlur, handlePageTitleKeydown,
+  handleDescriptionBlur, handleDescriptionKeydown, handleDescriptionInput,
+  focusPageDescription, focusPageTitle, focusPageTitleForMeta,
+  buildPageMetaChipsHtml
 } from './features/notes.js';
 
 import {
@@ -365,6 +369,10 @@ Object.assign(window, {
   handleNoteDragStart, handleNoteDragEnd, handleNoteDragOver,
   handleNoteDragLeave, handleNoteDrop, reorderNotes,
   renderNoteItem, renderNotesOutliner,
+  handlePageTitleBlur, handlePageTitleKeydown,
+  handleDescriptionBlur, handleDescriptionKeydown, handleDescriptionInput,
+  focusPageDescription, focusPageTitle, focusPageTitleForMeta,
+  buildPageMetaChipsHtml,
 
   // Drag & Drop
   handleDragStart, handleDragEnd, handleDragOver, handleDragLeave,
