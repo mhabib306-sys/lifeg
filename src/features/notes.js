@@ -407,8 +407,15 @@ function buildNoteMetaChipsHtml(note) {
 export function removeNoteInlineMeta(noteId, type, id) {
   const note = state.tasksData.find(t => t.id === noteId && isActiveNote(t));
   if (!note) return;
-  if (type === 'category') note.areaId = null;
-  else if (type === 'label') note.labels = (note.labels || []).filter(l => l !== id);
+  if (type === 'category') {
+    const isSubcategory = (state.taskCategories || []).some(c => c.id === id);
+    if (isSubcategory) {
+      note.categoryId = null;
+    } else {
+      note.areaId = null;
+      note.categoryId = null;
+    }
+  } else if (type === 'label') note.labels = (note.labels || []).filter(l => l !== id);
   else if (type === 'person') note.people = (note.people || []).filter(p => p !== id);
   else if (type === 'deferDate') note.deferDate = null;
   recordNoteChange(note, 'updated', { field: 'metadata' });
@@ -600,6 +607,7 @@ function getNavigationNotes(currentNote) {
 
 function persistAndRender(focusId = null) {
   saveTasksData();
+  debouncedSaveToGithubSafe();
   window.render();
   if (focusId) {
     setTimeout(() => focusNote(focusId), 60);
@@ -1114,6 +1122,7 @@ export function deleteNoteWithUndo(noteId, focusAfterDeleteId) {
     });
     if (snap.wasCollapsed) state.collapsedNotes.add(noteId);
     saveTasksData();
+    debouncedSaveToGithubSafe();
   });
 }
 
@@ -1383,6 +1392,7 @@ export function handleNoteBlur(event, noteId) {
     note.title = newTitle;
     recordNoteChange(note, 'updated', { field: 'title' });
     saveTasksData();
+    debouncedSaveToGithubSafe();
   }
   if (state.editingNoteId === noteId) {
     state.editingNoteId = null;
@@ -1392,6 +1402,13 @@ export function handleNoteBlur(event, noteId) {
 export function handleNoteFocus(event, noteId) {
   clearTimeout(noteBlurTimeout);
   state.editingNoteId = noteId;
+}
+
+/** Strip HTML from pasted content in note contenteditable elements */
+export function handleNotePaste(event) {
+  event.preventDefault();
+  const text = (event.clipboardData || window.clipboardData).getData('text/plain');
+  document.execCommand('insertText', false, text);
 }
 
 // ============================================================================
@@ -1431,10 +1448,10 @@ export function navigateToBreadcrumb(noteId) {
     // Navigate to root
     state.zoomedNoteId = null;
     state.notesBreadcrumb = [];
+    window.render();
   } else {
-    zoomIntoNote(noteId);
+    zoomIntoNote(noteId); // already calls render()
   }
-  window.render();
 }
 
 // ============================================================================
@@ -1744,12 +1761,14 @@ export function renderNotesBreadcrumb() {
         oninput="handleNoteInput(event, '${state.zoomedNoteId}')"
         onblur="handlePageTitleBlur(event, '${state.zoomedNoteId}')"
         onfocus="handleNoteFocus(event, '${state.zoomedNoteId}')"
+        onpaste="handleNotePaste(event)"
       >${escapeHtml(currentCrumb.title || '')}</div>
       <div class="note-page-meta">${note ? buildPageMetaChipsHtml(note) : ''}</div>
       <div contenteditable="true" class="note-page-description" data-placeholder="Add a description..."
         onkeydown="handleDescriptionKeydown(event, '${state.zoomedNoteId}')"
         oninput="handleDescriptionInput(event, '${state.zoomedNoteId}')"
         onblur="handleDescriptionBlur(event, '${state.zoomedNoteId}')"
+        onpaste="handleNotePaste(event)"
       >${escapeHtml(note?.notes || '')}</div>
     </div>
     <div class="note-page-separator"></div>
@@ -1943,6 +1962,7 @@ export function renderNoteItem(note) {
             oninput="handleNoteInput(event, '${note.id}')"
             onblur="handleNoteBlur(event, '${note.id}')"
             onfocus="handleNoteFocus(event, '${note.id}')"
+            onpaste="handleNotePaste(event)"
           >${escapeHtml(note.title || '')}</div>
           ${hasMetaChips ? `<div class="note-meta-chips">${buildNoteMetaChipsHtml(note)}</div>` : ''}
         </div>

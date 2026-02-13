@@ -150,9 +150,13 @@ export function handleTaskInlineBlur(event, taskId) {
     window.debouncedSaveToGithub?.();
     window.render();
   } else if (!newTitle) {
-    // Empty title — revert (don't delete existing tasks)
     const task = state.tasksData.find(t => t.id === taskId);
-    if (task && task.title) {
+    if (task && !task.title) {
+      // Newly created task via quick-add with no title — clean up
+      deleteTask(taskId);
+      window.render();
+    } else if (task && task.title) {
+      // Existing task cleared — revert to original title
       el.textContent = task.title;
     }
   }
@@ -1299,7 +1303,7 @@ export function renderTaskModalHtml() {
         <div class="modal-body-enhanced">
           <!-- Title -->
           <div class="modal-section">
-            <input type="text" id="task-title" value="${editingTask?.title || ''}"
+            <input type="text" id="task-title" value="${escapeHtml(editingTask?.title || '')}"
               placeholder="${state.modalIsNote ? 'What do you want to capture?' : 'What needs to be done?'}"
               maxlength="500"
               onkeydown="if(event._inlineAcHandled)return;if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();saveTaskFromModal();}"
@@ -1319,7 +1323,7 @@ export function renderTaskModalHtml() {
             <textarea id="task-notes" placeholder="Add details, links, or context..."
               onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();saveTaskFromModal();}"
               oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
-              class="modal-textarea-enhanced">${editingTask?.notes || ''}</textarea>
+              class="modal-textarea-enhanced">${escapeHtml(editingTask?.notes || '')}</textarea>
           </div>
 
           <hr class="modal-divider">
