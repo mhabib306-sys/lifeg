@@ -864,7 +864,7 @@ img.twemoji {
   color: var(--accent);
 }
 .widget-size-badge {
-  font-size: 9px;
+  font-size: 10px;
   padding: 2px 6px;
   background: var(--bg-secondary);
   border-radius: 4px;
@@ -1673,11 +1673,11 @@ img.twemoji {
     position: static !important;
   }
 
-  /* Reduce main content padding on mobile */
+  /* Standardize main content padding on mobile */
   main.max-w-6xl {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
-    padding-top: 16px !important;
+    padding-left: var(--space-4) !important;
+    padding-right: var(--space-4) !important;
+    padding-top: var(--space-4) !important;
     min-width: 0;
   }
 
@@ -2125,7 +2125,7 @@ img.twemoji {
   }
 
   .mobile-nav-label {
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .mobile-version {
@@ -2429,6 +2429,30 @@ img.twemoji {
   .quick-add-type-toggle:hover {
     background: transparent;
   }
+
+  /* Form input sizing — 44pt minimum (Task 14) */
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  input[type="email"],
+  input[type="url"],
+  input[type="search"],
+  select {
+    min-height: var(--touch-min);
+    font-size: 16px;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  textarea {
+    min-height: calc(var(--touch-min) * 2);
+    font-size: 16px;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  input:focus, textarea:focus, select:focus {
+    box-shadow: 0 0 0 3px var(--accent-light);
+    border-color: var(--accent);
+  }
 }
 
 /* iOS safe areas */
@@ -2603,7 +2627,7 @@ body.mobile-keyboard-open .main-content {
 }
 
 .calendar-more-line {
-  font-size: 9px;
+  font-size: 10px;
   color: var(--text-muted);
   margin-top: 2px;
 }
@@ -3371,7 +3395,7 @@ body.mobile-keyboard-open .main-content {
   }
   .calendar-task-tag {
     min-width: 24px;
-    font-size: 9px;
+    font-size: 10px;
   }
   .calendar-header-cell {
     padding: 8px 2px;

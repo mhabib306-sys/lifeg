@@ -75,7 +75,7 @@ function renderAchievementsGallery() {
                   <div class="min-w-0">
                     <div class="text-xs font-semibold text-[var(--text-primary)] truncate">${ach.name}</div>
                     <div class="text-[10px] text-[var(--text-muted)]">${ach.desc}</div>
-                    ${isUnlocked ? `<div class="text-[9px] text-[var(--warning)] mt-0.5">${unlockedDate}</div>` : ''}
+                    ${isUnlocked ? `<div class="text-[10px] text-[var(--warning)] mt-0.5">${unlockedDate}</div>` : ''}
                   </div>
                 </div>
               </div>

@@ -363,7 +363,7 @@ export function renderGlucoseWidget(today) {
 
   const dayLabels = histData.map((d, i) => {
     const isToday = i === histData.length - 1;
-    return `<span class="text-[9px] ${isToday ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}">${d.day}</span>`;
+    return `<span class="text-[10px] ${isToday ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}">${d.day}</span>`;
   }).join('');
 
   return `
@@ -530,7 +530,7 @@ export function renderScoreWidget(today) {
         stroke-dasharray="${dash} ${circ}" stroke-linecap="round"
         transform="rotate(-90 20 20)" class="transition-all duration-500"/>
       <text x="20" y="21" text-anchor="middle" dominant-baseline="middle"
-        class="text-[9px] font-bold" fill="${color}">${Math.round(pct * 100)}</text>
+        class="text-[10px] font-bold" fill="${color}">${Math.round(pct * 100)}</text>
     </svg>`;
   };
 
@@ -571,7 +571,7 @@ export function renderScoreWidget(today) {
         <div class="h-1.5 bg-[var(--bg-secondary)] rounded-full mt-1.5 overflow-hidden">
           <div class="h-full bg-[var(--accent)] rounded-full transition-all duration-500" style="width: ${Math.round(levelInfo.progress * 100)}%"></div>
         </div>
-        <div class="text-[9px] text-[var(--text-muted)] mt-0.5">${(state.xp?.total || 0).toLocaleString()} / ${levelInfo.nextLevelXP.toLocaleString()} XP</div>
+        <div class="text-[10px] text-[var(--text-muted)] mt-0.5">${(state.xp?.total || 0).toLocaleString()} / ${levelInfo.nextLevelXP.toLocaleString()} XP</div>
       </div>
     </div>
     <div class="score-categories-grid grid grid-cols-5 gap-1 mt-3 pt-3 border-t border-[var(--border-light)]">
@@ -579,7 +579,7 @@ export function renderScoreWidget(today) {
         const tier = getTierForScore(c.pct);
         return `<div class="text-center">
           ${miniRing(c.pct, tier.color)}
-          <div class="text-[9px] text-[var(--text-muted)] mt-0.5">${c.label}</div>
+          <div class="text-[10px] text-[var(--text-muted)] mt-0.5">${c.label}</div>
         </div>`;
       }).join('')}
     </div>
