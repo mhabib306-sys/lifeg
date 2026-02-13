@@ -242,8 +242,10 @@ export function toggleTaskComplete(taskId) {
 
     if (task.completed) {
       // Animate the row, then render after a short delay
-      const el = document.querySelector(`.task-inline-title[data-task-id="${taskId}"]`);
-      const row = el?.closest('.task-item, .swipe-row, .note-item');
+      const el = document.querySelector(`.task-inline-title[data-task-id="${taskId}"]`)
+        || document.querySelector(`[data-task-id="${taskId}"]`)
+        || document.querySelector(`[data-note-id="${taskId}"]`);
+      const row = el?.closest('.task-item, .swipe-row, .note-item') || el;
       if (row) {
         row.classList.add('task-completing');
         setTimeout(() => window.render(), 400);

@@ -89,7 +89,15 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
       </button>
     </div>`;
 
+  const hasAnyTasks = overdueTasks.length + todayTasks.length + upcomingTasks.length + deferredTasks.length + inboxTasks.length + anytimeTasks.length + somedayTasks.length > 0;
+
   return `
+    ${!hasAnyTasks ? `
+      <div class="text-center py-12 text-[var(--text-muted)]">
+        <p class="text-sm font-medium mb-2">No tasks yet</p>
+        ${addBtn('anytime', 'Add a task...', entityColor)}
+      </div>
+    ` : ''}
     ${overdueTasks.length > 0 ? `
       <div class="bg-[var(--bg-card)] rounded-lg overflow-hidden" style="border: 1px solid color-mix(in srgb, var(--overdue-color) 12%, transparent)">
         <div class="px-4 py-3 flex items-center gap-2" style="background: color-mix(in srgb, var(--overdue-color) 3%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--overdue-color) 12%, transparent)">

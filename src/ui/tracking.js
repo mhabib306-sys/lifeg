@@ -23,6 +23,10 @@ import {
 
 /** Navigate tracking date by +/- days */
 export function navigateTrackingDate(offset) {
+  // Blur active input first so pending onchange fires and saves the value
+  if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT')) {
+    document.activeElement.blur();
+  }
   const d = new Date(state.currentDate + 'T00:00:00');
   d.setDate(d.getDate() + offset);
   state.currentDate = d.toISOString().slice(0, 10);

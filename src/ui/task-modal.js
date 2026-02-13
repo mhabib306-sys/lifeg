@@ -182,9 +182,20 @@ export function handleTaskInlineKeydown(event, taskId) {
   }
 }
 
-/** Handle input on contenteditable task title */
+/** Handle input on contenteditable task title — enforce maxlength */
 export function handleTaskInlineInput(event, taskId) {
-  // Placeholder for future autocomplete integration
+  const el = event.target;
+  const text = el.textContent || '';
+  if (text.length > 500) {
+    el.textContent = text.slice(0, 500);
+    // Place cursor at end
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
 }
 
 /** Strip HTML from pasted content in contenteditable task title */
@@ -1182,6 +1193,14 @@ export function initModalAutocomplete() {
 export function closeTaskModal() {
   cleanupInlineAutocomplete('task-title');
   cleanupModalAutocomplete();
+
+  // Clean up orphaned empty tasks (created via quick-add but never titled)
+  if (state.editingTaskId) {
+    const task = state.tasksData.find(t => t.id === state.editingTaskId);
+    if (task && !task.title) {
+      deleteTask(state.editingTaskId);
+    }
+  }
 
   // Sheet dismiss animation on mobile
   if (isMobileViewport()) {

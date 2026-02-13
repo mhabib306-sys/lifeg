@@ -1417,7 +1417,7 @@ export function handleNoteBlur(event, noteId) {
   const newTitle = event.target.textContent.trim();
   const previousTitle = note.title || '';
 
-  if (newTitle === '' && !noteHasChildren(noteId)) {
+  if (newTitle === '' && !noteHasChildren(noteId) && !note.notes) {
     deleteNote(noteId);
     return;
   }
@@ -1809,7 +1809,7 @@ export function renderNotesBreadcrumb() {
         onblur="handlePageTitleBlur(event, '${state.zoomedNoteId}')"
         onfocus="handleNoteFocus(event, '${state.zoomedNoteId}')"
         onpaste="handleNotePaste(event)"
-      >${escapeHtml(currentCrumb.title || '')}</div>
+      >${currentCrumb.title ? escapeHtml(currentCrumb.title) : ''}</div>
       <div class="note-page-meta">${note ? buildPageMetaChipsHtml(note) : ''}</div>
       <div contenteditable="true" class="note-page-description" data-placeholder="Add a description..."
         onkeydown="handleDescriptionKeydown(event, '${state.zoomedNoteId}')"
@@ -2014,7 +2014,7 @@ export function renderNoteItem(note) {
             onblur="handleNoteBlur(event, '${note.id}')"
             onfocus="handleNoteFocus(event, '${note.id}')"
             onpaste="handleNotePaste(event)"
-          >${escapeHtml(note.title || '')}</div>
+          >${note.title ? escapeHtml(note.title) : ''}</div>
           ${hasMetaChips ? `<div class="note-meta-chips">${buildNoteMetaChipsHtml(note)}</div>` : ''}
         </div>
 
