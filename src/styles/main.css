@@ -262,6 +262,30 @@ img.twemoji {
   word-break: break-word;
 }
 
+/* Swipe-to-reveal task actions (mobile) */
+.swipe-row { position: relative; overflow: hidden; }
+.swipe-row-content {
+  position: relative; z-index: 2;
+  background: var(--bg-card);
+  will-change: transform;
+}
+.swipe-actions-left, .swipe-actions-right {
+  position: absolute; top: 0; bottom: 0;
+  display: flex; align-items: stretch; z-index: 1;
+}
+.swipe-actions-left { left: 0; }
+.swipe-actions-right { right: 0; }
+.swipe-action-btn {
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: var(--space-1);
+  min-width: 76px; padding: 0 var(--space-4);
+  color: white; font-size: var(--type-caption1);
+  font-weight: 600; border: none; cursor: pointer;
+}
+.swipe-action-complete { background: var(--success); }
+.swipe-action-flag { background: var(--flagged-color); }
+.swipe-action-delete { background: var(--danger); }
+
 .task-meta-inline {
   display: block;
   white-space: nowrap;

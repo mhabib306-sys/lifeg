@@ -441,6 +441,9 @@ export function render() {
       if (typeof window.attachCalendarSwipe === 'function') window.attachCalendarSwipe();
     }
 
+    // Initialize swipe actions on task lists (mobile only)
+    if (typeof window.initSwipeActions === 'function') window.initSwipeActions();
+
     const anyModalOpen = !!(
       state.showTaskModal ||
       state.showPerspectiveModal ||

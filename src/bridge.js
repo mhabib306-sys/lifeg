@@ -122,6 +122,8 @@ import {
   handleDrop, reorderTasks, normalizeTaskOrders, setupSidebarDragDrop
 } from './features/drag-drop.js';
 
+import { initSwipeActions, closeActiveRow } from './features/swipe-actions.js';
+
 import {
   createTrigger, createRootTrigger, createTriggerAfter, createChildTrigger,
   updateTrigger, deleteTrigger, indentTrigger, outdentTrigger,
@@ -363,6 +365,7 @@ Object.assign(window, {
   // Drag & Drop
   handleDragStart, handleDragEnd, handleDragOver, handleDragLeave,
   handleDrop, reorderTasks, normalizeTaskOrders, setupSidebarDragDrop,
+  initSwipeActions, closeActiveRow,
 
   // Triggers
   createTrigger, createRootTrigger, createTriggerAfter, createChildTrigger,

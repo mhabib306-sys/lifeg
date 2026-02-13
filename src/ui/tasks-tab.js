@@ -331,7 +331,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
     `;
   }
 
-  return `
+  const taskInnerHtml = `
     <div class="task-item group relative ${hasMetadata && metaParts.length ? 'has-meta' : 'no-meta'}${task.isNote ? ' is-note' : ''}"
       draggable="${isInlineEditing || isTouch ? 'false' : 'true'}"
       ${isInlineEditing || isTouch ? '' : `ondragstart="window.handleDragStart(event, '${task.id}')"
@@ -339,7 +339,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
       ondragover="window.handleDragOver(event, '${task.id}')"
       ondragleave="window.handleDragLeave(event)"
       ondrop="window.handleDrop(event, '${task.id}')"`}
-      onclick="if(window.isTouchDevice && window.isTouchDevice() && !event.target.closest('.task-checkbox') && !event.target.closest('button')) { window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render(); }">
+      onclick="if(window.isTouchDevice && window.isTouchDevice() && !event.target.closest('.task-checkbox') && !event.target.closest('button') && !event.target.closest('.swipe-action-btn')) { window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render(); }">
       <div class="task-row flex items-start gap-3 px-4 py-2.5" style="${indentLevel > 0 ? `padding-left: ${16 + indentPx}px` : ''}">
         ${task.isNote ? `
           <div class="mt-2 w-1.5 h-1.5 rounded-full ${indentLevel > 0 ? 'bg-[var(--notes-accent)]/50' : 'bg-[var(--notes-accent)]'} flex-shrink-0"></div>
@@ -396,6 +396,32 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
       </div>
     </div>
   `;
+
+  if (isTouch && !task.isNote) {
+    return `
+      <div class="swipe-row" data-task-id="${task.id}">
+        <div class="swipe-actions-left">
+          <button class="swipe-action-btn swipe-action-complete" onclick="event.stopPropagation(); window.toggleTaskComplete('${task.id}')">
+            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>${task.completed ? 'Undo' : 'Done'}</span>
+          </button>
+        </div>
+        <div class="swipe-row-content">${taskInnerHtml}</div>
+        <div class="swipe-actions-right">
+          <button class="swipe-action-btn swipe-action-flag" onclick="event.stopPropagation(); window.toggleFlag('${task.id}')">
+            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="${task.flagged ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            <span>${task.flagged ? 'Unflag' : 'Flag'}</span>
+          </button>
+          <button class="swipe-action-btn swipe-action-delete" onclick="event.stopPropagation(); window.confirmDeleteTask('${task.id}')">
+            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            <span>Delete</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  return taskInnerHtml;
 }
 
 // ============================================================================
