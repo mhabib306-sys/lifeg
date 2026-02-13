@@ -53,7 +53,13 @@ let _swipeTouchCurrentX = 0;
 let _swipeDragging = false;
 
 function _handleSwipeStart(e) {
-  _swipeTouchStartX = e.touches[0].clientX;
+  const x = e.touches[0].clientX;
+  // Skip if touch starts in OS gesture zones (iOS back gesture, Android edge)
+  if (x < 20 || x > window.innerWidth - 20) {
+    _swipeDragging = false;
+    return;
+  }
+  _swipeTouchStartX = x;
   _swipeTouchCurrentX = _swipeTouchStartX;
   _swipeDragging = true;
 }

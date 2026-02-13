@@ -250,7 +250,10 @@ export function render() {
         </div>
         <div class="mobile-header-center">
           <h1 class="mobile-header-title text-[17px] font-bold text-[var(--text-primary)] truncate">${state.activeTab === 'home' ? 'Homebase' : state.activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : state.activeTab === 'life' ? 'Life Score' : state.activeTab === 'calendar' ? 'Calendar' : 'Settings'}</h1>
-          <span class="mobile-version text-[10px] font-semibold text-[var(--text-muted)]">v${APP_VERSION}</span>
+          <div class="flex items-center gap-1.5">
+            <span class="mobile-version text-[10px] font-semibold text-[var(--text-muted)]">v${APP_VERSION}</span>
+            <div class="w-1.5 h-1.5 rounded-full" style="background: ${getGithubToken() ? 'var(--success)' : 'var(--text-muted)'}"></div>
+          </div>
         </div>
         <div class="w-10 flex items-center justify-end">
           ${state.activeTab === 'tasks' ? `

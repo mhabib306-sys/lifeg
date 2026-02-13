@@ -31,6 +31,35 @@ function stopSpeechRecognitionInternal() {
 }
 
 // ============================================================================
+// Focus Trap
+// ============================================================================
+
+function trapBraindumpFocus(e) {
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    closeBraindump();
+    return;
+  }
+  if (e.key !== 'Tab') return;
+
+  const overlay = document.querySelector('.braindump-overlay');
+  if (!overlay) return;
+  const focusable = overlay.querySelectorAll('button, input, textarea, select, [tabindex]:not([tabindex="-1"])');
+  if (!focusable.length) return;
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
+// ============================================================================
 // Open / Close
 // ============================================================================
 
@@ -46,6 +75,7 @@ export function openBraindump() {
   state.braindumpVoiceTranscribing = false;
   state.braindumpVoiceError = null;
   window.render();
+  document.addEventListener('keydown', trapBraindumpFocus);
   // Focus textarea after render
   setTimeout(() => {
     const ta = document.getElementById('braindump-textarea');
@@ -54,6 +84,7 @@ export function openBraindump() {
 }
 
 export function closeBraindump() {
+  document.removeEventListener('keydown', trapBraindumpFocus);
   stopSpeechRecognitionInternal();
   speechRecognition = null;
   speechFinalText = '';
