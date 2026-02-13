@@ -144,8 +144,11 @@ export function handleTaskInlineBlur(event, taskId) {
   if (!state.inlineEditingTaskId) return;
   const el = event.target;
   const newTitle = el.textContent.trim();
+  state.inlineEditingTaskId = null;
   if (newTitle && newTitle !== el.dataset.originalTitle) {
     updateTask(taskId, { title: newTitle });
+    window.debouncedSaveToGithub?.();
+    window.render();
   } else if (!newTitle) {
     // Empty title — revert (don't delete existing tasks)
     const task = state.tasksData.find(t => t.id === taskId);
@@ -153,7 +156,6 @@ export function handleTaskInlineBlur(event, taskId) {
       el.textContent = task.title;
     }
   }
-  state.inlineEditingTaskId = null;
 }
 
 /** Handle keydown in contenteditable task title */
@@ -174,6 +176,15 @@ export function handleTaskInlineKeydown(event, taskId) {
 /** Handle input on contenteditable task title */
 export function handleTaskInlineInput(event, taskId) {
   // Placeholder for future autocomplete integration
+}
+
+/** Strip HTML from pasted content in contenteditable task title */
+export function handleTaskInlinePaste(event) {
+  event.preventDefault();
+  const text = (event.clipboardData || window.clipboardData).getData('text/plain');
+  // Insert plain text only (single line — strip newlines)
+  const clean = text.replace(/[\r\n]+/g, ' ').trim();
+  document.execCommand('insertText', false, clean);
 }
 
 /**

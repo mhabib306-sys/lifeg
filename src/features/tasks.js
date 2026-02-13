@@ -269,6 +269,17 @@ export function toggleTaskComplete(taskId) {
   }
 }
 
+/** Toggle the flagged state of a task (used by swipe actions) */
+export function toggleFlag(taskId) {
+  const task = state.tasksData.find(t => taskIdEquals(t.id, taskId));
+  if (!task) return;
+  task.flagged = !task.flagged;
+  task.updatedAt = new Date().toISOString();
+  if (navigator.vibrate) navigator.vibrate(10);
+  saveTasksData();
+  window.render();
+}
+
 // Calculate next date based on repeat settings
 export function calculateNextRepeatDate(baseDate, repeat) {
   const date = new Date(baseDate);

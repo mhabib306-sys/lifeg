@@ -91,7 +91,7 @@ import {
 
 import {
   createTask, updateTask, deleteTask, confirmDeleteTask,
-  toggleTaskComplete, calculateNextRepeatDate, createNextRepeatOccurrence,
+  toggleTaskComplete, toggleFlag, calculateNextRepeatDate, createNextRepeatOccurrence,
   getRepeatUnitLabel, updateRepeatUI, moveTaskTo
 } from './features/tasks.js';
 
@@ -212,7 +212,7 @@ import {
 // -- Task Modal --
 import {
   startInlineEdit, saveInlineEdit, cancelInlineEdit, handleInlineEditKeydown,
-  handleTaskInlineFocus, handleTaskInlineBlur, handleTaskInlineKeydown, handleTaskInlineInput,
+  handleTaskInlineFocus, handleTaskInlineBlur, handleTaskInlineKeydown, handleTaskInlineInput, handleTaskInlinePaste,
   focusTaskInlineTitle,
   openNewTaskModal, quickAddTask, handleQuickAddKeydown,
   toggleInlineTagInput, addInlineTag, toggleInlinePersonInput, addInlinePerson,
@@ -350,7 +350,7 @@ Object.assign(window, {
 
   // Tasks CRUD
   createTask, updateTask, deleteTask, confirmDeleteTask,
-  toggleTaskComplete, calculateNextRepeatDate, createNextRepeatOccurrence,
+  toggleTaskComplete, toggleFlag, calculateNextRepeatDate, createNextRepeatOccurrence,
   getRepeatUnitLabel, updateRepeatUI, moveTaskTo,
 
   // Task Filtering
@@ -452,7 +452,7 @@ Object.assign(window, {
 
   // Task Modal
   startInlineEdit, saveInlineEdit, cancelInlineEdit, handleInlineEditKeydown,
-  handleTaskInlineFocus, handleTaskInlineBlur, handleTaskInlineKeydown, handleTaskInlineInput,
+  handleTaskInlineFocus, handleTaskInlineBlur, handleTaskInlineKeydown, handleTaskInlineInput, handleTaskInlinePaste,
   focusTaskInlineTitle,
   openNewTaskModal, quickAddTask, handleQuickAddKeydown,
   toggleInlineTagInput, addInlineTag, toggleInlinePersonInput, addInlinePerson,

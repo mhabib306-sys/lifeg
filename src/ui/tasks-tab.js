@@ -351,15 +351,19 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
           </button>
         `}
         <div class="flex-1 min-w-0">
-          <div contenteditable="${task.completed ? 'false' : 'true'}"
-            class="task-inline-title text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug outline-none"
-            data-task-id="${task.id}"
-            data-placeholder="Task title..."
-            onfocus="event.stopPropagation(); window.handleTaskInlineFocus(event, '${task.id}')"
-            onblur="window.handleTaskInlineBlur(event, '${task.id}')"
-            onkeydown="window.handleTaskInlineKeydown(event, '${task.id}')"
-            oninput="window.handleTaskInlineInput(event, '${task.id}')"
-          >${task.flagged ? `<span class="inline-flex items-center mr-1.5" style="color: var(--flagged-color)" contenteditable="false">${getActiveIcons().flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}${escapeHtml(task.title)}</div>
+          <div class="flex items-start gap-1">
+            ${task.flagged ? `<span class="inline-flex items-center mt-0.5 flex-shrink-0" style="color: var(--flagged-color)">${getActiveIcons().flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
+            <div contenteditable="${task.completed ? 'false' : 'true'}"
+              class="task-inline-title flex-1 text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug outline-none"
+              data-task-id="${task.id}"
+              data-placeholder="Task title..."
+              onfocus="event.stopPropagation(); window.handleTaskInlineFocus(event, '${task.id}')"
+              onblur="window.handleTaskInlineBlur(event, '${task.id}')"
+              onkeydown="window.handleTaskInlineKeydown(event, '${task.id}')"
+              oninput="window.handleTaskInlineInput(event, '${task.id}')"
+              onpaste="window.handleTaskInlinePaste(event)"
+            >${escapeHtml(task.title)}</div>
+          </div>
           ${hasMetadata && metaParts.length ? `
             <div class="task-meta-inline">${metaParts.join(' • ')}</div>
           ` : ''}
