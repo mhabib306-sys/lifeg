@@ -1867,14 +1867,24 @@ export function renderNoteItem(note) {
       ondragleave="handleNoteDragLeave(event)"
       ondrop="handleNoteDrop(event)"` : ''}>
       <div class="note-row group">
-        <button onclick="event.stopPropagation(); zoomIntoNote('${note.id}')"
-          class="note-bullet ${hasChildren ? 'has-children' : ''} ${isCollapsed ? 'collapsed' : ''}"
-          title="Open as page"
-          aria-label="Open note as page">
-          ${hasChildren
-            ? `<span class="note-bullet-dot ${isCollapsed ? 'note-collapsed-ring' : ''}"></span>`
-            : '<span class="note-bullet-dot"></span>'}
-        </button>
+        ${note.isNote
+          ? `<button onclick="event.stopPropagation(); zoomIntoNote('${note.id}')"
+              class="note-bullet ${hasChildren ? 'has-children' : ''} ${isCollapsed ? 'collapsed' : ''}"
+              title="Open as page"
+              aria-label="Open note as page">
+              ${hasChildren
+                ? '<span class="note-bullet-dot ' + (isCollapsed ? 'note-collapsed-ring' : '') + '"></span>'
+                : '<span class="note-bullet-dot"></span>'}
+            </button>`
+          : `<button onclick="event.stopPropagation(); toggleTaskComplete('${note.id}')"
+              class="note-checkbox-btn ${note.completed ? 'completed' : ''}"
+              title="${note.completed ? 'Mark incomplete' : 'Mark complete'}"
+              aria-label="${note.completed ? 'Mark incomplete' : 'Mark complete'}">
+              <span class="note-checkbox-circle ${note.completed ? 'bg-[var(--accent)] border-[var(--accent)]' : 'border-[var(--text-muted)] hover:border-[var(--accent)]'}">
+                ${note.completed ? '<svg class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+              </span>
+            </button>`
+        }
 
         <div class="note-content-col">
           <div contenteditable="true" class="note-input" data-placeholder="Type something..."

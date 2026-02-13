@@ -1041,6 +1041,31 @@ img.twemoji {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--notes-accent) 18%, transparent);
 }
 
+/* Checkbox for tasks living in the outliner (Tana-style note↔task toggle) */
+.note-checkbox-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+.note-checkbox-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
 /* Contenteditable input */
 .note-input {
   border: none !important;
