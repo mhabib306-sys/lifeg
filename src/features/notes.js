@@ -1117,37 +1117,48 @@ export function deleteNoteWithUndo(noteId, focusAfterDeleteId) {
   });
 }
 
-/** Toggle an item between note (bullet) and task (checkbox). Tana-style in-place toggle. */
+/** Toggle an item between note (bullet) and task (checkbox) with undo.
+ *  Note→Task: item leaves outliner, enters task views.
+ *  Task→Note: item leaves task views, enters outliner.
+ */
 export function toggleNoteTask(id) {
   const item = state.tasksData.find(t => t.id === id && (isNoteItem(t) || !t.isNote));
   if (!item) return;
 
+  // Snapshot for undo
+  const snapshot = JSON.parse(JSON.stringify(item));
+  const wasNote = item.isNote;
+
   if (item.isNote) {
-    // NOTE → TASK: gains checkbox, appears in task perspectives too
+    // NOTE → TASK: leaves outliner, enters task perspectives
     item.isNote = false;
     item.status = item.status || 'anytime';
-    // Keep outliner fields: parentId, indent, noteOrder, noteLifecycleState, noteHistory
-    // Ensure task ordering for task list views
+    item.noteLifecycleState = 'converted'; // no longer active in outliner
     if (item.order == null) item.order = item.noteOrder || Date.now();
   } else {
-    // TASK → NOTE: gains bullet, leaves task perspectives
+    // TASK → NOTE: leaves task perspectives, enters outliner
     item.isNote = true;
-    // Ensure outliner fields exist (for tasks not already in outliner)
-    if (!item.noteLifecycleState) item.noteLifecycleState = 'active';
+    item.noteLifecycleState = 'active';
     if (!item.noteHistory) item.noteHistory = [];
     if (item.noteOrder == null) item.noteOrder = item.order || Date.now();
     if (item.parentId == null) item.parentId = null;
     if (item.indent == null) item.indent = 0;
-    // Clear task-only view flags (these views don't apply to notes)
+    // Clear task-only view flags
     item.today = false;
     item.flagged = false;
   }
 
-  const wasNote = !item.isNote; // inverted because we already flipped it
-  recordNoteChange(item, 'toggled', { from: wasNote ? 'task' : 'note', to: wasNote ? 'note' : 'task' });
+  recordNoteChange(item, 'toggled', { from: wasNote ? 'note' : 'task', to: wasNote ? 'task' : 'note' });
   saveTasksData();
   debouncedSaveToGithubSafe();
-  window.render();
+
+  const label = wasNote ? `Converted to task` : `Converted to note`;
+  startUndoCountdown(label, snapshot, (snap) => {
+    // Restore all fields from snapshot
+    Object.assign(item, snap);
+    saveTasksData();
+    debouncedSaveToGithubSafe();
+  });
 }
 
 // ============================================================================
