@@ -173,6 +173,8 @@ function getGithubToken() {
 let _inlineAcRafId = null;
 // Track previous tab for scroll preservation (skip restore on tab change)
 let _previousTab = null;
+// Reusable IntersectionObserver for large-title collapse (prevents leak)
+let _largeTitleObserver = null;
 
 /**
  * Full-DOM replacement render. Reads state.activeTab to decide which tab
@@ -496,14 +498,15 @@ export function render() {
     if (typeof window.initPullToRefresh === 'function') window.initPullToRefresh();
 
     // Large title collapse observer (Home tab, mobile only)
+    if (_largeTitleObserver) { _largeTitleObserver.disconnect(); _largeTitleObserver = null; }
     if (isMobileViewport() && state.activeTab === 'home') {
       const sentinel = document.getElementById('large-title-sentinel');
       const inlineTitle = document.querySelector('.mobile-header-title-inline');
       if (sentinel && inlineTitle) {
-        const observer = new IntersectionObserver(([entry]) => {
+        _largeTitleObserver = new IntersectionObserver(([entry]) => {
           inlineTitle.classList.toggle('visible', !entry.isIntersecting);
         }, { threshold: 0 });
-        observer.observe(sentinel);
+        _largeTitleObserver.observe(sentinel);
       }
     }
 
@@ -529,7 +532,7 @@ export function render() {
       const overlay = document.querySelector('.modal-overlay');
       if (handle && modal && overlay && !handle._sheetDragInit) {
         handle._sheetDragInit = true;
-        let startY = 0, currentY = 0, dragging = false;
+        let startY = 0, currentY = 0, startTime = 0, dragging = false;
         const dragZone = 40; // top 40px of modal also activatable
 
         function onTouchStart(e) {
@@ -538,6 +541,7 @@ export function render() {
           if (touchY - rect.top > dragZone && e.target !== handle) return;
           startY = touchY;
           currentY = startY;
+          startTime = Date.now();
           dragging = true;
           modal.style.transition = 'none';
         }
@@ -553,7 +557,7 @@ export function render() {
           if (!dragging) return;
           dragging = false;
           const dy = currentY - startY;
-          const velocity = dy / ((Date.now() - startY) || 1); // rough
+          const velocity = dy / ((Date.now() - startTime) || 1);
           const dismiss = dy > modal.offsetHeight * 0.3 || (dy > 50 && velocity > 0.5);
           if (dismiss) {
             modal.style.transition = `transform var(--duration-slow) var(--ease-accelerate)`;

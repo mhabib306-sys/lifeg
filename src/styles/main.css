@@ -427,7 +427,7 @@ img.twemoji {
 
 /* Sidebar item interactions - Things 3 style */
 .sidebar-item {
-  transition: background 0.15sease-out, transform 0.15sease-out;
+  transition: background 0.15s ease-out, transform 0.15s ease-out;
   border-radius: var(--border-radius);
   min-height: 36px;
 }
@@ -1336,6 +1336,13 @@ img.twemoji {
   }
 }
 
+/* Notes list scroll optimizations (matches .task-list) */
+.notes-list {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
 /* ========== Note Page View (Zoomed "Every Note is a Page") ========== */
 .note-page-header {
   padding: 16px 20px 0;
@@ -1484,7 +1491,7 @@ img.twemoji {
     font-size: 20px;
   }
   .note-page-description {
-    font-size: 14px;
+    font-size: 16px;
     min-height: 32px;
   }
   .note-page-chip {
@@ -1543,7 +1550,7 @@ img.twemoji {
 
 /* Modal animations */
 .modal-overlay {
-  animation: fadeIn var(--duration-fast) var(--ease-default)-out;
+  animation: fadeIn var(--duration-fast) ease-out;
   padding: 16px;
 }
 .modal-content {
@@ -2096,15 +2103,31 @@ img.twemoji {
     to { transform: translateY(100%); }
   }
 
-  /* Form inputs */
+  /* Form inputs — prevent iOS auto-zoom (requires >=16px) */
   input[type="text"],
   input[type="date"],
   input[type="number"],
+  input[type="password"],
+  input[type="url"],
+  input[type="email"],
+  input[type="search"],
   textarea,
   select {
-    font-size: 16px !important; /* Prevents iOS zoom */
+    font-size: 16px !important;
     padding: 14px 16px !important;
     border-radius: var(--border-radius-lg) !important;
+  }
+  /* Contenteditable elements that need iOS zoom prevention */
+  .task-inline-title,
+  .tag-input-field,
+  .autocomplete-input,
+  .modal-input-enhanced,
+  .trigger-input,
+  .braindump-edit-input,
+  .calendar-meeting-notes-textarea,
+  .input-field-sm,
+  .braindump-meta-select {
+    font-size: 16px !important;
   }
 
   /* Weather widget compact */
@@ -2723,6 +2746,7 @@ img.twemoji {
   input[type="email"],
   input[type="url"],
   input[type="search"],
+  input[type="password"],
   select {
     min-height: var(--touch-min);
     font-size: 16px;
@@ -2738,6 +2762,11 @@ img.twemoji {
   input:focus, textarea:focus, select:focus {
     box-shadow: 0 0 0 3px var(--accent-light);
     border-color: var(--accent);
+  }
+
+  /* Sidebar: make hover-only Edit buttons and area chevrons visible on touch */
+  .sidebar-item .opacity-0.group-hover\:opacity-100 {
+    opacity: 1 !important;
   }
 }
 
@@ -5098,7 +5127,7 @@ body.mobile-keyboard-open .main-content {
   background: transparent;
   cursor: pointer;
   text-align: left;
-  transition: background 0.15sease;
+  transition: background 0.15s ease;
   font-family: var(--font-family);
 }
 .global-search-result:focus {
@@ -5589,7 +5618,7 @@ mark.global-search-highlight {
 [data-theme="geist"] .task-item {
   border-radius: var(--border-radius-sm);
   border: 1px solid transparent;
-  transition: background 0.15sease, border-color 0.15sease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 [data-theme="geist"] .task-item:hover {
   background: var(--bg-hover);
@@ -5675,7 +5704,7 @@ mark.global-search-highlight {
 /* --- Review mode cards --- */
 [data-theme="geist"] .review-task-card {
   border-radius: var(--border-radius-sm);
-  transition: background 0.15sease;
+  transition: background 0.15s ease;
 }
 [data-theme="geist"] .review-task-card:hover {
   background: var(--bg-hover);

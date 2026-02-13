@@ -1021,7 +1021,7 @@ export function createChildNoteAndReturn(noteId) {
     noteLifecycleState: 'active',
     noteHistory: [],
     parentId: noteId,
-    indent: (note.indent || 0) + 1,
+    indent: Math.min((note.indent || 0) + 1, 5),
     noteOrder: newOrder,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -1947,7 +1947,7 @@ export function reorderNotes(draggedId, targetId, position) {
   if (position === 'child') {
     // Re-parent into target
     dragged.parentId = targetId;
-    dragged.indent = (target.indent || 0) + 1;
+    dragged.indent = Math.min((target.indent || 0) + 1, 5);
     dragged.areaId = target.areaId; // Inherit area from new parent
     const newSiblings = state.tasksData
       .filter(t => isActiveNote(t) && t.parentId === targetId && t.id !== draggedId)
