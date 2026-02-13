@@ -1261,6 +1261,166 @@ img.twemoji {
   }
 }
 
+/* ========== Note Page View (Zoomed "Every Note is a Page") ========== */
+.note-page-header {
+  padding: 16px 20px 0;
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  margin: -8px -2px 0;
+}
+.note-page-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+.note-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.35;
+  padding: 0 2px;
+  margin: 0;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  width: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 34px;
+  cursor: text;
+}
+.note-page-title:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-secondary);
+  opacity: 0.35;
+  pointer-events: none;
+}
+.note-page-title:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.note-page-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 2px 6px;
+}
+.note-page-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--bg-tertiary, var(--bg-secondary));
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  transition: all 0.12s ease;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.note-page-chip:hover {
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.12s, background 0.12s, color 0.12s;
+  margin-left: 2px;
+  margin-right: -4px;
+}
+.note-page-chip:hover .chip-remove {
+  opacity: 1;
+}
+.chip-remove:hover {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+}
+.note-page-add-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  border: 1px dashed color-mix(in srgb, var(--text-muted) 30%, transparent);
+  cursor: pointer;
+  transition: all 0.12s ease;
+  line-height: 1.4;
+}
+.note-page-add-meta:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+}
+.note-page-description {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  padding: 10px 2px;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  width: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 40px;
+  cursor: text;
+}
+.note-page-description:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-secondary);
+  opacity: 0.3;
+  pointer-events: none;
+}
+.note-page-description:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.note-page-separator {
+  height: 1px;
+  background: var(--border-light);
+  margin: 4px -2px 8px;
+}
+
+@media (max-width: 640px) {
+  .note-page-header {
+    padding: 12px 14px 0;
+  }
+  .note-page-title {
+    font-size: 20px;
+  }
+  .note-page-description {
+    font-size: 14px;
+    min-height: 32px;
+  }
+  .note-page-chip {
+    font-size: 11px;
+    padding: 2px 8px;
+  }
+  .chip-remove {
+    opacity: 1;
+  }
+}
+
 /* Sidebar draggable items */
 .draggable-item {
   cursor: grab;

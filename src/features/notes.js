@@ -350,6 +350,8 @@ function noteAcCheckTrigger(el) {
 
 /** Called from oninput on contenteditable note inputs. */
 export function handleNoteInput(event, noteId) {
+  // Skip autocomplete for description area (freeform text)
+  if (event.target.classList.contains('note-page-description')) return;
   noteAcNoteId = noteId;
   const el = event.target;
   noteAcCheckTrigger(el);
@@ -1369,31 +1371,299 @@ export function navigateToBreadcrumb(noteId) {
   window.render();
 }
 
+// ============================================================================
+// Page View — "Every Note is a Page" (when zoomed)
+// ============================================================================
+
+let descriptionSaveTimer = null;
+
+/** Build interactive pill chips for note metadata in page view. */
+export function buildPageMetaChipsHtml(note) {
+  if (!note) return '';
+  let chips = '';
+
+  if (note.areaId) {
+    const area = state.taskAreas.find(a => a.id === note.areaId);
+    if (area) {
+      chips += `<span class="note-page-chip" style="background:${area.color}12;border-color:${area.color}30;color:${area.color}">
+        #${escapeHtml(area.name)}
+        <span class="chip-remove" onclick="event.stopPropagation();removeNoteInlineMeta('${note.id}','category','${area.id}')" title="Remove">&times;</span>
+      </span>`;
+    }
+  }
+  if (note.categoryId) {
+    const cat = (state.taskCategories || []).find(c => c.id === note.categoryId);
+    if (cat) {
+      chips += `<span class="note-page-chip">
+        #${escapeHtml(cat.name)}
+        <span class="chip-remove" onclick="event.stopPropagation();removeNoteInlineMeta('${note.id}','category','${cat.id}')" title="Remove">&times;</span>
+      </span>`;
+    }
+  }
+  (note.labels || []).forEach(lid => {
+    const label = state.taskLabels.find(l => l.id === lid);
+    if (label) {
+      chips += `<span class="note-page-chip" style="background:${label.color}12;border-color:${label.color}30;color:${label.color}">
+        @${escapeHtml(label.name)}
+        <span class="chip-remove" onclick="event.stopPropagation();removeNoteInlineMeta('${note.id}','label','${lid}')" title="Remove">&times;</span>
+      </span>`;
+    }
+  });
+  (note.people || []).forEach(pid => {
+    const person = state.taskPeople.find(p => p.id === pid);
+    if (person) {
+      chips += `<span class="note-page-chip" style="background:${person.color}12;border-color:${person.color}30;color:${person.color}">
+        &amp;${escapeHtml(person.name.split(' ')[0])}
+        <span class="chip-remove" onclick="event.stopPropagation();removeNoteInlineMeta('${note.id}','person','${pid}')" title="Remove">&times;</span>
+      </span>`;
+    }
+  });
+  if (note.deferDate) {
+    chips += `<span class="note-page-chip">
+      <svg style="width:12px;height:12px;flex-shrink:0" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+      ${formatSmartDate(note.deferDate)}
+      <span class="chip-remove" onclick="event.stopPropagation();removeNoteInlineMeta('${note.id}','deferDate',null)" title="Remove">&times;</span>
+    </span>`;
+  }
+
+  chips += `<button class="note-page-add-meta" onclick="focusPageTitleForMeta('${note.id}')" title="Add metadata">+ Add</button>`;
+  return chips;
+}
+
+/** Focus the page title and optionally append a trigger character for autocomplete. */
+export function focusPageTitleForMeta(noteId) {
+  const titleEl = document.querySelector('.note-page-title');
+  if (!titleEl) return;
+  titleEl.focus();
+  // Place cursor at end and insert # to trigger autocomplete
+  const range = document.createRange();
+  const sel = window.getSelection();
+  if (titleEl.childNodes.length > 0) {
+    const lastNode = titleEl.childNodes[titleEl.childNodes.length - 1];
+    if (lastNode.nodeType === Node.TEXT_NODE) {
+      range.setStart(lastNode, lastNode.length);
+    } else {
+      range.setStartAfter(lastNode);
+    }
+  } else {
+    range.setStart(titleEl, 0);
+  }
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  // Insert space + # to trigger autocomplete
+  const text = titleEl.textContent || '';
+  const suffix = text.endsWith(' ') ? '#' : ' #';
+  document.execCommand('insertText', false, suffix);
+  // Trigger input event for autocomplete
+  noteAcNoteId = noteId;
+  noteAcCheckTrigger(titleEl);
+}
+
+/** Focus page description area. */
+export function focusPageDescription(noteId) {
+  const descEl = document.querySelector('.note-page-description');
+  if (descEl) {
+    descEl.focus();
+    // Place cursor at end
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(descEl);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+}
+
+/** Focus page title area. */
+export function focusPageTitle(noteId) {
+  const titleEl = document.querySelector('.note-page-title');
+  if (titleEl) {
+    titleEl.focus();
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(titleEl);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+}
+
+/** Handle page title blur — save title (never auto-delete). */
+export function handlePageTitleBlur(event, noteId) {
+  const note = getActiveNoteById(noteId);
+  if (!note) return;
+  // Dismiss autocomplete popup with delay
+  noteBlurTimeout = setTimeout(() => noteAcDismissPopup(), 150);
+
+  const newTitle = event.target.textContent.trim();
+  if (newTitle !== (note.title || '')) {
+    note.title = newTitle;
+    recordNoteChange(note, 'updated', { field: 'title' });
+    saveTasksData();
+    debouncedSaveToGithubSafe();
+    // Update breadcrumb state
+    const crumb = state.notesBreadcrumb.find(b => b.id === noteId);
+    if (crumb) crumb.title = newTitle || 'Untitled';
+  }
+}
+
+/** Handle page title keydown — Enter goes to description, arrows navigate. */
+export function handlePageTitleKeydown(event, noteId) {
+  // Let autocomplete popup handle keys when open
+  if (noteAcPopup) {
+    const el = event.target;
+    const text = el.textContent || '';
+    const caret = getCaretOffset(el);
+    const query = text.substring(noteAcTriggerPos + 1, caret);
+    const isDate = noteAcTriggerChar === '!';
+    const items = noteAcGetItems(query);
+    const filtered = isDate ? items : items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));
+    const hasExactMatch = isDate ? true : items.some(i => i.name.toLowerCase() === query.toLowerCase());
+    const showCreate = !isDate && query.length > 0 && !hasExactMatch;
+    const totalItems = filtered.length + (showCreate ? 1 : 0);
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      noteAcActiveIndex = (noteAcActiveIndex + 1) % totalItems;
+      noteAcRenderPopup(items, query, el);
+      return;
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      noteAcActiveIndex = (noteAcActiveIndex - 1 + totalItems) % totalItems;
+      noteAcRenderPopup(items, query, el);
+      return;
+    } else if (event.key === 'Enter' || event.key === 'Tab') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      noteAcNoteId = noteId;
+      if (noteAcActiveIndex < filtered.length) {
+        noteAcSelectItem(filtered[noteAcActiveIndex]);
+      } else if (showCreate) {
+        const createFn = noteAcGetCreateFn();
+        if (createFn) {
+          const newItem = createFn(query);
+          noteAcSelectItem(newItem);
+        }
+      }
+      return;
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      noteAcDismissPopup();
+      return;
+    }
+  }
+
+  // Cmd+Backspace → zoom out
+  if (event.key === 'Backspace' && (event.metaKey || event.ctrlKey)) {
+    event.preventDefault();
+    if (state.zoomedNoteId) zoomOutOfNote();
+    return;
+  }
+
+  // Enter → focus description (not newline in title)
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    focusPageDescription(noteId);
+    return;
+  }
+
+  // ArrowDown at end → focus description
+  if (event.key === 'ArrowDown' && getCursorAtEnd(event.target)) {
+    event.preventDefault();
+    focusPageDescription(noteId);
+    return;
+  }
+}
+
+/** Handle description blur — save note.notes immediately. */
+export function handleDescriptionBlur(event, noteId) {
+  if (descriptionSaveTimer) {
+    clearTimeout(descriptionSaveTimer);
+    descriptionSaveTimer = null;
+  }
+  const note = getActiveNoteById(noteId);
+  if (!note) return;
+  const newNotes = event.target.textContent.trim();
+  if (newNotes !== (note.notes || '')) {
+    note.notes = newNotes;
+    recordNoteChange(note, 'updated', { field: 'notes' });
+    saveTasksData();
+    debouncedSaveToGithubSafe();
+  }
+}
+
+/** Handle description keydown — arrows navigate to title/children. */
+export function handleDescriptionKeydown(event, noteId) {
+  // Cmd+Backspace → zoom out
+  if (event.key === 'Backspace' && (event.metaKey || event.ctrlKey)) {
+    event.preventDefault();
+    if (state.zoomedNoteId) zoomOutOfNote();
+    return;
+  }
+
+  // ArrowUp at start → focus page title
+  if (event.key === 'ArrowUp' && getCursorAtStart(event.target)) {
+    event.preventDefault();
+    focusPageTitle(noteId);
+    return;
+  }
+
+  // ArrowDown at end → focus first child note
+  if (event.key === 'ArrowDown' && getCursorAtEnd(event.target)) {
+    event.preventDefault();
+    const firstChild = document.querySelector('.note-item .note-input');
+    if (firstChild) firstChild.focus();
+    return;
+  }
+
+  // Enter = newline (default contenteditable behavior — don't prevent)
+}
+
+/** Handle description input — debounced auto-save. */
+export function handleDescriptionInput(event, noteId) {
+  if (descriptionSaveTimer) clearTimeout(descriptionSaveTimer);
+  descriptionSaveTimer = setTimeout(() => {
+    const note = getActiveNoteById(noteId);
+    if (!note) return;
+    const el = event.target;
+    const newNotes = el.textContent.trim();
+    if (newNotes !== (note.notes || '')) {
+      note.notes = newNotes;
+      recordNoteChange(note, 'updated', { field: 'notes' });
+      saveTasksData();
+      debouncedSaveToGithubSafe();
+    }
+    descriptionSaveTimer = null;
+  }, 2000);
+}
+
 export function renderNotesBreadcrumb() {
   if (!state.zoomedNoteId || state.notesBreadcrumb.length === 0) return '';
 
-  // The current (last) breadcrumb entry is the zoomed-in note
   const currentCrumb = state.notesBreadcrumb[state.notesBreadcrumb.length - 1];
-  // The parent label for the back button
+  const note = getActiveNoteById(state.zoomedNoteId);
   const ancestors = state.notesBreadcrumb.slice(0, -1);
   const parentLabel = ancestors.length > 0
     ? ancestors[ancestors.length - 1].title
     : 'All Notes';
 
-  // Build trail for the full path (shown below back button)
+  // Build breadcrumb trail
   const trail = ['All Notes', ...ancestors.map(a => escapeHtml(a.title))];
 
   return `
-    <div class="notes-breadcrumb-bar">
-      <div class="flex items-center gap-2 mb-1">
+    <div class="note-page-header">
+      <div class="note-page-nav">
         <button onclick="zoomOutOfNote()" class="notes-back-btn" title="Go back (Cmd+Backspace)">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
           <span>${escapeHtml(parentLabel)}</span>
         </button>
       </div>
-      <div class="notes-breadcrumb-title">${escapeHtml(currentCrumb.title || 'Untitled')}</div>
       ${trail.length > 1 ? `
-        <div class="notes-breadcrumb-trail">
+        <div class="notes-breadcrumb-trail" style="margin-bottom:10px;">
           ${trail.map((t, i) => {
             if (i < trail.length - 1) {
               const crumbId = i === 0 ? null : ancestors[i - 1].id;
@@ -1403,7 +1673,20 @@ export function renderNotesBreadcrumb() {
           }).join('')}
         </div>
       ` : ''}
+      <div contenteditable="true" class="note-page-title" data-placeholder="Untitled"
+        onkeydown="handlePageTitleKeydown(event, '${state.zoomedNoteId}')"
+        oninput="handleNoteInput(event, '${state.zoomedNoteId}')"
+        onblur="handlePageTitleBlur(event, '${state.zoomedNoteId}')"
+        onfocus="handleNoteFocus(event, '${state.zoomedNoteId}')"
+      >${escapeHtml(currentCrumb.title || '')}</div>
+      <div class="note-page-meta">${note ? buildPageMetaChipsHtml(note) : ''}</div>
+      <div contenteditable="true" class="note-page-description" data-placeholder="Add a description..."
+        onkeydown="handleDescriptionKeydown(event, '${state.zoomedNoteId}')"
+        oninput="handleDescriptionInput(event, '${state.zoomedNoteId}')"
+        onblur="handleDescriptionBlur(event, '${state.zoomedNoteId}')"
+      >${escapeHtml(note?.notes || '')}</div>
     </div>
+    <div class="note-page-separator"></div>
   `;
 }
 
