@@ -439,3 +439,30 @@ export function renderCalendarView() {
     </div>
   `;
 }
+
+/**
+ * Attach touch swipe listeners to the calendar grid for month navigation.
+ * Called after render when calendar tab is active.
+ */
+export function attachCalendarSwipe() {
+  const grid = document.querySelector('.calendar-grid');
+  if (!grid || grid._swipeAttached) return;
+  grid._swipeAttached = true;
+
+  let startX = 0;
+  let startY = 0;
+
+  grid.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  grid.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx < 0) window.calendarNextMonth();
+      else window.calendarPrevMonth();
+    }
+  }, { passive: true });
+}

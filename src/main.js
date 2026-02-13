@@ -248,6 +248,11 @@ function initApp() {
     updateKeyboardClass();
   }
 
+  // Auto-hide bottom nav on scroll down (mobile only)
+  if (window.innerWidth <= 768 && typeof window.initBottomNavScrollHide === 'function') {
+    window.initBottomNavScrollHide();
+  }
+
   // Re-render on orientation change for responsive layout updates
   let resizeRenderTimeout = null;
   const handleOrientationChange = () => {

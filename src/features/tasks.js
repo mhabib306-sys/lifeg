@@ -118,6 +118,7 @@ export function createTask(title, options = {}) {
   if (!task.isNote && (task.deferDate || task.dueDate)) {
     window.pushTaskToGCalIfConnected?.(task);
   }
+  if (navigator.vibrate) navigator.vibrate(10);
   return task;
 }
 
@@ -216,6 +217,7 @@ export function toggleTaskComplete(taskId) {
   if (task) {
     const wasCompleted = task.completed;
     task.completed = !task.completed;
+    if (navigator.vibrate) navigator.vibrate(10);
     task.completedAt = task.completed ? new Date().toISOString() : null;
     task.updatedAt = new Date().toISOString();
 

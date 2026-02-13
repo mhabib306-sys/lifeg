@@ -392,6 +392,35 @@ export function toggleWorkspaceSidebar() {
  * Only triggers on touch devices or viewports <= 768px.
  * Scrolls to .main-content or <main>, or falls back to top of page.
  */
+// ============================================================================
+// Bottom Nav Auto-Hide on Scroll
+// ============================================================================
+
+let _lastScrollY = 0;
+let _scrollHideAttached = false;
+
+export function initBottomNavScrollHide() {
+  if (_scrollHideAttached || window.innerWidth > 768) return;
+  _scrollHideAttached = true;
+  _lastScrollY = window.scrollY;
+
+  window.addEventListener('scroll', () => {
+    const nav = document.querySelector('.mobile-bottom-nav');
+    if (!nav) return;
+
+    const currentY = window.scrollY;
+    const delta = currentY - _lastScrollY;
+
+    if (delta > 20 && currentY > 100) {
+      nav.classList.add('nav-scroll-hidden');
+    } else if (delta < -10 || currentY < 50) {
+      nav.classList.remove('nav-scroll-hidden');
+    }
+
+    _lastScrollY = currentY;
+  }, { passive: true });
+}
+
 export function scrollToContent() {
   if (window.matchMedia('(hover: none)').matches || window.innerWidth <= 768) {
     setTimeout(() => {

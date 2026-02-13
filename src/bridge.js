@@ -187,14 +187,16 @@ import {
   clearCalendarEventDrag,
   dropCalendarEventToSlot,
   addMeetingLinkedItem,
-  handleMeetingItemInputKeydown
+  handleMeetingItemInputKeydown,
+  attachCalendarSwipe
 } from './ui/calendar-view.js';
 import { createPrayerInput, createToggle, createNumberInput, createCounter, createScoreCard, createCard } from './ui/input-builders.js';
 import {
   openMobileDrawer, closeMobileDrawer, renderMobileDrawer, renderBottomNav,
   showAreaTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, showCategoryTasks, scrollToContent,
   showAllLabelsPage, showAllPeoplePage,
-  toggleSidebarAreaCollapse, toggleWorkspaceSidebar
+  toggleSidebarAreaCollapse, toggleWorkspaceSidebar,
+  initBottomNavScrollHide
 } from './ui/mobile.js';
 
 // -- Task Modal --
@@ -313,7 +315,7 @@ Object.assign(window, {
   addDiscussionItemToMeeting,
   toggleCalendarMobilePanel,
   convertCalendarEventToTask, startCalendarEventDrag, clearCalendarEventDrag, dropCalendarEventToSlot,
-  addMeetingLinkedItem, handleMeetingItemInputKeydown,
+  addMeetingLinkedItem, handleMeetingItemInputKeydown, attachCalendarSwipe,
 
   // Scoring
   parsePrayer, calcPrayerScore, invalidateScoresCache,
@@ -425,7 +427,7 @@ Object.assign(window, {
   openMobileDrawer, closeMobileDrawer, renderMobileDrawer, renderBottomNav,
   showAreaTasks, showLabelTasks, showPerspectiveTasks, showPersonTasks, showCategoryTasks, scrollToContent,
   showAllLabelsPage, showAllPeoplePage,
-  toggleSidebarAreaCollapse, toggleWorkspaceSidebar,
+  toggleSidebarAreaCollapse, toggleWorkspaceSidebar, initBottomNavScrollHide,
 
   // Task Modal
   startInlineEdit, saveInlineEdit, cancelInlineEdit, handleInlineEditKeydown,

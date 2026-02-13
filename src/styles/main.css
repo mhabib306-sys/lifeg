@@ -1303,6 +1303,13 @@ img.twemoji {
   -webkit-backdrop-filter: blur(10px);
   box-shadow: var(--shadow-sm);
   will-change: transform;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.mobile-bottom-nav.nav-scroll-hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .mobile-bottom-nav-inner {
