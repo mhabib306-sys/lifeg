@@ -32,7 +32,7 @@ body {
   line-height: 1.45;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: background var(--duration-normal) var(--ease-default), color var(--duration-normal) var(--ease-default);
   overflow-x: hidden;
 }
 
@@ -61,14 +61,14 @@ button {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--border-radius);
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition: background var(--duration-normal) var(--ease-default), border-color var(--duration-normal) var(--ease-default);
 }
 .sb-btn {
   background: var(--btn-bg);
   color: white;
   min-height: 36px;
   padding-inline: 14px;
-  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background var(--duration-fast) var(--ease-default), transform var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
   border-radius: var(--border-radius);
 }
 .sb-btn:hover {
@@ -95,7 +95,7 @@ input[type="number"], input[type="text"], textarea, select {
   border: none;
   border-radius: calc(var(--border-radius) - 2px);
   color: var(--text-primary);
-  transition: background 0.2s ease, box-shadow 0.2s ease;
+  transition: background var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
 }
 input[type="number"]:focus, input[type="text"]:focus, textarea:focus, select:focus {
   outline: none;
@@ -218,7 +218,7 @@ input[type="checkbox"]:focus {
 
 /* Task item - Things 3 style (no left border, subtle hover) */
 .task-item {
-  transition: background 0.15s ease, border-radius 0.15s ease;
+  transition: background var(--duration-fast) var(--ease-default), border-radius var(--duration-fast) var(--ease-default);
   border-left: none;
   border-radius: var(--border-radius);
   margin: 0 4px;
@@ -276,7 +276,7 @@ img.twemoji {
 
 /* Checkbox - Things 3 style (thin circle, smooth animations) */
 .task-checkbox {
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease, background 0.2s ease;
+  transition: transform 0.2s var(--ease-spring), border-color var(--duration-fast) var(--ease-default), background var(--duration-fast) var(--ease-default);
   cursor: pointer;
   border-radius: 9999px !important;
   -webkit-border-radius: 9999px !important;
@@ -289,7 +289,7 @@ img.twemoji {
   transform: scale(0.95);
 }
 .task-checkbox.completed {
-  animation: checkPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: checkPop 0.3s var(--ease-spring);
   background: var(--accent) !important;
   border-color: var(--accent) !important;
 }
@@ -344,7 +344,7 @@ img.twemoji {
   line-height: 1;
   padding: 8px 12px;
   border-radius: var(--border-radius);
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 
 .workspace-mode-btn:hover:not(:disabled) {
@@ -391,7 +391,7 @@ img.twemoji {
   align-items: center;
   gap: 6px;
   white-space: nowrap;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 
 .workspace-chip:hover {
@@ -436,7 +436,7 @@ img.twemoji {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
   color: var(--text-secondary);
 }
 
@@ -567,7 +567,7 @@ img.twemoji {
   font-weight: 600;
   line-height: 1;
   padding: 10px 12px;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 
 .workspace-sidebar-toggle-btn:hover,
@@ -600,7 +600,7 @@ img.twemoji {
 
 /* Category/Label pill interactions */
 .tag-pill {
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s var(--ease-default);
   cursor: pointer;
 }
 .tag-pill:hover {
@@ -613,7 +613,7 @@ img.twemoji {
 
 /* Button micro-interactions */
 .action-btn {
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s var(--ease-default);
   opacity: 0;
 }
 .task-item:hover .action-btn {
@@ -628,7 +628,7 @@ img.twemoji {
 
 /* Move dropdown */
 .move-dropdown {
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
   opacity: 0;
   transform: translateY(-2px);
 }
@@ -699,7 +699,7 @@ img.twemoji {
   cursor: grabbing;
 }
 .task-list.is-dragging .task-item:not(.dragging) {
-  transition: transform 0.2s ease;
+  transition: transform var(--duration-fast) var(--ease-default);
 }
 .task-item.dragging .drag-indicator {
   background: var(--accent) !important;
@@ -707,7 +707,7 @@ img.twemoji {
 
 /* Home widgets */
 .widget {
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-default);
   position: relative;
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--border-light);
@@ -773,7 +773,7 @@ img.twemoji {
 }
 /* Resize handle */
 .widget-resize-btn {
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 .widget-resize-btn:hover {
   background: var(--accent-light);
@@ -814,7 +814,7 @@ img.twemoji {
 }
 .area-chip-action {
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 .area-chip-action:hover {
   transform: translateY(-1px);
@@ -1145,7 +1145,7 @@ img.twemoji {
 /* Sidebar draggable items */
 .draggable-item {
   cursor: grab;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
   -webkit-user-select: none;
   user-select: none;
   position: relative;
@@ -1189,11 +1189,11 @@ img.twemoji {
 
 /* Modal animations */
 .modal-overlay {
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn var(--duration-fast) var(--ease-default)-out;
   padding: 16px;
 }
 .modal-content {
-  animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: slideUp 0.25s var(--ease-spring);
 }
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -1212,7 +1212,7 @@ img.twemoji {
 
 /* Input focus animations */
 .task-input {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s var(--ease-default);
 }
 .task-input:focus {
   border-color: var(--accent);
@@ -1222,7 +1222,7 @@ img.twemoji {
 
 /* Label checkbox interactions */
 .label-checkbox {
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s var(--ease-default);
 }
 .label-checkbox:hover {
   transform: scale(1.02);
@@ -1267,7 +1267,7 @@ img.twemoji {
 
 /* Perspective count badge */
 .count-badge {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s var(--ease-default);
 }
 .sidebar-item:hover .count-badge {
   transform: scale(1.1);
@@ -1317,7 +1317,7 @@ img.twemoji {
   -webkit-backdrop-filter: blur(10px);
   box-shadow: var(--shadow-sm);
   will-change: transform;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform var(--duration-fast) var(--ease-default), opacity var(--duration-fast) var(--ease-default);
 }
 
 .mobile-bottom-nav.nav-scroll-hidden {
@@ -1349,7 +1349,7 @@ img.twemoji {
   min-height: 58px;
   border-radius: var(--border-radius-lg);
   color: var(--text-muted);
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-default);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -1394,7 +1394,7 @@ img.twemoji {
 /* Mobile Header Compact */
 .mobile-header-compact {
   display: none;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform var(--duration-fast) var(--ease-default), opacity var(--duration-fast) var(--ease-default);
 }
 
 @media (max-width: 768px) {
@@ -1480,7 +1480,7 @@ img.twemoji {
     z-index: var(--z-drawer-overlay);
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: all var(--duration-normal) var(--ease-default);
     touch-action: none;
   }
 
@@ -1499,7 +1499,7 @@ img.twemoji {
     background: var(--bg-primary);
     z-index: var(--z-drawer);
     transform: translate3d(-100%, 0, 0);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s var(--ease-default);
     will-change: transform;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -1666,7 +1666,7 @@ img.twemoji {
     width: 100% !important;
     max-width: 100% !important;
     border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0 !important;
-    animation: slideUpModal 0.3s ease;
+    animation: slideUpModal var(--duration-normal) var(--ease-default);
   }
 
   @keyframes slideUpModal {
@@ -2301,14 +2301,14 @@ img.twemoji {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
-  transition: visibility 0s 0.15s, opacity 0.15s ease;
+  transition: visibility 0s 0.15s, opacity var(--duration-fast) var(--ease-default);
 }
 
 .body-modal-open .mobile-header-compact {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
-  transition: visibility 0s 0.15s, opacity 0.15s ease;
+  transition: visibility 0s 0.15s, opacity var(--duration-fast) var(--ease-default);
 }
 
 .drawer-open .mobile-bottom-nav {
@@ -2324,7 +2324,7 @@ body.mobile-keyboard-open .mobile-bottom-nav {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
-  transition: visibility 0s 0.15s, opacity 0.15s ease;
+  transition: visibility 0s 0.15s, opacity var(--duration-fast) var(--ease-default);
 }
 
 body.mobile-keyboard-open main,
@@ -2345,7 +2345,7 @@ body.mobile-keyboard-open .main-content {
   font-size: 15px;
   background: var(--bg-input);
   color: var(--text-primary);
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 .autocomplete-input:focus {
   outline: none;
@@ -2378,7 +2378,7 @@ body.mobile-keyboard-open .main-content {
   opacity: 0;
   visibility: hidden;
   transform: translateY(-8px);
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 .autocomplete-dropdown.show {
   opacity: 1;
@@ -2391,7 +2391,7 @@ body.mobile-keyboard-open .main-content {
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: background 0.15s ease;
+  transition: background var(--duration-fast) var(--ease-default);
 }
 .autocomplete-option:first-child {
   border-radius: var(--border-radius) var(--border-radius) 0 0;
@@ -2519,7 +2519,7 @@ body.mobile-keyboard-open .main-content {
   border-radius: 5px;
   font-size: 11px;
   font-weight: 500;
-  animation: tagPop 0.2s ease;
+  animation: tagPop var(--duration-fast) var(--ease-default);
 }
 .inline-meta-chip-remove {
   cursor: pointer;
@@ -3088,7 +3088,7 @@ body.mobile-keyboard-open .main-content {
   justify-content: center;
   color: var(--text-secondary);
   background: transparent;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default);
 }
 .calendar-period-btn:hover {
   background: var(--bg-secondary);
@@ -3106,7 +3106,7 @@ body.mobile-keyboard-open .main-content {
   color: var(--text-secondary);
   font-size: 12px;
   font-weight: 500;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition: color var(--duration-fast) var(--ease-default), background var(--duration-fast) var(--ease-default);
 }
 .calendar-today-btn:hover {
   color: var(--accent);
@@ -3335,7 +3335,7 @@ body.mobile-keyboard-open .main-content {
   border-radius: var(--border-radius);
   background: var(--bg-input);
   padding: 6px 10px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
 }
 .modal-token-shell:focus-within {
   border-color: var(--accent);
@@ -3375,7 +3375,7 @@ body.mobile-keyboard-open .main-content {
   background: var(--bg-input);
   min-height: 44px;
   cursor: text;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 .tag-input-container:focus-within {
   border-color: var(--accent);
@@ -3391,7 +3391,7 @@ body.mobile-keyboard-open .main-content {
   font-weight: 500;
   background: var(--bg-secondary);
   color: var(--text-primary);
-  animation: tagPop 0.2s ease;
+  animation: tagPop var(--duration-fast) var(--ease-default);
 }
 @keyframes tagPop {
   0% { transform: scale(0.8); opacity: 0; }
@@ -3495,7 +3495,7 @@ body.mobile-keyboard-open .main-content {
   font-size: 15px;
   background: var(--bg-input);
   color: var(--text-primary);
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 .modal-input-enhanced:focus {
   outline: none !important;
@@ -3516,7 +3516,7 @@ body.mobile-keyboard-open .main-content {
   border-radius: var(--border-radius);
   background: var(--bg-input);
   color: var(--text-primary);
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 .input-field:focus {
   outline: none;
@@ -3532,7 +3532,7 @@ body.mobile-keyboard-open .main-content {
   border-radius: var(--border-radius-sm);
   background: var(--bg-input);
   color: var(--text-primary);
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 .input-field-sm:focus {
   outline: none;
@@ -3574,7 +3574,7 @@ body.mobile-keyboard-open .main-content {
   min-height: 80px;
   max-height: 40vh;
   overflow-y: auto;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 .modal-textarea-enhanced:focus {
   outline: none !important;
@@ -3611,7 +3611,7 @@ body.mobile-keyboard-open .main-content {
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
   padding: 0;
   outline: none;
 }
@@ -3689,7 +3689,7 @@ body.mobile-keyboard-open .main-content {
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-default);
   color: var(--text-secondary);
 }
 .type-option.active {
@@ -3716,7 +3716,7 @@ body.mobile-keyboard-open .main-content {
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-default);
   border: 1px solid var(--border);
   background: var(--bg-input);
   color: var(--text-secondary);
@@ -3763,7 +3763,7 @@ body.mobile-keyboard-open .main-content {
   background: var(--bg-input);
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 .date-quick-pill:hover {
   border-color: var(--text-muted);
@@ -3811,7 +3811,7 @@ body.mobile-keyboard-open .main-content {
   background: var(--bg-input);
   border: 1px solid var(--border);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 .repeat-toggle:hover {
   background: var(--bg-secondary);
@@ -3833,7 +3833,7 @@ body.mobile-keyboard-open .main-content {
 }
 .repeat-config.show {
   display: block;
-  animation: slideDown 0.2s ease;
+  animation: slideDown var(--duration-fast) var(--ease-default);
 }
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-8px); }
@@ -3849,7 +3849,7 @@ body.mobile-keyboard-open .main-content {
   left: 50%;
   transform: translateX(-50%);
   z-index: var(--z-toast);
-  animation: undoSlideUp 0.3s ease;
+  animation: undoSlideUp var(--duration-normal) var(--ease-default);
 }
 @media (min-width: 768px) {
   .undo-toast { bottom: 32px; }
@@ -3920,7 +3920,7 @@ body.mobile-keyboard-open .main-content {
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 .undo-fade-out {
-  animation: undoFadeOut 0.3s ease forwards;
+  animation: undoFadeOut var(--duration-normal) var(--ease-default) forwards;
 }
 @keyframes undoFadeOut {
   from { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -3969,7 +3969,7 @@ body.mobile-keyboard-open .main-content {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  animation: braindumpFadeIn 0.2s ease;
+  animation: braindumpFadeIn var(--duration-fast) var(--ease-default);
 }
 @keyframes braindumpFadeIn {
   from { opacity: 0; }
@@ -4477,7 +4477,7 @@ body.mobile-keyboard-open .main-content {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  animation: braindumpSuccessPop 0.3s ease;
+  animation: braindumpSuccessPop var(--duration-normal) var(--ease-default);
 }
 @keyframes braindumpSuccessPop {
   0% { opacity: 0; transform: scale(0.8); }
@@ -4496,7 +4496,7 @@ body.mobile-keyboard-open .main-content {
   align-items: flex-start;
   justify-content: center;
   padding-top: 15vh;
-  animation: globalSearchFadeIn 0.15s ease;
+  animation: globalSearchFadeIn var(--duration-fast) var(--ease-default);
 }
 @keyframes globalSearchFadeIn {
   from { opacity: 0; }
@@ -4514,7 +4514,7 @@ body.mobile-keyboard-open .main-content {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: globalSearchSlideDown 0.2s ease;
+  animation: globalSearchSlideDown var(--duration-fast) var(--ease-default);
 }
 @keyframes globalSearchSlideDown {
   from { opacity: 0; transform: translateY(-12px) scale(0.98); }
@@ -4584,7 +4584,7 @@ body.mobile-keyboard-open .main-content {
   background: var(--bg-secondary);
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
   white-space: nowrap;
   line-height: 1.4;
   font-family: var(--font-family);
@@ -4805,7 +4805,7 @@ mark.global-search-highlight {
 /* Heatmap grid */
 .heatmap-cell {
   min-height: 20px;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--duration-fast) var(--ease-default);
 }
 .heatmap-cell:hover {
   opacity: 1 !important;
@@ -4815,7 +4815,7 @@ mark.global-search-highlight {
 
 /* Achievement card hover */
 .achievement-card {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
 }
 .achievement-card:hover {
   transform: translateY(-1px);
@@ -4830,7 +4830,7 @@ mark.global-search-highlight {
 
 /* Daily focus card */
 .daily-focus-card {
-  animation: focusSlideIn 0.3s ease;
+  animation: focusSlideIn var(--duration-normal) var(--ease-default);
 }
 @keyframes focusSlideIn {
   0% { opacity: 0; transform: translateY(-8px); }
@@ -4914,7 +4914,7 @@ mark.global-search-highlight {
 .trigger-bullet-chevron {
   width: 14px;
   height: 14px;
-  transition: transform 0.15s ease;
+  transition: transform var(--duration-fast) var(--ease-default);
   transform: rotate(90deg);
 }
 .trigger-bullet.collapsed .trigger-bullet-chevron {
@@ -4976,7 +4976,7 @@ mark.global-search-highlight {
   gap: 2px;
   flex-shrink: 0;
   margin-top: 2px;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--duration-fast) var(--ease-default);
 }
 .trigger-action-btn {
   width: 24px;
@@ -5088,7 +5088,7 @@ mark.global-search-highlight {
   box-shadow: none;
   transform: none;
   letter-spacing: 0;
-  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  transition: background var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
 }
 [data-theme="geist"] .sb-btn:hover,
 [data-theme="geist"] .sb-btn:active {
@@ -5115,7 +5115,7 @@ mark.global-search-highlight {
   border-radius: var(--border-radius-sm);
   box-shadow: none;
   background: var(--bg-input);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
 }
 [data-theme="geist"] input[type="number"]:focus,
 [data-theme="geist"] input[type="text"]:focus,
