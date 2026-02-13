@@ -615,7 +615,8 @@ function persistAndRender(focusId = null) {
   debouncedSaveToGithubSafe();
   window.render();
   if (focusId) {
-    setTimeout(() => focusNote(focusId), 60);
+    // Use requestAnimationFrame + setTimeout to ensure DOM is fully laid out before focusing
+    requestAnimationFrame(() => setTimeout(() => focusNote(focusId), 30));
   }
 }
 
@@ -1367,8 +1368,9 @@ export function handleNoteKeydown(event, noteId) {
     if (nextTitle !== (note.title || '')) {
       note.title = nextTitle;
       recordNoteChange(note, 'updated', { field: 'title' });
-      // No saveTasksData() here — createChildNote → persistAndRender handles it
     }
+    // Blur parent before creating child so focus isn't stuck
+    input.blur();
     createChildNote(noteId);
     return;
   }
