@@ -17,6 +17,45 @@ import { escapeHtml, renderPersonAvatar } from '../utils.js';
 import { THINGS3_AREA_COLORS } from '../constants.js';
 
 // ============================================================================
+// INLINE VALIDATION HELPER
+// ============================================================================
+
+/**
+ * Show inline validation error on an input field.
+ * Adds red border + error text below. Auto-clears on next input.
+ * @param {string} inputId - ID of the input element
+ * @param {string} message - Error message to display
+ * @returns {boolean} Always returns false (for early-return convenience)
+ */
+function showFieldError(inputId, message) {
+  const input = document.getElementById(inputId);
+  if (!input) return false;
+  // Add error styling
+  input.style.borderColor = 'var(--danger)';
+  input.style.boxShadow = '0 0 0 3px color-mix(in srgb, var(--danger) 15%, transparent)';
+  // Remove existing error text if any
+  const existingError = input.parentElement.querySelector('.field-error-msg');
+  if (existingError) existingError.remove();
+  // Add error message
+  const errorEl = document.createElement('p');
+  errorEl.className = 'field-error-msg';
+  errorEl.style.cssText = 'color: var(--danger); font-size: 12px; margin-top: 4px; font-weight: 500;';
+  errorEl.textContent = message;
+  input.insertAdjacentElement('afterend', errorEl);
+  input.focus();
+  // Auto-clear on next input
+  const clearError = () => {
+    input.style.borderColor = '';
+    input.style.boxShadow = '';
+    const msg = input.parentElement.querySelector('.field-error-msg');
+    if (msg) msg.remove();
+    input.removeEventListener('input', clearError);
+  };
+  input.addEventListener('input', clearError);
+  return false;
+}
+
+// ============================================================================
 // ENTITY MODAL SAVE FUNCTIONS (Area, Label, Person)
 // ============================================================================
 
@@ -28,8 +67,7 @@ export function saveAreaFromModal() {
   const emoji = document.getElementById('area-emoji')?.value?.trim() || '';
   const color = document.getElementById('area-color')?.value || '#6366F1';
   if (!name) {
-    alert('Please enter an area name');
-    return;
+    return showFieldError('area-name', 'Please enter an area name');
   }
 
   if (state.editingAreaId) {
@@ -52,8 +90,8 @@ export function saveCategoryFromModal() {
   const areaId = document.getElementById('category-area')?.value;
   const color = document.getElementById('category-color')?.value || '#6366F1';
   const emoji = document.getElementById('category-emoji')?.value?.trim() || '';
-  if (!name) { alert('Please enter a name'); return; }
-  if (!areaId) { alert('Please select an area'); return; }
+  if (!name) { return showFieldError('category-name', 'Please enter a name'); }
+  if (!areaId) { return showFieldError('category-area', 'Please select an area'); }
 
   if (state.editingCategoryId) {
     updateCategory(state.editingCategoryId, { name, areaId, color, emoji });
@@ -73,8 +111,7 @@ export function saveCategoryFromModal() {
 export function saveLabelFromModal() {
   const name = document.getElementById('label-name').value.trim();
   if (!name) {
-    alert('Please enter a tag name');
-    return;
+    return showFieldError('label-name', 'Please enter a tag name');
   }
   const color = document.getElementById('label-color').value;
 
@@ -95,8 +132,7 @@ export function savePersonFromModal() {
   const name = document.getElementById('person-name').value.trim();
   const email = document.getElementById('person-email').value.trim();
   if (!name) {
-    alert('Please enter a name');
-    return;
+    return showFieldError('person-name', 'Please enter a name');
   }
 
   if (state.editingPersonId) {
@@ -119,8 +155,7 @@ export function savePersonFromModal() {
 export function savePerspectiveFromModal() {
   const name = document.getElementById('perspective-name').value.trim();
   if (!name) {
-    alert('Please enter a perspective name');
-    return;
+    return showFieldError('perspective-name', 'Please enter a perspective name');
   }
 
   const icon = document.getElementById('perspective-icon').value || '\uD83D\uDCCC';

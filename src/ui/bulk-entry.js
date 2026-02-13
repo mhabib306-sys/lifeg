@@ -299,8 +299,8 @@ export function renderBulkEntryTab() {
     '</div>' +
     // Data table
     '<div class="rounded-lg border border-[var(--border-light)] overflow-hidden bg-[var(--bg-card)]">' +
-      '<div class="overflow-x-auto">' +
-        '<table class="w-full text-sm">' +
+      '<div class="overflow-x-auto" style="-webkit-overflow-scrolling: touch">' +
+        '<table class="w-full text-sm" style="min-width: 480px">' +
           '<thead>' +
             '<tr class="text-white" style="background-color: ' + catColor + '">' +
               '<th class="border px-2 py-3 sticky left-0 z-20" style="border-color: ' + catColor + '; background-color: ' + catColor + '">Day</th>' +

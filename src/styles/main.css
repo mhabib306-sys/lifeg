@@ -1299,9 +1299,10 @@ img.twemoji {
   padding: 8px 0;
   padding-bottom: max(8px, env(safe-area-inset-bottom));
   z-index: 100;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: var(--shadow-sm);
+  will-change: transform;
 }
 
 .mobile-bottom-nav-inner {
@@ -1472,8 +1473,8 @@ img.twemoji {
     top: 0;
     left: 0;
     bottom: 0;
-    width: min(88vw, 340px);
-    max-width: 340px;
+    width: min(80vw, 320px);
+    max-width: 320px;
     background: var(--bg-primary);
     z-index: 201;
     transform: translate3d(-100%, 0, 0);
@@ -1574,7 +1575,7 @@ img.twemoji {
 
   /* Task items - larger touch targets */
   .task-item {
-    padding: 4px 8px;
+    padding: 8px 12px;
     min-height: 50px;
     margin: 0 !important;
     border-radius: 0 !important;
@@ -1591,7 +1592,7 @@ img.twemoji {
   .task-meta-inline {
     margin-top: 2px !important;
     font-size: 11px !important;
-    line-height: 1.05 !important;
+    line-height: 1.25 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
@@ -1640,7 +1641,7 @@ img.twemoji {
 
   .modal-content, .modal-enhanced {
     margin: 0 !important;
-    max-height: calc(100dvh - env(safe-area-inset-top) - 8px) !important;
+    max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 8px) !important;
     width: 100% !important;
     max-width: 100% !important;
     border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0 !important;
@@ -1908,8 +1909,8 @@ img.twemoji {
   }
 }
 
-/* Force mobile widget layout for touch devices even in landscape widths */
-@media (hover: none) and (pointer: coarse) {
+/* Force mobile widget layout for touch devices on phone-sized screens only */
+@media (hover: none) and (pointer: coarse) and (max-width: 768px) {
   .widget-grid {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
@@ -1932,10 +1933,14 @@ img.twemoji {
   }
 
   .task-item {
-    padding: 12px;
+    padding: 8px 10px;
   }
 
   .score-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .score-grid-compact {
     grid-template-columns: 1fr;
   }
 
@@ -1969,6 +1974,14 @@ img.twemoji {
 
   .widget-body {
     padding: 12px !important;
+  }
+}
+
+/* Mid-size phones (375-599) — 2-col score grid */
+@media (min-width: 375px) and (max-width: 599px) {
+  .score-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 }
 
@@ -2007,8 +2020,8 @@ img.twemoji {
 
   /* Task items more spacious */
   .task-item {
-    padding: 16px 20px;
-    min-height: 60px;
+    padding: 10px 14px;
+    min-height: 56px;
   }
 
   /* Bottom nav larger icons */
@@ -2176,6 +2189,53 @@ img.twemoji {
     white-space: normal;
     line-height: 1.2;
   }
+
+  /* Fix #5: Quick-add type toggle — 44px touch target */
+  .quick-add-type-toggle {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Fix #6: Note action buttons — 44px touch target */
+  .note-action-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+  }
+
+  /* Fix #7: Calendar task lines — larger padding for touch */
+  .calendar-task-line {
+    padding: 4px 6px;
+    min-height: 28px;
+  }
+
+  /* Fix #8: Tag pill remove button — 32px touch target */
+  .tag-pill-remove {
+    min-width: 32px;
+    min-height: 32px;
+    justify-content: center;
+  }
+
+  /* Fix #17: Prevent sticky hover states on touch devices */
+  .sidebar-item:hover {
+    background: transparent;
+  }
+  .widget:hover {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  }
+  .tag-pill:hover {
+    opacity: 1;
+  }
+  .autocomplete-option:hover {
+    background: transparent;
+  }
+  .note-action-btn:hover {
+    background: transparent;
+    color: var(--text-muted);
+  }
+  .quick-add-type-toggle:hover {
+    background: transparent;
+  }
 }
 
 /* iOS safe areas */
@@ -2194,15 +2254,17 @@ img.twemoji {
 }
 
 .body-modal-open .mobile-bottom-nav {
-  transform: translateY(120%);
+  visibility: hidden;
   opacity: 0;
   pointer-events: none;
+  transition: visibility 0s 0.15s, opacity 0.15s ease;
 }
 
 .body-modal-open .mobile-header-compact {
-  transform: translateY(-120%);
+  visibility: hidden;
   opacity: 0;
   pointer-events: none;
+  transition: visibility 0s 0.15s, opacity 0.15s ease;
 }
 
 .drawer-open .mobile-bottom-nav {
@@ -2215,9 +2277,10 @@ img.twemoji {
 }
 
 body.mobile-keyboard-open .mobile-bottom-nav {
-  transform: translateY(120%);
+  visibility: hidden;
   opacity: 0;
   pointer-events: none;
+  transition: visibility 0s 0.15s, opacity 0.15s ease;
 }
 
 body.mobile-keyboard-open main,
@@ -3055,13 +3118,13 @@ body.mobile-keyboard-open .main-content {
     -webkit-overflow-scrolling: touch;
   }
   .calendar-day {
-    padding: 3px;
+    padding: 4px;
     margin: 0;
     border-radius: 6px;
   }
   .calendar-grid {
-    grid-template-rows: auto repeat(6, minmax(82px, auto));
-    grid-auto-rows: minmax(82px, auto);
+    grid-template-rows: auto repeat(6, minmax(90px, auto));
+    grid-auto-rows: minmax(90px, auto);
     height: auto;
   }
   .calendar-event-modal {
@@ -3111,15 +3174,15 @@ body.mobile-keyboard-open .main-content {
     height: 24px;
   }
   .calendar-task-line {
-    font-size: 10px;
+    font-size: 11px;
   }
   .calendar-task-tag {
     min-width: 24px;
-    font-size: 8px;
+    font-size: 9px;
   }
   .calendar-header-cell {
-    padding: 6px 2px;
-    font-size: 10px;
+    padding: 8px 2px;
+    font-size: 11px;
   }
   .calendar-event-action-title {
     font-size: 15px;
@@ -3191,6 +3254,11 @@ body.mobile-keyboard-open .main-content {
   .calendar-view-toggle-btn {
     min-width: 42px;
     padding-inline: 10px;
+    flex: 1;
+  }
+  .calendar-view-toggle {
+    width: 100%;
+    display: flex;
   }
   .calendar-mobile-panel-toggle {
     min-height: 46px;

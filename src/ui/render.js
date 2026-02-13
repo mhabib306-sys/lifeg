@@ -146,6 +146,8 @@ function getGithubToken() {
 
 // Track pending rAF for inline autocomplete setup to prevent races
 let _inlineAcRafId = null;
+// Track previous tab for scroll preservation (skip restore on tab change)
+let _previousTab = null;
 
 /**
  * Full-DOM replacement render. Reads state.activeTab to decide which tab
@@ -156,6 +158,10 @@ export function render() {
   const renderStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
   try {
     const app = document.getElementById('app');
+    // Save scroll position before DOM replacement (restore only on same-tab renders)
+    const isTabChange = _previousTab !== null && _previousTab !== state.activeTab;
+    const savedScrollTop = !isTabChange ? (document.documentElement.scrollTop || document.body.scrollTop) : 0;
+    _previousTab = state.activeTab;
     const isCalendarTabActive = state.activeTab === 'calendar';
     const resetBodyUiState = () => {
       document.body.classList.remove('body-modal-open');
@@ -407,6 +413,12 @@ export function render() {
         const len = emojiInput.value.length;
         emojiInput.setSelectionRange(len, len);
       }
+    }
+
+    // Restore scroll position after DOM replacement (same-tab only)
+    if (!isTabChange && savedScrollTop > 0) {
+      document.documentElement.scrollTop = savedScrollTop;
+      document.body.scrollTop = savedScrollTop;
     }
 
     // Initialize inline autocomplete for quick-add inputs

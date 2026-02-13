@@ -323,8 +323,8 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
             ${task.flagged ? `<span class="inline-flex items-center mr-1" style="color: var(--flagged-color)">${getActiveIcons().flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
             ${escapeHtml(task.title)}
           </span>
-          <div class="flex items-center gap-1.5 ml-2 flex-shrink-0 text-[10px]">
-            ${area ? `<span class="text-[var(--text-muted)] truncate max-w-[70px]">${escapeHtml(area.name)}${subcategory ? ' › ' + escapeHtml(subcategory.name) : ''}</span>` : ''}
+          <div class="flex items-center gap-1.5 ml-2 flex-shrink-0 text-[11px]">
+            ${area ? `<span class="text-[var(--text-muted)] truncate max-w-[90px]">${escapeHtml(area.name)}${subcategory ? ' › ' + escapeHtml(subcategory.name) : ''}</span>` : ''}
             ${task.dueDate ? `<span class="${isOverdue ? 'font-medium' : isDueToday ? 'text-[var(--accent)] font-medium' : isDueSoon ? 'font-medium' : 'text-[var(--text-muted)]'}" style="${isOverdue ? 'color: var(--overdue-color)' : isDueSoon ? 'color: var(--flagged-color)' : ''}">${formatSmartDate(task.dueDate)}</span>` : ''}
             ${task.repeat && task.repeat.type !== 'none' ? `<span class="text-[var(--text-muted)]" title="Repeats ${task.repeat.interval > 1 ? 'every ' + task.repeat.interval + ' ' : ''}${task.repeat.type}"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></span>` : ''}
           </div>
