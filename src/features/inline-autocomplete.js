@@ -306,8 +306,9 @@ export function setupInlineAutocomplete(inputId, config = {}) {
     // Position near input
     const rect = input.getBoundingClientRect();
     const spaceBelow = window.innerHeight - rect.bottom;
-    popup.style.left = Math.min(rect.left, window.innerWidth - 310) + 'px';
-    popup.style.width = Math.min(rect.width, 300) + 'px';
+    const popupWidth = Math.min(300, window.innerWidth - 24);
+    popup.style.left = Math.min(rect.left, window.innerWidth - popupWidth - 12) + 'px';
+    popup.style.width = popupWidth + 'px';
     if (spaceBelow > 240) {
       popup.style.top = rect.bottom + 4 + 'px';
       popup.style.bottom = 'auto';

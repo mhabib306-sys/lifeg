@@ -1,6 +1,19 @@
 @import 'tailwindcss';
 @import './themes.css';
 
+:root {
+  --z-base: 1;
+  --z-raised: 10;
+  --z-sticky: 100;
+  --z-drawer-overlay: 200;
+  --z-drawer: 201;
+  --z-dropdown: 300;
+  --z-modal: 340;
+  --z-search: 350;
+  --z-toast: 400;
+  --z-autocomplete: 500;
+}
+
 @theme {
   --color-cream: var(--bg-primary);
   --color-warmgray: var(--bg-secondary);
@@ -672,7 +685,7 @@ img.twemoji {
 .drag-ghost {
   position: fixed;
   pointer-events: none;
-  z-index: 1000;
+  z-index: var(--z-sticky);
   background: var(--bg-card);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-lg);
@@ -712,7 +725,7 @@ img.twemoji {
   opacity: 0.4;
   transform: scale(0.98);
   box-shadow: var(--shadow-md);
-  z-index: 1000;
+  z-index: var(--z-sticky);
 }
 .widget.drag-over {
   transform: scale(1.02);
@@ -1299,7 +1312,7 @@ img.twemoji {
   border-top: 1px solid var(--border);
   padding: 8px 0;
   padding-bottom: max(8px, env(safe-area-inset-bottom));
-  z-index: 100;
+  z-index: var(--z-sticky);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: var(--shadow-sm);
@@ -1443,7 +1456,7 @@ img.twemoji {
   .mobile-header-compact {
     position: sticky;
     top: 0;
-    z-index: 80;
+    z-index: var(--z-sticky);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }
@@ -1464,7 +1477,7 @@ img.twemoji {
     inset: 0;
     height: 100dvh;
     background: rgba(0,0,0,0.5);
-    z-index: 200;
+    z-index: var(--z-drawer-overlay);
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
@@ -1484,7 +1497,7 @@ img.twemoji {
     width: min(80vw, 320px);
     max-width: 320px;
     background: var(--bg-primary);
-    z-index: 201;
+    z-index: var(--z-drawer);
     transform: translate3d(-100%, 0, 0);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
@@ -1985,6 +1998,20 @@ img.twemoji {
   }
 }
 
+/* Tiny screens (320px) — tighter widget gap */
+@media (max-width: 360px) {
+  .widget-grid {
+    gap: 12px !important;
+  }
+}
+
+/* Short viewports — prevent settings lists from pushing content off-screen */
+@media (max-height: 700px) {
+  .max-h-36 {
+    max-height: 24vh !important;
+  }
+}
+
 /* Mid-size phones (375-599) — 2-col score grid */
 @media (min-width: 375px) and (max-width: 599px) {
   .score-grid {
@@ -2338,7 +2365,7 @@ body.mobile-keyboard-open .main-content {
   box-shadow: 0 0 0 1px var(--border-light), var(--shadow-sm);
   max-height: 200px;
   overflow-y: auto;
-  z-index: 300;
+  z-index: var(--z-dropdown);
   opacity: 0;
   visibility: hidden;
   transform: translateY(-8px);
@@ -2406,7 +2433,7 @@ body.mobile-keyboard-open .main-content {
 /* Inline autocomplete popup (for trigger chars #, @, &) */
 .inline-autocomplete-popup {
   position: fixed;
-  z-index: 10000;
+  z-index: var(--z-autocomplete);
   background: var(--modal-bg, var(--bg-card));
   border: 1px solid var(--border);
   border-radius: var(--border-radius);
@@ -3812,7 +3839,7 @@ body.mobile-keyboard-open .main-content {
   bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 300;
+  z-index: var(--z-toast);
   animation: undoSlideUp 0.3s ease;
 }
 @media (min-width: 768px) {
@@ -3898,7 +3925,7 @@ body.mobile-keyboard-open .main-content {
   position: fixed;
   bottom: 90px;
   right: 20px;
-  z-index: 100;
+  z-index: var(--z-sticky);
   width: 52px;
   height: 52px;
   border-radius: 50%;
@@ -3928,7 +3955,7 @@ body.mobile-keyboard-open .main-content {
 .braindump-overlay {
   position: fixed;
   inset: 0;
-  z-index: 340;
+  z-index: var(--z-modal);
   background: var(--bg-primary);
   display: flex;
   flex-direction: column;
@@ -4454,7 +4481,7 @@ body.mobile-keyboard-open .main-content {
 .global-search-overlay {
   position: fixed;
   inset: 0;
-  z-index: 350;
+  z-index: var(--z-search);
   background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: flex-start;
