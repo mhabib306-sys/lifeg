@@ -1117,6 +1117,38 @@ export function deleteNoteWithUndo(noteId, focusAfterDeleteId) {
   });
 }
 
+/** Toggle an item between note (bullet) and task (checkbox). Tana-style in-place toggle. */
+export function toggleNoteTask(id) {
+  const item = state.tasksData.find(t => t.id === id && (isNoteItem(t) || !t.isNote));
+  if (!item) return;
+
+  if (item.isNote) {
+    // NOTE → TASK: gains checkbox, appears in task perspectives too
+    item.isNote = false;
+    item.status = item.status || 'anytime';
+    // Keep outliner fields: parentId, indent, noteOrder, noteLifecycleState, noteHistory
+    // Ensure task ordering for task list views
+    if (item.order == null) item.order = item.noteOrder || Date.now();
+  } else {
+    // TASK → NOTE: gains bullet, leaves task perspectives
+    item.isNote = true;
+    // Ensure outliner fields exist (for tasks not already in outliner)
+    if (!item.noteLifecycleState) item.noteLifecycleState = 'active';
+    if (!item.noteHistory) item.noteHistory = [];
+    if (item.noteOrder == null) item.noteOrder = item.order || Date.now();
+    if (item.parentId === undefined) item.parentId = null;
+    if (item.indent == null) item.indent = 0;
+    // Clear task-only view flags (these views don't apply to notes)
+    item.today = false;
+    item.flagged = false;
+  }
+
+  item.updatedAt = new Date().toISOString();
+  saveTasksData();
+  debouncedSaveToGithubSafe();
+  window.render();
+}
+
 // ============================================================================
 // Focus & Cursor (Selection API for contenteditable)
 // ============================================================================
