@@ -1013,10 +1013,10 @@ img.twemoji {
   line-height: 1.5;
 }
 
-/* Unified bullet element */
+/* Unified bullet element — height matches .note-input first line (padding + line-height) so flex-start alignment works */
 .note-bullet {
   width: 20px;
-  height: 20px;
+  height: calc(2px + 1.5em);  /* matches .note-input padding-top + line-height */
   min-width: 20px;
   display: inline-flex;
   align-items: center;
@@ -1026,8 +1026,7 @@ img.twemoji {
   cursor: pointer;
   transition: all 0.15s ease;
   color: color-mix(in srgb, var(--notes-accent) 55%, transparent);
-  /* Align bullet center with first line of text: text padding 2px + half line-height (15px*1.5/2≈11px) - half bullet (10px) ≈ 3px */
-  margin-top: 3px;
+  font-size: 15px; /* match .note-input font-size so em units align */
 }
 .note-bullet:hover {
   background: color-mix(in srgb, var(--notes-accent) 10%, transparent);
@@ -1060,8 +1059,8 @@ img.twemoji {
   justify-content: center;
   flex-shrink: 0;
   width: 24px;
-  height: 24px;
-  margin-top: 1px;
+  height: calc(2px + 1.5em); /* match .note-input first line height */
+  font-size: 15px; /* match .note-input font-size so em units align */
   cursor: pointer;
   background: none;
   border: none;
@@ -1313,13 +1312,13 @@ img.twemoji {
   .note-actions {
     display: none !important;
   }
-  /* Adjust bullet vertical alignment for 16px mobile font */
+  /* Match bullet height to 16px mobile font */
   .note-bullet {
     position: relative;
-    margin-top: 4px;
+    font-size: 16px;
   }
   .note-checkbox-btn {
-    margin-top: 2px;
+    font-size: 16px;
   }
   .note-bullet::before {
     content: '';
