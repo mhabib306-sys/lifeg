@@ -191,9 +191,16 @@ export function handleTaskInlineInput(event, taskId) {
 export function handleTaskInlinePaste(event) {
   event.preventDefault();
   const text = (event.clipboardData || window.clipboardData).getData('text/plain');
-  // Insert plain text only (single line — strip newlines)
   const clean = text.replace(/[\r\n]+/g, ' ').trim();
-  document.execCommand('insertText', false, clean);
+  const sel = window.getSelection();
+  if (sel.rangeCount) {
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(document.createTextNode(clean));
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
 }
 
 /**

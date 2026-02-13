@@ -492,7 +492,12 @@ function getNextOrder(siblings) {
 function getOrderBetween(before, after) {
   const a = before != null ? before : 0;
   const b = after != null ? after : a + 2000;
-  return a + Math.max(1, Math.floor((b - a) / 2));
+  const gap = b - a;
+  if (gap <= 1) {
+    // Values too close for integer midpoint — use float to avoid collision
+    return (a + b) / 2;
+  }
+  return a + Math.floor(gap / 2);
 }
 
 // ============================================================================
@@ -1149,8 +1154,18 @@ export function toggleNoteTask(id) {
   // Snapshot for undo
   const snapshot = JSON.parse(JSON.stringify(item));
   const wasNote = item.isNote;
+  let childSnapshots = [];
 
   if (item.isNote) {
+    // Reparent direct children before converting so they aren't orphaned
+    const directChildren = state.tasksData.filter(t => isActiveNote(t) && t.parentId === id);
+    if (directChildren.length) {
+      childSnapshots = directChildren.map(c => ({ id: c.id, parentId: c.parentId, indent: c.indent }));
+      directChildren.forEach(child => {
+        child.parentId = item.parentId || null;
+        child.indent = Math.max(0, (child.indent || 0) - 1);
+      });
+    }
     // NOTE → TASK: leaves outliner, enters task perspectives
     item.isNote = false;
     item.status = item.status || 'anytime';
@@ -1174,9 +1189,16 @@ export function toggleNoteTask(id) {
   debouncedSaveToGithubSafe();
 
   const label = wasNote ? `Converted to task` : `Converted to note`;
-  startUndoCountdown(label, snapshot, (snap) => {
-    // Restore all fields from snapshot
-    Object.assign(item, snap);
+  startUndoCountdown(label, { itemSnap: snapshot, childSnaps: childSnapshots }, (snap) => {
+    // Restore item fields from snapshot
+    Object.assign(item, snap.itemSnap);
+    // Restore reparented children
+    if (snap.childSnaps && snap.childSnaps.length) {
+      snap.childSnaps.forEach(cs => {
+        const child = state.tasksData.find(t => t.id === cs.id);
+        if (child) { child.parentId = cs.parentId; child.indent = cs.indent; }
+      });
+    }
     saveTasksData();
     debouncedSaveToGithubSafe();
   });
@@ -1345,7 +1367,7 @@ export function handleNoteKeydown(event, noteId) {
     if (nextTitle !== (note.title || '')) {
       note.title = nextTitle;
       recordNoteChange(note, 'updated', { field: 'title' });
-      saveTasksData();
+      // No saveTasksData() here — createChildNote → persistAndRender handles it
     }
     createChildNote(noteId);
     return;
@@ -1420,7 +1442,15 @@ export function handleNoteFocus(event, noteId) {
 export function handleNotePaste(event) {
   event.preventDefault();
   const text = (event.clipboardData || window.clipboardData).getData('text/plain');
-  document.execCommand('insertText', false, text);
+  const sel = window.getSelection();
+  if (sel.rangeCount) {
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(document.createTextNode(text));
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
 }
 
 // ============================================================================
@@ -1549,7 +1579,12 @@ export function focusPageTitleForMeta(noteId) {
   // Insert space + # to trigger autocomplete
   const text = titleEl.textContent || '';
   const suffix = text.endsWith(' ') ? '#' : ' #';
-  document.execCommand('insertText', false, suffix);
+  const textNode = document.createTextNode(suffix);
+  range.insertNode(textNode);
+  range.setStartAfter(textNode);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
   // Trigger input event for autocomplete
   noteAcNoteId = noteId;
   noteAcCheckTrigger(titleEl);
@@ -1883,6 +1918,7 @@ export function reorderNotes(draggedId, targetId, position) {
     // Re-parent into target
     dragged.parentId = targetId;
     dragged.indent = (target.indent || 0) + 1;
+    dragged.areaId = target.areaId; // Inherit area from new parent
     const newSiblings = state.tasksData
       .filter(t => isActiveNote(t) && t.parentId === targetId && t.id !== draggedId)
       .sort(compareNotes);
