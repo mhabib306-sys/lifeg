@@ -1010,6 +1010,7 @@ img.twemoji {
   padding: 5px 12px 5px calc(12px + (var(--note-depth) * 24px));
   position: relative;
   z-index: 1;
+  line-height: 1.5;
 }
 
 /* Unified bullet element */
@@ -1025,7 +1026,8 @@ img.twemoji {
   cursor: pointer;
   transition: all 0.15s ease;
   color: color-mix(in srgb, var(--notes-accent) 55%, transparent);
-  margin-top: 4px;
+  /* Align bullet center with first line of text: text padding 2px + half line-height (15px*1.5/2≈11px) - half bullet (10px) ≈ 3px */
+  margin-top: 3px;
 }
 .note-bullet:hover {
   background: color-mix(in srgb, var(--notes-accent) 10%, transparent);
@@ -1059,7 +1061,7 @@ img.twemoji {
   flex-shrink: 0;
   width: 24px;
   height: 24px;
-  margin-top: 2px;
+  margin-top: 1px;
   cursor: pointer;
   background: none;
   border: none;
@@ -1299,6 +1301,10 @@ img.twemoji {
     min-height: 44px;
     padding: 8px 12px 8px calc(8px + (var(--note-depth) * 16px));
     gap: 6px;
+  }
+  /* Prevent iOS auto-zoom on contenteditable focus (requires >=16px) */
+  .note-input {
+    font-size: 16px;
   }
   .note-item.has-children:not(.note-collapsed)::after {
     left: calc(18px + (var(--note-depth) * 16px));
