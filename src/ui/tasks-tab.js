@@ -382,6 +382,14 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="4" x2="21" y2="4"/><line x1="3" y1="20" x2="21" y2="20"/><line x1="11" y1="8" x2="21" y2="8"/><line x1="11" y1="12" x2="21" y2="12"/><line x1="11" y1="16" x2="21" y2="16"/><polyline points="3 8 7 12 3 16"/></svg>
             </button>
           ` : ''}
+          <button onclick="event.stopPropagation(); window.toggleNoteTask('${task.id}')"
+            class="p-1 text-[var(--text-muted)] hover:text-[var(--notes-accent)] hover:bg-[color-mix(in_srgb,var(--notes-accent)_8%,transparent)] rounded-md transition"
+            title="${task.isNote ? 'Convert to task' : 'Convert to note'}"
+            aria-label="${task.isNote ? 'Convert to task' : 'Convert to note'}">
+            ${task.isNote
+              ? '<svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/></svg>'
+              : '<svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>'}
+          </button>
           <button onclick="event.stopPropagation(); window.inlineEditingTaskId=null; window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render()"
             aria-label="Edit task: ${escapeHtml(task.title)}"
             class="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-md transition" title="Edit">
