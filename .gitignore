@@ -11,3 +11,4 @@ workbox-*.js
 registerSW.js
 manifest.webmanifest
 assets/
+.worktrees/
