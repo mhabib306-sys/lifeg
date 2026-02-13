@@ -1258,6 +1258,13 @@ export function handleNoteKeydown(event, noteId) {
     return;
   }
 
+  // Cmd/Ctrl+Shift+Enter = toggle note↔task (Tana-style)
+  if (event.key === 'Enter' && event.shiftKey && (event.metaKey || event.ctrlKey)) {
+    event.preventDefault();
+    toggleNoteTask(noteId);
+    return;
+  }
+
   // Cmd/Ctrl+Enter = zoom into note (open as page)
   if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
     event.preventDefault();
@@ -1933,6 +1940,13 @@ export function renderNoteItem(note) {
         ` : ''}
 
         <div class="note-actions md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
+          <button onclick="event.stopPropagation(); toggleNoteTask('${note.id}')"
+            class="note-action-btn" title="${note.isNote ? 'Convert to task (\u2318\u21e7\u21a9)' : 'Convert to note (\u2318\u21e7\u21a9)'}"
+            aria-label="${note.isNote ? 'Convert to task' : 'Convert to note'}">
+            ${note.isNote
+              ? '<svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/></svg>'
+              : '<svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>'}
+          </button>
           <button onclick="event.stopPropagation(); zoomIntoNote('${note.id}')"
             class="note-action-btn" title="Open as page (Cmd+Enter)" aria-label="Open note as page">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
