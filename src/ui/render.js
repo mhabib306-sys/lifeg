@@ -475,6 +475,9 @@ export function render() {
     if (typeof window.initTouchDrag === 'function') window.initTouchDrag();
     if (typeof window.initLongPress === 'function' && window.isTouchDevice && window.isTouchDevice()) {
       window.initLongPress('.task-list', '.task-item, .swipe-row', (el, e) => {
+        // Don't show action sheet if a touch-drag is active (drag fires at 300ms, long-press at 500ms)
+        if (typeof window.isTouchDragging === 'function' && window.isTouchDragging()) return;
+
         const taskId = el.dataset.taskId || el.querySelector('[data-task-id]')?.dataset.taskId;
         if (!taskId) return;
         const task = (window.state?.tasksData || []).find(t => t.id === taskId);

@@ -123,7 +123,7 @@ import {
 } from './features/drag-drop.js';
 
 import { initSwipeActions, closeActiveRow } from './features/swipe-actions.js';
-import { initTouchDrag } from './features/touch-drag.js';
+import { initTouchDrag, cancelTouchDrag, isTouchDragging, cancelHoldTimer } from './features/touch-drag.js';
 import { initLongPress } from './features/long-press.js';
 import { initPullToRefresh } from './features/pull-to-refresh.js';
 import { showActionSheet, hideActionSheet } from './ui/action-sheet.js';
@@ -371,7 +371,7 @@ Object.assign(window, {
   handleDrop, reorderTasks, normalizeTaskOrders, setupSidebarDragDrop,
   initSwipeActions, closeActiveRow,
   showActionSheet, hideActionSheet,
-  initTouchDrag, initLongPress,
+  initTouchDrag, cancelTouchDrag, isTouchDragging, cancelHoldTimer, initLongPress,
   initPullToRefresh,
 
   // Triggers

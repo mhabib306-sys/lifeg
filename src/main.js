@@ -220,6 +220,8 @@ function initApp() {
     if (document.visibilityState === 'hidden') {
       stopPeriodicGithubSync();
       flushPendingSave({ keepalive: true });
+      // Cancel any in-flight touch drag so it doesn't get stuck
+      if (typeof window.cancelTouchDrag === 'function') window.cancelTouchDrag();
       if (visibilityPullTimer) {
         clearTimeout(visibilityPullTimer);
         visibilityPullTimer = null;

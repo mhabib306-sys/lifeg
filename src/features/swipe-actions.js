@@ -5,6 +5,7 @@
 // the task row when swiped horizontally. Only one row can be open at a time.
 
 import { isTouchDevice } from '../utils.js';
+import { isTouchDragging, cancelHoldTimer } from './touch-drag.js';
 
 let activeRow = null;
 let startX = 0;
@@ -42,6 +43,10 @@ export function initSwipeActions() {
 
   const containers = document.querySelectorAll('.task-list');
   containers.forEach(container => {
+    // Prevent duplicate listeners on persistent containers
+    if (container._swipeInit) return;
+    container._swipeInit = true;
+
     container.addEventListener('touchstart', onTouchStart, { passive: true });
     container.addEventListener('touchmove', onTouchMove, { passive: false });
     container.addEventListener('touchend', onTouchEnd, { passive: true });
@@ -82,6 +87,9 @@ function onTouchMove(e) {
   const dx = touch.clientX - startX;
   const dy = touch.clientY - startY;
 
+  // Don't swipe if a touch-drag is active
+  if (isTouchDragging()) return;
+
   // Determine gesture direction on first significant move
   if (!isDragging && !isScrolling) {
     if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) {
@@ -91,6 +99,8 @@ function onTouchMove(e) {
     if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) {
       isDragging = true;
       activeRow = row;
+      // Kill the drag hold timer — this is a swipe, not a drag
+      cancelHoldTimer();
     } else {
       return;
     }
