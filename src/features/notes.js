@@ -1452,7 +1452,7 @@ export function buildPageMetaChipsHtml(note) {
     const area = state.taskAreas.find(a => a.id === note.areaId);
     if (area) {
       chips += `<span class="note-page-chip" style="background:${area.color}12;border-color:${area.color}30;color:${area.color}">
-        #${escapeHtml(area.name)}
+        ${escapeHtml(area.name)}
         <span class="chip-remove" onclick="event.stopPropagation();removeNoteInlineMeta('${note.id}','category','${area.id}')" title="Remove">&times;</span>
       </span>`;
     }
@@ -1461,7 +1461,7 @@ export function buildPageMetaChipsHtml(note) {
     const cat = (state.taskCategories || []).find(c => c.id === note.categoryId);
     if (cat) {
       chips += `<span class="note-page-chip">
-        #${escapeHtml(cat.name)}
+        ${escapeHtml(cat.name)}
         <span class="chip-remove" onclick="event.stopPropagation();removeNoteInlineMeta('${note.id}','category','${cat.id}')" title="Remove">&times;</span>
       </span>`;
     }
@@ -1470,7 +1470,7 @@ export function buildPageMetaChipsHtml(note) {
     const label = state.taskLabels.find(l => l.id === lid);
     if (label) {
       chips += `<span class="note-page-chip" style="background:${label.color}12;border-color:${label.color}30;color:${label.color}">
-        @${escapeHtml(label.name)}
+        ${escapeHtml(label.name)}
         <span class="chip-remove" onclick="event.stopPropagation();removeNoteInlineMeta('${note.id}','label','${lid}')" title="Remove">&times;</span>
       </span>`;
     }
@@ -1479,7 +1479,7 @@ export function buildPageMetaChipsHtml(note) {
     const person = state.taskPeople.find(p => p.id === pid);
     if (person) {
       chips += `<span class="note-page-chip" style="background:${person.color}12;border-color:${person.color}30;color:${person.color}">
-        &amp;${escapeHtml(person.name.split(' ')[0])}
+        ${escapeHtml(person.name.split(' ')[0])}
         <span class="chip-remove" onclick="event.stopPropagation();removeNoteInlineMeta('${note.id}','person','${pid}')" title="Remove">&times;</span>
       </span>`;
     }
