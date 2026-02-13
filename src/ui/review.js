@@ -142,7 +142,7 @@ export function renderReviewMode() {
   if (areas.length === 0) {
     return `
       <div class="flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
-        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 bg-[var(--bg-secondary)]">
+        <div class="w-16 h-16 rounded-xl flex items-center justify-center mb-4 bg-[var(--bg-secondary)]">
           ${getActiveIcons().review}
         </div>
         <p class="text-lg font-medium mb-1">No areas to review</p>
@@ -210,7 +210,7 @@ export function renderReviewMode() {
           ${areas.map((a, i) => `
             <button onclick="state.reviewAreaIndex=${i}; render()"
               class="w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center transition
-                ${state.reviewCompletedAreas.includes(a.id) ? 'bg-[#34C759] text-white' : i === state.reviewAreaIndex ? 'ring-2 ring-offset-1' : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'}"
+                ${state.reviewCompletedAreas.includes(a.id) ? 'bg-[var(--success)] text-white' : i === state.reviewAreaIndex ? 'ring-2 ring-offset-1' : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'}"
               style="${i === state.reviewAreaIndex ? `ring-color: ${a.color || '#147EFB'}; background: ${a.color || '#147EFB'}20; color: ${a.color || '#147EFB'}` : ''}"
               title="${escapeHtml(a.name)}">
               ${state.reviewCompletedAreas.includes(a.id) ? '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : `${i + 1}`}
@@ -339,7 +339,7 @@ export function renderReviewMode() {
           </div>
         ` : `
           <div class="px-4 py-8 text-center">
-            <svg class="w-8 h-8 mx-auto mb-2 text-[#34C759] opacity-60" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            <svg class="w-8 h-8 mx-auto mb-2 text-[var(--success)] opacity-60" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
             <p class="text-sm font-medium text-[var(--text-primary)]">All tasks reviewed</p>
             <p class="text-xs text-[var(--text-muted)] mt-0.5">No stale tasks in this area</p>
           </div>
@@ -357,7 +357,7 @@ export function renderReviewMode() {
             </span>
           </button>
         ` : `
-          <div class="flex items-center gap-2 text-[#34C759] text-sm font-medium">
+          <div class="flex items-center gap-2 text-[var(--success)] text-sm font-medium">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
             Area reviewed
           </div>
@@ -366,11 +366,11 @@ export function renderReviewMode() {
 
       <!-- Review Complete -->
       ${completedCount === totalAreas ? `
-        <div class="mt-8 text-center bg-[#34C759]/10 rounded-lg p-6">
-          <svg class="w-12 h-12 mx-auto mb-3 text-[#34C759]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-          <h3 class="text-lg font-bold text-[#34C759] mb-1">Review Complete!</h3>
+        <div class="mt-8 text-center bg-[var(--success)]/10 rounded-lg p-6">
+          <svg class="w-12 h-12 mx-auto mb-3 text-[var(--success)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <h3 class="text-lg font-bold text-[var(--success)] mb-1">Review Complete!</h3>
           <p class="text-sm text-[var(--text-muted)] mb-4">All ${totalAreas} areas have been reviewed</p>
-          <button onclick="exitReview()" class="px-5 py-2.5 bg-[#34C759] text-white rounded-lg text-sm font-semibold hover:opacity-90 transition">
+          <button onclick="exitReview()" class="px-5 py-2.5 bg-[var(--success)] text-white rounded-lg text-sm font-semibold hover:opacity-90 transition">
             Done
           </button>
         </div>

@@ -116,11 +116,11 @@ export function renderBulkEntryTab() {
 
   // Category colors matching Daily tab
   const categoryColors = {
-    prayers: '#4A90A4',
-    glucose: '#6B8E5A',
-    whoop: '#7C6B8E',
-    family: '#C4943D',
-    habits: '#6B7280'
+    prayers: 'var(--accent)',
+    glucose: 'var(--success)',
+    whoop: 'var(--notes-accent)',
+    family: 'var(--warning)',
+    habits: 'var(--text-muted)'
   };
 
   const whoopConnected = isWhoopConnected();

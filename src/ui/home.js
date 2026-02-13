@@ -51,7 +51,7 @@ export function renderHomeWidget(widget, isEditing) {
   const editControls = isEditing ? `
     <div class="flex items-center gap-1 ml-auto">
       <button onclick="event.stopPropagation(); toggleWidgetSize('${widget.id}')"
-        class="widget-resize-btn flex items-center gap-1.5 px-2 py-1 text-[var(--text-secondary)] hover:text-[var(--accent)] rounded transition border border-[var(--border-light)] hover:border-[var(--accent)]"
+        class="widget-resize-btn flex items-center gap-1.5 px-2 py-1 text-[var(--text-secondary)] hover:text-[var(--accent)] rounded-md transition border border-[var(--border-light)] hover:border-[var(--accent)]"
         title="Click to resize">
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           ${widget.size === 'full'
@@ -61,11 +61,11 @@ export function renderHomeWidget(widget, isEditing) {
         <span class="text-[11px] font-medium uppercase">${sizeLabels[widget.size] || 'Half'}</span>
       </button>
       ${isPerspectiveWidget ? `
-        <button onclick="event.stopPropagation(); removePerspectiveWidget('${widget.id}')" class="p-1.5 text-[var(--text-muted)] hover:text-red-500 hover:bg-red-50 rounded transition" title="Remove widget">
+        <button onclick="event.stopPropagation(); removePerspectiveWidget('${widget.id}')" class="p-1.5 text-[var(--text-muted)] hover:text-[var(--danger)] hover:bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] rounded-md transition" title="Remove widget">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       ` : `
-        <button onclick="event.stopPropagation(); toggleWidgetVisibility('${widget.id}')" class="p-1.5 text-[var(--text-muted)] hover:text-red-500 hover:bg-red-50 rounded transition" title="Hide widget">
+        <button onclick="event.stopPropagation(); toggleWidgetVisibility('${widget.id}')" class="p-1.5 text-[var(--text-muted)] hover:text-[var(--danger)] hover:bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] rounded-md transition" title="Hide widget">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         </button>
       `}
@@ -284,7 +284,7 @@ export function renderHomeTab() {
           <div class="flex items-center gap-3 mt-1">
             <p class="text-[var(--text-secondary)] text-sm">${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
             <span class="text-[var(--text-muted)] hidden md:inline">\u2022</span>
-            <p class="text-[var(--text-muted)] text-xs hidden md:block">Press <kbd class="px-1.5 py-0.5 bg-[var(--bg-secondary)] rounded text-[11px] font-mono">\u2318K</kbd> to quick add</p>
+            <p class="text-[var(--text-muted)] text-xs hidden md:block">Press <kbd class="px-1.5 py-0.5 bg-[var(--bg-secondary)] rounded-md text-[11px] font-mono">\u2318K</kbd> to quick add</p>
           </div>
           ${isMobileViewport() ? `
           <div class="mobile-search-pill mt-3 md:hidden" onclick="showGlobalSearch = true; render()">
@@ -321,7 +321,7 @@ export function renderHomeTab() {
           <div class="bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] p-4">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-sm font-semibold text-[var(--text-primary)]">Add Perspective Widget</h3>
-              <button onclick="showAddWidgetPicker = false; render()" class="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded transition">
+              <button onclick="showAddWidgetPicker = false; render()" class="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-md transition">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
@@ -335,7 +335,7 @@ export function renderHomeTab() {
                       : 'border-[var(--border-light)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 cursor-pointer'}">
                     <span style="color: ${p.color}">${p.icon || ''}</span>
                     <span class="text-sm text-[var(--text-primary)] truncate">${escapeHtml(p.name)}</span>
-                    ${isAdded ? '<svg class="w-3.5 h-3.5 text-green-500 ml-auto flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+                    ${isAdded ? '<svg class="w-3.5 h-3.5 text-[var(--success)] ml-auto flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
                   </button>
                 `;
               }).join('')}

@@ -67,7 +67,7 @@ button {
   background: var(--btn-bg);
   color: white;
   min-height: 36px;
-  padding-inline: 14px;
+  padding-inline: 16px;
   transition: background var(--duration-fast) var(--ease-default), transform var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
   border-radius: var(--border-radius);
 }
@@ -420,14 +420,14 @@ img.twemoji {
 }
 /* Task completion fade-out animation */
 .task-completing {
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
   opacity: 0;
   transform: translateX(10px);
 }
 
 /* Sidebar item interactions - Things 3 style */
 .sidebar-item {
-  transition: background 0.1s ease-out, transform 0.1s ease-out;
+  transition: background 0.15sease-out, transform 0.15sease-out;
   border-radius: var(--border-radius);
   min-height: 36px;
 }
@@ -620,7 +620,7 @@ img.twemoji {
 }
 
 .workspace-overflow-grid {
-  margin-top: 10px;
+  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
@@ -632,7 +632,7 @@ img.twemoji {
   letter-spacing: 0.08em;
   color: var(--text-muted);
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .workspace-overflow-list {
@@ -653,7 +653,7 @@ img.twemoji {
   align-items: center;
   gap: 8px;
   padding: 6px 8px;
-  transition: all 0.12s ease;
+  transition: all 0.15s ease;
 }
 
 .workspace-overflow-item:hover,
@@ -714,7 +714,7 @@ img.twemoji {
 .drag-handle {
   opacity: 0;
   cursor: grab;
-  transition: opacity 0.12s ease;
+  transition: opacity 0.15s ease;
   touch-action: none;
 }
 .sidebar-item:hover .drag-handle {
@@ -976,7 +976,7 @@ img.twemoji {
 .note-item {
   --note-depth: 0;
   position: relative;
-  transition: background 0.12s ease;
+  transition: background 0.15s ease;
   border-radius: 6px;
 }
 .note-item:hover {
@@ -1023,9 +1023,9 @@ img.twemoji {
   border-radius: 4px;
   flex-shrink: 0;
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: all 0.15s ease;
   color: color-mix(in srgb, var(--notes-accent) 55%, transparent);
-  margin-top: 3px;
+  margin-top: 4px;
 }
 .note-bullet:hover {
   background: color-mix(in srgb, var(--notes-accent) 10%, transparent);
@@ -1038,7 +1038,7 @@ img.twemoji {
   height: 6px;
   border-radius: 50%;
   background: var(--notes-accent, #8B5CF6);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .note-bullet:hover .note-bullet-dot {
   transform: scale(1.3);
@@ -1175,7 +1175,7 @@ img.twemoji {
   align-items: center;
   gap: 2px;
   opacity: 1;
-  transition: opacity 0.12s ease;
+  transition: opacity 0.15s ease;
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -1187,7 +1187,7 @@ img.twemoji {
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
-  transition: all 0.12s ease;
+  transition: all 0.15s ease;
 }
 .note-action-btn:hover {
   background: var(--bg-secondary);
@@ -1216,7 +1216,7 @@ img.twemoji {
   cursor: pointer;
   padding: 4px 8px 4px 4px;
   border-radius: 6px;
-  transition: background 0.12s;
+  transition: background 0.15s;
 }
 .notes-back-btn:hover {
   background: var(--accent-light);
@@ -1243,7 +1243,7 @@ img.twemoji {
 .notes-trail-link {
   color: var(--text-muted);
   cursor: pointer;
-  transition: color 0.12s;
+  transition: color 0.15s;
 }
 .notes-trail-link:hover {
   color: var(--accent);
@@ -1394,7 +1394,7 @@ img.twemoji {
   background: var(--bg-tertiary, var(--bg-secondary));
   color: var(--text-secondary);
   border: 1px solid var(--border-light);
-  transition: all 0.12s ease;
+  transition: all 0.15s ease;
   line-height: 1.4;
   white-space: nowrap;
 }
@@ -1413,7 +1413,7 @@ img.twemoji {
   cursor: pointer;
   color: var(--text-muted);
   opacity: 0;
-  transition: opacity 0.12s, background 0.12s, color 0.12s;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
   margin-left: 2px;
   margin-right: -4px;
 }
@@ -1435,7 +1435,7 @@ img.twemoji {
   color: var(--text-muted);
   border: 1px dashed color-mix(in srgb, var(--text-muted) 30%, transparent);
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: all 0.15s ease;
   line-height: 1.4;
 }
 .note-page-add-meta:hover {
@@ -2932,7 +2932,7 @@ body.mobile-keyboard-open .main-content {
   gap: 8px;
   font-size: 13px;
   color: var(--text-primary);
-  transition: background 0.1s;
+  transition: background 0.15s;
 }
 .inline-ac-option:hover,
 .inline-ac-option.active {
@@ -2985,7 +2985,7 @@ body.mobile-keyboard-open .main-content {
   transition: opacity 0.15s;
   display: inline-flex;
   align-items: center;
-  margin-left: 1px;
+  margin-left: 2px;
 }
 .inline-meta-chip-remove:hover {
   opacity: 1;
@@ -3039,7 +3039,7 @@ body.mobile-keyboard-open .main-content {
   min-height: 36px;
   white-space: nowrap;
   border-radius: var(--border-radius-sm);
-  transition: all 0.14s ease;
+  transition: all 0.15s ease;
 }
 .calendar-view-toggle-btn.active {
   background: var(--bg-card);
@@ -3065,7 +3065,7 @@ body.mobile-keyboard-open .main-content {
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  transition: border-color 0.14s ease, background 0.14s ease;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 .calendar-range-day.selected {
   border-color: color-mix(in srgb, var(--accent) 30%, var(--border-light));
@@ -3129,7 +3129,7 @@ body.mobile-keyboard-open .main-content {
   min-height: 94px;
   padding: 6px 6px 4px;
   cursor: pointer;
-  transition: background 0.12s;
+  transition: background 0.15s;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -3170,7 +3170,7 @@ body.mobile-keyboard-open .main-content {
   font-size: 13px;
   font-weight: 500;
   color: var(--text-primary);
-  margin-bottom: 3px;
+  margin-bottom: 4px;
   width: 26px;
   height: 26px;
   display: flex;
@@ -3232,7 +3232,7 @@ body.mobile-keyboard-open .main-content {
   height: 5px;
   border-radius: 9999px;
   background: var(--flagged-color);
-  margin-right: 5px;
+  margin-right: 4px;
   vertical-align: middle;
 }
 .calendar-side-event-with-notes {
@@ -3275,7 +3275,7 @@ body.mobile-keyboard-open .main-content {
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--bg-input);
-  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 .calendar-event-quick-actions {
   display: grid;
@@ -3294,7 +3294,7 @@ body.mobile-keyboard-open .main-content {
   justify-content: flex-start;
   gap: 6px;
   padding: 12px;
-  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 .calendar-icon-action:hover {
   background: var(--bg-secondary);
@@ -3464,7 +3464,7 @@ body.mobile-keyboard-open .main-content {
   font-size: 13px;
   line-height: 1.35;
   color: var(--text-primary);
-  margin-bottom: 3px;
+  margin-bottom: 4px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -3755,7 +3755,7 @@ body.mobile-keyboard-open .main-content {
   }
   .calendar-view-toggle-btn {
     min-width: 42px;
-    padding-inline: 10px;
+    padding-inline: 12px;
     flex: 1;
   }
   .calendar-view-toggle {
@@ -3924,7 +3924,7 @@ body.mobile-keyboard-open .main-content {
   background: var(--modal-bg);
 }
 .modal-section {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 .modal-section:last-child {
   margin-bottom: 0;
@@ -4003,7 +4003,7 @@ body.mobile-keyboard-open .main-content {
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 .modal-hint-chip {
   font-size: 11px;
@@ -5097,7 +5097,7 @@ body.mobile-keyboard-open .main-content {
   background: transparent;
   cursor: pointer;
   text-align: left;
-  transition: background 0.1s ease;
+  transition: background 0.15sease;
   font-family: var(--font-family);
 }
 .global-search-result:focus {
@@ -5182,7 +5182,7 @@ mark.global-search-highlight {
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 1px 5px;
-  margin-right: 3px;
+  margin-right: 4px;
   font-family: var(--font-family);
   line-height: 1.3;
 }
@@ -5322,7 +5322,7 @@ mark.global-search-highlight {
 .trigger-item {
   --trigger-depth: 0;
   position: relative;
-  transition: background 0.12s ease;
+  transition: background 0.15s ease;
   border-radius: 6px;
 }
 .trigger-item:hover {
@@ -5361,9 +5361,9 @@ mark.global-search-highlight {
   border-radius: 4px;
   flex-shrink: 0;
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: all 0.15s ease;
   color: color-mix(in srgb, var(--trigger-color) 70%, transparent);
-  margin-top: 5px;
+  margin-top: 4px;
 }
 .trigger-bullet:hover {
   background: color-mix(in srgb, var(--trigger-color) 12%, transparent);
@@ -5383,7 +5383,7 @@ mark.global-search-highlight {
   height: 6px;
   border-radius: 50%;
   background: var(--trigger-color);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .trigger-bullet:hover .trigger-bullet-dot {
   transform: scale(1.3);
@@ -5444,7 +5444,7 @@ mark.global-search-highlight {
   justify-content: center;
   border-radius: 4px;
   color: var(--text-muted);
-  transition: all 0.12s ease;
+  transition: all 0.15s ease;
   cursor: pointer;
 }
 .trigger-action-btn:hover {
@@ -5493,7 +5493,7 @@ mark.global-search-highlight {
   flex-shrink: 0;
 }
 .review-task-card {
-  transition: background 0.12s ease;
+  transition: background 0.15s ease;
 }
 .review-task-card:hover {
   background: var(--bg-secondary);
@@ -5588,7 +5588,7 @@ mark.global-search-highlight {
 [data-theme="geist"] .task-item {
   border-radius: var(--border-radius-sm);
   border: 1px solid transparent;
-  transition: background 0.1s ease, border-color 0.1s ease;
+  transition: background 0.15sease, border-color 0.15sease;
 }
 [data-theme="geist"] .task-item:hover {
   background: var(--bg-hover);
@@ -5674,7 +5674,7 @@ mark.global-search-highlight {
 /* --- Review mode cards --- */
 [data-theme="geist"] .review-task-card {
   border-radius: var(--border-radius-sm);
-  transition: background 0.1s ease;
+  transition: background 0.15sease;
 }
 [data-theme="geist"] .review-task-card:hover {
   background: var(--bg-hover);

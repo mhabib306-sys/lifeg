@@ -101,11 +101,11 @@ export function renderTrackingTab() {
 
     <!-- Score Cards Row -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8">
-      ${createScoreCard('Prayer', scores.prayer, state.MAX_SCORES.prayer, 'bg-blue-500')}
-      ${createScoreCard('Diabetes', scores.diabetes, state.MAX_SCORES.diabetes, 'bg-green-500')}
-      ${createScoreCard('Whoop', scores.whoop, state.MAX_SCORES.whoop, 'bg-purple-500')}
-      ${createScoreCard('Family', scores.family, state.MAX_SCORES.family, 'bg-amber-500')}
-      ${createScoreCard('Habits', scores.habit, state.MAX_SCORES.habits, 'bg-slate-500')}
+      ${createScoreCard('Prayer', scores.prayer, state.MAX_SCORES.prayer, 'bg-[var(--accent)]')}
+      ${createScoreCard('Diabetes', scores.diabetes, state.MAX_SCORES.diabetes, 'bg-[var(--success)]')}
+      ${createScoreCard('Whoop', scores.whoop, state.MAX_SCORES.whoop, 'bg-[var(--notes-accent)]')}
+      ${createScoreCard('Family', scores.family, state.MAX_SCORES.family, 'bg-[var(--warning)]')}
+      ${createScoreCard('Habits', scores.habit, state.MAX_SCORES.habits, 'bg-[var(--text-muted)]')}
       <div class="sb-card rounded-lg p-4 bg-[var(--bg-card)] border border-[var(--border-light)]">
         <div class="sb-section-title text-[var(--text-muted)] flex justify-between">
           <span>Total</span>

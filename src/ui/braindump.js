@@ -161,7 +161,7 @@ export function startBraindumpVoiceCapture() {
     const btn = document.getElementById('braindump-voice-btn');
     if (btn) {
       btn.classList.add('voice-recording-active');
-      btn.innerHTML = '<svg class="w-5 h-5 text-red-500 animate-pulse" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/></svg>';
+      btn.innerHTML = '<svg class="w-5 h-5 text-[var(--danger)] animate-pulse" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/></svg>';
     }
     const errEl = document.getElementById('braindump-voice-error');
     if (errEl) errEl.style.display = 'none';
@@ -696,7 +696,7 @@ function renderSuccessOverlay() {
   return `
     <div class="braindump-overlay">
       <div class="braindump-success">
-        <svg class="w-12 h-12 text-green-500 mb-3" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="w-12 h-12 text-[var(--success)] mb-3" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
         </svg>
         <p class="text-base font-semibold text-[var(--text-primary)]">${state.braindumpSuccessMessage || 'Done!'}</p>

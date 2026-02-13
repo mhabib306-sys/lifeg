@@ -123,7 +123,7 @@ export function renderQuickAddWidget() {
       <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
         class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
         ${state.quickAddIsNote
-          ? `<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-accent)]"></div>`
+          ? `<div class="w-1.5 h-1.5 rounded-full bg-[var(--notes-accent)]"></div>`
           : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed border-[var(--text-muted)]/30 flex-shrink-0"></div>`
         }
       </div>
@@ -664,7 +664,7 @@ export function renderPerspectiveWidget(widget, today) {
     return `
       <div class="py-6 text-center">
         <p class="text-[var(--text-muted)] text-sm mb-2">View not found</p>
-        <button onclick="removePerspectiveWidget('${widget.id}')" class="text-xs text-red-500 hover:underline">Remove widget</button>
+        <button onclick="removePerspectiveWidget('${widget.id}')" class="text-xs text-[var(--danger)] hover:underline">Remove widget</button>
       </div>
     `;
   }
@@ -757,7 +757,7 @@ export function renderGSheetWidget(today) {
     const responseContent = isError ? escapeHtml(response) : normalizeGSheetResponseHtml(response);
     responseHtml = `
       <div class="max-h-[300px] overflow-y-auto">
-        <div class="gsheet-response text-sm leading-relaxed ${isError ? 'text-red-500' : 'text-[var(--text-primary)]'}">${responseContent}</div>
+        <div class="gsheet-response text-sm leading-relaxed ${isError ? 'text-[var(--danger)]' : 'text-[var(--text-primary)]'}">${responseContent}</div>
       </div>
     `;
   } else {

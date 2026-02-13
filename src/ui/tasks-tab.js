@@ -419,18 +419,18 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
       <div class="swipe-row" data-task-id="${task.id}">
         <div class="swipe-actions-left">
           <button class="swipe-action-btn swipe-action-complete" onclick="event.stopPropagation(); window.toggleTaskComplete('${task.id}')">
-            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             <span>${task.completed ? 'Undo' : 'Done'}</span>
           </button>
         </div>
         <div class="swipe-row-content">${taskInnerHtml}</div>
         <div class="swipe-actions-right">
           <button class="swipe-action-btn swipe-action-flag" onclick="event.stopPropagation(); window.toggleFlag('${task.id}')">
-            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="${task.flagged ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="${task.flagged ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
             <span>${task.flagged ? 'Unflag' : 'Flag'}</span>
           </button>
           <button class="swipe-action-btn swipe-action-delete" onclick="event.stopPropagation(); window.confirmDeleteTask('${task.id}')">
-            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
             <span>Delete</span>
           </button>
         </div>
@@ -507,13 +507,13 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
             </div>
           </div>
           ${overdueCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--overdue-color)">
+            <div class="flex items-center gap-1.5 text-xs font-medium" style="color: var(--overdue-color)">
               <span class="w-2 h-2 rounded-full" style="background: var(--overdue-color)"></span>
               ${overdueCt} overdue
             </div>
           ` : ''}
           ${todayCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--today-color)">
+            <div class="flex items-center gap-1.5 text-xs font-medium" style="color: var(--today-color)">
               <span class="w-2 h-2 rounded-full" style="background: var(--today-color)"></span>
               ${todayCt} today
             </div>
@@ -540,7 +540,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-color)]"></div>`
+              ? `<div class="w-1.5 h-1.5 rounded-full bg-[var(--notes-color)]"></div>`
               : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: color-mix(in srgb, ${categoryColor} 25%, transparent)"></div>`
             }
           </div>
@@ -596,7 +596,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
                   ${sc.emoji || '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V5a2 2 0 012-2h4.586a1 1 0 01.707.293L12 5h7a2 2 0 012 2v2"/><rect x="2" y="9" width="20" height="12" rx="2"/></svg>'}
                 </span>
                 <span class="flex-1 text-[14px] text-[var(--text-primary)] truncate">${escapeHtml(sc.name)}</span>
-                <span class="text-[12px] text-[var(--text-muted)]">${scTaskCount || ''}</span>
+                <span class="text-xs text-[var(--text-muted)]">${scTaskCount || ''}</span>
                 <svg class="w-4 h-4 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
               </button>`;
             }).join('')}
@@ -715,13 +715,13 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
             </div>
           </div>
           ${overdueCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--overdue-color)">
+            <div class="flex items-center gap-1.5 text-xs font-medium" style="color: var(--overdue-color)">
               <span class="w-2 h-2 rounded-full" style="background: var(--overdue-color)"></span>
               ${overdueCt} overdue
             </div>
           ` : ''}
           ${todayCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--today-color)">
+            <div class="flex items-center gap-1.5 text-xs font-medium" style="color: var(--today-color)">
               <span class="w-2 h-2 rounded-full" style="background: var(--today-color)"></span>
               ${todayCt} today
             </div>
@@ -748,7 +748,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? '<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-color)]"></div>'
+              ? '<div class="w-1.5 h-1.5 rounded-full bg-[var(--notes-color)]"></div>'
               : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: color-mix(in srgb, ${categoryColor} 25%, transparent)"></div>`
             }
           </div>
@@ -855,13 +855,13 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
             </div>
           </div>
           ${overdueCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--overdue-color)">
+            <div class="flex items-center gap-1.5 text-xs font-medium" style="color: var(--overdue-color)">
               <span class="w-2 h-2 rounded-full" style="background: var(--overdue-color)"></span>
               ${overdueCt} overdue
             </div>
           ` : ''}
           ${todayCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--today-color)">
+            <div class="flex items-center gap-1.5 text-xs font-medium" style="color: var(--today-color)">
               <span class="w-2 h-2 rounded-full" style="background: var(--today-color)"></span>
               ${todayCt} today
             </div>
@@ -888,7 +888,7 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-color)]"></div>`
+              ? `<div class="w-1.5 h-1.5 rounded-full bg-[var(--notes-color)]"></div>`
               : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: color-mix(in srgb, ${labelColor} 25%, transparent)"></div>`
             }
           </div>
@@ -1002,13 +1002,13 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
             </div>
           </div>
           ${overdueCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--overdue-color)">
+            <div class="flex items-center gap-1.5 text-xs font-medium" style="color: var(--overdue-color)">
               <span class="w-2 h-2 rounded-full" style="background: var(--overdue-color)"></span>
               ${overdueCt} overdue
             </div>
           ` : ''}
           ${todayCt > 0 ? `
-            <div class="flex items-center gap-1.5 text-[12px] font-medium" style="color: var(--today-color)">
+            <div class="flex items-center gap-1.5 text-xs font-medium" style="color: var(--today-color)">
               <span class="w-2 h-2 rounded-full" style="background: var(--today-color)"></span>
               ${todayCt} today
             </div>
@@ -1035,7 +1035,7 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-color)]"></div>`
+              ? `<div class="w-1.5 h-1.5 rounded-full bg-[var(--notes-color)]"></div>`
               : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: color-mix(in srgb, ${personColor} 25%, transparent)"></div>`
             }
           </div>
@@ -1135,7 +1135,7 @@ export function buildAllLabelsHtml() {
                 <span class="w-4 h-4 rounded-full flex-shrink-0" style="background: ${color}"></span>
                 <span class="font-medium text-[var(--text-primary)] text-[14px] truncate">${escapeHtml(label.name)}</span>
               </div>
-              <p class="text-[12px] text-[var(--text-muted)]">${count} active task${count !== 1 ? 's' : ''}</p>
+              <p class="text-xs text-[var(--text-muted)]">${count} active task${count !== 1 ? 's' : ''}</p>
             </button>`;
         }).join('')}
       </div>
@@ -1191,7 +1191,7 @@ export function buildAllPeopleHtml() {
                   ${person.jobTitle ? `<span class="block text-[11px] text-[var(--text-muted)] truncate">${escapeHtml(person.jobTitle)}</span>` : ''}
                 </div>
               </div>
-              <p class="text-[12px] text-[var(--text-muted)]">${count} active task${count !== 1 ? 's' : ''}</p>
+              <p class="text-xs text-[var(--text-muted)]">${count} active task${count !== 1 ? 's' : ''}</p>
             </button>`;
         }).join('')}
       </div>
@@ -1239,7 +1239,7 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
           <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
             class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
             ${state.quickAddIsNote
-              ? `<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-color)]"></div>`
+              ? `<div class="w-1.5 h-1.5 rounded-full bg-[var(--notes-color)]"></div>`
               : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed flex-shrink-0" style="border-color: color-mix(in srgb, ${perspColor} 25%, transparent)"></div>`
             }
           </div>
@@ -1507,7 +1507,7 @@ export function renderTasksTab() {
               class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg transition-all ${isPerspectiveActive(p.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
               <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="color: ${p.color}">${p.icon}</span>
               <span class="flex-1 text-[14px] ${isPerspectiveActive(p.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${p.name}</span>
-              <span class="count-badge min-w-[20px] text-right text-[12px] ${isPerspectiveActive(p.id) ? 'text-[var(--text-secondary)]' : 'text-[var(--text-muted)]'}">${taskCounts[p.id] || ''}</span>
+              <span class="count-badge min-w-[20px] text-right text-xs ${isPerspectiveActive(p.id) ? 'text-[var(--text-secondary)]' : 'text-[var(--text-muted)]'}">${taskCounts[p.id] || ''}</span>
             </button>
           `).join('')}
         </div>
@@ -1523,7 +1523,7 @@ export function renderTasksTab() {
             class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg transition-all ${isPerspectiveActive('notes') ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
             <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="color: ${NOTES_PERSPECTIVE.color}">${NOTES_PERSPECTIVE.icon}</span>
             <span class="flex-1 text-[14px] ${isPerspectiveActive('notes') ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">All Notes</span>
-            <span class="count-badge min-w-[20px] text-right text-[12px] ${isPerspectiveActive('notes') ? 'text-[var(--text-secondary)]' : 'text-[var(--text-muted)]'}">${taskCounts['notes'] || ''}</span>
+            <span class="count-badge min-w-[20px] text-right text-xs ${isPerspectiveActive('notes') ? 'text-[var(--text-secondary)]' : 'text-[var(--text-muted)]'}">${taskCounts['notes'] || ''}</span>
           </button>
         </div>
       </div>
@@ -1535,7 +1535,7 @@ export function renderTasksTab() {
             class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg transition-all ${state.reviewMode ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
             <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="color: var(--success)">${getActiveIcons().review}</span>
             <span class="flex-1 text-[14px] ${state.reviewMode ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">Review</span>
-            ${staleTaskCount > 0 ? `<span class="count-badge min-w-[20px] text-right text-[12px] text-[var(--text-muted)]">${staleTaskCount}</span>` : ''}
+            ${staleTaskCount > 0 ? `<span class="count-badge min-w-[20px] text-right text-xs text-[var(--text-muted)]">${staleTaskCount}</span>` : ''}
           </button>
         </div>
       </div>
@@ -1554,7 +1554,7 @@ export function renderTasksTab() {
               class="sidebar-item w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg group relative transition-all ${isPerspectiveActive(p.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
               <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-lg text-[var(--text-muted)]">${p.icon}</span>
               <span class="flex-1 text-[14px] ${isPerspectiveActive(p.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(p.name)}</span>
-              <span class="min-w-[20px] text-right text-[12px] group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${taskCounts[p.id] || ''}</span>
+              <span class="min-w-[20px] text-right text-xs group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${taskCounts[p.id] || ''}</span>
               <span onclick="event.stopPropagation(); window.editCustomPerspective('${p.id}')"
                 class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
             </button>
@@ -1600,7 +1600,7 @@ export function renderTasksTab() {
                   ` : ''}
                 </span>
                 <span class="flex-1 text-[14px] truncate ${isAreaActive(cat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(cat.name)}</span>
-                <span class="min-w-[20px] text-right text-[12px] group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${categoryCounts[cat.id] || ''}</span>
+                <span class="min-w-[20px] text-right text-xs group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${categoryCounts[cat.id] || ''}</span>
                 <span onclick="event.stopPropagation(); window.editingAreaId='${cat.id}'; window.showAreaModal=true; window.render()"
                   class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
               </div>
@@ -1620,7 +1620,7 @@ export function renderTasksTab() {
               `}).join('')}
               ${isAreaActive(cat.id) ? `
               <button onclick="event.stopPropagation(); window.editingCategoryId=null; window.showCategoryModal=true; window.modalSelectedArea='${cat.id}'; window.render()"
-                class="w-full pl-10 pr-3 py-1 flex items-center gap-2 text-[12px] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
+                class="w-full pl-10 pr-3 py-1 flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
                 <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
                 Add Category
               </button>
@@ -1654,7 +1654,7 @@ export function renderTasksTab() {
           </button>
         </div>
         <div class="py-2 px-2">
-          ${displayLabels.length === 0 ? `<div class="px-3 py-2 text-[12px] text-[var(--text-muted)]">No tags yet</div>` : displayLabels.map(label => `
+          ${displayLabels.length === 0 ? `<div class="px-3 py-2 text-xs text-[var(--text-muted)]">No tags yet</div>` : displayLabels.map(label => `
             <div onclick="window.showLabelTasks('${label.id}')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.showLabelTasks('${label.id}');}"
               tabindex="0"
@@ -1668,14 +1668,14 @@ export function renderTasksTab() {
                 <span class="w-3 h-3 rounded-full" style="background-color: ${label.color}"></span>
               </span>
               <span class="flex-1 text-[14px] ${isLabelActive(label.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(label.name)}</span>
-              <span class="min-w-[20px] text-right text-[12px] group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${labelCounts[label.id] || ''}</span>
+              <span class="min-w-[20px] text-right text-xs group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${labelCounts[label.id] || ''}</span>
               <span onclick="event.stopPropagation(); window.editingLabelId='${label.id}'; window.showLabelModal=true; window.render()"
                 class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
             </div>
           `).join('')}
           ${hiddenCount > 0 ? `
           <button onclick="window.showAllLabelsPage()"
-            class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-dark)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
+            class="w-full px-3 py-2 text-xs text-[var(--accent)] hover:text-[var(--accent-dark)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
             View all ${state.taskLabels.length} tags
           </button>` : ''}
         </div>
@@ -1704,7 +1704,7 @@ export function renderTasksTab() {
           </button>
         </div>
         <div class="py-2 px-2">
-          ${displayPeople.length === 0 ? `<div class="px-3 py-2 text-[12px] text-[var(--text-muted)]">No people yet</div>` : displayPeople.map(person => `
+          ${displayPeople.length === 0 ? `<div class="px-3 py-2 text-xs text-[var(--text-muted)]">No people yet</div>` : displayPeople.map(person => `
             <div onclick="window.showPersonTasks('${person.id}')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.showPersonTasks('${person.id}');}"
               tabindex="0"
@@ -1719,14 +1719,14 @@ export function renderTasksTab() {
                 <span class="block text-[14px] truncate ${isPersonActive(person.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(person.name)}</span>
                 ${person.jobTitle ? `<span class="block text-[11px] truncate text-[var(--text-muted)]">${escapeHtml(person.jobTitle)}</span>` : ''}
               </span>
-              <span class="min-w-[20px] text-right text-[12px] group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${peopleCounts[person.id] || ''}</span>
+              <span class="min-w-[20px] text-right text-xs group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${peopleCounts[person.id] || ''}</span>
               <span onclick="event.stopPropagation(); window.editingPersonId='${person.id}'; window.showPersonModal=true; window.render()"
                 class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
             </div>
           `).join('')}
           ${hiddenCount > 0 ? `
           <button onclick="window.showAllPeoplePage()"
-            class="w-full px-3 py-2 text-[12px] text-[var(--accent)] hover:text-[var(--accent-dark)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
+            class="w-full px-3 py-2 text-xs text-[var(--accent)] hover:text-[var(--accent-dark)] text-left rounded-lg hover:bg-[var(--bg-secondary)] transition">
             View all ${state.taskPeople.length} people
           </button>` : ''}
         </div>
@@ -1792,7 +1792,7 @@ export function renderTasksTab() {
               <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
                 class="quick-add-type-toggle" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
                 ${state.quickAddIsNote
-                  ? `<div class="w-[7px] h-[7px] rounded-full bg-[var(--notes-color)]"></div>`
+                  ? `<div class="w-1.5 h-1.5 rounded-full bg-[var(--notes-color)]"></div>`
                   : `<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed border-[var(--text-muted)]/30 flex-shrink-0"></div>`
                 }
               </div>

@@ -317,9 +317,9 @@ export function updateSyncStatus(status, message = '') {
   if (indicator) {
     const colors = {
       idle: 'bg-[var(--text-muted)]',
-      syncing: 'bg-amber-400 animate-pulse',
-      success: 'bg-green-500',
-      error: 'bg-red-500'
+      syncing: 'bg-[var(--warning)] animate-pulse',
+      success: 'bg-[var(--success)]',
+      error: 'bg-[var(--danger)]'
     };
     indicator.className = `w-2 h-2 rounded-full ${colors[status]}`;
     indicator.title = message || status;

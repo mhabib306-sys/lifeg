@@ -60,7 +60,7 @@ export function createPrayerInput(prayer, label, value) {
   return `
     <div class="flex-1 text-center">
       <input type="text" value="${value}" placeholder="X.Y"
-        class="prayer-input w-full px-3 py-2 border border-[var(--border)] rounded text-center font-mono text-lg bg-[var(--bg-input)] mb-1"
+        class="prayer-input w-full px-3 py-2 border border-[var(--border)] rounded-md text-center font-mono text-lg bg-[var(--bg-input)] mb-1"
         onchange="updateData('prayers', '${prayer}', this.value)">
       <div class="text-xs font-medium text-[var(--text-secondary)]">${label}</div>
       <div class="text-xs text-[var(--text-muted)] mt-0.5">
@@ -81,11 +81,11 @@ export function createPrayerInput(prayer, label, value) {
  */
 export function createToggle(label, checked, category, field) {
   return `
-    <label class="flex items-center justify-between cursor-pointer py-2 px-1 hover:bg-[var(--bg-secondary)] rounded transition">
+    <label class="flex items-center justify-between cursor-pointer py-2 px-1 hover:bg-[var(--bg-secondary)] rounded-md transition">
       <span class="text-sm text-[var(--text-primary)]">${label}</span>
       <div class="relative toggle-switch toggle-track" onclick="updateData('${category}', '${field}', !${checked})">
-        <div class="w-[51px] h-[31px] rounded-full transition ${checked ? 'toggle-on' : 'toggle-off'}"></div>
-        <div class="absolute left-0.5 top-0.5 w-[27px] h-[27px] bg-white rounded-full shadow transition" style="transform: translateX(${checked ? '22px' : '0'})"></div>
+        <div class="w-[52px] h-8 rounded-full transition ${checked ? 'toggle-on' : 'toggle-off'}"></div>
+        <div class="absolute left-0.5 top-0.5 w-7 h-7 bg-white rounded-full shadow transition" style="transform: translateX(${checked ? '20px' : '0'})"></div>
       </div>
     </label>
   `;
@@ -117,7 +117,7 @@ export function createNumberInput(label, value, category, field, placeholder, un
         ${tooltip ? `<span class="cursor-help text-[var(--text-muted)] hover:text-[var(--accent)]">\u24D8</span>` : ''}
       </div>
       <div class="text-xs text-[var(--text-muted)]">${unit}${hint ? ` \u00B7 ${hint}` : ''}</div>
-      ${tooltip ? `<div class="absolute ${posClass} top-full mt-1 z-50 hidden group-hover:block bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs rounded p-3 w-48 shadow-lg text-left">${tooltip}</div>` : ''}
+      ${tooltip ? `<div class="absolute ${posClass} top-full mt-1 z-50 hidden group-hover:block bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs rounded-md p-3 w-48 shadow-lg text-left">${tooltip}</div>` : ''}
     </div>
   `;
 }
@@ -156,17 +156,9 @@ export function createCounter(label, value, category, field, max = 10) {
  */
 export function createScoreCard(label, score, max, colorClass) {
   const pct = max ? Math.min((score / max) * 100, 100) : 0;
-  // Map old color classes to theme-aware CSS variable colors
-  const style = typeof document !== 'undefined' ? getComputedStyle(document.documentElement) : null;
-  const v = (name, fb) => (style?.getPropertyValue(name)?.trim()) || fb;
-  const accentMap = {
-    'bg-blue-500': v('--accent', '#4A90A4'),
-    'bg-green-500': v('--success', '#6B8E5A'),
-    'bg-purple-500': v('--notes-accent', '#7C6B8E'),
-    'bg-amber-500': v('--warning', '#C4943D'),
-    'bg-slate-500': v('--text-muted', '#6B7280')
-  };
-  const accent = accentMap[colorClass] || getAccentColor();
+  // Extract CSS variable name from bg-[var(--name)] format, or fall back to accent
+  const varMatch = colorClass?.match(/var\(([^)]+)\)/);
+  const accent = varMatch ? `var(${varMatch[1]})` : (colorClass || 'var(--accent)');
   const pctDisplay = Math.round(pct);
   return `
     <div class="sb-card rounded-lg p-4">

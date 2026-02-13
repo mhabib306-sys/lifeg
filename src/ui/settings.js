@@ -33,7 +33,7 @@ function formatSyncTime(ts) {
 }
 
 function statusDot(on) {
-  return `<span class="w-2 h-2 rounded-full flex-shrink-0 ${on ? 'bg-green-500' : 'bg-[var(--text-muted)]/40'}"></span>`;
+  return `<span class="w-2 h-2 rounded-full flex-shrink-0 ${on ? 'bg-[var(--success)]' : 'bg-[var(--text-muted)]/40'}"></span>`;
 }
 
 // ============================================================================
@@ -47,9 +47,9 @@ function renderSyncHealthSection() {
   const loadSuccessRate = health.totalLoads > 0
     ? ((health.successfulLoads / health.totalLoads) * 100).toFixed(0)
     : '--';
-  const dirtyFlag = state.githubSyncDirty ? '<span class="text-amber-500">Unsaved changes</span>' : '<span class="text-green-600">Clean</span>';
+  const dirtyFlag = state.githubSyncDirty ? '<span class="text-[var(--warning)]">Unsaved changes</span>' : '<span class="text-[var(--success)]">Clean</span>';
   const lastError = health.lastError
-    ? `<span class="text-red-500 text-[10px]">${escapeHtml(health.lastError.message)} (${formatSyncTime(health.lastError.timestamp)})</span>`
+    ? `<span class="text-[var(--danger)] text-[10px]">${escapeHtml(health.lastError.message)} (${formatSyncTime(health.lastError.timestamp)})</span>`
     : '<span class="text-[var(--text-muted)]">None</span>';
   const recentEvents = (health.recentEvents || []).slice(0, 10);
 
@@ -64,19 +64,19 @@ function renderSyncHealthSection() {
       </summary>
       <div class="px-5 pb-4 border-t border-[var(--border-light)] space-y-3">
         <div class="grid grid-cols-2 gap-3 text-xs mt-3">
-          <div class="p-2 rounded bg-[var(--bg-secondary)]">
+          <div class="p-2 rounded-md bg-[var(--bg-secondary)]">
             <div class="text-[var(--text-muted)] mb-0.5">Saves</div>
             <div class="font-medium">${health.successfulSaves}/${health.totalSaves} (${saveSuccessRate}%)</div>
           </div>
-          <div class="p-2 rounded bg-[var(--bg-secondary)]">
+          <div class="p-2 rounded-md bg-[var(--bg-secondary)]">
             <div class="text-[var(--text-muted)] mb-0.5">Loads</div>
             <div class="font-medium">${health.successfulLoads}/${health.totalLoads} (${loadSuccessRate}%)</div>
           </div>
-          <div class="p-2 rounded bg-[var(--bg-secondary)]">
+          <div class="p-2 rounded-md bg-[var(--bg-secondary)]">
             <div class="text-[var(--text-muted)] mb-0.5">Avg Latency</div>
             <div class="font-medium">${health.avgSaveLatencyMs || 0}ms</div>
           </div>
-          <div class="p-2 rounded bg-[var(--bg-secondary)]">
+          <div class="p-2 rounded-md bg-[var(--bg-secondary)]">
             <div class="text-[var(--text-muted)] mb-0.5">Status</div>
             <div class="font-medium">${dirtyFlag}</div>
           </div>
@@ -89,10 +89,10 @@ function renderSyncHealthSection() {
             <div class="text-[var(--text-muted)] mb-1.5">Recent sync events:</div>
             <div class="space-y-1 max-h-40 overflow-y-auto">
               ${recentEvents.map(evt => {
-                const statusColor = evt.status === 'success' ? 'text-green-600' : 'text-red-500';
+                const statusColor = evt.status === 'success' ? 'text-[var(--success)]' : 'text-[var(--danger)]';
                 const time = new Date(evt.timestamp).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', second: '2-digit' });
                 return `<div class="flex items-center gap-2 py-0.5">
-                  <span class="w-1.5 h-1.5 rounded-full flex-shrink-0 ${evt.status === 'success' ? 'bg-green-500' : 'bg-red-500'}"></span>
+                  <span class="w-1.5 h-1.5 rounded-full flex-shrink-0 ${evt.status === 'success' ? 'bg-[var(--success)]' : 'bg-[var(--danger)]'}"></span>
                   <span class="${statusColor} font-medium">${escapeHtml(evt.type)}</span>
                   <span class="text-[var(--text-muted)] flex-1">${evt.details ? escapeHtml(evt.details) : ''}</span>
                   <span class="text-[var(--text-muted)]">${time}</span>
@@ -147,8 +147,8 @@ function renderWorkerIntegration(name, {
             <span class="text-xs text-[var(--text-muted)]">${lastSyncText}</span>
           </div>
           <div class="flex items-center gap-1.5 flex-shrink-0">
-            <button onclick="window.${syncFn}()" class="px-2.5 py-1 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition">Sync</button>
-            <button onclick="window.${disconnectFn}(); window.render()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Disconnect</button>
+            <button onclick="window.${syncFn}()" class="px-2.5 py-1 bg-[var(--accent)] text-white rounded-md text-xs font-medium hover:bg-[var(--accent-dark)] transition">Sync</button>
+            <button onclick="window.${disconnectFn}(); window.render()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-md text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Disconnect</button>
           </div>
         </div>
         <details class="mt-2">
@@ -197,8 +197,8 @@ function renderWorkerIntegration(name, {
         </div>
       </div>
       <div class="flex items-center gap-2 pl-4">
-        <button onclick="window.${connectFn}()" class="px-3 py-1.5 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>Connect</button>
-        ${checkStatusFn ? `<button onclick="window.${checkStatusFn}()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-xs font-medium hover:bg-[var(--bg-tertiary)] transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>Check Status</button>` : ''}
+        <button onclick="window.${connectFn}()" class="px-3 py-1.5 bg-[var(--accent)] text-white rounded-md text-xs font-medium hover:bg-[var(--accent-dark)] transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>Connect</button>
+        ${checkStatusFn ? `<button onclick="window.${checkStatusFn}()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-md text-xs font-medium hover:bg-[var(--bg-tertiary)] transition ${hasConfig ? '' : 'opacity-50 cursor-not-allowed'}" ${hasConfig ? '' : 'disabled'}>Check Status</button>` : ''}
       </div>
     </div>
   `;
@@ -232,7 +232,7 @@ function renderGCalIntegration() {
             <span class="text-sm font-medium text-[var(--text-primary)]">Google Calendar</span>
             <span class="text-xs text-[var(--text-muted)]">Not connected</span>
           </div>
-          <button onclick="window.connectGCal()" class="px-3 py-1.5 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition">Connect</button>
+          <button onclick="window.connectGCal()" class="px-3 py-1.5 bg-[var(--accent)] text-white rounded-md text-xs font-medium hover:bg-[var(--accent-dark)] transition">Connect</button>
         </div>
       </div>
     `;
@@ -243,13 +243,13 @@ function renderGCalIntegration() {
       <div class="py-3 border-b border-[var(--border-light)]">
         <div class="flex items-center justify-between gap-3">
           <div class="flex items-center gap-2.5">
-            <span class="w-2 h-2 rounded-full flex-shrink-0 bg-amber-400"></span>
+            <span class="w-2 h-2 rounded-full flex-shrink-0 bg-[var(--warning)]"></span>
             <span class="text-sm font-medium text-[var(--text-primary)]">Google Calendar</span>
-            <span class="text-xs text-amber-600">Session expired</span>
+            <span class="text-xs text-[var(--warning)]">Session expired</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <button onclick="window.reconnectGCal()" class="px-2.5 py-1 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition">Reconnect</button>
-            <button onclick="window.disconnectGCal()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Disconnect</button>
+            <button onclick="window.reconnectGCal()" class="px-2.5 py-1 bg-[var(--accent)] text-white rounded-md text-xs font-medium hover:bg-[var(--accent-dark)] transition">Reconnect</button>
+            <button onclick="window.disconnectGCal()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-md text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Disconnect</button>
           </div>
         </div>
       </div>
@@ -266,18 +266,18 @@ function renderGCalIntegration() {
           <span class="text-xs text-[var(--text-muted)]">${lastSyncText}</span>
         </div>
         <div class="flex items-center gap-1.5 flex-shrink-0">
-          <button onclick="window.syncGCalNow()" class="px-2.5 py-1 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition">Sync</button>
-          <button onclick="window.disconnectGCal()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Disconnect</button>
+          <button onclick="window.syncGCalNow()" class="px-2.5 py-1 bg-[var(--accent)] text-white rounded-md text-xs font-medium hover:bg-[var(--accent-dark)] transition">Sync</button>
+          <button onclick="window.disconnectGCal()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-md text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">Disconnect</button>
         </div>
       </div>
 
       ${calendarsLoading ? `
         <p class="text-xs text-[var(--text-muted)] pl-4 mb-2">Loading calendars...</p>
       ` : gcalError ? `
-        <div class="ml-4 mb-2 p-2.5 rounded bg-amber-50 border border-amber-200">
-          <p class="text-xs text-amber-800">${escapeHtml(gcalError)}</p>
-          ${gcalErrorUrl ? `<a href="${escapeHtml(gcalErrorUrl)}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-medium text-amber-900 underline">Open API setup</a>` : ''}
-          <button onclick="window.fetchCalendarList()" class="ml-2 px-2 py-1 bg-white border border-amber-300 rounded text-[11px] font-medium text-amber-800 hover:bg-amber-100 transition">Retry</button>
+        <div class="ml-4 mb-2 p-2.5 rounded-md bg-[color-mix(in_srgb,var(--warning)_8%,transparent)] border border-[color-mix(in_srgb,var(--warning)_25%,transparent)]">
+          <p class="text-xs text-[var(--warning)]">${escapeHtml(gcalError)}</p>
+          ${gcalErrorUrl ? `<a href="${escapeHtml(gcalErrorUrl)}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-medium text-[var(--warning)] underline">Open API setup</a>` : ''}
+          <button onclick="window.fetchCalendarList()" class="ml-2 px-2 py-1 bg-white border border-[color-mix(in_srgb,var(--warning)_30%,transparent)] rounded-md text-[11px] font-medium text-[var(--warning)] hover:bg-[color-mix(in_srgb,var(--warning)_12%,transparent)] transition">Retry</button>
         </div>
       ` : calendars.length > 0 ? `
         <div class="pl-4 space-y-3 mb-2">
@@ -285,7 +285,7 @@ function renderGCalIntegration() {
             <label class="text-xs text-[var(--text-muted)] block mb-1.5">Show events from</label>
             <div class="space-y-1 max-h-36 overflow-y-auto">
               ${calendars.map(c => `
-                <label class="flex items-center gap-2 px-1.5 py-0.5 rounded hover:bg-[var(--bg-secondary)] cursor-pointer">
+                <label class="flex items-center gap-2 px-1.5 py-0.5 rounded-md hover:bg-[var(--bg-secondary)] cursor-pointer">
                   <input type="checkbox" ${selected.includes(c.id) ? 'checked' : ''}
                     onchange="window.toggleCalendarSelection('${c.id.replace(/'/g, "\\'")}')"
                     class="rounded text-[var(--accent)] focus:ring-[var(--accent)]">
@@ -309,16 +309,16 @@ function renderGCalIntegration() {
               <span class="text-xs text-[var(--text-muted)]">Contacts sync · ${contactsLastSyncText}</span>
             </div>
             <div class="flex items-center gap-1.5">
-              <button onclick="window.forceFullContactsResync()" class="px-2 py-1 bg-[var(--bg-secondary)] text-[var(--text-muted)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${state.gcontactsSyncing ? 'opacity-60 cursor-not-allowed' : ''}" ${state.gcontactsSyncing ? 'disabled' : ''} title="Clear cache and re-fetch all contacts">
+              <button onclick="window.forceFullContactsResync()" class="px-2 py-1 bg-[var(--bg-secondary)] text-[var(--text-muted)] rounded-md text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${state.gcontactsSyncing ? 'opacity-60 cursor-not-allowed' : ''}" ${state.gcontactsSyncing ? 'disabled' : ''} title="Clear cache and re-fetch all contacts">
                 Full Resync
               </button>
-              <button onclick="window.syncGoogleContactsNow()" class="px-2 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${state.gcontactsSyncing ? 'opacity-60 cursor-not-allowed' : ''}" ${state.gcontactsSyncing ? 'disabled' : ''}>
+              <button onclick="window.syncGoogleContactsNow()" class="px-2 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-md text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${state.gcontactsSyncing ? 'opacity-60 cursor-not-allowed' : ''}" ${state.gcontactsSyncing ? 'disabled' : ''}>
                 ${state.gcontactsSyncing ? 'Syncing...' : 'Sync Contacts'}
               </button>
             </div>
           </div>
         </div>
-        ${state.gcontactsError ? `<p class="text-[11px] text-amber-700 pl-4 mb-1">${escapeHtml(state.gcontactsError)}</p>` : ''}
+        ${state.gcontactsError ? `<p class="text-[11px] text-[var(--warning)] pl-4 mb-1">${escapeHtml(state.gcontactsError)}</p>` : ''}
       ` : '<p class="text-xs text-[var(--text-muted)] pl-4 mb-2">No calendars found.</p>'}
     </div>
   `;
@@ -348,7 +348,7 @@ function renderAIIntegration() {
               placeholder="sk-ant-..."
               class="input-field-sm flex-1">
             <button onclick="window.setAnthropicKey(document.getElementById('anthropic-key-input').value); window.render()"
-              class="px-3 py-1.5 bg-[var(--accent)] text-white rounded text-xs font-medium hover:bg-[var(--accent-dark)] transition">Save</button>
+              class="px-3 py-1.5 bg-[var(--accent)] text-white rounded-md text-xs font-medium hover:bg-[var(--accent-dark)] transition">Save</button>
           </div>
           <p class="text-[11px] text-[var(--text-muted)]">
             Get a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" class="sb-link text-[11px]">console.anthropic.com</a>. Uses Claude Haiku 4.5.
@@ -368,12 +368,12 @@ function renderDataManagementSection() {
     <div class="py-3 border-b border-[var(--border-light)]">
       <h4 class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-2.5">Data Management</h4>
       <div class="flex flex-col sm:flex-row flex-wrap gap-2">
-        <button onclick="window.exportData()" class="sb-btn px-3 py-2 sm:py-1.5 rounded text-xs font-medium">Export Data</button>
-        <label class="sb-btn px-3 py-2 sm:py-1.5 rounded text-xs font-medium cursor-pointer text-center">
+        <button onclick="window.exportData()" class="sb-btn px-3 py-2 sm:py-1.5 rounded-md text-xs font-medium">Export Data</button>
+        <label class="sb-btn px-3 py-2 sm:py-1.5 rounded-md text-xs font-medium cursor-pointer text-center">
           Import Data
           <input type="file" accept=".json" class="hidden" onchange="window.importData(event)">
         </label>
-        <button onclick="window.forceHardRefresh()" class="px-3 py-2 sm:py-1.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-[var(--accent)]/20 transition">Force Refresh</button>
+        <button onclick="window.forceHardRefresh()" class="px-3 py-2 sm:py-1.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-md text-xs font-medium hover:bg-[var(--accent)]/20 transition">Force Refresh</button>
       </div>
     </div>
   `;
@@ -395,17 +395,17 @@ function renderNoteSafetySection() {
         <input id="note-safety-search" type="text" placeholder="Search notes..."
           class="input-field-sm flex-1 min-w-[140px]">
         <button onclick="(() => { const q = document.getElementById('note-safety-search')?.value || ''; const rows = window.findNotesByText(q, 20); alert(rows.length ? rows.map(r => (r.title + ' [' + r.state + '] · ' + new Date(r.updatedAt).toLocaleString())).join('\\n') : 'No matching notes found.'); })()"
-          class="sb-btn px-2.5 py-1.5 rounded text-xs font-medium">Find</button>
+          class="sb-btn px-2.5 py-1.5 rounded-md text-xs font-medium">Find</button>
       </div>
       <div class="flex flex-wrap gap-1.5">
         <button onclick="(() => { const rows = window.getRecentNoteChanges(20); alert(rows.length ? rows.map(r => (r.title + ' [' + r.state + '] · ' + r.lastAction + ' · ' + new Date(r.updatedAt).toLocaleString())).join('\\n') : 'No recent note changes found.'); })()"
-          class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition">Recent Changes</button>
+          class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-md text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition">Recent Changes</button>
         <button onclick="(() => { const rows = window.getDeletedNotes(20); alert(rows.length ? rows.map(r => (r.title + ' · deleted ' + new Date(r.deletedAt).toLocaleString() + ' · id=' + r.id)).join('\\n') : 'Trash is empty.'); })()"
-          class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition">Deleted</button>
+          class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-md text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition">Deleted</button>
         <button onclick="(() => { const latest = window.getDeletedNotes(1)[0]; if (!latest) { alert('No deleted note to restore.'); return; } const ok = window.restoreDeletedNote(latest.id, true); alert(ok ? ('Restored: ' + latest.title) : 'Could not restore note.'); })()"
-          class="px-2.5 py-1 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-[11px] font-medium hover:bg-[var(--accent)]/20 transition">Restore Latest</button>
+          class="px-2.5 py-1 bg-[var(--accent)]/10 text-[var(--accent)] rounded-md text-[11px] font-medium hover:bg-[var(--accent)]/20 transition">Restore Latest</button>
         <button onclick="(() => { const info = window.createNoteLocalBackup(); alert('Backup saved locally: ' + info.noteCount + ' notes at ' + new Date(info.createdAt).toLocaleString()); })()"
-          class="px-2.5 py-1 bg-[var(--accent)] text-white rounded text-[11px] font-medium hover:bg-[var(--accent-dark)] transition">Backup</button>
+          class="px-2.5 py-1 bg-[var(--accent)] text-white rounded-md text-[11px] font-medium hover:bg-[var(--accent-dark)] transition">Backup</button>
       </div>
     </div>
   `;
@@ -420,19 +420,19 @@ function renderOfflineQueueSection() {
         <span class="text-[11px] text-[var(--text-muted)]">${queue.length} queued</span>
       </div>
       <div class="flex items-center gap-2 mb-2">
-        <button onclick="window.retryGCalOfflineQueue()" class="px-2.5 py-1 bg-[var(--accent)] text-white rounded text-[11px] font-medium hover:bg-[var(--accent-dark)] transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Retry All</button>
-        <button onclick="window.clearGCalOfflineQueue()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Clear</button>
+        <button onclick="window.retryGCalOfflineQueue()" class="px-2.5 py-1 bg-[var(--accent)] text-white rounded-md text-[11px] font-medium hover:bg-[var(--accent-dark)] transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Retry All</button>
+        <button onclick="window.clearGCalOfflineQueue()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-md text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${queue.length ? '' : 'opacity-50 cursor-not-allowed'}" ${queue.length ? '' : 'disabled'}>Clear</button>
       </div>
       ${queue.length ? `
         <div class="space-y-1.5 max-h-40 overflow-auto">
           ${queue.map(item => `
-            <div class="px-2.5 py-1.5 rounded bg-[var(--bg-secondary)] border border-[var(--border)] flex items-center justify-between gap-2 text-[11px]">
+            <div class="px-2.5 py-1.5 rounded-md bg-[var(--bg-secondary)] border border-[var(--border)] flex items-center justify-between gap-2 text-[11px]">
               <div class="min-w-0">
                 <span class="font-medium text-[var(--text-primary)]">${item.type}</span>
                 <span class="text-[var(--text-muted)] ml-1">${new Date(item.createdAt).toLocaleString()}</span>
-                ${item.lastError ? `<span class="text-amber-700 ml-1">${item.lastError}</span>` : ''}
+                ${item.lastError ? `<span class="text-[var(--warning)] ml-1">${item.lastError}</span>` : ''}
               </div>
-              <button onclick="window.removeGCalOfflineQueueItem('${item.id}')" class="text-[11px] px-1.5 py-0.5 rounded bg-white border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex-shrink-0">Remove</button>
+              <button onclick="window.removeGCalOfflineQueueItem('${item.id}')" class="text-[11px] px-1.5 py-0.5 rounded-md bg-white border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex-shrink-0">Remove</button>
             </div>
           `).join('')}
         </div>
@@ -450,17 +450,17 @@ function renderConflictCenterSection() {
         <span class="text-[11px] text-[var(--text-muted)]">${conflicts.length} items</span>
       </div>
       <div class="flex items-center gap-2 mb-2">
-        <button onclick="window.clearConflictNotifications()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${conflicts.length ? '' : 'opacity-50 cursor-not-allowed'}" ${conflicts.length ? '' : 'disabled'}>Clear All</button>
+        <button onclick="window.clearConflictNotifications()" class="px-2.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-md text-[11px] font-medium hover:bg-[var(--bg-tertiary)] transition ${conflicts.length ? '' : 'opacity-50 cursor-not-allowed'}" ${conflicts.length ? '' : 'disabled'}>Clear All</button>
       </div>
       ${conflicts.length ? `
         <div class="space-y-1.5 max-h-40 overflow-auto">
           ${conflicts.map(item => `
-            <div class="px-2.5 py-1.5 rounded border border-amber-200 bg-amber-50 flex items-center justify-between gap-2 text-[11px]">
+            <div class="px-2.5 py-1.5 rounded-md border border-[color-mix(in_srgb,var(--warning)_25%,transparent)] bg-[color-mix(in_srgb,var(--warning)_8%,transparent)] flex items-center justify-between gap-2 text-[11px]">
               <div class="min-w-0">
-                <span class="font-medium text-amber-900">${item.entity || 'entity'} · ${item.mode || 'policy'}</span>
-                <span class="text-amber-700 ml-1">${item.reason || ''}</span>
+                <span class="font-medium text-[var(--warning)]">${item.entity || 'entity'} · ${item.mode || 'policy'}</span>
+                <span class="text-[var(--warning)] ml-1">${item.reason || ''}</span>
               </div>
-              <button onclick="window.dismissConflictNotification('${item.id}')" class="text-[11px] px-1.5 py-0.5 rounded bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 flex-shrink-0">Dismiss</button>
+              <button onclick="window.dismissConflictNotification('${item.id}')" class="text-[11px] px-1.5 py-0.5 rounded-md bg-white border border-[color-mix(in_srgb,var(--warning)_30%,transparent)] text-[var(--warning)] hover:bg-[color-mix(in_srgb,var(--warning)_12%,transparent)] flex-shrink-0">Dismiss</button>
             </div>
           `).join('')}
         </div>
@@ -481,7 +481,7 @@ function renderPerformanceSection() {
           ['Max', perf.maxMs],
           ['Samples', perf.count]
         ].map(([label, val]) => `
-          <div class="py-2 rounded bg-[var(--bg-secondary)] border border-[var(--border)]">
+          <div class="py-2 rounded-md bg-[var(--bg-secondary)] border border-[var(--border)]">
             <div class="text-[11px] text-[var(--text-muted)]">${label}</div>
             <div class="text-sm font-semibold text-[var(--text-primary)]">${val}${label !== 'Samples' ? ' ms' : ''}</div>
           </div>
@@ -577,7 +577,7 @@ export function renderSettingsTab() {
         <div class="flex items-center justify-between mb-3">
           <h3 class="font-semibold text-[var(--text-primary)] text-sm">Cloud Sync</h3>
           <span class="flex items-center text-xs text-[var(--text-muted)]">
-            ${getGithubToken() ? '<span class="w-2 h-2 rounded-full bg-green-500 mr-1.5"></span> Connected' : '<span class="w-2 h-2 rounded-full bg-[var(--text-muted)]/40 mr-1.5"></span> Not connected'}
+            ${getGithubToken() ? '<span class="w-2 h-2 rounded-full bg-[var(--success)] mr-1.5"></span> Connected' : '<span class="w-2 h-2 rounded-full bg-[var(--text-muted)]/40 mr-1.5"></span> Not connected'}
           </span>
         </div>
         <div class="flex gap-2 mb-3">
@@ -585,7 +585,7 @@ export function renderSettingsTab() {
             placeholder="ghp_xxxx or github_pat_xxxx"
             class="input-field flex-1">
           <button onclick="window.setGithubToken(document.getElementById('github-token-input').value)"
-            class="sb-btn px-3 py-1.5 rounded text-xs font-medium">Save</button>
+            class="sb-btn px-3 py-1.5 rounded-md text-xs font-medium">Save</button>
         </div>
         <div class="flex flex-wrap gap-2">
           <button onclick="window.saveToGithub()" class="px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--accent-dark)] transition ${getGithubToken() ? '' : 'opacity-50 cursor-not-allowed'}" ${getGithubToken() ? '' : 'disabled'}>Sync Now</button>
@@ -594,7 +594,7 @@ export function renderSettingsTab() {
         ${(() => {
           const credStatus = getCredentialSyncStatus();
           return `<div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-[var(--border-light)]">
-            <span class="w-1.5 h-1.5 rounded-full ${credStatus.hasCreds ? 'bg-green-500' : 'bg-[var(--text-muted)]/40'}"></span>
+            <span class="w-1.5 h-1.5 rounded-full ${credStatus.hasCreds ? 'bg-[var(--success)]' : 'bg-[var(--text-muted)]/40'}"></span>
             <span class="text-[11px] text-[var(--text-muted)]">${credStatus.hasCreds ? credStatus.count + ' credential' + (credStatus.count !== 1 ? 's' : '') + ' synced to cloud' : 'No credentials to sync'}</span>
           </div>`;
         })()}
@@ -655,7 +655,7 @@ export function renderSettingsTab() {
           <div>
             <div class="flex justify-between items-center mb-3">
               <h4 class="text-sm font-medium text-[var(--text-primary)]">Scoring Weights</h4>
-              <button onclick="window.resetWeights()" class="px-3 py-1 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-[var(--accent)]/20 transition">Reset</button>
+              <button onclick="window.resetWeights()" class="px-3 py-1 bg-[var(--accent)]/10 text-[var(--accent)] rounded-md text-xs font-medium hover:bg-[var(--accent)]/20 transition">Reset</button>
             </div>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div class="bg-[var(--bg-secondary)] rounded-lg p-3 border border-[var(--border)]">
@@ -709,7 +709,7 @@ export function renderSettingsTab() {
           <div>
             <div class="flex justify-between items-center mb-3">
               <h4 class="text-sm font-medium text-[var(--text-primary)]">Perfect Day Targets</h4>
-              <button onclick="window.resetMaxScores()" class="px-3 py-1 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-[var(--accent)]/20 transition">Reset</button>
+              <button onclick="window.resetMaxScores()" class="px-3 py-1 bg-[var(--accent)]/10 text-[var(--accent)] rounded-md text-xs font-medium hover:bg-[var(--accent)]/20 transition">Reset</button>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
               ${['prayer', 'diabetes', 'whoop', 'family', 'habits', 'total'].map(key => `
