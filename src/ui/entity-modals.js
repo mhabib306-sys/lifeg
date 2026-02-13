@@ -479,11 +479,7 @@ export function renderPerspectiveModalHtml() {
   return `
     <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){pendingPerspectiveEmoji=''; showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="perspective-modal-title">
       <div class="modal-enhanced w-full max-w-lg mx-4" onclick="event.stopPropagation()">
-        <!-- Mobile drag handle -->
-        <div class="flex justify-center pt-3 pb-1 md:hidden">
-          <div class="w-10 h-1 rounded-full bg-[var(--text-muted)]/30"></div>
-        </div>
-        <!-- Header -->
+        <div class="sheet-handle md:hidden"></div>
         <div class="modal-header-enhanced">
           <h3 id="perspective-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingPerspective ? 'Edit Custom View' : 'New Custom View'}</h3>
           <button onclick="pendingPerspectiveEmoji=''; showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()" aria-label="Close dialog" class="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
@@ -673,6 +669,7 @@ export function renderAreaModalHtml() {
   return `
     <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){pendingAreaEmoji=''; showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
       <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
+        <div class="sheet-handle md:hidden"></div>
         <div class="modal-header-enhanced">
           <h3 id="area-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingArea ? 'Edit Area' : 'New Area'}</h3>
           <button onclick="pendingAreaEmoji=''; showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()" aria-label="Close dialog" class="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
@@ -732,6 +729,7 @@ export function renderCategoryModalHtml() {
   return `
     <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){pendingCategoryEmoji=''; showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
       <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
+        <div class="sheet-handle md:hidden"></div>
         <div class="modal-header-enhanced">
           <h3 id="category-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editing ? 'Edit' : 'New'} Category</h3>
           <button onclick="pendingCategoryEmoji=''; showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()" aria-label="Close dialog" class="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
@@ -783,6 +781,7 @@ export function renderLabelModalHtml() {
   return `
     <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="label-modal-title">
       <div class="modal-enhanced w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+        <div class="sheet-handle md:hidden"></div>
         <div class="modal-header-enhanced">
           <h3 id="label-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingLabel ? 'Edit Tag' : 'New Tag'}</h3>
           <button onclick="showLabelModal=false; editingLabelId=null; render()" aria-label="Close dialog" class="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
@@ -833,6 +832,7 @@ export function renderPersonModalHtml() {
   return `
     <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="person-modal-title">
       <div class="modal-enhanced w-full max-w-sm mx-4" onclick="event.stopPropagation()">
+        <div class="sheet-handle md:hidden"></div>
         <div class="modal-header-enhanced">
           <h3 id="person-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingPerson ? 'Edit Person' : 'New Person'}</h3>
           <button onclick="showPersonModal=false; editingPersonId=null; render()" aria-label="Close dialog" class="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">

@@ -1082,6 +1082,22 @@ export function initModalAutocomplete() {
 export function closeTaskModal() {
   cleanupInlineAutocomplete('task-title');
   cleanupModalAutocomplete();
+
+  // Sheet dismiss animation on mobile
+  if (isMobileViewport()) {
+    const overlay = document.querySelector('.modal-overlay');
+    if (overlay) {
+      overlay.classList.add('sheet-dismissing');
+      setTimeout(() => {
+        state.showTaskModal = false;
+        state.editingTaskId = null;
+        state.modalStateInitialized = false;
+        window.render();
+      }, 350);
+      return;
+    }
+  }
+
   state.showTaskModal = false;
   state.editingTaskId = null;
   state.modalStateInitialized = false;
@@ -1176,10 +1192,7 @@ export function renderTaskModalHtml() {
   return `
     <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){closeTaskModal()}" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
       <div class="modal-enhanced w-full max-w-xl mx-4" onclick="event.stopPropagation()">
-        <!-- Mobile drag handle -->
-        <div class="flex justify-center pt-3 pb-1 md:hidden">
-          <div class="w-10 h-1 rounded-full bg-[var(--text-muted)]/30"></div>
-        </div>
+        <div class="sheet-handle md:hidden"></div>
         <!-- Header -->
         <div class="modal-header-enhanced">
           <div class="flex items-center gap-4">
