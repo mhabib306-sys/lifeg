@@ -13,11 +13,11 @@
   --accent-dark: #C4432F;
   --accent-light: rgba(229, 83, 61, 0.1);
   --accent-hover: rgba(229, 83, 61, 0.08);
-  --notes-accent: #5856D6;
+  --notes-accent: #8E8E93;
   --flagged-color: #FF9500;
   --overdue-color: #FF3B30;
   --deferred-color: #8E8E93;
-  --notes-color: #5856D6;
+  --notes-color: #8E8E93;
   --inbox-color: #E5533D;
   --today-color: #FFCC00;
   --upcoming-color: #FF3B30;
@@ -70,13 +70,13 @@
   --accent-dark: #0066DC;
   --accent-light: rgba(20, 126, 251, 0.08);
   --accent-hover: rgba(0, 0, 0, 0.03);
-  --notes-accent: #5856D6;
+  --notes-accent: #8E8E93;
 
   /* Perspective colors (additional) */
   --flagged-color: #FF9500;
   --overdue-color: #FF3B30;
   --deferred-color: #8E8E93;
-  --notes-color: #5856D6;
+  --notes-color: #8E8E93;
 
   /* Borders */
   --border: #DFE1E6;
@@ -155,13 +155,13 @@
   --accent-dark: #0060D1;
   --accent-light: rgba(0, 112, 243, 0.08);
   --accent-hover: rgba(0, 0, 0, 0.05);
-  --notes-accent: #8E4EC6;
+  --notes-accent: #8F8F8F;
 
   /* Semantic — Geist scale 700 per color: red, amber, green, purple */
   --flagged-color: #FFB224;
   --overdue-color: #E5484D;
   --deferred-color: #8F8F8F;
-  --notes-color: #8E4EC6;
+  --notes-color: #8F8F8F;
   --success: #46A758;
   --warning: #FFB224;
   --danger: #E5484D;
@@ -359,11 +359,11 @@
   --accent-dark: #52A8FF;
   --accent-light: rgba(50, 145, 255, 0.12);
   --accent-hover: rgba(255, 255, 255, 0.06);
-  --notes-accent: #BF7AF0;
+  --notes-accent: #707070;
   --flagged-color: #FFD074;
   --overdue-color: #FF6166;
   --deferred-color: #707070;
-  --notes-color: #BF7AF0;
+  --notes-color: #707070;
   --success: #3CCF4E;
   --warning: #FFD074;
   --danger: #FF6166;

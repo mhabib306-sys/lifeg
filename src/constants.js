@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.51.2 - Homebase';
+export const APP_VERSION = '4.51.3 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -305,7 +305,7 @@ export const BUILTIN_PERSPECTIVES = new Proxy([], {
 
 export function getNotesPerspective() {
   const icons = getActiveIcons();
-  return { id: 'notes', name: 'Notes', icon: icons.notes, color: _css('--notes-color') || '#5856D6', filter: { notes: true }, builtin: true };
+  return { id: 'notes', name: 'Notes', icon: icons.notes, color: _css('--notes-color') || '#8E8E93', filter: { notes: true }, builtin: true };
 }
 // Backwards-compat: constant reads resolve at access time via Proxy.
 export const NOTES_PERSPECTIVE = new Proxy({}, {

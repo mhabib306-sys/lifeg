@@ -1029,7 +1029,7 @@ img.twemoji {
 }
 .note-bullet:hover {
   background: color-mix(in srgb, var(--notes-accent) 10%, transparent);
-  color: var(--notes-accent, #8B5CF6);
+  color: var(--notes-accent, #8E8E93);
 }
 
 /* Dot for all nodes (leaf + parent) */
@@ -1037,7 +1037,7 @@ img.twemoji {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--notes-accent, #8B5CF6);
+  background: var(--notes-accent, #8E8E93);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .note-bullet:hover .note-bullet-dot {
@@ -1270,7 +1270,7 @@ img.twemoji {
   left: calc(12px + (var(--note-depth) * 24px));
   right: 12px;
   height: 2px;
-  background: var(--notes-accent, #8B5CF6);
+  background: var(--notes-accent, #8E8E93);
   border-radius: 1px;
   z-index: 10;
 }
@@ -1284,7 +1284,7 @@ img.twemoji {
   left: calc(12px + (var(--note-depth) * 24px));
   right: 12px;
   height: 2px;
-  background: var(--notes-accent, #8B5CF6);
+  background: var(--notes-accent, #8E8E93);
   border-radius: 1px;
   z-index: 10;
 }
