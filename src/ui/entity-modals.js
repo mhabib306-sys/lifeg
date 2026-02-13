@@ -339,7 +339,7 @@ function buildEmojiGridHtml(searchQuery, selectFnName) {
     html += `
       <div class="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider px-1 pt-2 pb-1">${category}</div>
       <div class="grid grid-cols-6 sm:grid-cols-8 gap-0.5">
-        ${filtered.map(e => `<button type="button" class="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center text-lg rounded-md hover:bg-[var(--accent-light)] transition cursor-pointer" onclick="event.stopPropagation(); ${selectFnName}('${e.replace(/'/g, "\\'")}')">${e}</button>`).join('')}
+        ${filtered.map(e => `<button type="button" class="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center text-xl sm:text-lg rounded-md hover:bg-[var(--accent-light)] transition cursor-pointer" onclick="event.stopPropagation(); ${selectFnName}('${e.replace(/'/g, "\\'")}')">${e}</button>`).join('')}
       </div>
     `;
   }
