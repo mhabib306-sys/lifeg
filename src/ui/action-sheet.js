@@ -51,6 +51,7 @@ export function showActionSheet({ title, items, cancelLabel = 'Cancel' }) {
       const idx = parseInt(btn.dataset.index);
       const item = items[idx];
       if (item && !item.disabled && item.handler) {
+        if (navigator.vibrate) navigator.vibrate(5);
         hideActionSheet();
         item.handler();
       }

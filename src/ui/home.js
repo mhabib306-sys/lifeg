@@ -5,7 +5,7 @@
 // Individual widget content renderers live in home-widgets.js.
 
 import { state } from '../state.js';
-import { getLocalDateString, escapeHtml, isMobile } from '../utils.js';
+import { getLocalDateString, escapeHtml, isMobile, isMobileViewport } from '../utils.js';
 import { THINGS3_ICONS, getActiveIcons, WEATHER_ICONS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, GSHEET_SAVED_PROMPT_KEY, GSHEET_RESPONSE_CACHE_KEY } from '../constants.js';
 import {
   renderStatsWidget, renderQuickAddWidget, renderTodayTasksWidget,
@@ -286,6 +286,12 @@ export function renderHomeTab() {
             <span class="text-[var(--text-muted)] hidden md:inline">\u2022</span>
             <p class="text-[var(--text-muted)] text-xs hidden md:block">Press <kbd class="px-1.5 py-0.5 bg-[var(--bg-secondary)] rounded text-[11px] font-mono">\u2318K</kbd> to quick add</p>
           </div>
+          ${isMobileViewport() ? `
+          <div class="mobile-search-pill mt-3 md:hidden" onclick="showGlobalSearch = true; render()">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span>Search tasks, events...</span>
+          </div>
+          ` : ''}
         </div>
         <div class="home-header-actions flex items-center gap-3">
           ${state.editingHomeWidgets ? `

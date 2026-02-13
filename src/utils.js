@@ -190,6 +190,13 @@ export function isMobile() {
   return isMobileViewport() || isTouchDevice();
 }
 
+/** Haptic feedback with named intensity patterns */
+export function haptic(type = 'light') {
+  if (!navigator.vibrate) return;
+  const patterns = { light: 5, medium: 10, heavy: 20, error: [10, 50, 10], success: [10, 30] };
+  navigator.vibrate(patterns[type] || 5);
+}
+
 /**
  * Smart date formatting like Things 3
  * Shows relative labels (Today, Tomorrow, Yesterday) for near dates,

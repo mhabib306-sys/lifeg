@@ -346,6 +346,41 @@ img.twemoji {
 }
 .action-sheet-cancel-btn { font-weight: 600 !important; }
 
+/* Pull-to-refresh indicator */
+.ptr-indicator {
+  position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--bg-card); box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 50; pointer-events: none;
+  color: var(--text-muted);
+}
+.ptr-indicator.ptr-refreshing .ptr-spinner {
+  animation: ptrSpin 0.8s linear infinite;
+}
+@keyframes ptrSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Skeleton loading shimmer */
+.skeleton {
+  background: linear-gradient(90deg,
+    var(--bg-tertiary) 25%,
+    color-mix(in srgb, var(--bg-tertiary) 60%, var(--bg-secondary)) 50%,
+    var(--bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s ease-in-out infinite;
+  border-radius: var(--border-radius);
+}
+.skeleton-circle { border-radius: 9999px; }
+.skeleton-text { height: 14px; border-radius: 4px; }
+.skeleton-title { height: 20px; border-radius: 4px; }
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .task-meta-inline {
   display: block;
   white-space: nowrap;
@@ -1549,6 +1584,19 @@ img.twemoji {
     letter-spacing: -0.02em;
     line-height: 1.15;
   }
+
+  /* Mobile search pill */
+  .mobile-search-pill {
+    display: flex; align-items: center; gap: var(--space-2);
+    height: 36px; border-radius: var(--border-radius);
+    background: var(--bg-tertiary);
+    padding: 0 var(--space-3);
+    color: var(--text-muted);
+    font-size: var(--type-subheadline);
+    cursor: pointer;
+    transition: background var(--duration-fast) var(--ease-default);
+  }
+  .mobile-search-pill:active { background: var(--bg-secondary); }
 
   /* Inline header title — fades in when large title scrolls out */
   .mobile-header-title-inline {

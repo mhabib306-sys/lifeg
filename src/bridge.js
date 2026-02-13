@@ -11,7 +11,7 @@
 import { state } from './state.js';
 
 // -- Utils --
-import { getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId, isMobileViewport, isTouchDevice, isMobile } from './utils.js';
+import { getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId, isMobileViewport, isTouchDevice, isMobile, haptic } from './utils.js';
 
 // -- Constants (some referenced directly in onclick handlers) --
 import { THINGS3_ICONS, GEIST_ICONS, getActiveIcons, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, defaultDayData } from './constants.js';
@@ -124,6 +124,8 @@ import {
 
 import { initSwipeActions, closeActiveRow } from './features/swipe-actions.js';
 import { initTouchDrag } from './features/touch-drag.js';
+import { initLongPress } from './features/long-press.js';
+import { initPullToRefresh } from './features/pull-to-refresh.js';
 import { showActionSheet, hideActionSheet } from './ui/action-sheet.js';
 
 import {
@@ -266,7 +268,7 @@ Object.assign(window, {
 
   // Utils
   getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId,
-  isMobileViewport, isTouchDevice, isMobile,
+  isMobileViewport, isTouchDevice, isMobile, haptic,
 
   // Constants
   THINGS3_ICONS, GEIST_ICONS, getActiveIcons, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, defaultDayData,
@@ -369,7 +371,8 @@ Object.assign(window, {
   handleDrop, reorderTasks, normalizeTaskOrders, setupSidebarDragDrop,
   initSwipeActions, closeActiveRow,
   showActionSheet, hideActionSheet,
-  initTouchDrag,
+  initTouchDrag, initLongPress,
+  initPullToRefresh,
 
   // Triggers
   createTrigger, createRootTrigger, createTriggerAfter, createChildTrigger,

@@ -6,7 +6,7 @@
 // footer, and bottom nav.
 
 import { state } from '../state.js';
-import { getLocalDateString, escapeHtml, isMobileViewport } from '../utils.js';
+import { getLocalDateString, escapeHtml, isMobileViewport, haptic } from '../utils.js';
 import { APP_VERSION, APP_VERSION_SEEN_KEY, THINGS3_ICONS, getActiveIcons, GITHUB_TOKEN_KEY } from '../constants.js';
 import { saveViewState } from '../data/storage.js';
 import { renderHomeTab } from './home.js';
@@ -16,14 +16,39 @@ import { renderHomeTab } from './home.js';
 // continue modularising. For now we fall back to window.xxx globals.
 // ---------------------------------------------------------------------------
 
+function skeletonRows(count = 4) {
+  return Array.from({ length: count }, () =>
+    `<div class="flex items-center gap-3 p-4">
+      <div class="skeleton skeleton-circle w-10 h-10 flex-shrink-0"></div>
+      <div class="flex-1 space-y-2">
+        <div class="skeleton skeleton-title w-3/4"></div>
+        <div class="skeleton skeleton-text w-1/2"></div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function skeletonCard() {
+  return `<div class="rounded-lg border border-[var(--border-light)] overflow-hidden">
+    <div class="p-4 space-y-3">
+      <div class="skeleton skeleton-title w-1/3"></div>
+      ${skeletonRows(3)}
+    </div>
+  </div>`;
+}
+
+function skeletonLoading() {
+  return `<div class="p-4 space-y-4 animate-pulse">${skeletonCard()}${skeletonCard()}</div>`;
+}
+
 function renderTrackingTab() {
   if (typeof window.renderTrackingTab === 'function') return window.renderTrackingTab();
-  return '<div class="p-8 text-center text-[var(--text-muted)]">Loading tracking tab...</div>';
+  return skeletonLoading();
 }
 
 function renderBulkEntryTab() {
   if (typeof window.renderBulkEntryTab === 'function') return window.renderBulkEntryTab();
-  return '<div class="p-8 text-center text-[var(--text-muted)]">Loading bulk entry tab...</div>';
+  return skeletonLoading();
 }
 
 function renderDashboardTab() {
@@ -42,17 +67,17 @@ function renderDashboardTab() {
         render();
       });
   }
-  return '<div class="p-8 text-center text-[var(--text-muted)]">Loading dashboard tab...</div>';
+  return skeletonLoading();
 }
 
 function renderTasksTab() {
   if (typeof window.renderTasksTab === 'function') return window.renderTasksTab();
-  return '<div class="p-8 text-center text-[var(--text-muted)]">Loading tasks tab...</div>';
+  return skeletonLoading();
 }
 
 function renderSettingsTab() {
   if (typeof window.renderSettingsTab === 'function') return window.renderSettingsTab();
-  return '<div class="p-8 text-center text-[var(--text-muted)]">Loading settings tab...</div>';
+  return skeletonLoading();
 }
 
 function renderMobileDrawer() {
@@ -361,7 +386,7 @@ export function render() {
       <main class="max-w-6xl mx-auto px-6 py-8">
         ${state.activeTab === 'home' ? renderHomeTab() :
           state.activeTab === 'life' ? (state.activeSubTab === 'daily' ? renderTrackingTab() : state.activeSubTab === 'bulk' ? renderBulkEntryTab() : renderDashboardTab()) :
-          state.activeTab === 'calendar' ? (typeof window.renderCalendarView === 'function' ? window.renderCalendarView() : '<div class="p-8 text-center text-[var(--text-muted)]">Loading calendar...</div>') :
+          state.activeTab === 'calendar' ? (typeof window.renderCalendarView === 'function' ? window.renderCalendarView() : skeletonLoading()) :
           state.activeTab === 'tasks' ? renderTasksTab() :
           renderSettingsTab()}
       </main>
@@ -445,9 +470,30 @@ export function render() {
       if (typeof window.attachCalendarSwipe === 'function') window.attachCalendarSwipe();
     }
 
-    // Initialize mobile touch interactions (swipe actions + touch drag)
+    // Initialize mobile touch interactions (swipe actions + touch drag + long-press)
     if (typeof window.initSwipeActions === 'function') window.initSwipeActions();
     if (typeof window.initTouchDrag === 'function') window.initTouchDrag();
+    if (typeof window.initLongPress === 'function' && window.isTouchDevice && window.isTouchDevice()) {
+      window.initLongPress('.task-list', '.task-item, .swipe-row', (el, e) => {
+        const taskId = el.dataset.taskId || el.querySelector('[data-task-id]')?.dataset.taskId;
+        if (!taskId) return;
+        const task = (window.state?.tasksData || []).find(t => t.id === taskId);
+        if (!task) return;
+        window.showActionSheet({
+          title: task.title || 'Task',
+          items: [
+            { label: 'Edit', icon: '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>', handler: () => { window.editingTaskId = taskId; window.showTaskModal = true; window.render(); } },
+            { label: task.completed ? 'Uncomplete' : 'Complete', icon: '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>', handler: () => { window.toggleTaskComplete(taskId); } },
+            { label: task.flagged ? 'Unflag' : 'Flag', icon: '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>', handler: () => { window.updateTask(taskId, { flagged: !task.flagged }); } },
+            { label: 'Move to Today', icon: '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>', handler: () => { window.moveTaskTo(taskId, 'today'); } },
+            { label: 'Delete', icon: '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>', destructive: true, handler: () => { window.confirmDeleteTask(taskId); } }
+          ]
+        });
+      });
+    }
+
+    // Pull-to-refresh on Home tab (mobile only)
+    if (typeof window.initPullToRefresh === 'function') window.initPullToRefresh();
 
     // Large title collapse observer (Home tab, mobile only)
     if (isMobileViewport() && state.activeTab === 'home') {
@@ -475,6 +521,61 @@ export function render() {
     document.body.classList.toggle('body-modal-open', anyModalOpen);
     if (anyModalOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = '';
+
+    // Sheet swipe-to-dismiss (mobile modals)
+    if (anyModalOpen && isMobileViewport()) {
+      const handle = document.querySelector('.sheet-handle');
+      const modal = document.querySelector('.modal-enhanced, .modal-content');
+      const overlay = document.querySelector('.modal-overlay');
+      if (handle && modal && overlay && !handle._sheetDragInit) {
+        handle._sheetDragInit = true;
+        let startY = 0, currentY = 0, dragging = false;
+        const dragZone = 40; // top 40px of modal also activatable
+
+        function onTouchStart(e) {
+          const rect = modal.getBoundingClientRect();
+          const touchY = e.touches[0].clientY;
+          if (touchY - rect.top > dragZone && e.target !== handle) return;
+          startY = touchY;
+          currentY = startY;
+          dragging = true;
+          modal.style.transition = 'none';
+        }
+        function onTouchMove(e) {
+          if (!dragging) return;
+          currentY = e.touches[0].clientY;
+          const dy = Math.max(0, currentY - startY);
+          modal.style.transform = `translateY(${dy}px)`;
+          const progress = Math.min(dy / (modal.offsetHeight * 0.5), 1);
+          overlay.style.background = `rgba(0,0,0,${0.4 * (1 - progress * 0.6)})`;
+        }
+        function onTouchEnd() {
+          if (!dragging) return;
+          dragging = false;
+          const dy = currentY - startY;
+          const velocity = dy / ((Date.now() - startY) || 1); // rough
+          const dismiss = dy > modal.offsetHeight * 0.3 || (dy > 50 && velocity > 0.5);
+          if (dismiss) {
+            modal.style.transition = `transform var(--duration-slow) var(--ease-accelerate)`;
+            modal.style.transform = 'translateY(100%)';
+            overlay.style.transition = `background var(--duration-slow) var(--ease-default)`;
+            overlay.style.background = 'rgba(0,0,0,0)';
+            setTimeout(() => {
+              if (typeof window.closeTaskModal === 'function' && state.showTaskModal) window.closeTaskModal();
+              else { overlay.remove(); window.render(); }
+            }, 350);
+          } else {
+            modal.style.transition = `transform var(--duration-normal) var(--ease-spring)`;
+            modal.style.transform = 'translateY(0)';
+            overlay.style.transition = `background var(--duration-normal) var(--ease-default)`;
+            overlay.style.background = 'rgba(0,0,0,0.4)';
+          }
+        }
+        modal.addEventListener('touchstart', onTouchStart, { passive: true });
+        modal.addEventListener('touchmove', onTouchMove, { passive: true });
+        modal.addEventListener('touchend', onTouchEnd, { passive: true });
+      }
+    }
 
     // Auto-focus first [autofocus] element after DOM replacement.
     // HTML autofocus only fires on page load, not on dynamic innerHTML.
@@ -534,6 +635,7 @@ export function dismissCacheRefreshPrompt() {
 export function switchTab(tab) {
   const validTabs = ['home', 'tasks', 'life', 'calendar', 'settings'];
   if (!validTabs.includes(tab)) return;
+  haptic('light');
   // Cleanup any open inline autocomplete popups and stale metadata
   document.querySelectorAll('.inline-autocomplete-popup').forEach(p => p.remove());
   state.inlineAutocompleteMeta.clear();

@@ -37,7 +37,7 @@ function renderHeatmap(last30Data) {
   });
 
   return `
-    <div class="heatmap-grid grid gap-1" style="grid-template-columns: repeat(10, 1fr);">
+    <div class="heatmap-grid grid gap-1" style="grid-template-columns: repeat(${isMobileViewport() ? 6 : 10}, 1fr);">
       ${cells.join('')}
     </div>
     <div class="flex items-center justify-end gap-2 mt-2">
@@ -230,11 +230,21 @@ export function renderDashboardTab() {
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false,
+          maintainAspectRatio: isMobileViewport(),
+          aspectRatio: isMobileViewport() ? 1.5 : 2,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
           plugins: {
             legend: {
               position: 'bottom',
               labels: { font: { size: isMobileViewport() ? 10 : 12 } }
+            },
+            tooltip: {
+              titleFont: { size: isMobileViewport() ? 14 : 12 },
+              bodyFont: { size: isMobileViewport() ? 14 : 12 },
+              events: isMobileViewport() ? ['click'] : ['mousemove', 'click']
             }
           },
           scales: {
@@ -319,7 +329,7 @@ export function renderDashboardTab() {
       <!-- Category Breakdown (Percentages) -->
       <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
         <h3 class="font-semibold text-[var(--text-primary)] mb-4">Category Trends (%)</h3>
-        <div class="h-72"><canvas id="breakdownChart"></canvas></div>
+        <div class="${isMobileViewport() ? 'aspect-[3/2]' : 'h-72'}"><canvas id="breakdownChart"></canvas></div>
       </div>
 
       <!-- Achievements Gallery -->
