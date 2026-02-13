@@ -476,6 +476,8 @@ export function renderPerspectiveModalHtml() {
     ? (state.customPerspectives || []).find(p => p.id === state.editingPerspectiveId)
     : null;
   const currentIcon = state.pendingPerspectiveEmoji || editingPerspective?.icon || '📌';
+  const ef = editingPerspective?.filter || {};
+  const sel = (val, target) => val === target ? 'selected' : '';
   return `
     <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){pendingPerspectiveEmoji=''; showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="perspective-modal-title">
       <div class="modal-enhanced w-full max-w-lg mx-4" onclick="event.stopPropagation()">
@@ -501,6 +503,7 @@ export function renderPerspectiveModalHtml() {
               </div>
               <div class="flex-1">
                 <input type="text" id="perspective-name" placeholder="View name, e.g. Work Projects" autofocus maxlength="100"
+                  value="${escapeHtml(editingPerspective?.name || '')}"
                   onkeydown="if(event.key==='Enter'){event.preventDefault();savePerspectiveFromModal();}"
                   class="modal-input-enhanced title-input">
               </div>
@@ -515,18 +518,18 @@ export function renderPerspectiveModalHtml() {
                 <div>
                   <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Match</label>
                   <select id="perspective-logic" class="modal-input-enhanced">
-                    <option value="all">All rules</option>
-                    <option value="any">Any rule</option>
-                    <option value="none">No rules</option>
+                    <option value="all" ${sel(ef.logic || 'all', 'all')}>All rules</option>
+                    <option value="any" ${sel(ef.logic, 'any')}>Any rule</option>
+                    <option value="none" ${sel(ef.logic, 'none')}>No rules</option>
                   </select>
                 </div>
                 <div>
                   <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Availability</label>
                   <select id="perspective-availability" class="modal-input-enhanced">
-                    <option value="available">Available</option>
-                    <option value="">Any</option>
-                    <option value="remaining">Remaining</option>
-                    <option value="completed">Completed</option>
+                    <option value="available" ${sel(ef.availability || 'available', 'available')}>Available</option>
+                    <option value="" ${sel(ef.availability, '')}>Any</option>
+                    <option value="remaining" ${sel(ef.availability, 'remaining')}>Remaining</option>
+                    <option value="completed" ${sel(ef.availability, 'completed')}>Completed</option>
                   </select>
                 </div>
               </div>
@@ -535,14 +538,14 @@ export function renderPerspectiveModalHtml() {
                   <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Area</label>
                   <select id="perspective-category" class="modal-input-enhanced">
                     <option value="">Any area</option>
-                    ${(state.taskAreas || []).map(cat => `<option value="${cat.id}">${escapeHtml(cat.name)}</option>`).join('')}
+                    ${(state.taskAreas || []).map(cat => `<option value="${cat.id}" ${sel(ef.categoryId, cat.id)}>${escapeHtml(cat.name)}</option>`).join('')}
                   </select>
                 </div>
                 <div>
                   <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Person</label>
                   <select id="perspective-person" class="modal-input-enhanced">
                     <option value="">Any person</option>
-                    ${(state.taskPeople || []).map(person => `<option value="${person.id}">${escapeHtml(person.name)}</option>`).join('')}
+                    ${(state.taskPeople || []).map(person => `<option value="${person.id}" ${sel(ef.personId, person.id)}>${escapeHtml(person.name)}</option>`).join('')}
                   </select>
                 </div>
               </div>
@@ -550,19 +553,19 @@ export function renderPerspectiveModalHtml() {
                 <div>
                   <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Status</label>
                   <select id="perspective-status" class="modal-input-enhanced">
-                    <option value="">Any status</option>
-                    <option value="inbox">Inbox</option>
-                    <option value="today">Today</option>
-                    <option value="anytime">Anytime</option>
-                    <option value="someday">Someday</option>
+                    <option value="" ${sel(ef.status, undefined)}>Any status</option>
+                    <option value="inbox" ${sel(ef.status, 'inbox')}>Inbox</option>
+                    <option value="today" ${sel(ef.status, 'today')}>Today</option>
+                    <option value="anytime" ${sel(ef.status, 'anytime')}>Anytime</option>
+                    <option value="someday" ${sel(ef.status, 'someday')}>Someday</option>
                   </select>
                 </div>
                 <div>
                   <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1.5">Special</label>
                   <select id="perspective-status-rule" class="modal-input-enhanced">
-                    <option value="">None</option>
-                    <option value="flagged">Flagged</option>
-                    <option value="dueSoon">Due Soon (7 days)</option>
+                    <option value="" ${sel(ef.statusRule, undefined)}>None</option>
+                    <option value="flagged" ${sel(ef.statusRule, 'flagged')}>Flagged</option>
+                    <option value="dueSoon" ${sel(ef.statusRule, 'dueSoon')}>Due Soon (7 days)</option>
                   </select>
                 </div>
               </div>
@@ -574,14 +577,14 @@ export function renderPerspectiveModalHtml() {
             <div class="flex items-center justify-between mb-2">
               <div class="modal-section-label mb-0">Tags</div>
               <select id="perspective-tags-mode" class="px-2 py-1 text-[11px] border border-[var(--border)] rounded-md bg-[var(--bg-secondary)] text-[var(--text-secondary)]">
-                <option value="any">Match any</option>
-                <option value="all">Match all</option>
+                <option value="any" ${sel(ef.tagMatch || 'any', 'any')}>Match any</option>
+                <option value="all" ${sel(ef.tagMatch, 'all')}>Match all</option>
               </select>
             </div>
             <div class="border border-[var(--border)] rounded-lg p-2 max-h-28 overflow-y-auto space-y-0.5">
               ${(state.taskLabels || []).length > 0 ? state.taskLabels.map(label => `
                 <label class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[var(--bg-secondary)] cursor-pointer transition">
-                  <input type="checkbox" class="perspective-tag-checkbox rounded border-[var(--border)]" value="${label.id}">
+                  <input type="checkbox" class="perspective-tag-checkbox rounded border-[var(--border)]" value="${label.id}" ${(ef.labelIds || []).includes(label.id) ? 'checked' : ''}>
                   <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: ${label.color}"></span>
                   <span class="text-[13px] text-[var(--text-primary)]">${escapeHtml(label.name)}</span>
                 </label>
@@ -594,23 +597,23 @@ export function renderPerspectiveModalHtml() {
             <div class="modal-section-label">Conditions</div>
             <div class="grid grid-cols-2 gap-x-4 gap-y-2">
               <label class="flex items-center gap-2 text-[13px] text-[var(--text-secondary)] cursor-pointer">
-                <input type="checkbox" id="perspective-due" class="rounded border-[var(--border)]">
+                <input type="checkbox" id="perspective-due" class="rounded border-[var(--border)]" ${ef.hasDueDate ? 'checked' : ''}>
                 Has due date
               </label>
               <label class="flex items-center gap-2 text-[13px] text-[var(--text-secondary)] cursor-pointer">
-                <input type="checkbox" id="perspective-defer" class="rounded border-[var(--border)]">
+                <input type="checkbox" id="perspective-defer" class="rounded border-[var(--border)]" ${ef.hasDeferDate ? 'checked' : ''}>
                 Has defer date
               </label>
               <label class="flex items-center gap-2 text-[13px] text-[var(--text-secondary)] cursor-pointer">
-                <input type="checkbox" id="perspective-repeat" class="rounded border-[var(--border)]">
+                <input type="checkbox" id="perspective-repeat" class="rounded border-[var(--border)]" ${ef.isRepeating ? 'checked' : ''}>
                 Repeating
               </label>
               <label class="flex items-center gap-2 text-[13px] text-[var(--text-secondary)] cursor-pointer">
-                <input type="checkbox" id="perspective-untagged" class="rounded border-[var(--border)]">
+                <input type="checkbox" id="perspective-untagged" class="rounded border-[var(--border)]" ${ef.isUntagged ? 'checked' : ''}>
                 Untagged
               </label>
               <label class="flex items-center gap-2 text-[13px] text-[var(--text-secondary)] cursor-pointer">
-                <input type="checkbox" id="perspective-inbox" class="rounded border-[var(--border)]">
+                <input type="checkbox" id="perspective-inbox" class="rounded border-[var(--border)]" ${ef.inboxOnly ? 'checked' : ''}>
                 Inbox only
               </label>
             </div>
@@ -621,12 +624,12 @@ export function renderPerspectiveModalHtml() {
             <div class="modal-section-label">Date Range</div>
             <div class="grid grid-cols-3 gap-2">
               <select id="perspective-range-type" class="modal-input-enhanced text-[13px]">
-                <option value="either">Due or Defer</option>
-                <option value="due">Due only</option>
-                <option value="defer">Defer only</option>
+                <option value="either" ${sel(ef.dateRange?.type, 'either')}>Due or Defer</option>
+                <option value="due" ${sel(ef.dateRange?.type, 'due')}>Due only</option>
+                <option value="defer" ${sel(ef.dateRange?.type, 'defer')}>Defer only</option>
               </select>
-              <input type="date" id="perspective-range-start" class="modal-input-enhanced text-[13px]">
-              <input type="date" id="perspective-range-end" class="modal-input-enhanced text-[13px]">
+              <input type="date" id="perspective-range-start" class="modal-input-enhanced text-[13px]" value="${ef.dateRange?.start || ''}">
+              <input type="date" id="perspective-range-end" class="modal-input-enhanced text-[13px]" value="${ef.dateRange?.end || ''}">
             </div>
           </div>
 
@@ -634,6 +637,7 @@ export function renderPerspectiveModalHtml() {
           <div class="modal-section">
             <div class="modal-section-label">Search Terms</div>
             <input type="text" id="perspective-search" placeholder="Title or notes contains..."
+              value="${escapeHtml(ef.searchTerms || '')}"
               class="modal-input-enhanced">
           </div>
         </div>

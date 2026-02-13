@@ -254,7 +254,14 @@ export function render() {
       </div>
     ` : '';
 
-    app.innerHTML = `
+    // Preserve active input state across DOM replacement
+    const _activeEl = document.activeElement;
+    let _savedInput = null;
+    if (_activeEl && (_activeEl.tagName === 'INPUT' || _activeEl.tagName === 'TEXTAREA') && _activeEl.id) {
+      _savedInput = { id: _activeEl.id, value: _activeEl.value, selStart: _activeEl.selectionStart, selEnd: _activeEl.selectionEnd };
+    }
+
+    app.innerHTML = `<!-- safe: all user content is escaped via escapeHtml() -->
       <!-- Mobile Header - Things 3 style -->
       <header class="mobile-header-compact border-b border-[var(--border-light)] bg-[var(--bg-card)] sticky top-0 z-50" style="display: none;">
         <div class="w-10 flex items-center justify-start">
@@ -451,6 +458,16 @@ export function render() {
     if (!isTabChange && savedScrollTop > 0) {
       document.documentElement.scrollTop = savedScrollTop;
       document.body.scrollTop = savedScrollTop;
+    }
+
+    // Restore active input value after DOM replacement
+    if (_savedInput) {
+      const restored = document.getElementById(_savedInput.id);
+      if (restored) {
+        restored.value = _savedInput.value;
+        restored.focus();
+        try { restored.setSelectionRange(_savedInput.selStart, _savedInput.selEnd); } catch(e) { /* non-text input */ }
+      }
     }
 
     // Initialize inline autocomplete for quick-add inputs

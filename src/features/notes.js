@@ -1367,9 +1367,9 @@ export function handleNoteKeydown(event, noteId) {
     if (nextTitle !== (note.title || '')) {
       note.title = nextTitle;
       recordNoteChange(note, 'updated', { field: 'title' });
-      // No saveTasksData() here — createChildNote → persistAndRender handles it
+      // No saveTasksData() here — createNoteAfter → persistAndRender handles it
     }
-    createChildNote(noteId);
+    createNoteAfter(noteId);
     return;
   }
 
@@ -1717,7 +1717,7 @@ export function handleDescriptionBlur(event, noteId) {
   }
   const note = getActiveNoteById(noteId);
   if (!note) return;
-  const newNotes = event.target.textContent.trim();
+  const newNotes = event.target.innerText.trim();
   if (newNotes !== (note.notes || '')) {
     note.notes = newNotes;
     recordNoteChange(note, 'updated', { field: 'notes' });
@@ -1760,7 +1760,7 @@ export function handleDescriptionInput(event, noteId) {
     const note = getActiveNoteById(noteId);
     if (!note) return;
     const el = event.target;
-    const newNotes = el.textContent.trim();
+    const newNotes = el.innerText.trim();
     if (newNotes !== (note.notes || '')) {
       note.notes = newNotes;
       recordNoteChange(note, 'updated', { field: 'notes' });
@@ -1986,12 +1986,15 @@ export function renderNoteItem(note) {
       ondrop="handleNoteDrop(event)"` : ''}>
       <div class="note-row group">
         ${note.isNote
-          ? `<button onclick="event.stopPropagation(); zoomIntoNote('${note.id}')"
+          ? `<button onclick="event.stopPropagation(); ${hasChildren ? `toggleNoteCollapse('${note.id}')` : `zoomIntoNote('${note.id}')`}"
+              ondblclick="event.stopPropagation(); zoomIntoNote('${note.id}')"
               class="note-bullet ${hasChildren ? 'has-children' : ''} ${isCollapsed ? 'collapsed' : ''}"
-              title="Open as page"
-              aria-label="Open note as page">
+              title="${hasChildren ? (isCollapsed ? 'Expand' : 'Collapse') : 'Open as page'} (double-click to zoom)"
+              aria-label="${hasChildren ? (isCollapsed ? 'Expand children' : 'Collapse children') : 'Open note as page'}">
               ${hasChildren
-                ? '<span class="note-bullet-dot ' + (isCollapsed ? 'note-collapsed-ring' : '') + '"></span>'
+                ? `<span class="note-chevron ${isCollapsed ? 'note-chevron-collapsed' : ''}">
+                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                  </span>`
                 : '<span class="note-bullet-dot"></span>'}
             </button>`
           : `<button onclick="event.stopPropagation(); toggleTaskComplete('${note.id}')"
@@ -2040,6 +2043,10 @@ export function renderNoteItem(note) {
     return `
       <div class="swipe-row">
         <div class="swipe-actions-left">
+          <button class="swipe-action-btn swipe-action-convert" onclick="event.stopPropagation(); window.outdentNote('${note.id}')">
+            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            <span>Outdent</span>
+          </button>
           <button class="swipe-action-btn swipe-action-convert" onclick="event.stopPropagation(); window.toggleNoteTask('${note.id}')">
             ${note.isNote
               ? '<svg class="w-[22px] h-[22px]" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/></svg>'
@@ -2049,6 +2056,10 @@ export function renderNoteItem(note) {
         </div>
         <div class="swipe-row-content">${noteHtml}</div>
         <div class="swipe-actions-right">
+          <button class="swipe-action-btn swipe-action-flag" onclick="event.stopPropagation(); window.indentNote('${note.id}')">
+            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            <span>Indent</span>
+          </button>
           <button class="swipe-action-btn swipe-action-delete" onclick="event.stopPropagation(); window.deleteNoteWithUndo('${note.id}')">
             <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
             <span>Delete</span>

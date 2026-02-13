@@ -222,12 +222,12 @@ export function toggleTaskComplete(taskId) {
     task.updatedAt = new Date().toISOString();
 
     // Handle repeating tasks
+    let spawnedTask = null;
     if (task.repeat && task.repeat.type !== 'none') {
       if (task.completed) {
         // Create next occurrence when completed
-        const newTask = createNextRepeatOccurrence(task);
-        // Store the ID of the spawned occurrence so we can clean up on uncomplete
-        task._spawnedRepeatId = newTask ? newTask.id : null;
+        spawnedTask = createNextRepeatOccurrence(task);
+        task._spawnedRepeatId = spawnedTask ? spawnedTask.id : null;
       } else if (wasCompleted && task._spawnedRepeatId) {
         // Uncompleting: remove the spawned repeat occurrence to prevent duplicates
         const spawnedIdx = state.tasksData.findIndex(t => t.id === task._spawnedRepeatId);
@@ -239,7 +239,35 @@ export function toggleTaskComplete(taskId) {
     }
 
     saveTasksData();
-    window.render();
+
+    if (task.completed) {
+      // Animate the row, then render after a short delay
+      const el = document.querySelector(`.task-inline-title[data-task-id="${taskId}"]`);
+      const row = el?.closest('.task-item, .swipe-row, .note-item');
+      if (row) {
+        row.classList.add('task-completing');
+        setTimeout(() => window.render(), 400);
+      } else {
+        window.render();
+      }
+
+      // Undo toast for completion
+      const snapshot = { completed: false, completedAt: null, updatedAt: task.updatedAt, _spawnedRepeatId: null };
+      startUndoCountdown(`"${task.title}" completed`, snapshot, (snap) => {
+        task.completed = false;
+        task.completedAt = null;
+        task.updatedAt = new Date().toISOString();
+        // Remove spawned repeat occurrence on undo
+        if (task._spawnedRepeatId) {
+          const idx = state.tasksData.findIndex(t => t.id === task._spawnedRepeatId);
+          if (idx !== -1) state.tasksData.splice(idx, 1);
+          task._spawnedRepeatId = null;
+        }
+        saveTasksData();
+      });
+    } else {
+      window.render();
+    }
 
     // Keep Google Calendar "Homebase Tasks" clean:
     // - completing a task removes its synced event

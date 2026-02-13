@@ -177,10 +177,20 @@ function initApp() {
       e.preventDefault();
       window.openBraindump();
     }
-    // Escape = close overlays
+    // Escape = close overlays (highest z-index first)
     if (e.key === 'Escape') {
       if (state.showBraindump) {
         window.closeBraindump();
+      } else if (state.showPerspectiveModal) {
+        state.showPerspectiveModal = false; state.editingPerspectiveId = null; state.pendingPerspectiveEmoji = ''; state.perspectiveEmojiPickerOpen = false; render();
+      } else if (state.showAreaModal) {
+        state.showAreaModal = false; state.editingAreaId = null; state.pendingAreaEmoji = ''; state.areaEmojiPickerOpen = false; render();
+      } else if (state.showCategoryModal) {
+        state.showCategoryModal = false; state.editingCategoryId = null; state.categoryEmojiPickerOpen = false; render();
+      } else if (state.showLabelModal) {
+        state.showLabelModal = false; state.editingLabelId = null; render();
+      } else if (state.showPersonModal) {
+        state.showPersonModal = false; state.editingPersonId = null; render();
       } else if (state.showTaskModal) {
         window.closeTaskModal();
         render();

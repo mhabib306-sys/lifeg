@@ -6,7 +6,7 @@
 // Revamped in v4.18.5: single-column flow, auto-synced fields as read-only.
 
 import { state } from '../state.js';
-import { getLocalDateString, fmt } from '../utils.js';
+import { getLocalDateString, fmt, formatSmartDate } from '../utils.js';
 import { defaultDayData, THINGS3_ICONS, getActiveIcons } from '../constants.js';
 import { calculateScores } from '../features/scoring.js';
 import { getTodayData } from '../data/storage.js';
@@ -20,6 +20,14 @@ import {
   createCounter,
   createScoreCard,
 } from './input-builders.js';
+
+/** Navigate tracking date by +/- days */
+export function navigateTrackingDate(offset) {
+  const d = new Date(state.currentDate + 'T00:00:00');
+  d.setDate(d.getDate() + offset);
+  state.currentDate = d.toISOString().slice(0, 10);
+  window.render();
+}
 
 /**
  * Render the daily tracking tab — single-column flow with auto-synced read-only fields.
@@ -66,7 +74,27 @@ export function renderTrackingTab() {
     <div class="text-[10px] text-[var(--success)] mt-1 text-center">Auto-synced</div>
   `;
 
+  const isToday = state.currentDate === getLocalDateString();
+  const dateLabel = formatSmartDate(state.currentDate);
+  const dateObj = new Date(state.currentDate + 'T00:00:00');
+  const fullDate = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
   return `
+    <!-- Date Navigation -->
+    <div class="flex items-center justify-center gap-3 mb-6">
+      <button onclick="navigateTrackingDate(-1)" class="w-9 h-9 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--border)] flex items-center justify-center text-[var(--text-secondary)] active:scale-95 transition" title="Previous day">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <div class="text-center min-w-[120px]">
+        <div class="text-sm font-semibold text-[var(--text-primary)]">${dateLabel}</div>
+        ${!isToday ? `<div class="text-[11px] text-[var(--text-muted)]">${fullDate}</div>` : ''}
+      </div>
+      <button onclick="navigateTrackingDate(1)" class="w-9 h-9 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--border)] flex items-center justify-center text-[var(--text-secondary)] active:scale-95 transition" title="Next day">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </button>
+      ${!isToday ? `<button onclick="setToday()" class="text-xs font-medium text-[var(--accent)] hover:underline ml-1">Today</button>` : ''}
+    </div>
+
     <!-- Score Cards Row -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8">
       ${createScoreCard('Prayer', scores.prayer, state.MAX_SCORES.prayer, 'bg-blue-500')}

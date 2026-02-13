@@ -418,6 +418,12 @@ img.twemoji {
   50% { transform: scale(1.3); }
   100% { transform: scale(1); }
 }
+/* Task completion fade-out animation */
+.task-completing {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  opacity: 0;
+  transform: translateX(10px);
+}
 
 /* Sidebar item interactions - Things 3 style */
 .sidebar-item {
@@ -1040,6 +1046,17 @@ img.twemoji {
 /* Tana-style collapsed ring — dot with subtle border indicating hidden children */
 .note-collapsed-ring {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--notes-accent) 18%, transparent);
+}
+/* Chevron toggle for parent notes */
+.note-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--notes-accent, #8B5CF6);
+  transition: transform 0.15s ease;
+}
+.note-chevron-collapsed {
+  transform: rotate(-90deg);
 }
 
 /* Checkbox for tasks living in the outliner (Tana-style note↔task toggle) */

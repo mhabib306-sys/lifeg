@@ -178,7 +178,7 @@ import {
 // -- UI --
 import { render, switchTab, switchSubTab, setToday, forceHardRefresh, dismissCacheRefreshPrompt } from './ui/render.js';
 import { renderHomeTab, renderHomeWidget, homeQuickAddTask, handleGSheetSavePrompt, handleGSheetEditPrompt, handleGSheetCancelEdit, handleGSheetRefresh } from './ui/home.js';
-import { renderTrackingTab } from './ui/tracking.js';
+import { renderTrackingTab, navigateTrackingDate } from './ui/tracking.js';
 import { setBulkMonth, setBulkCategory, updateBulkData, updateBulkSummary, getDaysInMonth, renderBulkEntryTab } from './ui/bulk-entry.js';
 import { renderTaskItem, buildAreaTaskListHtml, renderTasksTab } from './ui/tasks-tab.js';
 import {
@@ -437,7 +437,7 @@ Object.assign(window, {
   // Main UI
   render, switchTab, switchSubTab, setToday, forceHardRefresh, dismissCacheRefreshPrompt,
   renderHomeTab, renderHomeWidget, homeQuickAddTask, handleGSheetSavePrompt, handleGSheetEditPrompt, handleGSheetCancelEdit, handleGSheetRefresh,
-  renderTrackingTab,
+  renderTrackingTab, navigateTrackingDate,
   setBulkMonth, setBulkCategory, updateBulkData, updateBulkSummary, getDaysInMonth, renderBulkEntryTab,
   renderTaskItem, buildAreaTaskListHtml, renderTasksTab,
   renderCalendarView,

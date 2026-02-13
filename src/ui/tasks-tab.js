@@ -80,9 +80,9 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
   const somedayTasks = taskItems.filter(t => t.status === 'someday');
   const inboxTasks = taskItems.filter(t => t.status === 'inbox');
 
-  const addBtn = (status, label, color) => `
+  const addBtn = (status, label, color, extraProps = '') => `
     <div class="px-4 py-2 border-t border-[var(--border-light)]">
-      <button onclick="window.createTask('', { status: '${status}', ${createPropsExpr} }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && ${filterExpr} && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
+      <button onclick="window.createTask('', { status: '${status}', ${extraProps} ${createPropsExpr} }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && ${filterExpr} && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
         class="flex items-center gap-2 px-3 py-2 w-full text-sm hover:bg-opacity-50 rounded-lg transition text-left" style="color: ${color}">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         ${label}
@@ -109,7 +109,7 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
           <span class="text-xs text-[var(--text-muted)] ml-1">${todayTasks.length}</span>
         </div>
         <div class="task-list">${todayTasks.map(task => renderTaskItem(task, false)).join('')}</div>
-        ${addBtn('anytime', 'Add to Today...', 'var(--today-color)')}
+        ${addBtn('anytime', 'Add to Today...', 'var(--today-color)', 'today: true,')}
       </div>
     ` : ''}
 
