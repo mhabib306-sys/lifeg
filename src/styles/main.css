@@ -1928,6 +1928,15 @@ img.twemoji {
   .task-item .absolute.right-3 {
     opacity: 0 !important;
   }
+
+  /* Color swatches — bigger touch targets on mobile */
+  .color-swatch {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .color-swatch-grid {
+    gap: 8px !important;
+  }
 }
 
 /* Force mobile widget layout for touch devices on phone-sized screens only */

@@ -338,8 +338,8 @@ function buildEmojiGridHtml(searchQuery, selectFnName) {
     if (filtered.length === 0) continue;
     html += `
       <div class="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider px-1 pt-2 pb-1">${category}</div>
-      <div class="grid grid-cols-8 gap-0.5">
-        ${filtered.map(e => `<button type="button" class="w-8 h-8 flex items-center justify-center text-lg rounded-md hover:bg-[var(--accent-light)] transition cursor-pointer" onclick="event.stopPropagation(); ${selectFnName}('${e.replace(/'/g, "\\'")}')">${e}</button>`).join('')}
+      <div class="grid grid-cols-6 sm:grid-cols-8 gap-0.5">
+        ${filtered.map(e => `<button type="button" class="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center text-lg rounded-md hover:bg-[var(--accent-light)] transition cursor-pointer" onclick="event.stopPropagation(); ${selectFnName}('${e.replace(/'/g, "\\'")}')">${e}</button>`).join('')}
       </div>
     `;
   }
@@ -423,7 +423,7 @@ function renderEmojiPicker(selectFnName = 'selectPerspectiveEmoji') {
   const emojiGridHtml = buildEmojiGridHtml(searchQuery, selectFnName);
 
   return `
-    <div class="emoji-picker-dropdown absolute top-full left-0 mt-1 z-[400] w-72 bg-[var(--modal-bg)] rounded-lg border border-[var(--border-light)] shadow-xl overflow-hidden" onclick="event.stopPropagation()">
+    <div class="emoji-picker-dropdown absolute top-full left-0 mt-1 z-[400] w-full max-w-72 bg-[var(--modal-bg)] rounded-lg border border-[var(--border-light)] shadow-xl overflow-hidden" onclick="event.stopPropagation()">
       <div class="p-2 border-b border-[var(--border-light)]">
         <input type="text" id="emoji-search-input" placeholder="Search emojis..." value="${escapeHtml(searchQuery)}"
           oninput="updateEmojiGrid(this.value)"
@@ -486,7 +486,7 @@ export function renderPerspectiveModalHtml() {
         <!-- Header -->
         <div class="modal-header-enhanced">
           <h3 id="perspective-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingPerspective ? 'Edit Custom View' : 'New Custom View'}</h3>
-          <button onclick="pendingPerspectiveEmoji=''; showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
+          <button onclick="pendingPerspectiveEmoji=''; showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()" aria-label="Close dialog" class="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>
@@ -675,7 +675,7 @@ export function renderAreaModalHtml() {
       <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
         <div class="modal-header-enhanced">
           <h3 id="area-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingArea ? 'Edit Area' : 'New Area'}</h3>
-          <button onclick="pendingAreaEmoji=''; showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
+          <button onclick="pendingAreaEmoji=''; showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()" aria-label="Close dialog" class="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>
@@ -734,7 +734,7 @@ export function renderCategoryModalHtml() {
       <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
         <div class="modal-header-enhanced">
           <h3 id="category-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editing ? 'Edit' : 'New'} Category</h3>
-          <button onclick="pendingCategoryEmoji=''; showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
+          <button onclick="pendingCategoryEmoji=''; showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()" aria-label="Close dialog" class="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)]">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>
@@ -785,7 +785,7 @@ export function renderLabelModalHtml() {
       <div class="modal-enhanced w-full max-w-sm mx-4" onclick="event.stopPropagation()">
         <div class="modal-header-enhanced">
           <h3 id="label-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingLabel ? 'Edit Tag' : 'New Tag'}</h3>
-          <button onclick="showLabelModal=false; editingLabelId=null; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
+          <button onclick="showLabelModal=false; editingLabelId=null; render()" aria-label="Close dialog" class="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>
@@ -835,7 +835,7 @@ export function renderPersonModalHtml() {
       <div class="modal-enhanced w-full max-w-sm mx-4" onclick="event.stopPropagation()">
         <div class="modal-header-enhanced">
           <h3 id="person-modal-title" class="text-lg font-semibold text-[var(--text-primary)]">${editingPerson ? 'Edit Person' : 'New Person'}</h3>
-          <button onclick="showPersonModal=false; editingPersonId=null; render()" aria-label="Close dialog" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
+          <button onclick="showPersonModal=false; editingPersonId=null; render()" aria-label="Close dialog" class="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>

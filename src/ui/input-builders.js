@@ -137,10 +137,10 @@ export function createCounter(label, value, category, field, max = 10) {
       <span class="text-sm text-[var(--text-primary)]">${label}</span>
       <div class="flex items-center gap-2">
         <button onclick="updateData('${category}', '${field}', Math.max(0, ${value} - 1))"
-          class="w-7 h-7 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] flex items-center justify-center font-bold text-[var(--text-muted)] transition">\u2212</button>
+          class="w-10 h-10 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] flex items-center justify-center font-bold text-[var(--text-muted)] transition active:scale-95">\u2212</button>
         <span class="w-8 text-center font-semibold text-lg text-[var(--text-primary)]">${value}</span>
         <button onclick="updateData('${category}', '${field}', Math.min(${max}, ${value} + 1))"
-          class="w-7 h-7 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-dark)] text-white flex items-center justify-center font-bold transition">+</button>
+          class="w-10 h-10 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-dark)] text-white flex items-center justify-center font-bold transition active:scale-95">+</button>
       </div>
     </div>
   `;

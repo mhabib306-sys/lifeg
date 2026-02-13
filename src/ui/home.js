@@ -326,7 +326,7 @@ export function renderHomeTab() {
                 const isAdded = addedIds.has(p.id);
                 return `
                   <button ${isAdded ? 'disabled' : `onclick="addPerspectiveWidget('${p.id}')"`}
-                    class="flex items-center gap-2 px-3 py-2.5 rounded-lg border transition text-left ${isAdded
+                    class="flex items-center gap-2 px-3 py-3.5 sm:py-2.5 rounded-lg border transition text-left ${isAdded
                       ? 'border-[var(--border-light)] bg-[var(--bg-secondary)] opacity-50 cursor-default'
                       : 'border-[var(--border-light)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 cursor-pointer'}">
                     <span style="color: ${p.color}">${p.icon || ''}</span>

@@ -105,10 +105,10 @@ export function renderTrackingTab() {
           <div class="flex items-center justify-center gap-3">
             <span class="text-sm text-[var(--text-secondary)]">📖 Quran</span>
             <button onclick="updateData('prayers', 'quran', Math.max(0, ${parseInt(data.prayers.quran) || 0} - 1))"
-              class="w-7 h-7 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--border)] flex items-center justify-center font-bold text-[var(--text-muted)]">−</button>
+              class="w-10 h-10 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--border)] flex items-center justify-center font-bold text-[var(--text-muted)] active:scale-95 transition">−</button>
             <span class="w-8 text-center font-semibold text-lg text-[var(--text-primary)]">${parseInt(data.prayers.quran) || 0}</span>
             <button onclick="updateData('prayers', 'quran', ${parseInt(data.prayers.quran) || 0} + 1)"
-              class="w-7 h-7 rounded-full bg-[var(--accent)] hover:opacity-80 text-white flex items-center justify-center font-bold">+</button>
+              class="w-10 h-10 rounded-full bg-[var(--accent)] hover:opacity-80 text-white flex items-center justify-center font-bold active:scale-95 transition">+</button>
             <span class="text-xs text-[var(--text-muted)]">pages · ${(parseInt(data.prayers.quran) || 0) * 5} pts</span>
           </div>
         </div>
@@ -136,7 +136,7 @@ export function renderTrackingTab() {
             </div>
           </div>
         ` : ''}
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div class="text-center">
             <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Avg Glucose</label>
             ${libreSynced && data.glucose.avg

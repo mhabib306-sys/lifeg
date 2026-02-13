@@ -234,7 +234,7 @@ export function render() {
       <header class="mobile-header-compact border-b border-[var(--border-light)] bg-[var(--bg-card)] sticky top-0 z-50" style="display: none;">
         <div class="w-10 flex items-center justify-start">
           ${state.activeTab === 'tasks' ? `
-            <button onclick="openMobileDrawer()" class="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-secondary)] active:bg-[var(--bg-secondary)] transition" aria-label="Open sidebar">
+            <button onclick="openMobileDrawer()" class="w-10 h-10 flex items-center justify-center rounded-lg text-[var(--text-secondary)] active:bg-[var(--bg-secondary)] transition" aria-label="Open sidebar">
               <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
             </button>
           ` : `
@@ -257,13 +257,13 @@ export function render() {
         </div>
         <div class="w-10 flex items-center justify-end">
           ${state.activeTab === 'tasks' ? `
-            <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center shadow-sm active:opacity-80 transition" aria-label="New task">
+            <button onclick="openNewTaskModal()" class="w-9 h-9 rounded-full bg-[var(--accent)] text-white flex items-center justify-center shadow-sm active:opacity-80 transition" aria-label="New task">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             </button>
           ` : state.activeTab === 'settings' ? `
-            <span class="w-8 h-8"></span>
+            <span class="w-9 h-9"></span>
           ` : state.activeTab === 'calendar' ? `
-            <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center shadow-sm active:opacity-80 transition" aria-label="New task">
+            <button onclick="openNewTaskModal()" class="w-9 h-9 rounded-full bg-[var(--accent)] text-white flex items-center justify-center shadow-sm active:opacity-80 transition" aria-label="New task">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             </button>
           ` : `

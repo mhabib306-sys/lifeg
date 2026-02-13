@@ -264,17 +264,17 @@ export function renderDashboardTab() {
       <!-- Level + XP + Streak banner -->
       <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)] border border-[var(--border-light)]">
         <div class="flex items-center justify-between flex-wrap gap-4">
-          <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-full bg-[var(--warning)] flex items-center justify-center text-white text-lg font-bold">
+          <div class="flex items-center gap-4 min-w-0">
+            <div class="w-14 h-14 rounded-full bg-[var(--warning)] flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
               ${levelInfo.level}
             </div>
-            <div>
-              <div class="flex items-center gap-2">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-lg font-bold text-[var(--text-primary)]">Level ${levelInfo.level}</span>
                 <span class="text-sm text-[var(--text-muted)]">${levelInfo.tierIcon} ${levelInfo.tierName}</span>
               </div>
               <div class="text-xs text-[var(--text-muted)] mt-0.5">${totalXP.toLocaleString()} / ${levelInfo.nextLevelXP.toLocaleString()} XP</div>
-              <div class="h-2 bg-[var(--bg-secondary)] rounded-full mt-1.5 overflow-hidden w-48">
+              <div class="h-2 bg-[var(--bg-secondary)] rounded-full mt-1.5 overflow-hidden w-full max-w-48">
                 <div class="h-full bg-[var(--warning)] rounded-full transition-all duration-500" style="width: ${Math.round(levelInfo.progress * 100)}%"></div>
               </div>
             </div>

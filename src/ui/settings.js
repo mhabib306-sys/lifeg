@@ -367,13 +367,13 @@ function renderDataManagementSection() {
   return `
     <div class="py-3 border-b border-[var(--border-light)]">
       <h4 class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-2.5">Data Management</h4>
-      <div class="flex flex-wrap gap-2">
-        <button onclick="window.exportData()" class="sb-btn px-3 py-1.5 rounded text-xs font-medium">Export</button>
-        <label class="sb-btn px-3 py-1.5 rounded text-xs font-medium cursor-pointer">
-          Import
+      <div class="flex flex-col sm:flex-row flex-wrap gap-2">
+        <button onclick="window.exportData()" class="sb-btn px-3 py-2 sm:py-1.5 rounded text-xs font-medium">Export Data</button>
+        <label class="sb-btn px-3 py-2 sm:py-1.5 rounded text-xs font-medium cursor-pointer text-center">
+          Import Data
           <input type="file" accept=".json" class="hidden" onchange="window.importData(event)">
         </label>
-        <button onclick="window.forceHardRefresh()" class="px-3 py-1.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-[var(--accent)]/20 transition">Force Refresh</button>
+        <button onclick="window.forceHardRefresh()" class="px-3 py-2 sm:py-1.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-[var(--accent)]/20 transition">Force Refresh</button>
       </div>
     </div>
   `;
@@ -711,7 +711,7 @@ export function renderSettingsTab() {
               <h4 class="text-sm font-medium text-[var(--text-primary)]">Perfect Day Targets</h4>
               <button onclick="window.resetMaxScores()" class="px-3 py-1 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-xs font-medium hover:bg-[var(--accent)]/20 transition">Reset</button>
             </div>
-            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
               ${['prayer', 'diabetes', 'whoop', 'family', 'habits', 'total'].map(key => `
                 <div class="text-center">
                   <input type="number" inputmode="numeric" value="${state.MAX_SCORES[key]}"
