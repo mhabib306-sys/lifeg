@@ -249,7 +249,11 @@ export function render() {
           `}
         </div>
         <div class="mobile-header-center">
-          <h1 class="mobile-header-title text-[17px] font-bold text-[var(--text-primary)] truncate">${state.activeTab === 'home' ? 'Homebase' : state.activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : state.activeTab === 'life' ? 'Life Score' : state.activeTab === 'calendar' ? 'Calendar' : 'Settings'}</h1>
+          ${state.activeTab === 'home' ? `
+            <h1 class="mobile-header-title mobile-header-title-inline text-[17px] font-bold text-[var(--text-primary)] truncate">Homebase</h1>
+          ` : `
+            <h1 class="mobile-header-title text-[17px] font-bold text-[var(--text-primary)] truncate">${state.activeTab === 'tasks' ? (function(){ const vi = getCurrentViewInfo(); return vi?.name || 'Tasks'; })() : state.activeTab === 'life' ? 'Life Score' : state.activeTab === 'calendar' ? 'Calendar' : 'Settings'}</h1>
+          `}
           <div class="flex items-center gap-1.5">
             <span class="mobile-version text-[10px] font-semibold text-[var(--text-muted)]">v${APP_VERSION}</span>
             <div class="w-1.5 h-1.5 rounded-full" style="background: ${getGithubToken() ? 'var(--success)' : 'var(--text-muted)'}"></div>
@@ -444,6 +448,18 @@ export function render() {
     // Initialize mobile touch interactions (swipe actions + touch drag)
     if (typeof window.initSwipeActions === 'function') window.initSwipeActions();
     if (typeof window.initTouchDrag === 'function') window.initTouchDrag();
+
+    // Large title collapse observer (Home tab, mobile only)
+    if (isMobileViewport() && state.activeTab === 'home') {
+      const sentinel = document.getElementById('large-title-sentinel');
+      const inlineTitle = document.querySelector('.mobile-header-title-inline');
+      if (sentinel && inlineTitle) {
+        const observer = new IntersectionObserver(([entry]) => {
+          inlineTitle.classList.toggle('visible', !entry.isIntersecting);
+        }, { threshold: 0 });
+        observer.observe(sentinel);
+      }
+    }
 
     const anyModalOpen = !!(
       state.showTaskModal ||

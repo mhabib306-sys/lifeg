@@ -265,11 +265,13 @@ export function renderHomeTab() {
 
   return `
     <div class="space-y-6">
+      <!-- Large title sentinel for IntersectionObserver -->
+      <div id="large-title-sentinel" class="md:hidden" style="height:1px;margin:0;padding:0;"></div>
       <!-- Header -->
       <div class="flex items-start justify-between flex-wrap gap-4">
         <div>
           <div class="home-greeting-row flex items-center gap-3">
-            <h1 class="text-2xl font-bold text-[var(--text-primary)]">Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}</h1>
+            <h1 class="home-large-title text-2xl font-bold text-[var(--text-primary)]">Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}</h1>
             ${state.weatherData ? `
               <div class="weather-inline flex items-center gap-2 text-[var(--text-secondary)]" title="${state.weatherData.city}">
                 <span class="text-base">${WEATHER_ICONS[state.weatherData.weatherCode] || '\uD83C\uDF21\uFE0F'}</span>

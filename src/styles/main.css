@@ -1542,6 +1542,26 @@ img.twemoji {
     font-size: 14px !important;
   }
 
+  /* Large title on Home tab (iOS-style) */
+  .home-large-title {
+    font-size: var(--type-largeTitle) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  /* Inline header title — fades in when large title scrolls out */
+  .mobile-header-title-inline {
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity var(--duration-fast) var(--ease-default),
+                transform var(--duration-fast) var(--ease-default);
+  }
+  .mobile-header-title-inline.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   /* Active press feedback for nav items */
   .mobile-nav-item:active {
     transform: scale(0.97);
