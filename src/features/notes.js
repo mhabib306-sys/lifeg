@@ -1991,11 +1991,7 @@ export function renderNoteItem(note) {
               class="note-bullet ${hasChildren ? 'has-children' : ''} ${isCollapsed ? 'collapsed' : ''}"
               title="${hasChildren ? (isCollapsed ? 'Expand' : 'Collapse') : 'Open as page'} (double-click to zoom)"
               aria-label="${hasChildren ? (isCollapsed ? 'Expand children' : 'Collapse children') : 'Open note as page'}">
-              ${hasChildren
-                ? `<span class="note-chevron ${isCollapsed ? 'note-chevron-collapsed' : ''}">
-                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
-                  </span>`
-                : '<span class="note-bullet-dot"></span>'}
+              <span class="note-bullet-dot"></span>
             </button>`
           : `<button onclick="event.stopPropagation(); toggleTaskComplete('${note.id}')"
               class="note-checkbox-btn ${note.completed ? 'completed' : ''}"
