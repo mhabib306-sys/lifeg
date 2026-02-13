@@ -41,7 +41,7 @@ function closeActiveRow() {
 export function initSwipeActions() {
   if (!isTouchDevice()) return;
 
-  const containers = document.querySelectorAll('.task-list');
+  const containers = document.querySelectorAll('.task-list, .notes-list');
   containers.forEach(container => {
     // Prevent duplicate listeners on persistent containers
     if (container._swipeInit) return;

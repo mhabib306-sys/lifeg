@@ -1907,7 +1907,7 @@ export function renderNoteItem(note) {
 
   const isTouch = isTouchDevice();
 
-  return `
+  const noteHtml = `
     <div class="note-item ${hasChildren ? 'has-children' : ''} ${isCollapsed ? 'note-collapsed' : ''} ${isEditing ? 'editing' : ''}"
       data-note-id="${note.id}"
       style="--note-depth:${note.indent || 0};"
@@ -1959,14 +1959,6 @@ export function renderNoteItem(note) {
               ? '<svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/></svg>'
               : '<svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>'}
           </button>
-          <button onclick="event.stopPropagation(); zoomIntoNote('${note.id}')"
-            class="note-action-btn" title="Open as page (Cmd+Enter)" aria-label="Open note as page">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          </button>
-          <button onclick="event.stopPropagation(); createChildNote('${note.id}')"
-            class="note-action-btn" title="Add child note (Enter)" aria-label="Add child note">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          </button>
           <button onclick="event.stopPropagation(); deleteNoteWithUndo('${note.id}')"
             class="note-action-btn note-action-btn-delete" title="Delete note" aria-label="Delete note">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
@@ -1975,6 +1967,30 @@ export function renderNoteItem(note) {
       </div>
     </div>
   `;
+
+  if (isTouch) {
+    return `
+      <div class="swipe-row" data-note-id="${note.id}">
+        <div class="swipe-actions-left">
+          <button class="swipe-action-btn swipe-action-convert" onclick="event.stopPropagation(); window.toggleNoteTask('${note.id}')">
+            ${note.isNote
+              ? '<svg class="w-[22px] h-[22px]" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/></svg>'
+              : '<svg class="w-[22px] h-[22px]" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>'}
+            <span>${note.isNote ? 'To Task' : 'To Note'}</span>
+          </button>
+        </div>
+        <div class="swipe-row-content">${noteHtml}</div>
+        <div class="swipe-actions-right">
+          <button class="swipe-action-btn swipe-action-delete" onclick="event.stopPropagation(); window.deleteNoteWithUndo('${note.id}')">
+            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            <span>Delete</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  return noteHtml;
 }
 
 export function renderNotesOutliner(filter = null) {
@@ -2008,5 +2024,5 @@ export function renderNotesOutliner(filter = null) {
     `;
   }
 
-  return visibleNotes.map(note => renderNoteItem(note)).join('');
+  return `<div class="notes-list">${visibleNotes.map(note => renderNoteItem(note)).join('')}</div>`;
 }

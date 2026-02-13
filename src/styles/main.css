@@ -284,6 +284,7 @@ img.twemoji {
 }
 .swipe-action-complete { background: var(--success); }
 .swipe-action-flag { background: var(--flagged-color); }
+.swipe-action-convert { background: var(--accent); }
 .swipe-action-delete { background: var(--danger); }
 
 /* Action Sheet (iOS-style) */
@@ -1286,20 +1287,29 @@ img.twemoji {
 
 @media (max-width: 640px) {
   .note-row {
-    min-height: 40px;
-    padding-right: 8px;
-    padding-left: calc(8px + (var(--note-depth) * 16px));
-    gap: 4px;
+    min-height: 44px;
+    padding: 8px 12px 8px calc(8px + (var(--note-depth) * 16px));
+    gap: 6px;
   }
   .note-item.has-children:not(.note-collapsed)::after {
     left: calc(18px + (var(--note-depth) * 16px));
   }
-  .note-action-btn {
-    width: 28px;
-    height: 28px;
+  /* Hide action buttons on mobile — swipe replaces them */
+  .note-actions {
+    display: none !important;
   }
-  .note-zoom-btn {
-    opacity: 1 !important;
+  /* Bullet: 44px invisible touch target */
+  .note-bullet {
+    position: relative;
+  }
+  .note-bullet::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
   }
   .note-drag-over::before,
   .note-drag-over-bottom::after {
@@ -2644,13 +2654,6 @@ img.twemoji {
     height: 44px;
   }
 
-  /* Fix #6: Note action buttons — 44px touch target */
-  .note-action-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
-  }
-
   /* Fix #8: Note checkbox in outliner — 44px touch target */
   .note-checkbox-btn {
     position: relative;
@@ -2690,10 +2693,6 @@ img.twemoji {
   }
   .autocomplete-option:hover {
     background: transparent;
-  }
-  .note-action-btn:hover {
-    background: transparent;
-    color: var(--text-muted);
   }
   .quick-add-type-toggle:hover {
     background: transparent;
