@@ -231,10 +231,28 @@ export function renderDashboardTab() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom' } },
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { font: { size: window.innerWidth < 768 ? 10 : 12 } }
+            }
+          },
           scales: {
-            y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } },
-            x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: 10 } } }
+            y: {
+              beginAtZero: true,
+              max: 100,
+              ticks: {
+                callback: v => v + '%',
+                font: { size: window.innerWidth < 768 ? 9 : 11 }
+              }
+            },
+            x: {
+              ticks: {
+                maxRotation: 45,
+                minRotation: window.innerWidth < 768 ? 60 : 45,
+                font: { size: window.innerWidth < 768 ? 8 : 10 }
+              }
+            }
           }
         }
       });

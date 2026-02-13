@@ -262,11 +262,18 @@ export function renderCalendarView() {
       }
     }
     const hours = Array.from({ length: 18 }, (_, i) => i + 6);
+    const isMobileTimeline = window.innerWidth <= 768;
+    const timelineDays = isMobileTimeline && dayDates.length > 1 ? [dayDates[dayDates.indexOf(dayDates.find(d => dateToStr(d) === today)) >= 0 ? dayDates.indexOf(dayDates.find(d => dateToStr(d) === today)) : 0]] : dayDates;
+    const colClass = timelineDays.length === 1
+      ? 'grid-cols-[56px_1fr]'
+      : isMobileTimeline
+        ? `grid-cols-[56px_repeat(${timelineDays.length},minmax(120px,1fr))] min-w-[${56 + timelineDays.length * 120}px]`
+        : 'grid-cols-[56px_repeat(7,minmax(160px,1fr))] min-w-[840px]';
     return `
       <div class="overflow-auto border border-[var(--border-light)] rounded-lg">
-        <div class="grid ${dayDates.length === 1 ? 'grid-cols-[56px_1fr]' : 'grid-cols-[56px_repeat(7,minmax(160px,1fr))] min-w-[840px]'}">
+        <div class="grid ${colClass}">
           <div class="sticky top-0 z-10 bg-[var(--bg-card)] border-b border-r border-[var(--border-light)]"></div>
-          ${dayDates.map(d => {
+          ${timelineDays.map(d => {
             const ds = dateToStr(d);
             return `<div class="sticky top-0 z-10 bg-[var(--bg-card)] border-b border-r border-[var(--border-light)] px-2 py-2 text-xs font-semibold text-[var(--text-primary)] ${ds === today ? 'text-[var(--accent)]' : ''}">
               ${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -274,7 +281,7 @@ export function renderCalendarView() {
           }).join('')}
           ${hours.map(hour => `
             <div class="px-2 py-2 text-[11px] text-[var(--text-muted)] border-r border-b border-[var(--border-light)] bg-[var(--bg-card)]">${String(hour).padStart(2, '0')}:00</div>
-            ${dayDates.map(d => {
+            ${timelineDays.map(d => {
               const ds = dateToStr(d);
               const dayEvents = (window.getGCalEventsForDate?.(ds) || []).filter(e => !e.allDay);
               const inHour = dayEvents.filter(e => {
