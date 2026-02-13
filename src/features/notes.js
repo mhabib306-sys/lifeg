@@ -993,9 +993,10 @@ export function createNoteAfter(noteId) {
   persistAndRender(newNote.id);
 }
 
-export function createChildNote(noteId) {
+/** Create a child note and add to state, but don't persist/render. Returns the new note. */
+export function createChildNoteAndReturn(noteId) {
   const note = getActiveNoteById(noteId);
-  if (!note) return;
+  if (!note) return null;
 
   const existingChildren = getNoteChildren(noteId);
   const newOrder = existingChildren.length > 0
@@ -1033,7 +1034,12 @@ export function createChildNote(noteId) {
   }
 
   state.tasksData.push(newNote);
-  persistAndRender(newNote.id);
+  return newNote;
+}
+
+export function createChildNote(noteId) {
+  const newNote = createChildNoteAndReturn(noteId);
+  if (newNote) persistAndRender(newNote.id);
 }
 
 export function deleteNote(noteId, deleteChildren = false) {
@@ -1369,9 +1375,31 @@ export function handleNoteKeydown(event, noteId) {
       note.title = nextTitle;
       recordNoteChange(note, 'updated', { field: 'title' });
     }
-    // Blur parent before creating child so focus isn't stuck
-    input.blur();
-    createChildNote(noteId);
+    // Save title, create child, then focus it — skip blur to avoid race conditions
+    const childNote = createChildNoteAndReturn(noteId);
+    if (childNote) {
+      saveTasksData();
+      debouncedSaveToGithubSafe();
+      window.render();
+      // Retry focusing until the element appears in the DOM
+      let attempts = 0;
+      const tryFocus = () => {
+        const el = document.querySelector(`[data-note-id="${childNote.id}"] .note-input`);
+        if (el) {
+          el.focus();
+          const range = document.createRange();
+          const sel = window.getSelection();
+          range.setStart(el, 0);
+          range.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        } else if (attempts < 5) {
+          attempts++;
+          setTimeout(tryFocus, 50);
+        }
+      };
+      requestAnimationFrame(tryFocus);
+    }
     return;
   }
 
