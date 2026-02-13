@@ -263,13 +263,31 @@ export function renderCalendarView() {
     }
     const hours = Array.from({ length: 18 }, (_, i) => i + 6);
     const isMobileTimeline = isMobileViewport();
-    const timelineDays = isMobileTimeline && dayDates.length > 1 ? [dayDates[dayDates.indexOf(dayDates.find(d => dateToStr(d) === today)) >= 0 ? dayDates.indexOf(dayDates.find(d => dateToStr(d) === today)) : 0]] : dayDates;
+    const todayIdx = dayDates.findIndex(d => dateToStr(d) === today);
+    const selectedIdx = dayDates.findIndex(d => dateToStr(d) === state.calendarSelectedDate);
+    const mobileDayIdx = selectedIdx >= 0 ? selectedIdx : (todayIdx >= 0 ? todayIdx : 0);
+    const timelineDays = isMobileTimeline && dayDates.length > 1 ? [dayDates[mobileDayIdx]] : dayDates;
+    const timeCol = isMobileTimeline ? '44px' : '56px';
     const colClass = timelineDays.length === 1
-      ? 'grid-cols-[56px_1fr]'
-      : isMobileTimeline
-        ? `grid-cols-[56px_repeat(${timelineDays.length},minmax(120px,1fr))] min-w-[${56 + timelineDays.length * 120}px]`
-        : 'grid-cols-[56px_repeat(7,minmax(160px,1fr))] min-w-[840px]';
+      ? `grid-cols-[${timeCol}_1fr]`
+      : 'grid-cols-[56px_repeat(7,minmax(160px,1fr))] min-w-[840px]';
+    const slotHeight = isMobileTimeline ? 'min-h-[60px]' : 'min-h-[52px]';
+
+    const dayChipsHtml = isMobileTimeline && dayDates.length > 1 ? `
+      <div class="flex gap-1.5 overflow-x-auto pb-2 px-1 scrollbar-none">
+        ${dayDates.map((d, i) => {
+          const ds = dateToStr(d);
+          const isActive = i === mobileDayIdx;
+          return `<button onclick="calendarSelectDate('${ds}')"
+            class="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition ${isActive
+              ? 'bg-[var(--accent)] text-white'
+              : ds === today ? 'bg-[var(--accent-light)] text-[var(--accent)]' : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'}">${d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })}</button>`;
+        }).join('')}
+      </div>
+    ` : '';
+
     return `
+      ${dayChipsHtml}
       <div class="overflow-auto border border-[var(--border-light)] rounded-lg">
         <div class="grid ${colClass}">
           <div class="sticky top-0 z-10 bg-[var(--bg-card)] border-b border-r border-[var(--border-light)]"></div>
@@ -289,7 +307,7 @@ export function renderCalendarView() {
                 return Number.isFinite(h) && h === hour;
               });
               return `
-                <div class="min-h-[52px] border-r border-b border-[var(--border-light)] p-1.5 bg-[var(--bg-primary)]"
+                <div class="${slotHeight} border-r border-b border-[var(--border-light)] p-1.5 bg-[var(--bg-primary)]"
                   ondragover="event.preventDefault()"
                   ondrop="dropCalendarEventToSlot('${ds}', ${hour})">
                   ${inHour.map(e => `
