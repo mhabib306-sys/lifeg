@@ -118,7 +118,7 @@ export function createWeightInput(label, value, category, field = null) {
   return `
     <div class="flex items-center justify-between py-2 border-b border-[var(--border-light)]">
       <span class="text-sm text-[var(--text-secondary)]">${label}</span>
-      <input type="number" step="1" value="${value}"
+      <input type="number" step="1" inputmode="numeric" value="${value}"
         class="input-field-sm w-20 text-center"
         onchange="window.updateWeight('${category}', ${field ? `'${field}'` : 'null'}, this.value)">
     </div>
@@ -714,7 +714,7 @@ export function renderSettingsTab() {
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
               ${['prayer', 'diabetes', 'whoop', 'family', 'habits', 'total'].map(key => `
                 <div class="text-center">
-                  <input type="number" value="${state.MAX_SCORES[key]}"
+                  <input type="number" inputmode="numeric" value="${state.MAX_SCORES[key]}"
                     class="input-field-sm w-full text-center ${key === 'total' ? 'border-coral' : ''}"
                     onchange="window.updateMaxScore('${key}', this.value)">
                   <div class="text-[11px] font-medium ${key === 'total' ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)]'} mt-1">${key.charAt(0).toUpperCase() + key.slice(1)}</div>

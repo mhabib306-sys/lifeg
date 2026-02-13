@@ -3528,6 +3528,8 @@ body.mobile-keyboard-open .main-content {
   color: var(--text-primary);
   resize: none;
   min-height: 80px;
+  max-height: 40vh;
+  overflow-y: auto;
   transition: all 0.2s ease;
 }
 .modal-textarea-enhanced:focus {

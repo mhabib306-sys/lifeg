@@ -141,7 +141,7 @@ export function renderTrackingTab() {
             <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Avg Glucose</label>
             ${libreSynced && data.glucose.avg
               ? readOnlyValue(data.glucose.avg, 'mg/dL')
-              : `<input type="number" step="any" value="${data.glucose.avg}" placeholder="105"
+              : `<input type="number" step="any" inputmode="decimal" value="${data.glucose.avg}" placeholder="105"
                   class="input-field w-full text-center"
                   onchange="updateData('glucose', 'avg', this.value)">
                 <div class="text-xs text-[var(--text-muted)] mt-1 text-center">mg/dL · 105=10pts</div>`}
@@ -150,14 +150,14 @@ export function renderTrackingTab() {
             <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">TIR</label>
             ${libreSynced && data.glucose.tir
               ? readOnlyValue(data.glucose.tir, '%')
-              : `<input type="number" step="any" value="${data.glucose.tir}" placeholder="70+"
+              : `<input type="number" step="any" inputmode="decimal" value="${data.glucose.tir}" placeholder="70+"
                   class="input-field w-full text-center"
                   onchange="updateData('glucose', 'tir', this.value)">
                 <div class="text-xs text-[var(--text-muted)] mt-1 text-center">% · 0.1pts/%</div>`}
           </div>
           <div class="text-center">
             <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Insulin</label>
-            <input type="number" step="any" value="${data.glucose.insulin}" placeholder="≤${insulinThreshold}"
+            <input type="number" step="any" inputmode="decimal" value="${data.glucose.insulin}" placeholder="≤${insulinThreshold}"
               class="input-field w-full text-center"
               onchange="updateData('glucose', 'insulin', this.value)">
             <div class="text-xs text-[var(--text-muted)] mt-1 text-center">units · ≤${insulinThreshold}=+5</div>
@@ -183,7 +183,7 @@ export function renderTrackingTab() {
             <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Sleep Perf</label>
             ${whoopSynced && data.whoop.sleepPerf
               ? readOnlyValue(data.whoop.sleepPerf, '%')
-              : `<input type="number" step="any" value="${data.whoop.sleepPerf}" placeholder="≥90"
+              : `<input type="number" step="any" inputmode="decimal" value="${data.whoop.sleepPerf}" placeholder="≥90"
                   class="input-field w-full text-center"
                   onchange="updateData('whoop', 'sleepPerf', this.value)">
                 <div class="text-xs text-[var(--text-muted)] mt-1 text-center">% · ≥90%</div>`}
@@ -192,7 +192,7 @@ export function renderTrackingTab() {
             <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Recovery</label>
             ${whoopSynced && data.whoop.recovery
               ? readOnlyValue(data.whoop.recovery, '%')
-              : `<input type="number" step="any" value="${data.whoop.recovery}" placeholder="≥66"
+              : `<input type="number" step="any" inputmode="decimal" value="${data.whoop.recovery}" placeholder="≥66"
                   class="input-field w-full text-center"
                   onchange="updateData('whoop', 'recovery', this.value)">
                 <div class="text-xs text-[var(--text-muted)] mt-1 text-center">% · ≥66%</div>`}
@@ -201,7 +201,7 @@ export function renderTrackingTab() {
             <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Strain</label>
             ${whoopSynced && data.whoop.strain
               ? readOnlyValue(data.whoop.strain, '/21')
-              : `<input type="number" step="any" value="${data.whoop.strain}" placeholder="10-14"
+              : `<input type="number" step="any" inputmode="decimal" value="${data.whoop.strain}" placeholder="10-14"
                   class="input-field w-full text-center"
                   onchange="updateData('whoop', 'strain', this.value)">
                 <div class="text-xs text-[var(--text-muted)] mt-1 text-center">/21 · match recovery</div>`}
@@ -211,7 +211,7 @@ export function renderTrackingTab() {
         <div class="flex items-center justify-between p-3 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-light)]">
           <span class="text-sm font-medium text-[var(--text-primary)]">Whoop Age</span>
           <div class="flex items-center gap-2">
-            <input type="number" step="0.1" value="${data.whoop.whoopAge || ''}" placeholder="—"
+            <input type="number" step="0.1" inputmode="decimal" value="${data.whoop.whoopAge || ''}" placeholder="—"
               class="input-field w-16 text-center font-bold text-[var(--accent)]"
               onchange="updateData('whoop', 'whoopAge', this.value)">
             <span class="text-xs text-[var(--text-muted)]">yrs</span>
@@ -252,14 +252,14 @@ export function renderTrackingTab() {
         </div>
         <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-[var(--border-light)]">
           <div class="text-center">
-            <input type="number" step="any" value="${data.habits.water}" placeholder="2.5"
+            <input type="number" step="any" inputmode="decimal" value="${data.habits.water}" placeholder="2.5"
               class="input-field w-full text-center mb-1"
               onchange="updateData('habits', 'water', this.value)">
             <div class="text-xs font-medium text-[var(--text-secondary)]">💧 Water</div>
             <div class="text-xs text-[var(--text-muted)]">L · 1pt/L</div>
           </div>
           <div class="text-center">
-            <input type="number" step="1" value="${data.habits.nop}" placeholder="0-1"
+            <input type="number" step="1" inputmode="numeric" value="${data.habits.nop}" placeholder="0-1"
               class="input-field w-full text-center mb-1"
               onchange="updateData('habits', 'nop', this.value)">
             <div class="text-xs font-medium text-[var(--text-secondary)]">💤 NoP</div>

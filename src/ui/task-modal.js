@@ -1050,6 +1050,25 @@ export function initModalAutocomplete() {
 
     // Setup inline autocomplete for modal title (# @ &)
     setupInlineAutocomplete('task-title', { isModal: true });
+
+    // Auto-size notes textarea for pre-filled content
+    const notesEl = document.getElementById('task-notes');
+    if (notesEl && notesEl.value) {
+      notesEl.style.height = 'auto';
+      notesEl.style.height = notesEl.scrollHeight + 'px';
+    }
+
+    // Keyboard avoidance: scroll focused input into view on mobile
+    if (window.innerWidth <= 768) {
+      const modalBody = document.querySelector('.modal-body-enhanced');
+      if (modalBody) {
+        modalBody.querySelectorAll('input, textarea, select').forEach(el => {
+          el.addEventListener('focus', () => {
+            setTimeout(() => el.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300);
+          });
+        });
+      }
+    }
   }, 50);
 }
 
@@ -1202,6 +1221,7 @@ export function renderTaskModalHtml() {
             <label class="modal-section-label">Notes</label>
             <textarea id="task-notes" placeholder="Add details, links, or context..."
               onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();saveTaskFromModal();}"
+              oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
               class="modal-textarea-enhanced">${editingTask?.notes || ''}</textarea>
           </div>
 
