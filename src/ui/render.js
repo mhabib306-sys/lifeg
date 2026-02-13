@@ -441,8 +441,9 @@ export function render() {
       if (typeof window.attachCalendarSwipe === 'function') window.attachCalendarSwipe();
     }
 
-    // Initialize swipe actions on task lists (mobile only)
+    // Initialize mobile touch interactions (swipe actions + touch drag)
     if (typeof window.initSwipeActions === 'function') window.initSwipeActions();
+    if (typeof window.initTouchDrag === 'function') window.initTouchDrag();
 
     const anyModalOpen = !!(
       state.showTaskModal ||

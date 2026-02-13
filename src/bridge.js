@@ -123,6 +123,7 @@ import {
 } from './features/drag-drop.js';
 
 import { initSwipeActions, closeActiveRow } from './features/swipe-actions.js';
+import { initTouchDrag } from './features/touch-drag.js';
 import { showActionSheet, hideActionSheet } from './ui/action-sheet.js';
 
 import {
@@ -368,6 +369,7 @@ Object.assign(window, {
   handleDrop, reorderTasks, normalizeTaskOrders, setupSidebarDragDrop,
   initSwipeActions, closeActiveRow,
   showActionSheet, hideActionSheet,
+  initTouchDrag,
 
   // Triggers
   createTrigger, createRootTrigger, createTriggerAfter, createChildTrigger,
