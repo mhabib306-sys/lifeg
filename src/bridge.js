@@ -212,6 +212,8 @@ import {
 // -- Task Modal --
 import {
   startInlineEdit, saveInlineEdit, cancelInlineEdit, handleInlineEditKeydown,
+  handleTaskInlineFocus, handleTaskInlineBlur, handleTaskInlineKeydown, handleTaskInlineInput,
+  focusTaskInlineTitle,
   openNewTaskModal, quickAddTask, handleQuickAddKeydown,
   toggleInlineTagInput, addInlineTag, toggleInlinePersonInput, addInlinePerson,
   initModalState, setModalType, setModalStatus, toggleModalFlagged,
@@ -450,6 +452,8 @@ Object.assign(window, {
 
   // Task Modal
   startInlineEdit, saveInlineEdit, cancelInlineEdit, handleInlineEditKeydown,
+  handleTaskInlineFocus, handleTaskInlineBlur, handleTaskInlineKeydown, handleTaskInlineInput,
+  focusTaskInlineTitle,
   openNewTaskModal, quickAddTask, handleQuickAddKeydown,
   toggleInlineTagInput, addInlineTag, toggleInlinePersonInput, addInlinePerson,
   saveAreaFromModal, saveLabelFromModal, savePersonFromModal, saveCategoryFromModal,

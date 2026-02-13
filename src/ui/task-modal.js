@@ -129,6 +129,79 @@ export function handleInlineEditKeydown(event, taskId) {
 }
 
 // ============================================================================
+// CONTENTEDITABLE INLINE EDITING (seamless, no mode switch)
+// ============================================================================
+
+/** Handle focus on contenteditable task title */
+export function handleTaskInlineFocus(event, taskId) {
+  state.inlineEditingTaskId = taskId;
+  const el = event.target;
+  el.dataset.originalTitle = el.textContent.trim();
+}
+
+/** Handle blur on contenteditable task title — auto-save */
+export function handleTaskInlineBlur(event, taskId) {
+  if (!state.inlineEditingTaskId) return;
+  const el = event.target;
+  const newTitle = el.textContent.trim();
+  if (newTitle && newTitle !== el.dataset.originalTitle) {
+    updateTask(taskId, { title: newTitle });
+  } else if (!newTitle) {
+    // Empty title — revert (don't delete existing tasks)
+    const task = state.tasksData.find(t => t.id === taskId);
+    if (task && task.title) {
+      el.textContent = task.title;
+    }
+  }
+  state.inlineEditingTaskId = null;
+}
+
+/** Handle keydown in contenteditable task title */
+export function handleTaskInlineKeydown(event, taskId) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    event.target.blur(); // triggers save via blur handler
+  } else if (event.key === 'Escape') {
+    event.preventDefault();
+    const el = event.target;
+    const task = state.tasksData.find(t => t.id === taskId);
+    if (task) el.textContent = task.title;
+    state.inlineEditingTaskId = null;
+    el.blur();
+  }
+}
+
+/** Handle input on contenteditable task title */
+export function handleTaskInlineInput(event, taskId) {
+  // Placeholder for future autocomplete integration
+}
+
+/**
+ * Focus a contenteditable task title after render.
+ * Used by quick-add flows to focus the newly created task.
+ */
+export function focusTaskInlineTitle(taskId) {
+  setTimeout(() => {
+    const el = document.querySelector(`.task-inline-title[data-task-id="${taskId}"]`);
+    if (el) {
+      el.focus();
+      // Place cursor at end
+      const range = document.createRange();
+      const sel = window.getSelection();
+      if (el.childNodes.length > 0) {
+        const lastNode = el.childNodes[el.childNodes.length - 1];
+        range.setStartAfter(lastNode);
+      } else {
+        range.setStart(el, 0);
+      }
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }, 100);
+}
+
+// ============================================================================
 // OPEN NEW TASK MODAL
 // ============================================================================
 

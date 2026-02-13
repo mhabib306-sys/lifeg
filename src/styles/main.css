@@ -1094,6 +1094,28 @@ img.twemoji {
   pointer-events: none;
 }
 
+/* Contenteditable task title — matches note-input styling */
+.task-inline-title {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  width: 100%;
+  padding: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 20px;
+  cursor: text;
+}
+.task-inline-title:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-secondary);
+  opacity: 0.4;
+}
+.task-inline-title[contenteditable="false"] {
+  cursor: default;
+}
+
 /* Note content column (input + meta chips) */
 .note-content-col {
   flex: 1;

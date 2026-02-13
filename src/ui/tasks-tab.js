@@ -82,7 +82,7 @@ function buildTaskSections(taskItems, todayDate, entityColor, createPropsExpr, f
 
   const addBtn = (status, label, color) => `
     <div class="px-4 py-2 border-t border-[var(--border-light)]">
-      <button onclick="window.createTask('', { status: '${status}', ${createPropsExpr} }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && ${filterExpr} && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+      <button onclick="window.createTask('', { status: '${status}', ${createPropsExpr} }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && ${filterExpr} && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
         class="flex items-center gap-2 px-3 py-2 w-full text-sm hover:bg-opacity-50 rounded-lg transition text-left" style="color: ${color}">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         ${label}
@@ -339,7 +339,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
       ondragover="window.handleDragOver(event, '${task.id}')"
       ondragleave="window.handleDragLeave(event)"
       ondrop="window.handleDrop(event, '${task.id}')"`}
-      onclick="if(window.isTouchDevice && window.isTouchDevice() && !event.target.closest('.task-checkbox') && !event.target.closest('button') && !event.target.closest('.swipe-action-btn')) { window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render(); }">
+      onclick="if(window.isTouchDevice && window.isTouchDevice() && !event.target.closest('.task-inline-title') && !event.target.closest('.task-checkbox') && !event.target.closest('button') && !event.target.closest('.swipe-action-btn')) { window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render(); }">
       <div class="task-row flex items-start gap-3 px-4 py-2.5" style="${indentLevel > 0 ? `padding-left: ${16 + indentPx}px` : ''}">
         ${task.isNote ? `
           <div class="mt-2 w-1.5 h-1.5 rounded-full ${indentLevel > 0 ? 'bg-[var(--notes-accent)]/50' : 'bg-[var(--notes-accent)]'} flex-shrink-0"></div>
@@ -351,18 +351,15 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
           </button>
         `}
         <div class="flex-1 min-w-0">
-          ${isInlineEditing ? `
-            <input type="text" id="inline-edit-input" value="${escapeHtml(task.title)}"
-              onkeydown="window.handleInlineEditKeydown(event, '${task.id}')"
-              onblur="setTimeout(() => { if(window.inlineEditingTaskId) window.saveInlineEdit('${task.id}'); }, 180)"
-              class="w-full text-[16px] text-[var(--text-primary)] bg-[var(--bg-input)] border border-[var(--accent)] rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-light)]">
-          ` : `
-            <span ondblclick="event.stopPropagation(); window.startInlineEdit('${task.id}')"
-              class="task-title text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug transition cursor-text">
-              ${task.flagged ? `<span class="inline-flex items-center mr-1.5" style="color: var(--flagged-color)">${getActiveIcons().flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}
-              ${escapeHtml(task.title)}
-            </span>
-          `}
+          <div contenteditable="${task.completed ? 'false' : 'true'}"
+            class="task-inline-title text-[15px] ${task.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'} leading-snug outline-none"
+            data-task-id="${task.id}"
+            data-placeholder="Task title..."
+            onfocus="event.stopPropagation(); window.handleTaskInlineFocus(event, '${task.id}')"
+            onblur="window.handleTaskInlineBlur(event, '${task.id}')"
+            onkeydown="window.handleTaskInlineKeydown(event, '${task.id}')"
+            oninput="window.handleTaskInlineInput(event, '${task.id}')"
+          >${task.flagged ? `<span class="inline-flex items-center mr-1.5" style="color: var(--flagged-color)" contenteditable="false">${getActiveIcons().flagged.replace('w-5 h-5', 'w-3 h-3')}</span>` : ''}${escapeHtml(task.title)}</div>
           ${hasMetadata && metaParts.length ? `
             <div class="task-meta-inline">${metaParts.join(' • ')}</div>
           ` : ''}
@@ -545,13 +542,13 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           </button>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2">
-          <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Task</button>
-          <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Anytime</button>
-          <button onclick="window.createTask('', { status: 'someday', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'someday', areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-someday">+ Someday</button>
-          <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${currentCategory.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.areaId === '${currentCategory.id}' && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-today">+ Today</button>
           <button onclick="window.createRootNote('${currentCategory.id}')"
             class="area-chip area-chip-action area-chip-note">+ Note</button>
@@ -753,13 +750,13 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
           </button>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2">
-          <button onclick="window.createTask('', { status: 'anytime', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Task</button>
-          <button onclick="window.createTask('', { status: 'anytime', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Anytime</button>
-          <button onclick="window.createTask('', { status: 'someday', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'someday', areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-someday">+ Someday</button>
-          <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', today: true, areaId: '${category.areaId}', categoryId: '${category.id}' }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && t.categoryId === '${category.id}' && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-today">+ Today</button>
           <button onclick="window.createRootNote({areaId:'${category.areaId}',categoryId:'${category.id}'})"
             class="area-chip area-chip-action area-chip-note">+ Note</button>
@@ -893,13 +890,13 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
           </button>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2">
-          <button onclick="window.createTask('', { status: 'anytime', labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Task</button>
-          <button onclick="window.createTask('', { status: 'anytime', labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Anytime</button>
-          <button onclick="window.createTask('', { status: 'someday', labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'someday', labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-someday">+ Someday</button>
-          <button onclick="window.createTask('', { status: 'anytime', today: true, labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', today: true, labels: ['${label.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.labels||[]).includes('${label.id}') && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-today">+ Today</button>
           <button onclick="window.createRootNote(${filterArg})"
             class="area-chip area-chip-action area-chip-note">+ Note</button>
@@ -1040,13 +1037,13 @@ export function buildPersonTaskListHtml(person, filteredTasks, todayDate) {
           </button>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2">
-          <button onclick="window.createTask('', { status: 'anytime', people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Task</button>
-          <button onclick="window.createTask('', { status: 'anytime', people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-anytime">+ Anytime</button>
-          <button onclick="window.createTask('', { status: 'someday', people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'someday', people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-someday">+ Someday</button>
-          <button onclick="window.createTask('', { status: 'anytime', today: true, people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.startInlineEdit(tasks[tasks.length-1].id); }, 100);"
+          <button onclick="window.createTask('', { status: 'anytime', today: true, people: ['${person.id}'] }); setTimeout(() => { const tasks = window.tasksData.filter(t => !t.isNote && !t.title && (t.people||[]).includes('${person.id}') && !t.completed); if (tasks.length) window.focusTaskInlineTitle(tasks[tasks.length-1].id); }, 100);"
             class="area-chip area-chip-action area-chip-today">+ Today</button>
           <button onclick="window.createRootNote(${filterArg})"
             class="area-chip area-chip-action area-chip-note">+ Note</button>
