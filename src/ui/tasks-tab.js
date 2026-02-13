@@ -1821,11 +1821,18 @@ export function renderTasksTab() {
             <div class="task-list">
               ${groupTasksByDate(filteredTasks).map(group => `
                 <div class="date-group mb-6">
-                  <div class="px-5 py-2 sticky top-0 bg-[var(--bg-card)]">
+                  <div class="px-5 py-2 sticky top-0 bg-[var(--bg-card)] z-10">
                     <span class="text-[13px] font-semibold text-[var(--text-muted)]">${group.label}</span>
                   </div>
                   <div>
-                    ${group.tasks.map(task => renderTaskItem(task, false)).join('')}
+                    ${group.dueTasks.length > 0 ? `
+                      ${group.deferTasks.length > 0 ? '<div class="px-5 pt-1 pb-0.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--warning)]">Due</div>' : ''}
+                      ${group.dueTasks.map(task => renderTaskItem(task, false)).join('')}
+                    ` : ''}
+                    ${group.deferTasks.length > 0 ? `
+                      <div class="px-5 pt-2 pb-0.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--accent)]">Starting</div>
+                      ${group.deferTasks.map(task => renderTaskItem(task, false)).join('')}
+                    ` : ''}
                   </div>
                 </div>
               `).join('')}

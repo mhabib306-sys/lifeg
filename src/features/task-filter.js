@@ -37,8 +37,9 @@ export function matchesFlaggedPerspective(task) {
 }
 
 export function matchesUpcomingPerspective(task, today) {
-  if (!task.dueDate) return false;
-  return task.dueDate > today;
+  if (task.dueDate && task.dueDate > today) return true;
+  if (task.deferDate && task.deferDate > today) return true;
+  return false;
 }
 
 export function matchesAnytimePerspective(task, today) {
@@ -255,22 +256,28 @@ export function getFilteredTasks(perspectiveId) {
   });
 }
 
-// Group tasks by due date (for Upcoming view)
+// Group tasks by due date AND defer date (for Upcoming view)
 export function groupTasksByDate(tasks) {
   const groups = {};
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const todayStr = today.toISOString().slice(0, 10);
 
   tasks.forEach(task => {
-    if (!task.dueDate) return;
-    const date = task.dueDate;
-    if (!groups[date]) {
-      groups[date] = [];
+    // Add to due date group
+    if (task.dueDate && task.dueDate >= todayStr) {
+      if (!groups[task.dueDate]) groups[task.dueDate] = { due: [], defer: [] };
+      groups[task.dueDate].due.push(task);
     }
-    groups[date].push(task);
+    // Add to defer date group (avoid duplicate if same day as due)
+    if (task.deferDate && task.deferDate >= todayStr && task.deferDate !== task.dueDate) {
+      if (!groups[task.deferDate]) groups[task.deferDate] = { due: [], defer: [] };
+      groups[task.deferDate].defer.push(task);
+    }
+    // No date at all — skip
   });
 
-  // Sort dates and return as array of { date, label, tasks }
+  // Sort dates and return as array of { date, label, dueTasks, deferTasks }
   return Object.keys(groups).sort().map(date => {
     const d = new Date(date + 'T00:00:00');
     const diffDays = Math.round((d - today) / (1000 * 60 * 60 * 24));
@@ -280,7 +287,7 @@ export function groupTasksByDate(tasks) {
     else if (diffDays < 7) label = d.toLocaleDateString('en-US', { weekday: 'long' });
     else label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
-    return { date, label, tasks: groups[date] };
+    return { date, label, dueTasks: groups[date].due, deferTasks: groups[date].defer };
   });
 }
 
