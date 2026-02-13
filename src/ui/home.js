@@ -362,24 +362,8 @@ export function renderHomeTab() {
         </div>
       ` : ''}
 
-      <!-- Daily Focus Card -->
-      ${(() => {
-        if (state.dailyFocusDismissed === today) return '';
-        const focus = typeof window.getDailyFocus === 'function' ? window.getDailyFocus() : null;
-        if (!focus) return '';
-        return `
-          <div class="daily-focus-card bg-[var(--bg-card)] rounded-lg border border-[var(--border-light)] p-4 flex items-start gap-3">
-            <span class="text-xl flex-shrink-0 mt-0.5">\uD83D\uDCCC</span>
-            <div class="flex-1 min-w-0">
-              <div class="text-sm font-semibold text-[var(--text-primary)]">Focus Today: ${focus.displayName}</div>
-              <div class="text-xs text-[var(--text-muted)] mt-0.5">Your 7-day avg is ${focus.avgPercent}% \u2014 ${focus.tip}</div>
-            </div>
-            <button onclick="state.dailyFocusDismissed = '${today}'; render()" class="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded transition flex-shrink-0" title="Dismiss">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-          </div>
-        `;
-      })()}
+      <!-- Daily Focus Card — hidden permanently -->
+      ${''}
 
       <!-- Widget Grid -->
       <div class="widget-grid grid ${isMobileView ? 'grid-cols-1' : 'grid-cols-2'} gap-4">
