@@ -1921,7 +1921,7 @@ export function renderNoteItem(note) {
               title="${note.completed ? 'Mark incomplete' : 'Mark complete'}"
               aria-label="${note.completed ? 'Mark incomplete' : 'Mark complete'}">
               <span class="note-checkbox-circle ${note.completed ? 'bg-[var(--accent)] border-[var(--accent)]' : 'border-[var(--text-muted)] hover:border-[var(--accent)]'}">
-                ${note.completed ? '<svg class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+                ${note.completed ? '<svg class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
               </span>
             </button>`
         }
@@ -1946,7 +1946,7 @@ export function renderNoteItem(note) {
             aria-label="${note.isNote ? 'Convert to task' : 'Convert to note'}">
             ${note.isNote
               ? '<svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/></svg>'
-              : '<svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>'}
+              : '<svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>'}
           </button>
           <button onclick="event.stopPropagation(); zoomIntoNote('${note.id}')"
             class="note-action-btn" title="Open as page (Cmd+Enter)" aria-label="Open note as page">

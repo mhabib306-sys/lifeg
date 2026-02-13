@@ -1056,8 +1056,8 @@ img.twemoji {
   padding: 0;
 }
 .note-checkbox-circle {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   border: 1.5px solid;
   display: flex;
@@ -2627,6 +2627,20 @@ img.twemoji {
     width: 44px;
     height: 44px;
     border-radius: 8px;
+  }
+
+  /* Fix #8: Note checkbox in outliner — 44px touch target */
+  .note-checkbox-btn {
+    position: relative;
+  }
+  .note-checkbox-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
   }
 
   /* Fix #7: Calendar task lines — larger padding for touch */
