@@ -220,130 +220,114 @@ export function renderReviewMode() {
       </div>
 
       <!-- Current Area Header -->
-      <div class="review-area-header rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] p-5 mb-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <span class="w-10 h-10 rounded-lg flex items-center justify-center text-lg" style="background: ${areaColor}15">
-              ${currentArea.emoji || getActiveIcons().area.replace('w-5 h-5', 'w-6 h-6')}
-            </span>
-            <div>
-              <h3 class="text-lg font-bold text-[var(--text-primary)]">${escapeHtml(currentArea.name)}</h3>
-              <p class="text-sm text-[var(--text-muted)]">${areaTriggers.length} triggers, ${staleTasks.length} tasks to review</p>
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <span class="w-10 h-10 rounded-lg flex items-center justify-center text-lg" style="background: ${areaColor}15">
+            ${currentArea.emoji || getActiveIcons().area.replace('w-5 h-5', 'w-6 h-6')}
+          </span>
+          <div>
+            <h3 class="text-lg font-bold text-[var(--text-primary)]">${escapeHtml(currentArea.name)}</h3>
+            <p class="text-sm text-[var(--text-muted)]">${areaTriggers.length} triggers, ${staleTasks.length} tasks to review</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          ${state.reviewAreaIndex > 0 ? `
+            <button onclick="reviewPrevArea()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-lg text-sm hover:bg-[var(--bg-tertiary)] transition">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </button>
+          ` : ''}
+          ${state.reviewAreaIndex < areas.length - 1 ? `
+            <button onclick="reviewNextArea()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-lg text-sm hover:bg-[var(--bg-tertiary)] transition">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+
+      <!-- Two-column layout: Triggers | Tasks -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <!-- Left: Triggers -->
+        <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden flex flex-col">
+          <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between" style="background: #FFCC0008">
+            <div class="flex items-center gap-2">
+              <span style="color: #FFCC00">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Triggers</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${areaTriggers.length}</span>
+            </div>
+            <button onclick="window.createRootTrigger({areaId:'${currentArea.id}'})"
+              class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[#FFCC00] hover:bg-[#FFCC0010] rounded-lg transition">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add
+            </button>
+          </div>
+          <div class="py-2 flex-1 overflow-y-auto" style="max-height: 60vh">
+            ${renderTriggersOutliner({ areaId: currentArea.id })}
+          </div>
+          ${areaTriggers.length > 0 ? `
+            <div class="px-4 py-2 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/30">
+              <p class="text-xs text-[var(--text-muted)] italic">Read each trigger — does anything need a new task?</p>
+            </div>
+          ` : ''}
+        </div>
+
+        <!-- Right: Tasks + Capture -->
+        <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden flex flex-col">
+          <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Tasks</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${staleTasks.length}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="window.reviewAddTask('${currentArea.id}', 'anytime', false)"
+                class="area-chip area-chip-action area-chip-anytime" title="Add task">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Task
+              </button>
+              <button onclick="window.reviewAddTask('${currentArea.id}', 'anytime', true)"
+                class="area-chip area-chip-action area-chip-today" title="Add today task">
+                Today
+              </button>
+              <button onclick="window.reviewAddTask('${currentArea.id}', 'someday', false)"
+                class="area-chip area-chip-action area-chip-someday" title="Add someday task">
+                Someday
+              </button>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            ${state.reviewAreaIndex > 0 ? `
-              <button onclick="reviewPrevArea()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-lg text-sm hover:bg-[var(--bg-tertiary)] transition">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-              </button>
-            ` : ''}
-            ${state.reviewAreaIndex < areas.length - 1 ? `
-              <button onclick="reviewNextArea()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-lg text-sm hover:bg-[var(--bg-tertiary)] transition">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-              </button>
-            ` : ''}
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 1: Triggers Section -->
-      <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
-        <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between" style="background: #FFCC0008">
-          <div class="flex items-center gap-2">
-            <span class="review-step-badge" style="background: ${areaColor}; color: white">1</span>
-            <span style="color: #FFCC00">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
-            <span class="text-sm font-semibold text-[var(--text-primary)]">Review Triggers</span>
-            <span class="text-xs text-[var(--text-muted)] ml-1">${areaTriggers.length}</span>
-          </div>
-          <button onclick="window.createRootTrigger({areaId:'${currentArea.id}'})"
-            class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[#FFCC00] hover:bg-[#FFCC0010] rounded-lg transition">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            Add Trigger
-          </button>
-        </div>
-        <div class="py-2">
-          ${renderTriggersOutliner({ areaId: currentArea.id })}
-        </div>
-        ${areaTriggers.length > 0 ? `
-          <div class="px-4 py-2.5 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/30">
-            <p class="text-xs text-[var(--text-muted)] italic">Read through each trigger — does anything need a new task?</p>
-          </div>
-        ` : ''}
-      </div>
-
-      <!-- Step 2: Capture Tasks -->
-      <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
-        <div class="px-4 py-3 border-b border-[var(--border-light)]" style="background: ${areaColor}06">
-          <div class="flex items-center gap-2 mb-2">
-            <span class="review-step-badge" style="background: ${areaColor}; color: white">2</span>
-            <span class="text-sm font-semibold text-[var(--text-primary)]">Capture Tasks</span>
-          </div>
-          <p class="text-xs text-[var(--text-muted)] ml-6">Add any tasks prompted by the triggers above</p>
-        </div>
-        <div class="px-4 py-3">
-          <div class="flex flex-wrap items-center gap-2">
-            <button onclick="window.reviewAddTask('${currentArea.id}', 'anytime', false)"
-              class="area-chip area-chip-action area-chip-anytime">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-              Task
-            </button>
-            <button onclick="window.reviewAddTask('${currentArea.id}', 'anytime', true)"
-              class="area-chip area-chip-action area-chip-today">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-              Today
-            </button>
-            <button onclick="window.reviewAddTask('${currentArea.id}', 'someday', false)"
-              class="area-chip area-chip-action area-chip-someday">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-              Someday
-            </button>
-            <button onclick="window.createRootNote('${currentArea.id}')"
-              class="area-chip area-chip-action area-chip-note">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zM13 9V3.5L18.5 9H13z"/></svg>
-              Note
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stale Tasks Section -->
-      <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden mb-4">
-        <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center gap-2">
-          <svg class="w-4 h-4 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
-          <span class="text-sm font-semibold text-[var(--text-primary)]">Tasks to Review</span>
-          <span class="text-xs text-[var(--text-muted)] ml-1">${staleTasks.length}</span>
-        </div>
-        ${staleTasks.length > 0 ? `
-          <div class="divide-y divide-[var(--border-light)]">
-            ${staleTasks.map(task => `
-              <div class="review-task-card px-4 py-3">
-                <div class="flex items-start gap-3">
-                  <span class="w-5 h-5 mt-0.5 rounded-full border-2 flex-shrink-0" style="border-color: ${areaColor}40"></span>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-[var(--text-primary)] truncate">${escapeHtml(task.title || 'Untitled')}</p>
-                    <p class="text-xs text-[var(--text-muted)] mt-0.5">${formatTimeSince(task.lastReviewedAt)}</p>
+          <div class="flex-1 overflow-y-auto" style="max-height: 60vh">
+            ${staleTasks.length > 0 ? `
+              <div class="divide-y divide-[var(--border-light)]">
+                ${staleTasks.map(task => `
+                  <div class="review-task-card px-4 py-3">
+                    <div class="flex items-start gap-3">
+                      <span class="w-5 h-5 mt-0.5 rounded-full border-2 flex-shrink-0" style="border-color: ${areaColor}40"></span>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-[var(--text-primary)] truncate">${escapeHtml(task.title || 'Untitled')}</p>
+                        <p class="text-xs text-[var(--text-muted)] mt-0.5">${formatTimeSince(task.lastReviewedAt)}</p>
+                      </div>
+                      <div class="flex items-center gap-2 flex-shrink-0">
+                        <button onclick="reviewEngageTask('${task.id}')"
+                          class="px-3 py-1.5 text-xs font-medium rounded-lg transition" style="background: ${areaColor}15; color: ${areaColor}">
+                          Engage
+                        </button>
+                        <button onclick="reviewPassTask('${task.id}')"
+                          class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-muted)] text-xs font-medium rounded-lg hover:bg-[var(--bg-tertiary)] transition">
+                          Pass
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div class="flex items-center gap-2 flex-shrink-0">
-                    <button onclick="reviewEngageTask('${task.id}')"
-                      class="px-3 py-1.5 text-xs font-medium rounded-lg transition" style="background: ${areaColor}15; color: ${areaColor}">
-                      Engage
-                    </button>
-                    <button onclick="reviewPassTask('${task.id}')"
-                      class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-muted)] text-xs font-medium rounded-lg hover:bg-[var(--bg-tertiary)] transition">
-                      Pass
-                    </button>
-                  </div>
-                </div>
+                `).join('')}
               </div>
-            `).join('')}
+            ` : `
+              <div class="px-4 py-8 text-center">
+                <svg class="w-8 h-8 mx-auto mb-2 text-[var(--success)] opacity-60" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <p class="text-sm font-medium text-[var(--text-primary)]">All tasks reviewed</p>
+                <p class="text-xs text-[var(--text-muted)] mt-0.5">No stale tasks in this area</p>
+              </div>
+            `}
           </div>
-        ` : `
-          <div class="px-4 py-8 text-center">
-            <svg class="w-8 h-8 mx-auto mb-2 text-[var(--success)] opacity-60" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-            <p class="text-sm font-medium text-[var(--text-primary)]">All tasks reviewed</p>
-            <p class="text-xs text-[var(--text-muted)] mt-0.5">No stale tasks in this area</p>
-          </div>
-        `}
+        </div>
       </div>
 
       <!-- Area Complete Button -->

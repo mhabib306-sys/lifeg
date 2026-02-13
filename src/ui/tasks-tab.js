@@ -1973,6 +1973,11 @@ export function renderTasksTab() {
       </div>
     </div>
 
+    ${state.reviewMode ? `
+    <div class="flex-1">
+      ${taskListHtml}
+    </div>
+    ` : `
     <div class="flex flex-col md:flex-row gap-6">
       ${!isDesktopSidebarCollapsed ? `
       <div class="hidden md:block">
@@ -2006,5 +2011,6 @@ export function renderTasksTab() {
         ${taskListHtml}
       </div>
     </div>
+    `}
   `;
 }
