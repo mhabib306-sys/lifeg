@@ -2129,6 +2129,16 @@ img.twemoji {
     min-height: 20px;
   }
 
+  /* Toggle switch touch expansion */
+  .toggle-track {
+    position: relative;
+  }
+  .toggle-track::before {
+    content: '';
+    position: absolute;
+    inset: -8px -4px;
+  }
+
   /* Icon buttons need larger hit areas */
   button.p-1, button.p-1\.5 {
     min-width: 44px !important;

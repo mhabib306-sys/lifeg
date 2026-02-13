@@ -83,9 +83,9 @@ export function createToggle(label, checked, category, field) {
   return `
     <label class="flex items-center justify-between cursor-pointer py-2 px-1 hover:bg-[var(--bg-secondary)] rounded transition">
       <span class="text-sm text-[var(--text-primary)]">${label}</span>
-      <div class="relative toggle-switch" onclick="updateData('${category}', '${field}', !${checked})">
-        <div class="w-10 h-5 rounded-full transition ${checked ? 'toggle-on' : 'toggle-off'}"></div>
-        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition" style="transform: translateX(${checked ? '20px' : '0'})"></div>
+      <div class="relative toggle-switch toggle-track" onclick="updateData('${category}', '${field}', !${checked})">
+        <div class="w-[51px] h-[31px] rounded-full transition ${checked ? 'toggle-on' : 'toggle-off'}"></div>
+        <div class="absolute left-0.5 top-0.5 w-[27px] h-[27px] bg-white rounded-full shadow transition" style="transform: translateX(${checked ? '22px' : '0'})"></div>
       </div>
     </label>
   `;
