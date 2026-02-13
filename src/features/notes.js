@@ -21,7 +21,8 @@ let noteAcNoteId = null;
 const NOTE_HISTORY_LIMIT = 60;
 
 function isNoteItem(item) {
-  return !!item?.isNote;
+  // Notes (isNote=true) OR tasks living in the outliner (noteLifecycleState='active')
+  return !!item?.isNote || item?.noteLifecycleState === 'active';
 }
 
 function isDeletedNote(item) {
