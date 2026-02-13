@@ -147,7 +147,6 @@ export function handleTaskInlineBlur(event, taskId) {
   state.inlineEditingTaskId = null;
   if (newTitle && newTitle !== el.dataset.originalTitle) {
     updateTask(taskId, { title: newTitle });
-    window.debouncedSaveToGithub?.();
     window.render();
   } else if (!newTitle) {
     const task = state.tasksData.find(t => t.id === taskId);
@@ -171,8 +170,14 @@ export function handleTaskInlineKeydown(event, taskId) {
     event.preventDefault();
     const el = event.target;
     const task = state.tasksData.find(t => t.id === taskId);
-    if (task) el.textContent = task.title;
     state.inlineEditingTaskId = null;
+    if (task && !task.title) {
+      // Empty quick-add task — delete it (blur handler won't fire cleanup since we cleared inlineEditingTaskId)
+      deleteTask(taskId);
+      window.render();
+      return;
+    }
+    if (task) el.textContent = task.title;
     el.blur();
   }
 }
@@ -1252,6 +1257,7 @@ export function saveTaskFromModal() {
   }
 
   cleanupInlineAutocomplete('task-title');
+  cleanupModalAutocomplete();
   state.showTaskModal = false;
   state.editingTaskId = null;
   state.modalStateInitialized = false;

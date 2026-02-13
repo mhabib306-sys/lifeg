@@ -798,7 +798,10 @@ export function getNoteChildren(noteId) {
  */
 export function countAllDescendants(noteId) {
   let count = 0;
+  const visited = new Set();
   const collect = (parentId) => {
+    if (visited.has(parentId)) return;
+    visited.add(parentId);
     const children = state.tasksData.filter(t => isActiveNote(t) && t.parentId === parentId);
     count += children.length;
     children.forEach(child => collect(child.id));
@@ -1051,8 +1054,11 @@ export function deleteNote(noteId, deleteChildren = false) {
 
   if (deleteChildren) {
     const stack = [noteId];
+    const visited = new Set();
     while (stack.length) {
       const currentId = stack.pop();
+      if (visited.has(currentId)) continue;
+      visited.add(currentId);
       const current = getActiveNoteById(currentId);
       if (!current) continue;
       markDeleted(current);
@@ -1062,7 +1068,10 @@ export function deleteNote(noteId, deleteChildren = false) {
     }
   } else {
     const allDescendants = [];
+    const visited = new Set();
     const collectDescendants = (parentId) => {
+      if (visited.has(parentId)) return;
+      visited.add(parentId);
       const children = state.tasksData.filter(t => isActiveNote(t) && t.parentId === parentId);
       children.forEach(child => {
         allDescendants.push(child);
@@ -1097,7 +1106,10 @@ export function deleteNoteWithUndo(noteId, focusAfterDeleteId) {
   const note = getActiveNoteById(noteId);
   if (!note) return;
   const toSnapshot = new Set([noteId]);
+  const visited = new Set();
   const collectChildren = (parentId) => {
+    if (visited.has(parentId)) return;
+    visited.add(parentId);
     state.tasksData
       .filter(t => isActiveNote(t) && t.parentId === parentId)
       .forEach(child => {
