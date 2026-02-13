@@ -286,6 +286,66 @@ img.twemoji {
 .swipe-action-flag { background: var(--flagged-color); }
 .swipe-action-delete { background: var(--danger); }
 
+/* Action Sheet (iOS-style) */
+.action-sheet-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0);
+  display: flex; align-items: flex-end; justify-content: center;
+  transition: background var(--duration-normal) var(--ease-default);
+  padding: var(--space-2);
+  padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom));
+}
+.action-sheet-overlay.action-sheet-visible {
+  background: rgba(0,0,0,0.4);
+}
+.action-sheet {
+  width: 100%; max-width: 400px;
+  transform: translateY(100%);
+  transition: transform var(--duration-sheet) var(--ease-sheet);
+}
+.action-sheet-visible .action-sheet {
+  transform: translateY(0);
+}
+.action-sheet-dismissing .action-sheet {
+  transform: translateY(100%);
+  transition: transform var(--duration-slow) var(--ease-accelerate);
+}
+.action-sheet-group {
+  background: var(--bg-card);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+.action-sheet-title {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--type-footnote);
+  color: var(--text-muted);
+  text-align: center;
+  border-bottom: 1px solid var(--border-light);
+}
+.action-sheet-item {
+  display: flex; align-items: center; justify-content: center;
+  gap: var(--space-2); width: 100%;
+  min-height: var(--touch-large);
+  padding: 0 var(--space-4);
+  font-size: var(--type-body); font-weight: 400;
+  color: var(--accent); background: none; border: none;
+  cursor: pointer; transition: background var(--duration-fast) var(--ease-default);
+  border-bottom: 1px solid var(--border-light);
+}
+.action-sheet-item:last-child { border-bottom: none; }
+.action-sheet-item:active { background: var(--bg-secondary); }
+.action-sheet-destructive { color: var(--danger); }
+.action-sheet-disabled { opacity: 0.4; cursor: not-allowed; }
+.action-sheet-icon { display: flex; align-items: center; }
+.action-sheet-icon svg { width: 20px; height: 20px; }
+.action-sheet-cancel {
+  margin-top: var(--space-2);
+  background: var(--bg-card);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+.action-sheet-cancel-btn { font-weight: 600 !important; }
+
 .task-meta-inline {
   display: block;
   white-space: nowrap;
