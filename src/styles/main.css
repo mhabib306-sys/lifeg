@@ -1313,9 +1313,13 @@ img.twemoji {
   .note-actions {
     display: none !important;
   }
-  /* Bullet: 44px invisible touch target */
+  /* Adjust bullet vertical alignment for 16px mobile font */
   .note-bullet {
     position: relative;
+    margin-top: 4px;
+  }
+  .note-checkbox-btn {
+    margin-top: 2px;
   }
   .note-bullet::before {
     content: '';
