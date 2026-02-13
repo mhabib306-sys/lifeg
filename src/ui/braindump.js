@@ -6,7 +6,7 @@
 //   Step 2 (review): Classified items with editable metadata
 
 import { state } from '../state.js';
-import { escapeHtml } from '../utils.js';
+import { escapeHtml, isMobileViewport } from '../utils.js';
 import { parseBraindump, getAnthropicKey, refineVoiceTranscriptWithAI, submitBraindumpItems } from '../features/braindump.js';
 
 let speechRecognition = null;
@@ -487,7 +487,7 @@ function renderReviewStep() {
   const items = state.braindumpParsedItems;
   const taskCount = items.filter(i => i.included && i.type === 'task').length;
   const noteCount = items.filter(i => i.included && i.type === 'note').length;
-  const isFullPage = state.braindumpFullPage || window.innerWidth < 768;
+  const isFullPage = state.braindumpFullPage || isMobileViewport();
 
   return `
     <div class="braindump-overlay" onclick="if(event.target===this)closeBraindump()">

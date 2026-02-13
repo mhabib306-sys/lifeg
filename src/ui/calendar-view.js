@@ -7,7 +7,7 @@
 import { state } from '../state.js';
 import { getTasksForDate } from '../features/calendar.js';
 import { THINGS3_ICONS, getActiveIcons } from '../constants.js';
-import { escapeHtml, getLocalDateString, formatEventTime } from '../utils.js';
+import { escapeHtml, getLocalDateString, formatEventTime, isMobileViewport } from '../utils.js';
 import {
   hasMeetingNotes, q, getSelectedModalEvent,
   renderMeetingNotesPage, renderEventActionsModal
@@ -79,7 +79,7 @@ export function renderCalendarView() {
   if (state.calendarMeetingNotesEventKey) {
     return renderMeetingNotesPage();
   }
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+  const isMobile = isMobileViewport();
 
   const today = getLocalDateString();
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -262,7 +262,7 @@ export function renderCalendarView() {
       }
     }
     const hours = Array.from({ length: 18 }, (_, i) => i + 6);
-    const isMobileTimeline = window.innerWidth <= 768;
+    const isMobileTimeline = isMobileViewport();
     const timelineDays = isMobileTimeline && dayDates.length > 1 ? [dayDates[dayDates.indexOf(dayDates.find(d => dateToStr(d) === today)) >= 0 ? dayDates.indexOf(dayDates.find(d => dateToStr(d) === today)) : 0]] : dayDates;
     const colClass = timelineDays.length === 1
       ? 'grid-cols-[56px_1fr]'

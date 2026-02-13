@@ -31,6 +31,7 @@ import { migrateTodayFlag } from './features/tasks.js';
 import { ensureHomeWidgets } from './features/home-widgets.js';
 import { rebuildGamification, processGamification } from './features/scoring.js';
 import { APP_VERSION, APP_VERSION_SEEN_KEY } from './constants.js';
+import { isMobileViewport } from './utils.js';
 import twemoji from 'twemoji';
 
 // ============================================================================
@@ -249,7 +250,7 @@ function initApp() {
   }
 
   // Auto-hide bottom nav on scroll down (mobile only)
-  if (window.innerWidth <= 768 && typeof window.initBottomNavScrollHide === 'function') {
+  if (isMobileViewport() && typeof window.initBottomNavScrollHide === 'function') {
     window.initBottomNavScrollHide();
   }
 
@@ -261,12 +262,12 @@ function initApp() {
   };
   window.addEventListener('orientationchange', handleOrientationChange);
   window.addEventListener('resize', () => {
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = isMobileViewport();
     if (isMobile !== state._lastRenderWasMobile) {
       handleOrientationChange();
     }
   });
-  state._lastRenderWasMobile = window.innerWidth <= 768;
+  state._lastRenderWasMobile = isMobileViewport();
 
   console.log('Homebase initialized');
 }

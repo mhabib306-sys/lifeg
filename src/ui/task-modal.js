@@ -10,7 +10,7 @@
 import { state } from '../state.js';
 import { createTask, updateTask, deleteTask } from '../features/tasks.js';
 import { createLabel, createPerson, getCategoriesByArea, getCategoryById } from '../features/areas.js';
-import { escapeHtml, formatSmartDate, renderPersonAvatar } from '../utils.js';
+import { escapeHtml, formatSmartDate, renderPersonAvatar, isMobileViewport } from '../utils.js';
 import {
   getActiveIcons,
   _css,
@@ -1059,7 +1059,7 @@ export function initModalAutocomplete() {
     }
 
     // Keyboard avoidance: scroll focused input into view on mobile
-    if (window.innerWidth <= 768) {
+    if (isMobileViewport()) {
       const modalBody = document.querySelector('.modal-body-enhanced');
       if (modalBody) {
         modalBody.querySelectorAll('input, textarea, select').forEach(el => {

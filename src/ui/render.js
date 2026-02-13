@@ -6,7 +6,7 @@
 // footer, and bottom nav.
 
 import { state } from '../state.js';
-import { getLocalDateString, escapeHtml } from '../utils.js';
+import { getLocalDateString, escapeHtml, isMobileViewport } from '../utils.js';
 import { APP_VERSION, APP_VERSION_SEEN_KEY, THINGS3_ICONS, getActiveIcons, GITHUB_TOKEN_KEY } from '../constants.js';
 import { saveViewState } from '../data/storage.js';
 import { renderHomeTab } from './home.js';
@@ -477,7 +477,7 @@ export function render() {
       maxMs: Number(Math.max(perf.maxMs || 0, renderMs).toFixed(2)),
       count,
     };
-    state._lastRenderWasMobile = window.innerWidth <= 768;
+    state._lastRenderWasMobile = isMobileViewport();
   } catch (err) {
     console.error('Render error:', err);
     document.getElementById('app').innerHTML = `

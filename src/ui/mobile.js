@@ -8,6 +8,7 @@
 import { state } from '../state.js';
 import { saveViewState } from '../data/storage.js';
 import { THINGS3_ICONS, getActiveIcons } from '../constants.js';
+import { isMobileViewport } from '../utils.js';
 
 let drawerPreviouslyFocused = null;
 let drawerKeydownHandlerBound = false;
@@ -428,7 +429,7 @@ export function initBottomNavScrollHide() {
 }
 
 export function scrollToContent() {
-  if (window.matchMedia('(hover: none)').matches || window.innerWidth <= 768) {
+  if (isMobileViewport()) {
     setTimeout(() => {
       const mainContent = document.querySelector('.main-content') || document.querySelector('main');
       if (mainContent) {

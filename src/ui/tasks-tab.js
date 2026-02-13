@@ -6,7 +6,7 @@
 
 import { state } from '../state.js';
 import { THINGS3_ICONS, getActiveIcons, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
-import { escapeHtml, formatSmartDate, getLocalDateString, renderPersonAvatar } from '../utils.js';
+import { escapeHtml, formatSmartDate, getLocalDateString, renderPersonAvatar, isTouchDevice } from '../utils.js';
 import { getAreaById, getLabelById, getPersonById, getTasksByPerson, getCategoriesByArea, getCategoryById } from '../features/areas.js';
 import { saveViewState } from '../data/storage.js';
 
@@ -268,9 +268,7 @@ function buildTriggersSection(triggerItems, filterArg, filterObj) {
  * @returns {string} HTML string for the task item
  */
 export function renderTaskItem(task, showDueDate = true, compact = false) {
-  const isTouch = typeof window !== 'undefined'
-    && window.matchMedia
-    && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  const isTouch = isTouchDevice();
   const area = getAreaById(task.areaId);
   const subcategory = task.categoryId ? getCategoryById(task.categoryId) : null;
   const labels = (task.labels || []).map(lid => getLabelById(lid)).filter(Boolean);
@@ -341,7 +339,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
       ondragover="window.handleDragOver(event, '${task.id}')"
       ondragleave="window.handleDragLeave(event)"
       ondrop="window.handleDrop(event, '${task.id}')"`}
-      onclick="if(window.matchMedia('(hover: none) and (pointer: coarse)').matches && !event.target.closest('.task-checkbox') && !event.target.closest('button')) { window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render(); }">
+      onclick="if(window.isTouchDevice && window.isTouchDevice() && !event.target.closest('.task-checkbox') && !event.target.closest('button')) { window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render(); }">
       <div class="task-row flex items-start gap-3 px-4 py-2.5" style="${indentLevel > 0 ? `padding-left: ${16 + indentPx}px` : ''}">
         ${task.isNote ? `
           <div class="mt-2 w-1.5 h-1.5 rounded-full ${indentLevel > 0 ? 'bg-[var(--notes-accent)]/50' : 'bg-[var(--notes-accent)]'} flex-shrink-0"></div>

@@ -5,7 +5,7 @@
 // personal bests, achievements gallery, and lifetime stats.
 
 import { state } from '../state.js';
-import { fmt, getLocalDateString } from '../utils.js';
+import { fmt, getLocalDateString, isMobileViewport } from '../utils.js';
 import { getLast30DaysData, getLast30DaysStats, getPersonalBests, calculateScores, getLevelInfo, getScoreTier } from '../features/scoring.js';
 import { getAccentColor } from '../data/github-sync.js';
 import { ACHIEVEMENTS, SCORE_TIERS, LEVEL_TIERS, STREAK_MULTIPLIERS, STREAK_MIN_THRESHOLD, DEFAULT_CATEGORY_WEIGHTS, defaultDayData } from '../constants.js';
@@ -234,7 +234,7 @@ export function renderDashboardTab() {
           plugins: {
             legend: {
               position: 'bottom',
-              labels: { font: { size: window.innerWidth < 768 ? 10 : 12 } }
+              labels: { font: { size: isMobileViewport() ? 10 : 12 } }
             }
           },
           scales: {
@@ -243,14 +243,14 @@ export function renderDashboardTab() {
               max: 100,
               ticks: {
                 callback: v => v + '%',
-                font: { size: window.innerWidth < 768 ? 9 : 11 }
+                font: { size: isMobileViewport() ? 9 : 11 }
               }
             },
             x: {
               ticks: {
                 maxRotation: 45,
-                minRotation: window.innerWidth < 768 ? 60 : 45,
-                font: { size: window.innerWidth < 768 ? 8 : 10 }
+                minRotation: isMobileViewport() ? 60 : 45,
+                font: { size: isMobileViewport() ? 8 : 10 }
               }
             }
           }

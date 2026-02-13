@@ -1,6 +1,6 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
-import { generateTaskId, escapeHtml, formatSmartDate } from '../utils.js';
+import { generateTaskId, escapeHtml, formatSmartDate, isTouchDevice } from '../utils.js';
 import {
   TASK_CATEGORIES_KEY, TASK_LABELS_KEY, TASK_PEOPLE_KEY, COLLAPSED_NOTES_KEY,
   NOTE_INTEGRITY_SNAPSHOT_KEY, NOTE_LOCAL_BACKUP_KEY
@@ -1412,7 +1412,7 @@ export function renderNotesBreadcrumb() {
 // ============================================================================
 
 export function handleNoteDragStart(event, noteId) {
-  const isTouch = window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  const isTouch = isTouchDevice();
   if (isTouch) return;
 
   state.draggedNoteId = noteId;
@@ -1556,9 +1556,7 @@ export function renderNoteItem(note) {
 
   const hasMetaChips = note.areaId || (note.labels && note.labels.length > 0) || (note.people && note.people.length > 0) || note.deferDate;
 
-  const isTouch = typeof window !== 'undefined'
-    && window.matchMedia
-    && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  const isTouch = isTouchDevice();
 
   return `
     <div class="note-item ${hasChildren ? 'has-children' : ''} ${isCollapsed ? 'note-collapsed' : ''} ${isEditing ? 'editing' : ''}"

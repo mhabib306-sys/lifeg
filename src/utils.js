@@ -175,6 +175,21 @@ export function formatEventDateLabel(event) {
   return '';
 }
 
+/** Layout breakpoint check (viewport width) */
+export function isMobileViewport() {
+  return window.innerWidth <= 768;
+}
+
+/** Input capability check (touch device) */
+export function isTouchDevice() {
+  return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+}
+
+/** Combined mobile check (either narrow viewport or touch device) */
+export function isMobile() {
+  return isMobileViewport() || isTouchDevice();
+}
+
 /**
  * Smart date formatting like Things 3
  * Shows relative labels (Today, Tomorrow, Yesterday) for near dates,

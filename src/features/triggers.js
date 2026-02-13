@@ -6,7 +6,7 @@
 // no metadata chips). Stored separately from tasksData to keep task queries clean.
 
 import { state } from '../state.js';
-import { generateTaskId, escapeHtml } from '../utils.js';
+import { generateTaskId, escapeHtml, isTouchDevice } from '../utils.js';
 import { TRIGGERS_KEY, COLLAPSED_TRIGGERS_KEY, THINGS3_ICONS, getActiveIcons } from '../constants.js';
 
 // ---------------------------------------------------------------------------
@@ -577,9 +577,7 @@ export function renderTriggerItem(trigger) {
   const isCollapsed = state.collapsedTriggers.has(trigger.id);
   const descendantCount = hasChildren && isCollapsed ? countAllTriggerDescendants(trigger.id) : 0;
 
-  const isTouch = typeof window !== 'undefined'
-    && window.matchMedia
-    && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  const isTouch = isTouchDevice();
 
   return `
     <div class="trigger-item ${hasChildren ? 'has-children' : ''} ${isCollapsed ? 'trigger-collapsed' : ''}"

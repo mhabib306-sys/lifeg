@@ -11,7 +11,7 @@
 import { state } from './state.js';
 
 // -- Utils --
-import { getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId } from './utils.js';
+import { getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId, isMobileViewport, isTouchDevice, isMobile } from './utils.js';
 
 // -- Constants (some referenced directly in onclick handlers) --
 import { THINGS3_ICONS, GEIST_ICONS, getActiveIcons, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, defaultDayData } from './constants.js';
@@ -262,6 +262,7 @@ Object.assign(window, {
 
   // Utils
   getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId,
+  isMobileViewport, isTouchDevice, isMobile,
 
   // Constants
   THINGS3_ICONS, GEIST_ICONS, getActiveIcons, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, defaultDayData,

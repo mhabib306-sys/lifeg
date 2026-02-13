@@ -5,7 +5,7 @@
 // Individual widget content renderers live in home-widgets.js.
 
 import { state } from '../state.js';
-import { getLocalDateString, escapeHtml } from '../utils.js';
+import { getLocalDateString, escapeHtml, isMobile } from '../utils.js';
 import { THINGS3_ICONS, getActiveIcons, WEATHER_ICONS, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, GSHEET_SAVED_PROMPT_KEY, GSHEET_RESPONSE_CACHE_KEY } from '../constants.js';
 import {
   renderStatsWidget, renderQuickAddWidget, renderTodayTasksWidget,
@@ -40,9 +40,7 @@ function render() {
  */
 export function renderHomeWidget(widget, isEditing) {
   const today = getLocalDateString();
-  const isMobileView = typeof window !== 'undefined'
-    && typeof window.matchMedia === 'function'
-    && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
+  const isMobileView = isMobile();
 
   const sizeClass = isMobileView
     ? 'col-span-2'
@@ -258,9 +256,7 @@ export function renderHomeTab() {
   const today = getLocalDateString();
 
   const sortedWidgets = [...state.homeWidgets].sort((a, b) => a.order - b.order);
-  const isMobileView = typeof window !== 'undefined'
-    && typeof window.matchMedia === 'function'
-    && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
+  const isMobileView = isMobile();
 
   // On mobile, always render all widgets in the configured order so critical cards
   // (like Today) and any hidden cards remain accessible.
