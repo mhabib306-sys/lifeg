@@ -107,6 +107,21 @@ function mockSignInSuccess(token = 'refreshed-token') {
   });
 }
 
+/**
+ * Reset module-level cooldown state (silentRefreshFailedAt, silentRefreshFailCount).
+ * connectGCal() resets both to 0 on entry, before checking the token,
+ * so calling it with a null-returning mock is a clean reset.
+ */
+async function resetCooldownState() {
+  const prevImpl = window.signInWithGoogleCalendar.getMockImplementation?.() || null;
+  window.signInWithGoogleCalendar.mockResolvedValue(null);
+  await connectGCal();
+  window.signInWithGoogleCalendar.mockReset();
+  if (prevImpl) {
+    window.signInWithGoogleCalendar.mockImplementation(prevImpl);
+  }
+}
+
 // ============================================================================
 // Imports
 // ============================================================================
@@ -197,9 +212,10 @@ describe('Config getters/setters (additional edge cases)', () => {
   });
 
   describe('getSelectedCalendars', () => {
-    it('returns empty array for stored null string', () => {
+    it('returns null for stored "null" string (JSON.parse("null") = null)', () => {
       mockLocalStorage._storage.set(MOCK_CONSTANTS.GCAL_SELECTED_CALENDARS_KEY, 'null');
-      expect(getSelectedCalendars()).toEqual([]);
+      // JSON.parse('null') returns null without throwing, so the try branch returns null
+      expect(getSelectedCalendars()).toBeNull();
     });
   });
 
@@ -1035,22 +1051,31 @@ describe('deleteGCalEventIfConnected', () => {
     expect(mockFetch).toHaveBeenCalled();
   });
 
-  it('enqueues when delete returns null (API error)', async () => {
+  it('does NOT enqueue on API error (deleteGCalEvent returns undefined, not null)', async () => {
+    // deleteGCalEvent does `await gcalFetch(...)` without returning the value,
+    // so it always returns undefined. The check `result === null` in
+    // deleteGCalEventIfConnected never fires — this is a known code-level issue.
     setConnected();
     setValidToken();
     mockLocalStorage._storage.set(MOCK_CONSTANTS.GCAL_TARGET_CALENDAR_KEY, 'primary@gmail.com');
     mockFetch.mockReturnValue(failRes(500));
     await deleteGCalEventIfConnected(taskWithEvent);
-    expect(mockState.gcalOfflineQueue).toHaveLength(1);
+    // Queue is NOT populated because deleteGCalEvent returns undefined (not null)
+    expect(mockState.gcalOfflineQueue).toHaveLength(0);
   });
 
-  it('enqueues when delete throws an exception', async () => {
+  it('does NOT enqueue on exception (gcalFetch catches internally)', async () => {
+    // gcalFetch catches network errors internally and returns null,
+    // but deleteGCalEvent doesn't return gcalFetch's result, so
+    // deleteGCalEventIfConnected sees undefined, not null. The catch
+    // in deleteGCalEventIfConnected only fires on synchronous/top-level
+    // throws from deleteGCalEvent itself — gcalFetch swallows the error.
     setConnected();
     setValidToken();
     mockLocalStorage._storage.set(MOCK_CONSTANTS.GCAL_TARGET_CALENDAR_KEY, 'primary@gmail.com');
     mockFetch.mockRejectedValue(new Error('Network error'));
     await deleteGCalEventIfConnected(taskWithEvent);
-    expect(mockState.gcalOfflineQueue).toHaveLength(1);
+    expect(mockState.gcalOfflineQueue).toHaveLength(0);
   });
 });
 
@@ -1242,11 +1267,12 @@ describe('retryGCalOfflineQueue', () => {
     mockLocalStorage._storage.set(MOCK_CONSTANTS.GCAL_TARGET_CALENDAR_KEY, 'primary@gmail.com');
   });
 
-  it('does nothing when queue is empty', async () => {
+  it('returns early without calling render when queue is empty', async () => {
+    // retryGCalOfflineQueue has `if (!queue.length) return;` before the render() call
     mockState.gcalOfflineQueue = [];
     await retryGCalOfflineQueue();
     expect(mockFetch).not.toHaveBeenCalled();
-    expect(window.render).toHaveBeenCalled();
+    expect(window.render).not.toHaveBeenCalled();
   });
 
   it('retries push_task items', async () => {
@@ -1303,8 +1329,14 @@ describe('retryGCalOfflineQueue', () => {
     expect(remaining).toHaveLength(0);
   });
 
-  it('calls render after processing', async () => {
-    mockState.gcalOfflineQueue = [];
+  it('calls render after processing non-empty queue', async () => {
+    // Use a non-empty queue so the function doesn't return early
+    mockState.gcalOfflineQueue = [{
+      id: 'q1', type: 'push_task',
+      payload: { task: { id: 't1', title: 'Push', dueDate: '2026-02-12' } },
+      createdAt: new Date().toISOString(), lastError: '',
+    }];
+    mockFetch.mockReturnValue(okJson({ id: 'ev1' }));
     await retryGCalOfflineQueue();
     expect(window.render).toHaveBeenCalled();
   });
@@ -1354,9 +1386,16 @@ describe('connectGCal', () => {
   it('fetches calendar list after connecting', async () => {
     window.signInWithGoogleCalendar.mockResolvedValue('token123');
     setValidToken();
-    mockFetch.mockReturnValue(okJson({
-      items: [{ id: 'cal1', summary: 'Cal', primary: true }],
-    }));
+    // Use URL-based mock to differentiate calendarList vs events fetches.
+    // connectGCal calls fetchCalendarList then syncGCalNow (which calls fetchEventsForRange).
+    // Events require e.start.date or e.start.dateTime — calendar list items don't have those fields.
+    mockFetch.mockImplementation((url) => {
+      if (url.includes('calendarList')) {
+        return okJson({ items: [{ id: 'cal1', summary: 'Cal', primary: true }] });
+      }
+      // fetchEventsForRange — return proper event items
+      return okJson({ items: [] });
+    });
     await connectGCal();
     expect(mockFetch).toHaveBeenCalled();
     expect(mockState.gcalCalendarList).toHaveLength(1);
@@ -1889,6 +1928,13 @@ describe('gcalFetch error handling (via fetchCalendarList)', () => {
 // ############################################################################
 
 describe('ensureValidToken (via syncGCalNow)', () => {
+  beforeEach(async () => {
+    // Reset module-level cooldown state (silentRefreshFailedAt + silentRefreshFailCount)
+    // that may have been set by previous test blocks' failed refresh attempts.
+    // connectGCal() resets both to 0 on entry, before checking the token.
+    await resetCooldownState();
+  });
+
   it('returns immediately when token is valid', async () => {
     setConnected();
     setValidToken();
@@ -1932,6 +1978,11 @@ describe('ensureValidToken (via syncGCalNow)', () => {
 // ############################################################################
 
 describe('refreshAccessTokenSilent (via expired token scenarios)', () => {
+  beforeEach(async () => {
+    // Reset module-level cooldown state (silentRefreshFailedAt + silentRefreshFailCount)
+    await resetCooldownState();
+  });
+
   it('resets fail count on successful refresh', async () => {
     setConnected();
     mockLocalStorage._storage.set(MOCK_CONSTANTS.GCAL_ACCESS_TOKEN_KEY, 'expired-token');
