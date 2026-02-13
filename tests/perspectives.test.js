@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 // ---- Mocks (hoisted) ----
 const { mockState, mockSaveTasksData, mockSaveViewState } = vi.hoisted(() => ({
@@ -31,6 +31,7 @@ import {
 
 // ---- Setup ----
 beforeEach(() => {
+  vi.useFakeTimers();
   mockState.customPerspectives = [];
   mockState.activePerspective = 'inbox';
   mockState.editingPerspectiveId = null;
@@ -38,6 +39,13 @@ beforeEach(() => {
   mockSaveTasksData.mockClear();
   mockSaveViewState.mockClear();
   window.render = vi.fn();
+});
+
+afterEach(() => {
+  // Drain any pending timers (e.g. editCustomPerspective's setTimeout)
+  // to prevent leaks into other test files
+  vi.runAllTimers();
+  vi.useRealTimers();
 });
 
 // ============================================================================

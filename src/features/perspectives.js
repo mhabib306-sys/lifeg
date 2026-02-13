@@ -66,36 +66,40 @@ export function editCustomPerspective(perspectiveId) {
   state.editingPerspectiveId = perspectiveId;
   state.showPerspectiveModal = true;
   window.render();
-  // Pre-fill the form after render
+  // Pre-fill the form after render. Guard every DOM access — the modal
+  // may not be in the DOM yet if render is async or mocked in tests.
   setTimeout(() => {
     const p = state.customPerspectives.find(cp => cp.id === perspectiveId);
-    if (p) {
-      document.getElementById('perspective-name').value = p.name;
-      document.getElementById('perspective-icon').value = p.icon;
-      if (p.filter.categoryId) document.getElementById('perspective-category').value = p.filter.categoryId;
-      if (p.filter.status) document.getElementById('perspective-status').value = p.filter.status;
-      if (p.filter.logic) document.getElementById('perspective-logic').value = p.filter.logic;
-      if (p.filter.availability) document.getElementById('perspective-availability').value = p.filter.availability;
-      if (p.filter.statusRule) document.getElementById('perspective-status-rule').value = p.filter.statusRule;
-      if (p.filter.personId) document.getElementById('perspective-person').value = p.filter.personId;
-      if (p.filter.tagMatch) document.getElementById('perspective-tags-mode').value = p.filter.tagMatch;
-      if (p.filter.hasDueDate) document.getElementById('perspective-due').checked = true;
-      if (p.filter.hasDeferDate) document.getElementById('perspective-defer').checked = true;
-      if (p.filter.isRepeating) document.getElementById('perspective-repeat').checked = true;
-      if (p.filter.isUntagged) document.getElementById('perspective-untagged').checked = true;
-      if (p.filter.inboxOnly) document.getElementById('perspective-inbox').checked = true;
-      if (p.filter.dateRange) {
-        if (p.filter.dateRange.type) document.getElementById('perspective-range-type').value = p.filter.dateRange.type;
-        if (p.filter.dateRange.start) document.getElementById('perspective-range-start').value = p.filter.dateRange.start;
-        if (p.filter.dateRange.end) document.getElementById('perspective-range-end').value = p.filter.dateRange.end;
-      }
-      if (p.filter.searchTerms) document.getElementById('perspective-search').value = p.filter.searchTerms;
-      if (p.filter.labelIds) {
-        p.filter.labelIds.forEach(lid => {
-          const cb = document.querySelector(`.perspective-tag-checkbox[value="${lid}"]`);
-          if (cb) cb.checked = true;
-        });
-      }
+    if (!p) return;
+    const el = (id) => document.getElementById(id);
+    const setVal = (id, v) => { const e = el(id); if (e) e.value = v; };
+    const setChecked = (id) => { const e = el(id); if (e) e.checked = true; };
+
+    setVal('perspective-name', p.name);
+    setVal('perspective-icon', p.icon);
+    if (p.filter.categoryId) setVal('perspective-category', p.filter.categoryId);
+    if (p.filter.status) setVal('perspective-status', p.filter.status);
+    if (p.filter.logic) setVal('perspective-logic', p.filter.logic);
+    if (p.filter.availability) setVal('perspective-availability', p.filter.availability);
+    if (p.filter.statusRule) setVal('perspective-status-rule', p.filter.statusRule);
+    if (p.filter.personId) setVal('perspective-person', p.filter.personId);
+    if (p.filter.tagMatch) setVal('perspective-tags-mode', p.filter.tagMatch);
+    if (p.filter.hasDueDate) setChecked('perspective-due');
+    if (p.filter.hasDeferDate) setChecked('perspective-defer');
+    if (p.filter.isRepeating) setChecked('perspective-repeat');
+    if (p.filter.isUntagged) setChecked('perspective-untagged');
+    if (p.filter.inboxOnly) setChecked('perspective-inbox');
+    if (p.filter.dateRange) {
+      if (p.filter.dateRange.type) setVal('perspective-range-type', p.filter.dateRange.type);
+      if (p.filter.dateRange.start) setVal('perspective-range-start', p.filter.dateRange.start);
+      if (p.filter.dateRange.end) setVal('perspective-range-end', p.filter.dateRange.end);
+    }
+    if (p.filter.searchTerms) setVal('perspective-search', p.filter.searchTerms);
+    if (p.filter.labelIds) {
+      p.filter.labelIds.forEach(lid => {
+        const cb = document.querySelector(`.perspective-tag-checkbox[value="${lid}"]`);
+        if (cb) cb.checked = true;
+      });
     }
   }, 10);
 }

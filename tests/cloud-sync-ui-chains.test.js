@@ -910,13 +910,12 @@ describe('Entity modals save -> cloud sync chain', () => {
     n.remove(); e.remove(); c.remove();
   });
 
-  it('saveAreaFromModal() with empty name shows alert', () => {
+  it('saveAreaFromModal() with empty name shows inline error', () => {
     const n = document.createElement('input'); n.id = 'area-name'; n.value = ''; document.body.appendChild(n);
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     entityModals.saveAreaFromModal();
-    expect(alertSpy).toHaveBeenCalled();
+    expect(document.querySelector('.field-error-msg')).not.toBeNull();
     expect(mocks.createArea).not.toHaveBeenCalled();
-    alertSpy.mockRestore(); n.remove();
+    n.remove();
   });
 
   // --- Category ---
@@ -942,13 +941,12 @@ describe('Entity modals save -> cloud sync chain', () => {
     n.remove(); a.remove(); c.remove(); e.remove();
   });
 
-  it('saveCategoryFromModal() with empty name shows alert', () => {
+  it('saveCategoryFromModal() with empty name shows inline error', () => {
     const n = document.createElement('input'); n.id = 'category-name'; n.value = ''; document.body.appendChild(n);
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     entityModals.saveCategoryFromModal();
-    expect(alertSpy).toHaveBeenCalled();
+    expect(document.querySelector('.field-error-msg')).not.toBeNull();
     expect(mocks.createCategory).not.toHaveBeenCalled();
-    alertSpy.mockRestore(); n.remove();
+    n.remove();
   });
 
   // --- Label ---
@@ -970,13 +968,12 @@ describe('Entity modals save -> cloud sync chain', () => {
     n.remove(); c.remove();
   });
 
-  it('saveLabelFromModal() with empty name shows alert', () => {
+  it('saveLabelFromModal() with empty name shows inline error', () => {
     const n = document.createElement('input'); n.id = 'label-name'; n.value = ''; document.body.appendChild(n);
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     entityModals.saveLabelFromModal();
-    expect(alertSpy).toHaveBeenCalled();
+    expect(document.querySelector('.field-error-msg')).not.toBeNull();
     expect(mocks.createLabel).not.toHaveBeenCalled();
-    alertSpy.mockRestore(); n.remove();
+    n.remove();
   });
 
   // --- Person ---
@@ -998,14 +995,13 @@ describe('Entity modals save -> cloud sync chain', () => {
     n.remove(); e.remove();
   });
 
-  it('savePersonFromModal() with empty name shows alert', () => {
+  it('savePersonFromModal() with empty name shows inline error', () => {
     const n = document.createElement('input'); n.id = 'person-name'; n.value = ''; document.body.appendChild(n);
     const e = document.createElement('input'); e.id = 'person-email'; e.value = ''; document.body.appendChild(e);
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     entityModals.savePersonFromModal();
-    expect(alertSpy).toHaveBeenCalled();
+    expect(document.querySelector('.field-error-msg')).not.toBeNull();
     expect(mocks.createPerson).not.toHaveBeenCalled();
-    alertSpy.mockRestore(); n.remove(); e.remove();
+    n.remove(); e.remove();
   });
 
   // --- Perspective ---
@@ -1027,13 +1023,11 @@ describe('Entity modals save -> cloud sync chain', () => {
     form.cleanup();
   });
 
-  it('savePerspectiveFromModal() with empty name shows alert', () => {
+  it('savePerspectiveFromModal() with empty name shows inline error', () => {
     const form = createPerspectiveFormElements('', '\uD83D\uDCCC');
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     entityModals.savePerspectiveFromModal();
-    expect(alertSpy).toHaveBeenCalled();
+    expect(document.querySelector('.field-error-msg')).not.toBeNull();
     expect(mocks.createPerspective).not.toHaveBeenCalled();
-    alertSpy.mockRestore();
     form.cleanup();
   });
 });

@@ -423,19 +423,19 @@ afterEach(() => {
 // ENTITY MODALS — saveAreaFromModal
 // ############################################################################
 describe('entity-modals: saveAreaFromModal()', () => {
-  it('should alert and return if name is empty', () => {
+  it('should show inline error and return if name is empty', () => {
     setUpDomInput('area-name', '');
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     saveAreaFromModal();
-    expect(alertSpy).toHaveBeenCalledWith('Please enter an area name');
+    const errorEl = document.querySelector('.field-error-msg');
+    expect(errorEl).not.toBeNull();
+    expect(errorEl.textContent).toBe('Please enter an area name');
     expect(mocks.createArea).not.toHaveBeenCalled();
   });
 
-  it('should alert and return if name is only whitespace', () => {
+  it('should show inline error and return if name is only whitespace', () => {
     setUpDomInput('area-name', '   ');
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     saveAreaFromModal();
-    expect(alertSpy).toHaveBeenCalled();
+    expect(document.querySelector('.field-error-msg')).not.toBeNull();
     expect(mocks.createArea).not.toHaveBeenCalled();
   });
 
@@ -496,20 +496,22 @@ describe('entity-modals: saveAreaFromModal()', () => {
 // ENTITY MODALS — saveCategoryFromModal
 // ############################################################################
 describe('entity-modals: saveCategoryFromModal()', () => {
-  it('should alert if name is empty', () => {
+  it('should show inline error if name is empty', () => {
     setUpDomInput('category-name', '');
     setUpDomSelect('category-area', 'cat_1');
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     saveCategoryFromModal();
-    expect(alertSpy).toHaveBeenCalledWith('Please enter a name');
+    const errorEl = document.querySelector('.field-error-msg');
+    expect(errorEl).not.toBeNull();
+    expect(errorEl.textContent).toBe('Please enter a name');
   });
 
-  it('should alert if areaId is empty', () => {
+  it('should show inline error if areaId is empty', () => {
     setUpDomInput('category-name', 'Sub Category');
     setUpDomSelect('category-area', '');
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     saveCategoryFromModal();
-    expect(alertSpy).toHaveBeenCalledWith('Please select an area');
+    const errorEl = document.querySelector('.field-error-msg');
+    expect(errorEl).not.toBeNull();
+    expect(errorEl.textContent).toBe('Please select an area');
   });
 
   it('should create new category when not editing', () => {
@@ -545,12 +547,13 @@ describe('entity-modals: saveCategoryFromModal()', () => {
 // ENTITY MODALS — saveLabelFromModal
 // ############################################################################
 describe('entity-modals: saveLabelFromModal()', () => {
-  it('should alert if name is empty', () => {
+  it('should show inline error if name is empty', () => {
     setUpDomInput('label-name', '');
     setUpDomInput('label-color', '#6B7280');
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     saveLabelFromModal();
-    expect(alertSpy).toHaveBeenCalledWith('Please enter a tag name');
+    const errorEl = document.querySelector('.field-error-msg');
+    expect(errorEl).not.toBeNull();
+    expect(errorEl.textContent).toBe('Please enter a tag name');
   });
 
   it('should create new label when not editing', () => {
@@ -582,12 +585,13 @@ describe('entity-modals: saveLabelFromModal()', () => {
 // ENTITY MODALS — savePersonFromModal
 // ############################################################################
 describe('entity-modals: savePersonFromModal()', () => {
-  it('should alert if name is empty', () => {
+  it('should show inline error if name is empty', () => {
     setUpDomInput('person-name', '');
     setUpDomInput('person-email', '');
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     savePersonFromModal();
-    expect(alertSpy).toHaveBeenCalledWith('Please enter a name');
+    const errorEl = document.querySelector('.field-error-msg');
+    expect(errorEl).not.toBeNull();
+    expect(errorEl.textContent).toBe('Please enter a name');
   });
 
   it('should create a new person when not editing', () => {
@@ -628,11 +632,12 @@ describe('entity-modals: savePersonFromModal()', () => {
 // ENTITY MODALS — savePerspectiveFromModal
 // ############################################################################
 describe('entity-modals: savePerspectiveFromModal()', () => {
-  it('should alert if name is empty', () => {
+  it('should show inline error if name is empty', () => {
     setUpDomInput('perspective-name', '');
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     savePerspectiveFromModal();
-    expect(alertSpy).toHaveBeenCalledWith('Please enter a perspective name');
+    const errorEl = document.querySelector('.field-error-msg');
+    expect(errorEl).not.toBeNull();
+    expect(errorEl.textContent).toBe('Please enter a perspective name');
     expect(mocks.createPerspective).not.toHaveBeenCalled();
   });
 
