@@ -1944,7 +1944,7 @@ export function renderNoteItem(note) {
             onblur="handleNoteBlur(event, '${note.id}')"
             onfocus="handleNoteFocus(event, '${note.id}')"
           >${escapeHtml(note.title || '')}</div>
-          ${hasMetaChips ? `<div class="note-meta-chips">${buildNoteMetaChipsHtml(note)}</div>` : `<div class="note-meta-chips"></div>`}
+          ${hasMetaChips ? `<div class="note-meta-chips">${buildNoteMetaChipsHtml(note)}</div>` : ''}
         </div>
 
         ${isCollapsed && descendantCount > 0 ? `
@@ -1970,7 +1970,7 @@ export function renderNoteItem(note) {
 
   if (isTouch) {
     return `
-      <div class="swipe-row" data-note-id="${note.id}">
+      <div class="swipe-row">
         <div class="swipe-actions-left">
           <button class="swipe-action-btn swipe-action-convert" onclick="event.stopPropagation(); window.toggleNoteTask('${note.id}')">
             ${note.isNote
