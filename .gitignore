@@ -12,3 +12,7 @@ registerSW.js
 manifest.webmanifest
 assets/
 .worktrees/
+
+# iOS build artifacts
+ios/App/build/
+ios/DerivedData/
