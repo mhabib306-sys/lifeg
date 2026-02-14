@@ -15,6 +15,10 @@
   --z-search: 350;
   --z-toast: 400;
   --z-autocomplete: 500;
+  --z-animation-overlay: 9999;
+
+  /* Keyboard offset (set by native.js) */
+  --keyboard-height: 0px;
 
   /* Typography scale (mobile-optimized) */
   --text-xs: 0.6875rem;   /* 11px - Small labels, timestamps */
@@ -6091,3 +6095,13 @@ mark.global-search-highlight {
   -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
 }
+
+/* Animation overlay — persistent layer for exit animations */
+#animation-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-animation-overlay);
+  pointer-events: none;
+  overflow: hidden;
+}
+#animation-overlay:empty { display: none; }

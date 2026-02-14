@@ -191,6 +191,15 @@ export function render() {
       window.runCleanupCallbacks();
     }
 
+    // H3 fix: Sweep stale animation clones (>3s lifetime)
+    const overlay = document.getElementById('animation-overlay');
+    if (overlay) {
+      const now = Date.now();
+      overlay.querySelectorAll('[data-clone-ts]').forEach(clone => {
+        if (now - parseInt(clone.dataset.cloneTs, 10) > 3000) clone.remove();
+      });
+    }
+
     // Save scroll position before DOM replacement (restore only on same-tab renders)
     const isTabChange = _previousTab !== null && _previousTab !== state.activeTab;
     const savedScrollTop = !isTabChange ? (document.documentElement.scrollTop || document.body.scrollTop) : 0;
