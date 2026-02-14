@@ -40,6 +40,44 @@ npm run deploy
 - Entry points: Workspace, Calendar page, Home widgets
 - Data state: Fresh user, existing synced user, token-expired Google Calendar user
 
+## iOS Performance Budget (Phase 1-2 Baseline)
+
+Targets measured on iPhone 15 Pro Simulator (Xcode 16+, iOS 18 SDK):
+
+| Metric | Target | Notes |
+|--------|--------|-------|
+| Cold launch to interactive | < 2.5s | Measured from app tap to first meaningful paint |
+| Memory at idle | < 80MB | Safari Web Inspector → Memory tab |
+| Task completion animation | 60fps | Timeline tab → no dropped frames |
+| Tab switch animation | < 200ms | View Transitions or cross-fade fallback |
+| Swipe gesture response | < 16ms/frame | No jank during pan |
+| JS memory leaks | None | 20 render() cycles, stable heap |
+| Haptic latency (native) | < 5ms | Capacitor Haptics plugin |
+| Haptic latency (vibrate fallback) | < 20ms | navigator.vibrate on web |
+
+### Build Size Budget
+
+| Artifact | Limit | Current |
+|----------|-------|---------|
+| dist/ total | < 2MB | ~1.59MB |
+| Main JS chunk | < 900KB | ~838KB |
+| Dashboard chunk | < 250KB | ~224KB |
+
+### How to Measure
+
+1. **Cold launch**: Xcode Instruments → App Launch template
+2. **Animation FPS**: Safari Web Inspector → Timeline → Frames
+3. **Memory**: Safari Web Inspector → Memory → Heap Snapshots
+4. **Gesture latency**: Timeline → Input Events vs Frame Boundaries
+5. **Build size**: `npm run build` postbuild validator output
+
+### Web Performance (GitHub Pages)
+
+Verify with Lighthouse:
+- Performance score: > 85
+- First Contentful Paint: < 2s
+- Total Blocking Time: < 300ms
+
 ## Reliability Guardrails for New Features
 - Every new user-generated entity must define:
 1. Local storage key/persistence behavior
