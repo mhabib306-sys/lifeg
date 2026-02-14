@@ -128,6 +128,10 @@ export function createTask(title, options = {}) {
   if (!task.isNote && (task.deferDate || task.dueDate)) {
     window.pushTaskToGCalIfConnected?.(task);
   }
+  // Schedule due date reminder notification (native only)
+  if (task.dueDate) {
+    window.scheduleTaskReminder?.(task.id, task.title, task.dueDate);
+  }
   if (navigator.vibrate) navigator.vibrate(10);
   return task;
 }
@@ -159,6 +163,14 @@ export function updateTask(taskId, updates) {
         window.deleteGCalEventIfConnected?.(updated);
       }
     }
+    // Update due date reminder notification
+    if ('dueDate' in updates) {
+      if (updated.dueDate && !updated.completed) {
+        window.scheduleTaskReminder?.(updated.id, updated.title, updated.dueDate);
+      } else {
+        window.cancelTaskReminder?.(updated.id);
+      }
+    }
   }
 }
 
@@ -188,6 +200,8 @@ export function deleteTask(taskId) {
   if (taskToDelete && taskToDelete.gcalEventId) {
     window.deleteGCalEventIfConnected?.(taskToDelete);
   }
+  // Cancel any scheduled reminder
+  window.cancelTaskReminder?.(taskId);
   // Promote child notes to root level (clear parentId)
   state.tasksData.forEach(t => {
     if (taskIdEquals(t.parentId, taskId)) {
@@ -254,6 +268,13 @@ export function toggleTaskComplete(taskId) {
     }
 
     saveTasksData();
+
+    // Update notification: cancel on complete, reschedule on uncomplete
+    if (task.completed) {
+      window.cancelTaskReminder?.(taskId);
+    } else if (task.dueDate) {
+      window.scheduleTaskReminder?.(taskId, task.title, task.dueDate);
+    }
 
     if (task.completed) {
       // Animate the row, then render after a short delay

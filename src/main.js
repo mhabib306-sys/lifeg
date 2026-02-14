@@ -295,6 +295,12 @@ function bootstrap() {
   applyStoredTheme();
   initNative();
 
+  // Initialize push + local notifications (native only, no-ops on web)
+  if (isCapacitor()) {
+    window.initPushNotifications?.();
+    window.initLocalNotifications?.();
+  }
+
   // H1 fix: Listen for OAuth callback in Capacitor (SFSafariViewController redirect)
   if (isCapacitor()) {
     import('@capacitor/app').then(({ App }) => {
