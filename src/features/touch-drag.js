@@ -246,7 +246,8 @@ function onTouchEnd() {
 // ---- Phase 1: Drag Ready ----
 
 function activateDragReady(item, startX, startY) {
-  if (navigator.vibrate) navigator.vibrate(10);
+  if (typeof window.hapticSync === 'function') window.hapticSync('medium');
+  else if (navigator.vibrate) navigator.vibrate(10);
 
   dragReady = { item, startX, startY };
 
@@ -305,7 +306,9 @@ function promoteToFullDrag(currentX, currentY) {
     pointer-events: none;
     transition: transform var(--duration-fast) var(--ease-spring);
   `;
-  document.body.appendChild(clone);
+  clone.setAttribute('data-clone-ts', String(Date.now()));
+  const overlay = document.getElementById('animation-overlay') || document.body;
+  overlay.appendChild(clone);
 
   // Dim original
   item.style.opacity = '0.3';

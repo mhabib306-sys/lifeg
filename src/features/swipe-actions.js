@@ -8,11 +8,11 @@ import { isTouchDevice } from '../utils.js';
 import { isTouchDragging, cancelHoldTimer } from './touch-drag.js';
 
 let activeRow = null;
-let startX = 0;
-let startY = 0;
-let currentX = 0;
-let isDragging = false;
-let isScrolling = false;
+// H4 fix: gesture session objects replace module-level booleans
+let gestureSession = null;
+function createSession(sx, sy) {
+  return { id: Date.now() + Math.random(), type: null, startX: sx, startY: sy, currentX: 0 };
+}
 
 const THRESHOLD = 72;
 const MAX_TRANSLATE = 152;
@@ -47,6 +47,9 @@ export function initSwipeActions() {
     if (container._swipeInit) return;
     container._swipeInit = true;
 
+    // H2 fix: allow vertical scroll without gesture capture
+    container.style.touchAction = 'pan-y';
+
     container.addEventListener('touchstart', onTouchStart, { passive: true });
     container.addEventListener('touchmove', onTouchMove, { passive: false });
     container.addEventListener('touchend', onTouchEnd, { passive: true });
@@ -67,11 +70,7 @@ function onTouchStart(e) {
   }
 
   const touch = e.touches[0];
-  startX = touch.clientX;
-  startY = touch.clientY;
-  currentX = 0;
-  isDragging = false;
-  isScrolling = false;
+  gestureSession = createSession(touch.clientX, touch.clientY);
 
   const content = row.querySelector('.swipe-row-content');
   if (content) {
@@ -80,34 +79,34 @@ function onTouchStart(e) {
 }
 
 function onTouchMove(e) {
+  if (!gestureSession) return;
   const row = getSwipeRow(e.target);
   if (!row) return;
 
   const touch = e.touches[0];
-  const dx = touch.clientX - startX;
-  const dy = touch.clientY - startY;
+  const dx = touch.clientX - gestureSession.startX;
+  const dy = touch.clientY - gestureSession.startY;
 
   // Don't swipe if a touch-drag is active
   if (isTouchDragging()) return;
 
   // Determine gesture direction on first significant move
-  if (!isDragging && !isScrolling) {
+  if (!gestureSession.type) {
     if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) {
-      isScrolling = true;
+      gestureSession.type = 'scroll';
       return;
     }
-    if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) {
-      isDragging = true;
+    // H2 fix: increase angle threshold to ~38° (0.8 ratio)
+    if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 0.8) {
+      gestureSession.type = 'swipe';
       activeRow = row;
-      // Kill the drag hold timer — this is a swipe, not a drag
       cancelHoldTimer();
     } else {
       return;
     }
   }
 
-  if (isScrolling) return;
-  if (!isDragging) return;
+  if (gestureSession.type !== 'swipe') return;
 
   e.preventDefault();
 
@@ -118,7 +117,7 @@ function onTouchMove(e) {
     translateX = (translateX > 0 ? 1 : -1) * (MAX_TRANSLATE + overshoot * 0.2);
   }
 
-  currentX = translateX;
+  gestureSession.currentX = translateX;
   const content = row.querySelector('.swipe-row-content');
   if (content) {
     content.style.transform = `translateX(${translateX}px)`;
@@ -126,7 +125,8 @@ function onTouchMove(e) {
 
   // Haptic at threshold
   if (Math.abs(dx) >= THRESHOLD && Math.abs(dx) < THRESHOLD + 5) {
-    if (navigator.vibrate) navigator.vibrate(10);
+    if (typeof window.hapticSync === 'function') window.hapticSync('medium');
+    else if (navigator.vibrate) navigator.vibrate(10);
   }
 
   // Show open state classes
@@ -142,21 +142,30 @@ function onTouchMove(e) {
 }
 
 function onTouchEnd(e) {
-  if (!isDragging || !activeRow) {
-    isDragging = false;
+  if (!gestureSession || gestureSession.type !== 'swipe' || !activeRow) {
+    gestureSession = null;
     return;
   }
 
   const content = activeRow.querySelector('.swipe-row-content');
-  isDragging = false;
+  const currentX = gestureSession.currentX;
+  gestureSession = null;
 
   if (Math.abs(currentX) >= THRESHOLD) {
-    // Snap to open position
+    // Snap to open position with spring animation
     const snapX = currentX < 0 ? -MAX_TRANSLATE : MAX_TRANSLATE;
     if (content) {
-      content.style.transition = 'transform var(--duration-normal) var(--ease-spring)';
-      content.style.transform = `translateX(${snapX}px)`;
-      setTimeout(() => { content.style.transition = ''; }, 300);
+      // Try motion/mini for spring snap, fall back to CSS
+      import('motion/mini').then(({ animate }) => {
+        animate(content, { transform: `translateX(${snapX}px)` }, {
+          duration: 0.3,
+          easing: [0.22, 1.0, 0.36, 1.0], // spring-snappy
+        });
+      }).catch(() => {
+        content.style.transition = 'transform var(--duration-normal) var(--spring-snappy)';
+        content.style.transform = `translateX(${snapX}px)`;
+        setTimeout(() => { content.style.transition = ''; }, 300);
+      });
     }
   } else {
     // Spring back

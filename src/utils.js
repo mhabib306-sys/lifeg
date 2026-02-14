@@ -202,8 +202,9 @@ export function isMobile() {
   return isMobileViewport() || isTouchDevice();
 }
 
-/** Haptic feedback with named intensity patterns */
+/** Haptic feedback — prefers native haptics, falls back to navigator.vibrate */
 export function haptic(type = 'light') {
+  if (typeof window.hapticSync === 'function') { window.hapticSync(type); return; }
   if (!navigator.vibrate) return;
   const patterns = { light: 5, medium: 10, heavy: 20, error: [10, 50, 10], success: [10, 30] };
   navigator.vibrate(patterns[type] || 5);

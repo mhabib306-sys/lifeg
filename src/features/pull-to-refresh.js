@@ -80,7 +80,8 @@ export function initPullToRefresh() {
 
     // Haptic at threshold
     if (ptrDelta >= PTR_THRESHOLD && ptrDelta - (currentY - ptrStartY - ptrDelta) < PTR_THRESHOLD + 5) {
-      if (navigator.vibrate) navigator.vibrate(20);
+      if (typeof window.hapticSync === 'function') window.hapticSync('medium');
+      else if (navigator.vibrate) navigator.vibrate(20);
     }
   }, { passive: true });
 
@@ -99,10 +100,12 @@ export function initPullToRefresh() {
             await window.loadCloudData();
           }
           // Brief success state
-          if (navigator.vibrate) navigator.vibrate([10, 30]);
+          if (typeof window.hapticSync === 'function') window.hapticSync('success');
+          else if (navigator.vibrate) navigator.vibrate([10, 30]);
         } catch (err) {
           console.error('PTR sync failed:', err);
-          if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+          if (typeof window.hapticSync === 'function') window.hapticSync('error');
+          else if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
         }
 
         // Animate out

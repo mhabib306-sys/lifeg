@@ -225,9 +225,14 @@ export function confirmDeleteTask(taskId) {
 export function toggleTaskComplete(taskId) {
   const task = state.tasksData.find(t => taskIdEquals(t.id, taskId));
   if (task) {
+    // Trigger exit animation before state change
+    if (typeof window.animateTaskCompletion === 'function') {
+      window.animateTaskCompletion(taskId, !task.completed);
+    }
     const wasCompleted = task.completed;
     task.completed = !task.completed;
-    if (navigator.vibrate) navigator.vibrate(10);
+    if (typeof window.hapticSync === 'function') window.hapticSync(task.completed ? 'success' : 'light');
+    else if (navigator.vibrate) navigator.vibrate(10);
     task.completedAt = task.completed ? new Date().toISOString() : null;
     task.updatedAt = new Date().toISOString();
 

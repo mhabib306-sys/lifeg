@@ -313,6 +313,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
   if (compact) {
     return `
       <div class="task-item compact-task group relative hover:bg-[var(--bg-secondary)]/50 rounded-lg transition cursor-pointer"
+        data-task-id="${task.id}"
         onclick="window.inlineEditingTaskId=null; window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render()">
         <div class="flex items-center min-h-[32px] px-2 py-0.5">
           ${task.isNote ? `
@@ -342,6 +343,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
 
   const taskInnerHtml = `
     <div class="task-item group relative ${hasMetadata && metaParts.length ? 'has-meta' : 'no-meta'}${task.isNote ? ' is-note' : ''}"
+      data-task-id="${task.id}"
       draggable="${isInlineEditing || isTouch ? 'false' : 'true'}"
       ${isInlineEditing || isTouch ? '' : `ondragstart="window.handleDragStart(event, '${task.id}')"
       ondragend="window.handleDragEnd(event)"
