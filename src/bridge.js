@@ -10,6 +10,10 @@
 
 import { state } from './state.js';
 
+// -- Platform + Native --
+import { isCapacitor, isIOS, getPlatform, isNative, platformFeatures } from './platform.js';
+import { nativeHaptic, hapticSync, setStatusBarStyle, initKeyboard, hideSplashScreen, openInAppBrowser, initAppLifecycle, initNative } from './native.js';
+
 // -- Utils --
 import { getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId, isMobileViewport, isTouchDevice, isMobile, haptic } from './utils.js';
 
@@ -308,6 +312,11 @@ function runCleanupCallbacks() {
 Object.assign(window, {
   // State (direct access for simple onclick property sets like editingTaskId=...)
   state,
+
+  // Platform + Native
+  isCapacitor, isIOS, getPlatform, isNative, platformFeatures,
+  nativeHaptic, hapticSync, setStatusBarStyle, initKeyboard,
+  hideSplashScreen, openInAppBrowser, initAppLifecycle, initNative,
 
   // Utils
   getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId,
