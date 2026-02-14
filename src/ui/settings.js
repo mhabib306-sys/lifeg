@@ -514,9 +514,14 @@ export function renderSettingsTab() {
             <p class="font-medium text-[var(--text-primary)] truncate">${escapeHtml(user.displayName || 'User')}</p>
             <p class="text-xs text-[var(--text-muted)] truncate">${escapeHtml(user.email || '')}</p>
           </div>
-          <button onclick="signOutUser()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">
-            Sign Out
-          </button>
+          <div class="flex gap-2">
+            <button onclick="signOutUser()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary)] transition">
+              Sign Out
+            </button>
+            <button onclick="if(confirm('Delete your account? This will permanently erase all local data and your authentication. This action cannot be undone.')){deleteAccount().then(()=>window.location.reload())}" class="px-3 py-1.5 bg-[var(--danger-bg,rgba(239,68,68,0.1))] text-[var(--danger)] rounded-lg text-xs font-medium hover:opacity-80 transition">
+              Delete Account
+            </button>
+          </div>
         </div>
       </div>
       ` : ''}

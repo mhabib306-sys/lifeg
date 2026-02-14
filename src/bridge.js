@@ -44,7 +44,7 @@ import { exportData, importData } from './data/export-import.js';
 
 import { getCredentialSyncStatus } from './data/credential-sync.js';
 
-import { signInWithGoogle, signOutUser, getCurrentUser, initAuth, signInWithGoogleCalendar, getLastGisErrorType, preloadGoogleIdentityServices } from './data/firebase.js';
+import { signInWithGoogle, signOutUser, deleteAccount, getCurrentUser, initAuth, signInWithGoogleCalendar, getLastGisErrorType, preloadGoogleIdentityServices } from './data/firebase.js';
 
 import {
   getWhoopWorkerUrl, setWhoopWorkerUrl, getWhoopApiKey, setWhoopApiKey,
@@ -353,7 +353,7 @@ Object.assign(window, {
   getCredentialSyncStatus,
 
   // Firebase Auth
-  signInWithGoogle, signOutUser, getCurrentUser, initAuth, signInWithGoogleCalendar, getLastGisErrorType, preloadGoogleIdentityServices,
+  signInWithGoogle, signOutUser, deleteAccount, getCurrentUser, initAuth, signInWithGoogleCalendar, getLastGisErrorType, preloadGoogleIdentityServices,
 
   // Weather
   fetchWeather, detectUserLocation, initWeather, loadWeatherLocation, saveWeatherLocation,

@@ -6,7 +6,7 @@
 // redirect flows fail due to ITP and isolated webview storage.
 
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithCredential, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, signInWithCredential, GoogleAuthProvider, signOut, onAuthStateChanged, deleteUser } from 'firebase/auth';
 import { state } from '../state.js';
 import { GCAL_ACCESS_TOKEN_KEY, GCAL_TOKEN_TIMESTAMP_KEY, GCAL_CONNECTED_KEY } from '../constants.js';
 
@@ -92,6 +92,43 @@ export function signOutUser() {
   signOut(auth).catch(err => {
     console.error('Sign out failed:', err);
   });
+}
+
+/**
+ * Delete user account (App Store Guideline 5.1.1v).
+ * Clears all localStorage data and deletes Firebase auth account.
+ * @returns {Promise<boolean>} true if deleted successfully
+ */
+export async function deleteAccount() {
+  const user = auth.currentUser;
+  if (!user) return false;
+
+  // Stop all sync timers
+  window.stopWhoopSyncTimers?.();
+  window.stopGCalSyncTimers?.();
+
+  // Clear all localStorage data
+  const keysToPreserve = []; // Nothing to preserve
+  const allKeys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    allKeys.push(localStorage.key(i));
+  }
+  allKeys.forEach(key => {
+    if (!keysToPreserve.includes(key)) {
+      localStorage.removeItem(key);
+    }
+  });
+
+  // Delete Firebase auth account
+  try {
+    await deleteUser(user);
+    return true;
+  } catch (err) {
+    // If re-authentication required, sign out instead
+    console.error('Account deletion failed:', err);
+    await signOut(auth).catch(() => {});
+    return false;
+  }
 }
 
 export function getCurrentUser() {
