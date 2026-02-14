@@ -262,6 +262,22 @@ export function render() {
       </div>
     ` : '';
 
+    // Quota exceeded banner
+    const quotaExceededBanner = state.quotaExceededError ? `
+      <div class="max-w-6xl mx-auto px-6 pt-4">
+        <div class="rounded-lg border px-4 py-3 flex items-center justify-between gap-3" style="border-color: color-mix(in srgb, var(--danger) 25%, transparent); background: color-mix(in srgb, var(--danger) 8%, transparent)">
+          <div>
+            <p class="text-sm font-semibold" style="color: var(--danger)">Storage quota exceeded</p>
+            <p class="text-xs" style="color: var(--danger)">Your device's localStorage is full. Export your data to free up space, or some changes may not save locally.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="try{exportData()}catch(e){}" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-white" style="background: var(--danger)">Export Data</button>
+            <button onclick="state.quotaExceededError=false;render()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--bg-card)] border" style="border-color: color-mix(in srgb, var(--danger) 30%, transparent); color: var(--danger)">Dismiss</button>
+          </div>
+        </div>
+      </div>
+    ` : '';
+
     // Preserve active input state across DOM replacement
     const _activeEl = document.activeElement;
     let _savedInput = null;
@@ -397,6 +413,7 @@ export function render() {
       ` : ''}
 
       ${cachePromptHtml}
+      ${quotaExceededBanner}
 
       <main class="max-w-6xl mx-auto px-6 py-8">
         ${state.activeTab === 'home' ? renderHomeTab() :

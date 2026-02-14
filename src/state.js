@@ -615,4 +615,7 @@ export const state = {
   // ---- Event listener cleanup registry ----
   // Functions to call before full DOM replacement to prevent memory leaks
   cleanupCallbacks: [],
+
+  // ---- Storage quota status ----
+  quotaExceededError: false, // Set true when localStorage quota exceeded, shows UI banner
 };

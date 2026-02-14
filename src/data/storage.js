@@ -33,6 +33,7 @@ function safeLocalStorageSet(key, value) {
   } catch (e) {
     if (e.name === 'QuotaExceededError') {
       console.error('Storage quota exceeded for key:', key);
+      if (typeof state !== 'undefined') state.quotaExceededError = true;
     }
     return false;
   }
@@ -46,6 +47,7 @@ function safeLocalStorageSetRaw(key, value) {
   } catch (e) {
     if (e.name === 'QuotaExceededError') {
       console.error('Storage quota exceeded for key:', key);
+      if (typeof state !== 'undefined') state.quotaExceededError = true;
     }
     return false;
   }

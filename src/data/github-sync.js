@@ -826,6 +826,9 @@ export async function saveToGithub(options = {}) {
           localStorage.setItem(CONFLICT_NOTIFICATIONS_KEY, JSON.stringify(state.conflictNotifications || []));
         } catch (storageErr) {
           console.warn('localStorage quota exceeded during sync persist — cloud has full state, dirty flag preserved:', storageErr.message);
+          if (storageErr.name === 'QuotaExceededError') {
+            state.quotaExceededError = true;
+          }
         }
       }
       state.syncRetryCount = 0; // Reset retry counter on success
