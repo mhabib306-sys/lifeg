@@ -6106,6 +6106,35 @@ mark.global-search-highlight {
 }
 #animation-overlay:empty { display: none; }
 
+/* Magic Plus FAB */
+.magic-fab {
+  display: none;
+  position: fixed;
+  right: 20px;
+  bottom: calc(88px + env(safe-area-inset-bottom) + 8px);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 90;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: transform var(--spring-duration-snappy) var(--spring-snappy),
+              box-shadow var(--duration-fast) ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.magic-fab:active {
+  transform: scale(0.92);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+@media (max-width: 768px) {
+  .magic-fab { display: flex; align-items: center; justify-content: center; }
+}
+
 /* View Transitions for tab switching */
 ::view-transition-old(root) { animation: 120ms ease-out both vt-fade-out; }
 ::view-transition-new(root) { animation: 200ms ease-out both vt-fade-in; }

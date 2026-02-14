@@ -10,6 +10,7 @@ import { getLocalDateString, escapeHtml, isMobileViewport, haptic } from '../uti
 import { APP_VERSION, APP_VERSION_SEEN_KEY, THINGS3_ICONS, getActiveIcons, GITHUB_TOKEN_KEY } from '../constants.js';
 import { saveViewState } from '../data/storage.js';
 import { renderHomeTab } from './home.js';
+import { renderMagicFab } from './magic-fab.js';
 
 // ---------------------------------------------------------------------------
 // Tab renderers — these will be replaced with proper module imports as we
@@ -444,6 +445,9 @@ export function render() {
 
       <!-- Mobile Bottom Navigation -->
       ${renderBottomNav()}
+
+      <!-- Magic Plus FAB -->
+      ${renderMagicFab()}
 
       ${renderTaskModalHtml()}
       ${renderPerspectiveModalHtml()}
