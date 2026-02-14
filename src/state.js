@@ -561,6 +561,7 @@ export const state = {
   modalIsNote: false,
   modalRepeatEnabled: false,
   modalStateInitialized: false,
+  modalWaitingFor: null,  // GTD Waiting-For: {personId, description, followUpDate}
 
   // ---- Gamification ----
   CATEGORY_WEIGHTS: safeJsonParse(CATEGORY_WEIGHTS_KEY, null) || JSON.parse(JSON.stringify(DEFAULT_CATEGORY_WEIGHTS)),
@@ -586,6 +587,8 @@ export const state = {
   reviewMode: false,
   reviewAreaIndex: 0,
   reviewCompletedAreas: [],
+  lastWeeklyReview: localStorage.getItem('nucleusLastWeeklyReview') || null,
+  lastSomedayReview: localStorage.getItem('nucleusLastSomedayReview') || null,
 
   // ---- Google Sheets ----
   gsheetData: safeJsonParse(GSHEET_CACHE_KEY, null),

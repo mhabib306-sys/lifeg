@@ -703,6 +703,7 @@ export function initModalState(editingTask) {
     state.modalSelectedPeople = [...(editingTask.people || [])];
     state.modalIsNote = editingTask.isNote || false;
     state.modalRepeatEnabled = editingTask.repeat && editingTask.repeat.type !== 'none';
+    state.modalWaitingFor = editingTask.waitingFor ? { ...editingTask.waitingFor } : null;
   } else {
     state.modalSelectedArea = state.newTaskContext.areaId || null;
     state.modalSelectedCategory = state.newTaskContext.categoryId || null;
@@ -713,6 +714,7 @@ export function initModalState(editingTask) {
     state.modalSelectedPeople = state.newTaskContext.personId ? [state.newTaskContext.personId] : [];
     state.modalIsNote = state.activePerspective === 'notes';
     state.modalRepeatEnabled = false;
+    state.modalWaitingFor = null;
   }
 }
 
@@ -1138,6 +1140,7 @@ export function initModalAutocomplete() {
     renderCategoryInput();
     renderTagsInput();
     renderPeopleInput();
+    renderWaitingForUI();
 
     // Set initial status
     document.querySelectorAll('.status-pill').forEach(pill => {
@@ -1264,7 +1267,8 @@ export function saveTaskFromModal() {
     repeat: repeat,
     labels: state.modalSelectedTags,
     people: state.modalSelectedPeople,
-    isNote: state.modalIsNote
+    isNote: state.modalIsNote,
+    waitingFor: state.modalWaitingFor
   };
 
   // Things 3 logic: Assigning an Area to an Inbox task moves it to Anytime (not for notes)
@@ -1304,6 +1308,140 @@ export function saveTaskFromModal() {
   state.editingTaskId = null;
   state.modalStateInitialized = false;
   window.render();
+}
+
+// ============================================================================
+// WAITING FOR (GTD)
+// ============================================================================
+
+/**
+ * Mark a task as "waiting for" someone with an optional follow-up date.
+ */
+export function setWaitingFor(personId, description = '', followUpDays = 7) {
+  if (!personId) {
+    state.modalWaitingFor = null;
+    renderWaitingForUI();
+    return;
+  }
+
+  const followUpDate = new Date();
+  followUpDate.setDate(followUpDate.getDate() + followUpDays);
+  const yyyy = followUpDate.getFullYear();
+  const mm = String(followUpDate.getMonth() + 1).padStart(2, '0');
+  const dd = String(followUpDate.getDate()).padStart(2, '0');
+
+  state.modalWaitingFor = {
+    personId,
+    description,
+    followUpDate: `${yyyy}-${mm}-${dd}`
+  };
+
+  renderWaitingForUI();
+}
+
+/**
+ * Render the waiting-for UI section in the modal.
+ */
+export function renderWaitingForUI() {
+  const container = document.getElementById('waiting-for-container');
+  if (!container) return;
+
+  const editingTask = state.editingTaskId ? state.tasksData.find(t => t.id === state.editingTaskId) : null;
+  const waitingFor = state.modalWaitingFor || editingTask?.waitingFor || null;
+
+  if (!waitingFor) {
+    container.innerHTML = `
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="toggleWaitingForForm()" class="flex items-center gap-2 px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          Mark as Waiting For
+        </button>
+      </div>
+      <div id="waiting-for-form" class="hidden"></div>
+    `;
+  } else {
+    const person = state.taskPeople.find(p => p.id === waitingFor.personId);
+    const personName = person ? person.name : 'Unknown';
+    const followUpDate = waitingFor.followUpDate ? formatSmartDate(waitingFor.followUpDate) : 'No follow-up set';
+
+    container.innerHTML = `
+      <div class="flex items-start gap-3 p-3 bg-[var(--accent)]/10 border border-[var(--accent)]/20 rounded-lg">
+        <svg class="w-5 h-5 text-[var(--accent)] flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-medium text-[var(--text-primary)]">Waiting for ${escapeHtml(personName)}</div>
+          ${waitingFor.description ? `<div class="text-sm text-[var(--text-secondary)] mt-0.5">${escapeHtml(waitingFor.description)}</div>` : ''}
+          <div class="text-xs text-[var(--text-muted)] mt-1">Follow up: ${followUpDate}</div>
+        </div>
+        <button type="button" onclick="setWaitingFor(null)" class="flex-shrink-0 p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+    `;
+  }
+}
+
+/**
+ * Toggle the waiting-for form.
+ */
+export function toggleWaitingForForm() {
+  const formContainer = document.getElementById('waiting-for-form');
+  if (!formContainer) return;
+
+  if (formContainer.classList.contains('hidden')) {
+    formContainer.classList.remove('hidden');
+    formContainer.innerHTML = `
+      <div class="mt-3 p-3 bg-[var(--bg-secondary)]/30 rounded-lg space-y-3">
+        <div>
+          <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">Person</label>
+          <select id="waiting-person-select" class="input-field mt-1">
+            <option value="">Select person...</option>
+            ${state.taskPeople.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">What are you waiting for? (Optional)</label>
+          <input type="text" id="waiting-description-input" placeholder="e.g., Budget approval, Design review..." class="modal-input-enhanced mt-1">
+        </div>
+        <div>
+          <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">Follow up in</label>
+          <div class="flex gap-2 mt-1">
+            <button type="button" onclick="applyWaitingFor(3)" class="date-quick-pill">3 days</button>
+            <button type="button" onclick="applyWaitingFor(7)" class="date-quick-pill">7 days</button>
+            <button type="button" onclick="applyWaitingFor(14)" class="date-quick-pill">14 days</button>
+          </div>
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="applyWaitingFor(7)" class="flex-1 px-3 py-2 text-sm bg-[var(--accent)] text-white rounded-md hover:bg-[var(--accent-dark)] transition">Set Waiting</button>
+          <button type="button" onclick="toggleWaitingForForm()" class="px-3 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">Cancel</button>
+        </div>
+      </div>
+    `;
+    setTimeout(() => document.getElementById('waiting-person-select')?.focus(), 50);
+  } else {
+    formContainer.classList.add('hidden');
+    formContainer.innerHTML = '';
+  }
+}
+
+/**
+ * Apply waiting-for with selected person and follow-up days.
+ */
+export function applyWaitingFor(followUpDays = 7) {
+  const personId = document.getElementById('waiting-person-select')?.value;
+  const description = document.getElementById('waiting-description-input')?.value?.trim() || '';
+
+  if (!personId) {
+    alert('Please select a person to wait for');
+    return;
+  }
+
+  setWaitingFor(personId, description, followUpDays);
+
+  const formContainer = document.getElementById('waiting-for-form');
+  if (formContainer) {
+    formContainer.classList.add('hidden');
+    formContainer.innerHTML = '';
+  }
 }
 
 // ============================================================================
@@ -1504,6 +1642,14 @@ export function renderTaskModalHtml() {
             <label class="modal-section-label">People</label>
             <div id="people-input-container"></div>
           </div>
+
+          <!-- Waiting For (GTD) - Tasks only -->
+          ${!state.modalIsNote ? `
+          <div class="modal-section">
+            <label class="modal-section-label">Waiting For</label>
+            <div id="waiting-for-container"></div>
+          </div>
+          ` : ''}
         </div>
 
         ${editingTask?.meetingEventKey ? `

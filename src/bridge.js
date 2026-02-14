@@ -146,7 +146,8 @@ import {
 import {
   renderReviewMode, startReview, exitReview, reviewNextArea, reviewPrevArea,
   reviewEngageTask, reviewPassTask, reviewMarkAreaDone, reviewAddTask,
-  getStaleTasksForArea, getTotalStaleTaskCount
+  getStaleTasksForArea, getTotalStaleTaskCount,
+  isWeeklyReviewOverdue, getDaysSinceReview
 } from './ui/review.js';
 
 import { createPerspective, deletePerspective, editCustomPerspective } from './features/perspectives.js';
@@ -222,6 +223,7 @@ import {
   selectCategory, renderCategoryInput,
   addTag, removeTag, renderTagsInput,
   addPerson as addPersonModal, removePerson as removePersonModal, renderPeopleInput,
+  setWaitingFor, renderWaitingForUI, toggleWaitingForForm, applyWaitingFor,
   toggleRepeat, initModalAutocomplete, cleanupModalAutocomplete,
   closeTaskModal, saveTaskFromModal,
   renderTaskModalHtml
@@ -430,6 +432,7 @@ Object.assign(window, {
   renderReviewMode, startReview, exitReview, reviewNextArea, reviewPrevArea,
   reviewEngageTask, reviewPassTask, reviewMarkAreaDone, reviewAddTask,
   getStaleTasksForArea, getTotalStaleTaskCount,
+  isWeeklyReviewOverdue, getDaysSinceReview,
 
   // Perspectives
   createPerspective, deletePerspective, editCustomPerspective,
@@ -495,6 +498,7 @@ Object.assign(window, {
   selectCategory, renderCategoryInput,
   addTag, removeTag, renderTagsInput,
   addPersonModal, removePersonModal, renderPeopleInput,
+  setWaitingFor, renderWaitingForUI, toggleWaitingForForm, applyWaitingFor,
   toggleRepeat, initModalAutocomplete, cleanupModalAutocomplete,
   closeTaskModal, saveTaskFromModal, savePerspectiveFromModal, selectPerspectiveEmoji, selectAreaEmoji, selectCategoryEmoji, updateEmojiGrid, toggleEmojiPicker,
   renderTaskModalHtml,
@@ -518,7 +522,7 @@ const stateProxies = [
   'editingNoteId', 'inlineEditingTaskId', 'quickAddIsNote', 'showAllSidebarPeople', 'showAllSidebarLabels',
   'mobileDrawerOpen', 'activeTab', 'activeSubTab',
   'modalSelectedArea', 'modalSelectedStatus', 'modalSelectedToday', 'modalSelectedFlagged', 'modalSelectedTags', 'modalSelectedPeople',
-  'modalIsNote', 'modalRepeatEnabled', 'modalStateInitialized',
+  'modalIsNote', 'modalRepeatEnabled', 'modalStateInitialized', 'modalWaitingFor',
   'draggedTaskId', 'dragOverTaskId', 'dragPosition',
   'draggedSidebarItem', 'draggedSidebarType', 'sidebarDragPosition',
   'calendarMonth', 'calendarYear', 'calendarSelectedDate', 'calendarViewMode',
@@ -544,7 +548,7 @@ const stateProxies = [
   'CATEGORY_WEIGHTS', 'xp', 'streak', 'achievements', 'dailyFocusDismissed',
   'gsheetData', 'gsheetSyncing', 'gsheetError', 'gsheetPrompt', 'gsheetResponse', 'gsheetAsking', 'gsheetEditingPrompt',
   'triggers', 'editingTriggerId', 'collapsedTriggers', 'zoomedTriggerId', 'triggersBreadcrumb',
-  'reviewMode', 'reviewAreaIndex', 'reviewCompletedAreas',
+  'reviewMode', 'reviewAreaIndex', 'reviewCompletedAreas', 'lastWeeklyReview', 'lastSomedayReview',
   'showGlobalSearch', 'globalSearchQuery', 'globalSearchResults', 'globalSearchActiveIndex', 'globalSearchTypeFilter',
   'settingsIntegrationsOpen', 'settingsScoringOpen', 'settingsDevToolsOpen', 'settingsDataDiagOpen',
 ];

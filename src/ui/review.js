@@ -36,6 +36,27 @@ export function getTotalStaleTaskCount() {
   return state.tasksData.filter(t => isTaskStale(t)).length;
 }
 
+/**
+ * Check if weekly review is overdue (more than 7 days since last review)
+ */
+export function isWeeklyReviewOverdue() {
+  if (!state.lastWeeklyReview) return true; // Never reviewed
+  const lastReview = new Date(state.lastWeeklyReview);
+  const now = new Date();
+  const daysSinceReview = Math.floor((now - lastReview) / (1000 * 60 * 60 * 24));
+  return daysSinceReview >= 7;
+}
+
+/**
+ * Get days since last review (for display)
+ */
+export function getDaysSinceReview() {
+  if (!state.lastWeeklyReview) return null;
+  const lastReview = new Date(state.lastWeeklyReview);
+  const now = new Date();
+  return Math.floor((now - lastReview) / (1000 * 60 * 60 * 24));
+}
+
 // ---------------------------------------------------------------------------
 // Review lifecycle
 // ---------------------------------------------------------------------------
@@ -48,6 +69,14 @@ export function startReview() {
 }
 
 export function exitReview() {
+  // If all areas were reviewed, mark review as complete
+  const allAreasReviewed = state.reviewCompletedAreas.length === state.taskAreas.length;
+  if (allAreasReviewed) {
+    const now = new Date().toISOString();
+    state.lastWeeklyReview = now;
+    localStorage.setItem('nucleusLastWeeklyReview', now);
+  }
+
   state.reviewMode = false;
   state.reviewAreaIndex = 0;
   state.reviewCompletedAreas = [];

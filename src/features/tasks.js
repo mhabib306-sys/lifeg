@@ -65,6 +65,7 @@ export function clearTaskDeletionTombstone(taskId) {
  * @property {string|null} parentId - Parent note ID for hierarchy
  * @property {number} indent - Nesting level (0 = root)
  * @property {string|null} meetingEventKey - Linked calendar event key (calendarId::eventId)
+ * @property {Object|null} waitingFor - Waiting-for tracking {personId, description, followUpDate}
  * @property {string} createdAt - ISO creation timestamp
  * @property {string} updatedAt - ISO last modified timestamp
  *
@@ -107,6 +108,7 @@ export function createTask(title, options = {}) {
     parentId: options.parentId || null,   // For nested notes - parent note ID
     indent: options.indent || 0,          // Nesting level (0 = root, 1 = first child, etc.)
     meetingEventKey: options.meetingEventKey || null, // Meeting-linked notes/tasks
+    waitingFor: options.waitingFor || null, // { personId, description, followUpDate } for GTD Waiting-For list
     lastReviewedAt: null, // ISO string — set when reviewed in Review Mode
     order: (state.tasksData.filter(t => !t.completed).length + 1) * 1000, // For manual ordering
     createdAt: new Date().toISOString(),

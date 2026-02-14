@@ -365,6 +365,43 @@ export function renderHomeTab() {
       <!-- Daily Focus Card — hidden permanently -->
       ${''}
 
+      <!-- Weekly Review Reminder -->
+      ${(() => {
+        const isOverdue = typeof window.isWeeklyReviewOverdue === 'function' && window.isWeeklyReviewOverdue();
+        if (!isOverdue) return '';
+
+        const daysSince = typeof window.getDaysSinceReview === 'function' ? window.getDaysSinceReview() : null;
+        const message = daysSince === null
+          ? 'You haven\'t done a weekly review yet'
+          : daysSince >= 14
+            ? `Your weekly review is ${daysSince} days overdue`
+            : `It's been ${daysSince} days since your last review`;
+
+        return `
+          <div class="bg-gradient-to-r from-[var(--accent)]/10 to-[var(--accent)]/5 border border-[var(--accent)]/20 rounded-lg p-4 flex items-start gap-3">
+            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[var(--accent)]/15 flex items-center justify-center">
+              <svg class="w-5 h-5 text-[var(--accent)]" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10z"/>
+                <circle cx="12" cy="13" r="1.5"/>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-0.5">Weekly Review Due</h3>
+              <p class="text-sm text-[var(--text-secondary)] mb-3">${message}. GTD recommends reviewing your areas weekly to stay on top of your commitments.</p>
+              <button onclick="startReview()" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white text-sm font-medium rounded-lg hover:bg-[var(--accent-dark)] transition">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                Start Weekly Review
+              </button>
+            </div>
+            <button onclick="event.stopPropagation(); lastWeeklyReview = new Date().toISOString(); localStorage.setItem('nucleusLastWeeklyReview', lastWeeklyReview); render()" class="flex-shrink-0 p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/50 rounded-md transition" title="Dismiss for 7 days">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+          </div>
+        `;
+      })()}
+
       <!-- Widget Grid -->
       <div class="widget-grid grid ${isMobileView ? 'grid-cols-1' : 'grid-cols-2'} gap-4">
         ${visibleWidgets.map(widget => renderHomeWidget(widget, state.editingHomeWidgets)).join('')}
