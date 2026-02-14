@@ -1,6 +1,6 @@
 # Round 2: Comprehensive Codebase Audit - 200+ Issues
 
-## Completed Issues (Progress: 8/200+)
+## Completed Issues (Progress: 13/200+)
 
 ### Infrastructure (Phase 5) - COMPLETE ✅
 - [x] 220. Missing ESLint configuration → Installed ESLint 8.57 + eslint-plugin-no-unsanitized
@@ -18,6 +18,14 @@
 
 ### Data Integrity (Phase 1) - In Progress
 - [x] NEW: localStorage quota exceeded → Added state.quotaExceededError flag + UI banner with Export Data option
+
+### UX/UI Polish (Phase 4) - In Progress
+- [x] 186. No autocomplete on inputs → Added duplicate name validation for areas/labels/people (prevents confusion)
+
+### Accessibility - In Progress
+- [x] 80. No ARIA live regions for dynamic content → Added aria-live to all notifications
+- [x] 90. No aria-busy for loading states → Undo toast has aria-live="polite"
+- [x] 114. No aria-live for notifications → Cache/quota banners have aria-live + aria-atomic
 
 ---
 
