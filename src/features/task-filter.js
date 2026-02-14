@@ -72,6 +72,10 @@ export function matchesWaitingPerspective(task) {
   return !!task.waitingFor;
 }
 
+export function matchesProjectsPerspective(task) {
+  return task.isProject === true;
+}
+
 export function applyWorkspaceContentMode(items, mode = 'both') {
   if (!Array.isArray(items)) return [];
   if (mode === 'tasks') return items.filter(item => !item?.isNote);
@@ -109,6 +113,7 @@ export function initializeTaskOrders() {
  * - anytime: status='anytime' (today flag does not exclude) AND no future dueDate
  * - someday: status='someday'
  * - waiting: has waitingFor object (GTD Waiting-For list)
+ * - projects: isProject=true (GTD multi-step projects)
  * - logbook: completed=true
  *
  * "nextLabel" = task carries a label named "next" (case-insensitive).
@@ -163,6 +168,7 @@ export function getFilteredTasks(perspectiveId) {
     if (perspectiveId === 'inbox') return matchesInboxPerspective(task);
     if (perspectiveId === 'flagged') return matchesFlaggedPerspective(task);
     if (perspectiveId === 'waiting') return matchesWaitingPerspective(task);
+    if (perspectiveId === 'projects') return matchesProjectsPerspective(task);
 
     // Custom perspectives
     if (isCustom) {

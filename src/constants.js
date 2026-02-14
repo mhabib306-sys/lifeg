@@ -8,7 +8,7 @@
 // MAJOR: New major features (Home view, Next perspective, etc.)
 // MINOR: Enhancements and improvements
 // PATCH: Bug fixes and small tweaks
-export const APP_VERSION = '4.57.0 - Homebase';
+export const APP_VERSION = '4.58.0 - Homebase';
 
 export const STORAGE_KEY = 'lifeGamificationData_v3';
 export const WEIGHTS_KEY = 'lifeGamificationWeights_v1';
@@ -291,6 +291,7 @@ export function getBuiltinPerspectives() {
     { id: 'anytime', name: 'Anytime', icon: icons.anytime, color: _css('--anytime-color') || '#5AC8FA', filter: { status: 'anytime' }, builtin: true },
     { id: 'someday', name: 'Someday', icon: icons.someday, color: _css('--someday-color') || '#C69C6D', filter: { status: 'someday' }, builtin: true },
     { id: 'waiting', name: 'Waiting For', icon: '⏳', color: _css('--waiting-color') || '#AF52DE', filter: { waiting: true }, builtin: true },
+    { id: 'projects', name: 'Projects', icon: '📋', color: _css('--projects-color') || '#5856D6', filter: { projects: true }, builtin: true },
     { id: 'logbook', name: 'Logbook', icon: icons.logbook, color: _css('--logbook-color') || '#34C759', filter: { completed: true }, builtin: true }
   ];
 }

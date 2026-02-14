@@ -66,6 +66,9 @@ export function clearTaskDeletionTombstone(taskId) {
  * @property {number} indent - Nesting level (0 = root)
  * @property {string|null} meetingEventKey - Linked calendar event key (calendarId::eventId)
  * @property {Object|null} waitingFor - Waiting-for tracking {personId, description, followUpDate}
+ * @property {boolean} isProject - True if this is a multi-step project (not a single task)
+ * @property {string|null} projectId - Parent project ID (for sub-tasks linked to a project)
+ * @property {string} projectType - 'sequential' (ordered) or 'parallel' (any order)
  * @property {string} createdAt - ISO creation timestamp
  * @property {string} updatedAt - ISO last modified timestamp
  *
@@ -109,6 +112,9 @@ export function createTask(title, options = {}) {
     indent: options.indent || 0,          // Nesting level (0 = root, 1 = first child, etc.)
     meetingEventKey: options.meetingEventKey || null, // Meeting-linked notes/tasks
     waitingFor: options.waitingFor || null, // { personId, description, followUpDate } for GTD Waiting-For list
+    isProject: options.isProject || false, // GTD: Multi-step project (not a single task)
+    projectId: options.projectId || null, // Parent project ID for sub-tasks
+    projectType: options.projectType || 'parallel', // 'sequential' (ordered steps) or 'parallel' (any order)
     lastReviewedAt: null, // ISO string — set when reviewed in Review Mode
     order: (state.tasksData.filter(t => !t.completed).length + 1) * 1000, // For manual ordering
     createdAt: new Date().toISOString(),
@@ -415,4 +421,63 @@ export function updateRepeatUI(type) {
 export function moveTaskTo(taskId, status) {
   updateTask(taskId, { status: status });
   window.render();
+}
+
+// ============================================================================
+// PROJECT SUPPORT (GTD Phase 2.1)
+// ============================================================================
+
+/**
+ * Get all sub-tasks for a project
+ * @param {string} projectId - Project task ID
+ * @returns {Task[]} Array of sub-tasks linked to this project
+ */
+export function getProjectSubTasks(projectId) {
+  return state.tasksData.filter(t => t.projectId === projectId);
+}
+
+/**
+ * Calculate project completion percentage
+ * @param {string} projectId - Project task ID
+ * @returns {number} Completion percentage (0-100)
+ */
+export function getProjectCompletion(projectId) {
+  const subTasks = getProjectSubTasks(projectId);
+  if (subTasks.length === 0) return 0;
+  const completed = subTasks.filter(t => t.completed).length;
+  return Math.round((completed / subTasks.length) * 100);
+}
+
+/**
+ * Get the next actionable task for a sequential project
+ * @param {string} projectId - Project task ID
+ * @returns {Task|null} Next incomplete task, or null if all done
+ */
+export function getNextSequentialTask(projectId) {
+  const project = state.tasksData.find(t => t.id === projectId);
+  if (!project || project.projectType !== 'sequential') return null;
+
+  const subTasks = getProjectSubTasks(projectId)
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  return subTasks.find(t => !t.completed) || null;
+}
+
+/**
+ * Check if a project is stalled (no progress in 30 days)
+ * @param {string} projectId - Project task ID
+ * @returns {boolean} True if project has sub-tasks but none completed recently
+ */
+export function isProjectStalled(projectId) {
+  const subTasks = getProjectSubTasks(projectId);
+  if (subTasks.length === 0) return false;
+
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const hasRecentActivity = subTasks.some(t =>
+    t.completedAt && new Date(t.completedAt) > thirtyDaysAgo
+  );
+
+  return !hasRecentActivity;
 }

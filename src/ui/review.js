@@ -201,6 +201,13 @@ export function renderReviewMode() {
   // Get stale tasks for current area
   const staleTasks = getStaleTasksForArea(currentArea.id);
 
+  // Get active projects in this area (GTD Phase 2.1)
+  const areaProjects = state.tasksData.filter(t =>
+    t.areaId === currentArea.id &&
+    t.isProject &&
+    !t.completed
+  );
+
   // Time since last reviewed
   function formatTimeSince(isoStr) {
     if (!isoStr) return 'Never reviewed';
@@ -257,7 +264,7 @@ export function renderReviewMode() {
           </span>
           <div>
             <h3 class="text-lg font-bold text-[var(--text-primary)]">${escapeHtml(currentArea.name)}</h3>
-            <p class="text-sm text-[var(--text-muted)]">${areaTriggers.length} triggers, ${staleTasks.length} tasks to review</p>
+            <p class="text-sm text-[var(--text-muted)]">${areaProjects.length} projects, ${areaTriggers.length} triggers, ${staleTasks.length} tasks</p>
           </div>
         </div>
         <div class="flex items-center gap-2">
@@ -273,6 +280,47 @@ export function renderReviewMode() {
           ` : ''}
         </div>
       </div>
+
+      <!-- Projects Section (GTD Phase 2.1) -->
+      ${areaProjects.length > 0 ? `
+        <div class="mb-4 rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden">
+          <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span>📋</span>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Projects</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${areaProjects.length}</span>
+            </div>
+            <p class="text-xs text-[var(--text-muted)] italic">Review completion & ensure next actions</p>
+          </div>
+          <div class="divide-y divide-[var(--border-light)]">
+            ${areaProjects.map(project => {
+              const completion = window.getProjectCompletion?.(project.id) || 0;
+              const subTasksCount = window.getProjectSubTasks?.(project.id)?.length || 0;
+              const isStalled = window.isProjectStalled?.(project.id) || false;
+              return `
+                <div class="px-4 py-3 hover:bg-[var(--bg-secondary)]/30 transition cursor-pointer" onclick="reviewEngageTask('${project.id}')">
+                  <div class="flex items-start gap-3">
+                    <span class="w-5 h-5 mt-0.5 text-lg flex-shrink-0">📋</span>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2 mb-1">
+                        <p class="text-sm font-medium text-[var(--text-primary)] truncate">${escapeHtml(project.title || 'Untitled Project')}</p>
+                        ${isStalled ? `<span class="px-1.5 py-0.5 bg-[var(--warning)]/15 text-[var(--warning)] text-[10px] font-medium rounded">Stalled</span>` : ''}
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <div class="flex-1 h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
+                          <div class="h-full rounded-full transition-all" style="width: ${completion}%; background: ${areaColor}"></div>
+                        </div>
+                        <span class="text-xs text-[var(--text-muted)] tabular-nums">${completion}%</span>
+                      </div>
+                      <p class="text-xs text-[var(--text-muted)] mt-1">${subTasksCount} ${subTasksCount === 1 ? 'task' : 'tasks'} · ${project.projectType === 'sequential' ? '📝 Sequential' : '📋 Parallel'}</p>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      ` : ''}
 
       <!-- Two-column layout: Triggers | Tasks -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

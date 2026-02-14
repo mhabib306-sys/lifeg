@@ -92,7 +92,8 @@ import {
 import {
   createTask, updateTask, deleteTask, confirmDeleteTask,
   toggleTaskComplete, toggleFlag, calculateNextRepeatDate, createNextRepeatOccurrence,
-  getRepeatUnitLabel, updateRepeatUI, moveTaskTo
+  getRepeatUnitLabel, updateRepeatUI, moveTaskTo,
+  getProjectSubTasks, getProjectCompletion, getNextSequentialTask, isProjectStalled
 } from './features/tasks.js';
 
 import {
@@ -225,6 +226,7 @@ import {
   addTag, removeTag, renderTagsInput,
   addPerson as addPersonModal, removePerson as removePersonModal, renderPeopleInput,
   setWaitingFor, renderWaitingForUI, toggleWaitingForForm, applyWaitingFor,
+  toggleProjectMode, setProjectType, linkToProject, renderProjectUI,
   toggleRepeat, initModalAutocomplete, cleanupModalAutocomplete,
   closeTaskModal, saveTaskFromModal,
   renderTaskModalHtml
@@ -387,6 +389,7 @@ Object.assign(window, {
   createTask, updateTask, deleteTask, confirmDeleteTask,
   toggleTaskComplete, toggleFlag, calculateNextRepeatDate, createNextRepeatOccurrence,
   getRepeatUnitLabel, updateRepeatUI, moveTaskTo,
+  getProjectSubTasks, getProjectCompletion, getNextSequentialTask, isProjectStalled,
 
   // Task Filtering
   initializeTaskOrders, getFilteredTasks, groupTasksByDate,
@@ -501,6 +504,7 @@ Object.assign(window, {
   addTag, removeTag, renderTagsInput,
   addPersonModal, removePersonModal, renderPeopleInput,
   setWaitingFor, renderWaitingForUI, toggleWaitingForForm, applyWaitingFor,
+  toggleProjectMode, setProjectType, linkToProject, renderProjectUI,
   toggleRepeat, initModalAutocomplete, cleanupModalAutocomplete,
   closeTaskModal, saveTaskFromModal, savePerspectiveFromModal, selectPerspectiveEmoji, selectAreaEmoji, selectCategoryEmoji, updateEmojiGrid, toggleEmojiPicker,
   renderTaskModalHtml,
@@ -525,6 +529,7 @@ const stateProxies = [
   'mobileDrawerOpen', 'activeTab', 'activeSubTab',
   'modalSelectedArea', 'modalSelectedStatus', 'modalSelectedToday', 'modalSelectedFlagged', 'modalSelectedTags', 'modalSelectedPeople',
   'modalIsNote', 'modalRepeatEnabled', 'modalStateInitialized', 'modalWaitingFor',
+  'modalIsProject', 'modalProjectId', 'modalProjectType',
   'draggedTaskId', 'dragOverTaskId', 'dragPosition',
   'draggedSidebarItem', 'draggedSidebarType', 'sidebarDragPosition',
   'calendarMonth', 'calendarYear', 'calendarSelectedDate', 'calendarViewMode',

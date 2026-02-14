@@ -40,7 +40,7 @@
     // One-time cache nuke: if SW is serving stale code, clear everything and reload.
     // Uses a localStorage flag so it only runs once per version.
     (function(){
-      var v='4.57.0';
+      var v='4.58.0';
       var key='_hb_sw_clear';
       if(localStorage.getItem(key)===v)return;
       if('serviceWorker' in navigator){

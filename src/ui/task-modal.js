@@ -704,6 +704,9 @@ export function initModalState(editingTask) {
     state.modalIsNote = editingTask.isNote || false;
     state.modalRepeatEnabled = editingTask.repeat && editingTask.repeat.type !== 'none';
     state.modalWaitingFor = editingTask.waitingFor ? { ...editingTask.waitingFor } : null;
+    state.modalIsProject = editingTask.isProject || false;
+    state.modalProjectId = editingTask.projectId || null;
+    state.modalProjectType = editingTask.projectType || 'parallel';
   } else {
     state.modalSelectedArea = state.newTaskContext.areaId || null;
     state.modalSelectedCategory = state.newTaskContext.categoryId || null;
@@ -715,6 +718,9 @@ export function initModalState(editingTask) {
     state.modalIsNote = state.activePerspective === 'notes';
     state.modalRepeatEnabled = false;
     state.modalWaitingFor = null;
+    state.modalIsProject = false;
+    state.modalProjectId = null;
+    state.modalProjectType = 'parallel';
   }
 }
 
@@ -1141,6 +1147,7 @@ export function initModalAutocomplete() {
     renderTagsInput();
     renderPeopleInput();
     renderWaitingForUI();
+    renderProjectUI();
 
     // Set initial status
     document.querySelectorAll('.status-pill').forEach(pill => {
@@ -1268,7 +1275,10 @@ export function saveTaskFromModal() {
     labels: state.modalSelectedTags,
     people: state.modalSelectedPeople,
     isNote: state.modalIsNote,
-    waitingFor: state.modalWaitingFor
+    waitingFor: state.modalWaitingFor,
+    isProject: state.modalIsProject,
+    projectId: state.modalProjectId,
+    projectType: state.modalProjectType
   };
 
   // Things 3 logic: Assigning an Area to an Inbox task moves it to Anytime (not for notes)
@@ -1442,6 +1452,114 @@ export function applyWaitingFor(followUpDays = 7) {
     formContainer.classList.add('hidden');
     formContainer.innerHTML = '';
   }
+}
+
+// ============================================================================
+// PROJECT SUPPORT (GTD Phase 2.1)
+// ============================================================================
+
+/**
+ * Toggle the "Mark as Project" checkbox
+ */
+export function toggleProjectMode() {
+  state.modalIsProject = !state.modalIsProject;
+  renderProjectUI();
+}
+
+/**
+ * Set the project type (sequential vs parallel)
+ * @param {string} type - 'sequential' or 'parallel'
+ */
+export function setProjectType(type) {
+  if (type !== 'sequential' && type !== 'parallel') return;
+  state.modalProjectType = type;
+  renderProjectUI();
+}
+
+/**
+ * Link this task to a parent project
+ * @param {string|null} projectId - Parent project task ID
+ */
+export function linkToProject(projectId) {
+  state.modalProjectId = projectId;
+  renderProjectUI();
+}
+
+/**
+ * Render the project UI section in the modal
+ */
+export function renderProjectUI() {
+  const container = document.getElementById('project-container');
+  if (!container) return;
+
+  const editingTask = state.editingTaskId ? state.tasksData.find(t => t.id === state.editingTaskId) : null;
+  const isProject = state.modalIsProject || editingTask?.isProject || false;
+  const projectId = state.modalProjectId || editingTask?.projectId || null;
+  const projectType = state.modalProjectType || editingTask?.projectType || 'parallel';
+
+  // Get all projects for dropdown (excluding the current task being edited)
+  const projects = state.tasksData.filter(t =>
+    t.isProject &&
+    !t.completed &&
+    (!editingTask || t.id !== editingTask.id)
+  );
+
+  const hasProjects = projects.length > 0;
+  const linkedProject = projectId ? state.tasksData.find(t => t.id === projectId) : null;
+
+  let html = `
+    <div class="space-y-3">
+      <!-- Mark as Project checkbox -->
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input type="checkbox" ${isProject ? 'checked' : ''}
+          onchange="toggleProjectMode()"
+          class="rounded border-[var(--border)] text-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20">
+        <span class="text-sm font-medium text-[var(--text-primary)]">Mark as multi-step project</span>
+      </label>
+
+      ${isProject ? `
+        <!-- Project Type -->
+        <div class="ml-6 p-3 bg-[var(--bg-secondary)]/30 rounded-lg space-y-2">
+          <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">Project Type</label>
+          <div class="flex gap-2">
+            <button onclick="setProjectType('parallel')"
+              class="flex-1 px-3 py-2 text-sm rounded-lg transition ${projectType === 'parallel' ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}">
+              📋 Parallel
+            </button>
+            <button onclick="setProjectType('sequential')"
+              class="flex-1 px-3 py-2 text-sm rounded-lg transition ${projectType === 'sequential' ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}">
+              📝 Sequential
+            </button>
+          </div>
+          <p class="text-xs text-[var(--text-muted)] mt-1">
+            ${projectType === 'sequential' ? 'Tasks must be done in order' : 'Tasks can be done in any order'}
+          </p>
+        </div>
+      ` : ''}
+
+      ${hasProjects && !isProject ? `
+        <!-- Link to Project -->
+        <div class="space-y-2">
+          <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">Link to Project</label>
+          <select onchange="linkToProject(this.value || null)" class="input-field">
+            <option value="">No project (standalone task)</option>
+            ${projects.map(p => `
+              <option value="${p.id}" ${projectId === p.id ? 'selected' : ''}>
+                ${escapeHtml(p.title)}
+              </option>
+            `).join('')}
+          </select>
+          ${linkedProject ? `
+            <p class="text-xs text-[var(--text-muted)]">
+              This task belongs to project: <strong>${escapeHtml(linkedProject.title)}</strong>
+            </p>
+          ` : ''}
+        </div>
+      ` : ''}
+    </div>
+  `;
+
+  container.innerHTML = html;
 }
 
 // ============================================================================
@@ -1648,6 +1766,14 @@ export function renderTaskModalHtml() {
           <div class="modal-section">
             <label class="modal-section-label">Waiting For</label>
             <div id="waiting-for-container"></div>
+          </div>
+          ` : ''}
+
+          <!-- Project Support (GTD) - Tasks only -->
+          ${!state.modalIsNote ? `
+          <div class="modal-section">
+            <label class="modal-section-label">Project</label>
+            <div id="project-container"></div>
           </div>
           ` : ''}
         </div>
