@@ -341,6 +341,7 @@ export function render() {
           `}
           <div class="flex items-center gap-1.5">
             <span class="mobile-version text-[10px] font-semibold text-[var(--text-muted)]">v${APP_VERSION}</span>
+            ${!navigator.onLine ? '<span class="text-[9px] font-bold text-[var(--warning)] bg-[var(--warning-bg,rgba(245,158,11,0.1))] px-1.5 py-0.5 rounded">Offline</span>' : ''}
             <div class="w-1.5 h-1.5 rounded-full" style="background: ${getGithubToken() ? 'var(--success)' : 'var(--text-muted)'}"></div>
           </div>
         </div>
@@ -381,6 +382,7 @@ export function render() {
                 <div class="flex items-center gap-2">
                   <h1 class="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Homebase</h1>
                   <span class="text-[11px] font-medium text-[var(--text-muted)] bg-[var(--bg-secondary)] px-1.5 py-0.5 rounded-md">v${APP_VERSION}</span>
+                  ${!navigator.onLine ? '<span class="text-[10px] font-bold text-[var(--warning)] bg-[var(--warning-bg,rgba(245,158,11,0.1))] px-1.5 py-0.5 rounded-md">Offline</span>' : ''}
                 </div>
                 <p class="text-sm text-[var(--text-secondary)] mt-0.5">Your life, all in one place <span class="text-[var(--accent)]">\u2022</span> habits, health, productivity</p>
               </div>

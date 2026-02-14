@@ -219,10 +219,12 @@ function initApp() {
       debouncedSaveToGithub();
     }
     window.retryGCalOfflineQueue?.();
+    render(); // Update offline indicator
   });
 
   window.addEventListener('offline', () => {
     console.log('Offline — changes saved locally');
+    render(); // Show offline indicator
   });
 
   // Flush pending saves when user leaves or hides tab.
