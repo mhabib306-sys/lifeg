@@ -69,6 +69,7 @@ export function clearTaskDeletionTombstone(taskId) {
  * @property {boolean} isProject - True if this is a multi-step project (not a single task)
  * @property {string|null} projectId - Parent project ID (for sub-tasks linked to a project)
  * @property {string} projectType - 'sequential' (ordered) or 'parallel' (any order)
+ * @property {number|null} timeEstimate - Estimated duration in minutes (5, 15, 30, 60)
  * @property {string} createdAt - ISO creation timestamp
  * @property {string} updatedAt - ISO last modified timestamp
  *
@@ -115,6 +116,7 @@ export function createTask(title, options = {}) {
     isProject: options.isProject || false, // GTD: Multi-step project (not a single task)
     projectId: options.projectId || null, // Parent project ID for sub-tasks
     projectType: options.projectType || 'parallel', // 'sequential' (ordered steps) or 'parallel' (any order)
+    timeEstimate: options.timeEstimate || null, // GTD: Estimated duration in minutes (5, 15, 30, 60)
     lastReviewedAt: null, // ISO string — set when reviewed in Review Mode
     order: (state.tasksData.filter(t => !t.completed).length + 1) * 1000, // For manual ordering
     createdAt: new Date().toISOString(),

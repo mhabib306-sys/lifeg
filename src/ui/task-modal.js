@@ -707,6 +707,7 @@ export function initModalState(editingTask) {
     state.modalIsProject = editingTask.isProject || false;
     state.modalProjectId = editingTask.projectId || null;
     state.modalProjectType = editingTask.projectType || 'parallel';
+    state.modalTimeEstimate = editingTask.timeEstimate || null;
   } else {
     state.modalSelectedArea = state.newTaskContext.areaId || null;
     state.modalSelectedCategory = state.newTaskContext.categoryId || null;
@@ -721,6 +722,7 @@ export function initModalState(editingTask) {
     state.modalIsProject = false;
     state.modalProjectId = null;
     state.modalProjectType = 'parallel';
+    state.modalTimeEstimate = null;
   }
 }
 
@@ -1148,6 +1150,7 @@ export function initModalAutocomplete() {
     renderPeopleInput();
     renderWaitingForUI();
     renderProjectUI();
+    renderTimeEstimateUI();
 
     // Set initial status
     document.querySelectorAll('.status-pill').forEach(pill => {
@@ -1278,7 +1281,8 @@ export function saveTaskFromModal() {
     waitingFor: state.modalWaitingFor,
     isProject: state.modalIsProject,
     projectId: state.modalProjectId,
-    projectType: state.modalProjectType
+    projectType: state.modalProjectType,
+    timeEstimate: state.modalTimeEstimate
   };
 
   // Things 3 logic: Assigning an Area to an Inbox task moves it to Anytime (not for notes)
@@ -1562,6 +1566,55 @@ export function renderProjectUI() {
   container.innerHTML = html;
 }
 
+/**
+ * Set time estimate for the task
+ * @param {number|null} minutes - Estimate in minutes (5, 15, 30, 60) or null to clear
+ */
+export function setTimeEstimate(minutes) {
+  state.modalTimeEstimate = minutes;
+  renderTimeEstimateUI();
+}
+
+/**
+ * Render the time estimate UI section in the modal
+ */
+export function renderTimeEstimateUI() {
+  const container = document.getElementById('time-estimate-container');
+  if (!container) return;
+
+  const estimate = state.modalTimeEstimate;
+  const options = [5, 15, 30, 60];
+
+  let html = `
+    <div class="space-y-2">
+      <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">Time Estimate</label>
+      <div class="flex gap-2">
+        <button onclick="setTimeEstimate(null)"
+          class="flex-1 px-3 py-2 text-xs rounded-lg transition ${estimate === null ? 'bg-[var(--bg-secondary)] border-2 border-[var(--accent)]' : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)]'}">
+          None
+        </button>
+        ${options.map(min => `
+          <button onclick="setTimeEstimate(${min})"
+            class="flex-1 px-3 py-2 text-xs rounded-lg transition ${estimate === min ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)]'}">
+            ${min}m
+          </button>
+        `).join('')}
+      </div>
+      ${estimate ? `
+        <p class="text-xs text-[var(--text-muted)]">
+          ⏱️ Estimated duration: ${estimate} minute${estimate > 1 ? 's' : ''}
+        </p>
+      ` : `
+        <p class="text-xs text-[var(--text-muted)]">
+          Set time estimate for time-blocking and filtering
+        </p>
+      `}
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
 // ============================================================================
 // RENDER TASK MODAL HTML
 // ============================================================================
@@ -1774,6 +1827,14 @@ export function renderTaskModalHtml() {
           <div class="modal-section">
             <label class="modal-section-label">Project</label>
             <div id="project-container"></div>
+          </div>
+          ` : ''}
+
+          <!-- Time Estimate (GTD) - Tasks only -->
+          ${!state.modalIsNote ? `
+          <div class="modal-section">
+            <label class="modal-section-label">Time Estimate</label>
+            <div id="time-estimate-container"></div>
           </div>
           ` : ''}
         </div>

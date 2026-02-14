@@ -566,6 +566,7 @@ export const state = {
   modalIsProject: false,  // GTD: Mark task as multi-step project
   modalProjectId: null,   // GTD: Link task to parent project
   modalProjectType: 'parallel', // GTD: 'sequential' (ordered) or 'parallel' (any order)
+  modalTimeEstimate: null, // GTD: Time estimate in minutes (5, 15, 30, 60)
 
   // ---- Gamification ----
   CATEGORY_WEIGHTS: safeJsonParse(CATEGORY_WEIGHTS_KEY, null) || JSON.parse(JSON.stringify(DEFAULT_CATEGORY_WEIGHTS)),

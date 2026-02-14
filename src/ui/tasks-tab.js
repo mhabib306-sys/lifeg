@@ -307,6 +307,7 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
   if (showDueDate && task.dueDate) metaParts.push(`Due ${formatSmartDate(task.dueDate)}`);
   if (task.repeat && task.repeat.type !== 'none') metaParts.push('Repeats');
   if (task.notes) metaParts.push('Notes');
+  if (task.timeEstimate) metaParts.push(`⏱️ ${task.timeEstimate}m`);
 
   // Compact mode for widgets - clean single line Things 3 style
   if (compact) {

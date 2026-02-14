@@ -227,6 +227,7 @@ import {
   addPerson as addPersonModal, removePerson as removePersonModal, renderPeopleInput,
   setWaitingFor, renderWaitingForUI, toggleWaitingForForm, applyWaitingFor,
   toggleProjectMode, setProjectType, linkToProject, renderProjectUI,
+  setTimeEstimate, renderTimeEstimateUI,
   toggleRepeat, initModalAutocomplete, cleanupModalAutocomplete,
   closeTaskModal, saveTaskFromModal,
   renderTaskModalHtml
@@ -505,6 +506,7 @@ Object.assign(window, {
   addPersonModal, removePersonModal, renderPeopleInput,
   setWaitingFor, renderWaitingForUI, toggleWaitingForForm, applyWaitingFor,
   toggleProjectMode, setProjectType, linkToProject, renderProjectUI,
+  setTimeEstimate, renderTimeEstimateUI,
   toggleRepeat, initModalAutocomplete, cleanupModalAutocomplete,
   closeTaskModal, saveTaskFromModal, savePerspectiveFromModal, selectPerspectiveEmoji, selectAreaEmoji, selectCategoryEmoji, updateEmojiGrid, toggleEmojiPicker,
   renderTaskModalHtml,
@@ -530,6 +532,7 @@ const stateProxies = [
   'modalSelectedArea', 'modalSelectedStatus', 'modalSelectedToday', 'modalSelectedFlagged', 'modalSelectedTags', 'modalSelectedPeople',
   'modalIsNote', 'modalRepeatEnabled', 'modalStateInitialized', 'modalWaitingFor',
   'modalIsProject', 'modalProjectId', 'modalProjectType',
+  'modalTimeEstimate',
   'draggedTaskId', 'dragOverTaskId', 'dragPosition',
   'draggedSidebarItem', 'draggedSidebarType', 'sidebarDragPosition',
   'calendarMonth', 'calendarYear', 'calendarSelectedDate', 'calendarViewMode',
