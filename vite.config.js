@@ -1,10 +1,12 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const isCapacitor = !!process.env.CAPACITOR_BUILD;
+
 export default defineConfig({
-  base: '/lifeg/',
+  base: isCapacitor ? '/' : '/lifeg/',
   plugins: [
-    VitePWA({
+    !isCapacitor && VitePWA({
       registerType: 'autoUpdate',
       minify: false,
       includeAssets: ['icons/*.svg', 'icons/*.png'],
@@ -58,7 +60,7 @@ export default defineConfig({
         ]
       }
     })
-  ],
+  ].filter(Boolean),
   css: {
     postcss: './postcss.config.js'
   },
