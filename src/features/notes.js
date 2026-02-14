@@ -6,6 +6,7 @@ import {
   NOTE_INTEGRITY_SNAPSHOT_KEY, NOTE_LOCAL_BACKUP_KEY
 } from '../constants.js';
 import { startUndoCountdown } from './undo.js';
+import { createArea, createLabel, createPerson } from './areas.js';
 
 // ============================================================================
 // Note Inline Autocomplete (contenteditable-compatible)
@@ -156,30 +157,19 @@ function noteAcGetItems(query) {
 
 function noteAcGetCreateFn() {
   if (noteAcTriggerChar === '#') return (name) => {
-    const now = new Date().toISOString();
-    const c = { id: generateEntityId('cat'), name, color: '#6366f1', icon: '\uD83D\uDCC1', createdAt: now, updatedAt: now };
-    state.taskAreas.push(c);
-    localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
-    debouncedSaveToGithubSafe();
-    return { ...c, _acType: 'area' };
+    // Use proper CRUD function to ensure tombstone management and consistent structure
+    const area = createArea(name, '');
+    return { ...area, _acType: 'area' };
   };
   if (noteAcTriggerChar === '@') return (name) => {
-    const now = new Date().toISOString();
+    // Use proper CRUD function with random color
     const colors = ['#ef4444','#f59e0b','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
-    const l = { id: generateEntityId('label'), name, color: colors[Math.floor(Math.random() * colors.length)], createdAt: now, updatedAt: now };
-    state.taskLabels.push(l);
-    localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
-    debouncedSaveToGithubSafe();
-    return l;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    return createLabel(name, color);
   };
   if (noteAcTriggerChar === '&') return (name) => {
-    const now = new Date().toISOString();
-    const colors = ['#4A90A4','#6B8E5A','#E5533D','#C4943D','#7C6B8E'];
-    const p = { id: generateEntityId('person'), name, color: colors[Math.floor(Math.random() * colors.length)], email: '', createdAt: now, updatedAt: now };
-    state.taskPeople.push(p);
-    localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
-    debouncedSaveToGithubSafe();
-    return p;
+    // Use proper CRUD function (email defaults to empty)
+    return createPerson(name, '');
   };
   return null;
 }
