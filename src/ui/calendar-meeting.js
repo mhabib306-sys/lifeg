@@ -663,8 +663,9 @@ export function renderEventActionsModal(event) {
   const meetingSubLabel = event.meetingLink ? 'Open call link' : 'No call link found';
 
   return `
-    <div class="modal-overlay calendar-event-modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[320]" onclick="if(event.target===this) closeCalendarEventActions()">
+    <div class="modal-overlay calendar-event-modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-end md:items-center justify-center z-[320]" onclick="if(event.target===this) closeCalendarEventActions()">
       <div class="modal-enhanced calendar-event-modal w-full max-w-md mx-4" onclick="event.stopPropagation()">
+        <div class="sheet-handle md:hidden"></div>
         <div class="modal-header-enhanced">
           <div class="flex items-center gap-3 min-w-0">
             <div class="calendar-event-modal-header-icon">

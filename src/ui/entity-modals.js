@@ -507,7 +507,7 @@ export function renderPerspectiveModalHtml() {
   const ef = editingPerspective?.filter || {};
   const sel = (val, target) => val === target ? 'selected' : '';
   return `
-    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){pendingPerspectiveEmoji=''; showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="perspective-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-end md:items-center justify-center z-[300]" onclick="if(event.target===this){pendingPerspectiveEmoji=''; showPerspectiveModal=false; editingPerspectiveId=null; perspectiveEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="perspective-modal-title">
       <div class="modal-enhanced w-full max-w-lg mx-4" onclick="event.stopPropagation()">
         <div class="sheet-handle md:hidden"></div>
         <div class="modal-header-enhanced">
@@ -699,7 +699,7 @@ export function renderAreaModalHtml() {
   const areaColor = editingArea?.color || '#6366F1';
   const areaEmoji = state.pendingAreaEmoji || editingArea?.emoji || '';
   return `
-    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){pendingAreaEmoji=''; showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-end md:items-center justify-center z-[300]" onclick="if(event.target===this){pendingAreaEmoji=''; showAreaModal=false; editingAreaId=null; areaEmojiPickerOpen=false; render()}" role="dialog" aria-modal="true" aria-labelledby="area-modal-title">
       <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
         <div class="sheet-handle md:hidden"></div>
         <div class="modal-header-enhanced">
@@ -759,7 +759,7 @@ export function renderCategoryModalHtml() {
   const catEmoji = state.pendingCategoryEmoji || editing?.emoji || '';
 
   return `
-    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){pendingCategoryEmoji=''; showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-end md:items-center justify-center z-[300]" onclick="if(event.target===this){pendingCategoryEmoji=''; showCategoryModal=false;editingCategoryId=null;categoryEmojiPickerOpen=false;render()}" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
       <div class="modal-enhanced w-full max-w-md mx-4" onclick="event.stopPropagation()">
         <div class="sheet-handle md:hidden"></div>
         <div class="modal-header-enhanced">
@@ -811,7 +811,7 @@ export function renderLabelModalHtml() {
     ? (state.taskLabels || []).find(l => l.id === state.editingLabelId)
     : null;
   return `
-    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="label-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-end md:items-center justify-center z-[300]" onclick="if(event.target===this){showLabelModal=false; editingLabelId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="label-modal-title">
       <div class="modal-enhanced w-full max-w-sm mx-4" onclick="event.stopPropagation()">
         <div class="sheet-handle md:hidden"></div>
         <div class="modal-header-enhanced">
@@ -862,7 +862,7 @@ export function renderPersonModalHtml() {
     ? (state.taskPeople || []).find(p => p.id === state.editingPersonId)
     : null;
   return `
-    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="person-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-end md:items-center justify-center z-[300]" onclick="if(event.target===this){showPersonModal=false; editingPersonId=null; render()}" role="dialog" aria-modal="true" aria-labelledby="person-modal-title">
       <div class="modal-enhanced w-full max-w-sm mx-4" onclick="event.stopPropagation()">
         <div class="sheet-handle md:hidden"></div>
         <div class="modal-header-enhanced">

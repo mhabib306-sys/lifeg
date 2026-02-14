@@ -1326,7 +1326,7 @@ export function renderTaskModalHtml() {
   if (!state.showTaskModal) return '';
 
   return `
-    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-center justify-center z-[300]" onclick="if(event.target===this){closeTaskModal()}" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
+    <div class="modal-overlay fixed inset-0 bg-[var(--modal-overlay)] backdrop-blur-sm flex items-end md:items-center justify-center z-[300]" onclick="if(event.target===this){closeTaskModal()}" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
       <div class="modal-enhanced w-full max-w-xl mx-4" onclick="event.stopPropagation()">
         <div class="sheet-handle md:hidden"></div>
         <!-- Header -->
