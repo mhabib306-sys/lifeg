@@ -133,6 +133,8 @@ export function saveTasksData() {
   // (e.g. initializeTaskOrders) make local appear newer than cloud,
   // preventing wholesale cloud data adoption on app startup.
   window.debouncedSaveToGithub();
+  // Update native widget data (no-op on web)
+  window.updateWidgetData?.();
 }
 
 /**

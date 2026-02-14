@@ -17,6 +17,7 @@ import { animateTaskCompletion, animateTaskDeletion, sweepStaleClones } from './
 import { isBiometricAvailable, verifyBiometric, enableBiometric, disableBiometric, unlockWithBiometric } from './native/biometric.js';
 import { initPushNotifications } from './native/push-notifications.js';
 import { scheduleTaskReminder, cancelTaskReminder, initLocalNotifications } from './native/local-notifications.js';
+import { updateWidgetData } from './native/widget-bridge.js';
 
 // -- Utils --
 import { getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId, isMobileViewport, isTouchDevice, isMobile, haptic } from './utils.js';
@@ -324,6 +325,7 @@ Object.assign(window, {
   animateTaskCompletion, animateTaskDeletion, sweepStaleClones,
   isBiometricAvailable, verifyBiometric, enableBiometric, disableBiometric, unlockWithBiometric,
   initPushNotifications, scheduleTaskReminder, cancelTaskReminder, initLocalNotifications,
+  updateWidgetData,
 
   // Utils
   getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId,
