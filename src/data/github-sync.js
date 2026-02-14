@@ -88,6 +88,9 @@ export function setTheme(themeName) {
   localStorage.setItem(THEME_KEY, themeName);
   document.documentElement.setAttribute('data-theme', themeName);
   syncThemeColorMeta();
+  if (typeof window.setStatusBarStyle === 'function') {
+    window.setStatusBarStyle(getColorMode() === 'dark');
+  }
   window.render();
 }
 
