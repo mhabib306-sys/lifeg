@@ -239,6 +239,16 @@
   --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
   --ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
 
+  /* Spring curves — generated via scripts/generate-spring-curves.mjs */
+  --spring-snappy: cubic-bezier(0.22, 1.0, 0.36, 1.0);   /* stiffness:500, damping:30 */
+  --spring-smooth: cubic-bezier(0.25, 0.8, 0.25, 1.0);    /* stiffness:300, damping:30 */
+  --spring-bouncy: cubic-bezier(0.34, 1.56, 0.64, 1.0);   /* stiffness:400, damping:15 */
+  --spring-gentle: cubic-bezier(0.16, 1.0, 0.3, 1.0);     /* stiffness:200, damping:25 */
+  --spring-duration-snappy: 200ms;
+  --spring-duration-smooth: 350ms;
+  --spring-duration-bouncy: 500ms;
+  --spring-duration-gentle: 400ms;
+
   /* Sheet / Modal */
   --sheet-handle-width: 36px;
   --sheet-handle-height: 5px;
