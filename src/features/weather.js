@@ -57,7 +57,7 @@ export async function fetchWeather() {
     }
 
     const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${state.weatherLocation.lat}&longitude=${state.weatherLocation.lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&hourly=temperature_2m&timezone=auto&forecast_days=1`
+      `https://api.open-meteo.com/v1/forecast?latitude=${state.weatherLocation.lat}&longitude=${state.weatherLocation.lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m&timezone=auto&forecast_days=2`
     );
 
     if (!response.ok) throw new Error('Weather fetch failed');
@@ -76,16 +76,36 @@ export async function fetchWeather() {
     const minHour = new Date(hourlyTimes[minIdx]).getHours();
     const formatHour = (h) => h === 0 ? '12am' : h < 12 ? h + 'am' : h === 12 ? '12pm' : (h - 12) + 'pm';
 
+    // Tomorrow's forecast data (index 1 in daily arrays)
+    const tomorrowTempMax = Math.round(data.daily.temperature_2m_max[1]);
+    const tomorrowTempMin = Math.round(data.daily.temperature_2m_min[1]);
+    const tomorrowWeatherCode = data.daily.weather_code[1];
+    const todayTempMax = Math.round(data.daily.temperature_2m_max[0]);
+    const todayTempMin = Math.round(data.daily.temperature_2m_min[0]);
+
+    // Calculate temperature delta
+    const maxDelta = tomorrowTempMax - todayTempMax;
+    const minDelta = tomorrowTempMin - todayTempMin;
+    const avgDelta = Math.round((maxDelta + minDelta) / 2);
+
     state.weatherData = {
       temp: Math.round(data.current.temperature_2m),
       humidity: data.current.relative_humidity_2m,
       weatherCode: data.current.weather_code,
       windSpeed: Math.round(data.current.wind_speed_10m),
-      tempMax: Math.round(data.daily.temperature_2m_max[0]),
-      tempMin: Math.round(data.daily.temperature_2m_min[0]),
+      tempMax: todayTempMax,
+      tempMin: todayTempMin,
       maxHour: formatHour(maxHour),
       minHour: formatHour(minHour),
-      city: state.weatherLocation.city
+      city: state.weatherLocation.city,
+      tomorrow: {
+        tempMax: tomorrowTempMax,
+        tempMin: tomorrowTempMin,
+        weatherCode: tomorrowWeatherCode,
+        maxDelta: maxDelta,
+        minDelta: minDelta,
+        avgDelta: avgDelta
+      }
     };
 
     // Cache the result

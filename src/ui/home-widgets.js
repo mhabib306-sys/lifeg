@@ -605,6 +605,24 @@ export function renderWeatherWidget() {
   const humidityBar = humidity;
   const windDesc = windSpeed < 10 ? 'Calm' : windSpeed < 25 ? 'Breezy' : 'Windy';
 
+  // Tomorrow's forecast data
+  const tomorrow = w.tomorrow;
+  const tomorrowDesc = tomorrow ? (WEATHER_DESCRIPTIONS[tomorrow.weatherCode] || 'Weather') : '';
+  const tomorrowIcon = tomorrow ? (WEATHER_ICONS[tomorrow.weatherCode] || '\uD83C\uDF21\uFE0F') : '';
+
+  // Delta explanation helper
+  const getDeltaText = (delta) => {
+    if (delta > 0) return `${delta}° warmer`;
+    if (delta < 0) return `${Math.abs(delta)}° cooler`;
+    return 'same';
+  };
+
+  const getDeltaColor = (delta) => {
+    if (delta > 3) return 'var(--warning)';
+    if (delta < -3) return 'var(--accent)';
+    return 'var(--text-muted)';
+  };
+
   return `
     <div class="weather-widget-content flex items-start gap-4">
       <div class="flex-1 min-w-0">
@@ -654,6 +672,38 @@ export function renderWeatherWidget() {
         </div>
       </div>
     </div>
+
+    ${tomorrow ? `
+    <div class="mt-4 pt-4 border-t border-[var(--border-light)]">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">Tomorrow</span>
+          <span class="text-lg">${tomorrowIcon}</span>
+        </div>
+        <span class="text-xs text-[var(--text-secondary)]">${tomorrowDesc}</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="text-center">
+            <div class="text-xs text-[var(--text-muted)] mb-0.5">High</div>
+            <div class="text-lg font-bold text-[var(--text-primary)]">${tomorrow.tempMax}°</div>
+          </div>
+          <div class="text-center">
+            <div class="text-xs text-[var(--text-muted)] mb-0.5">Low</div>
+            <div class="text-lg font-bold text-[var(--text-primary)]">${tomorrow.tempMin}°</div>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-xs font-medium" style="color: ${getDeltaColor(tomorrow.avgDelta)}">
+            ${tomorrow.avgDelta === 0 ? 'Same as today' : getDeltaText(tomorrow.avgDelta)}
+          </div>
+          <div class="text-[10px] text-[var(--text-muted)] mt-0.5">
+            ${tomorrow.maxDelta > 0 ? '+' : ''}${tomorrow.maxDelta}° high, ${tomorrow.minDelta > 0 ? '+' : ''}${tomorrow.minDelta}° low
+          </div>
+        </div>
+      </div>
+    </div>
+    ` : ''}
   `;
 }
 
