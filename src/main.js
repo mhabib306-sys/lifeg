@@ -32,6 +32,7 @@ import { ensureHomeWidgets } from './features/home-widgets.js';
 import { rebuildGamification, processGamification } from './features/scoring.js';
 import { APP_VERSION, APP_VERSION_SEEN_KEY } from './constants.js';
 import { isMobileViewport } from './utils.js';
+import { initNative } from './native.js';
 import twemoji from 'twemoji';
 
 // ============================================================================
@@ -291,6 +292,7 @@ function initApp() {
 function bootstrap() {
   // Apply theme immediately so login screen is styled
   applyStoredTheme();
+  initNative();
   setupTwemojiObserver();
   // Eagerly load GIS script so it's ready by the time any token refresh is needed
   preloadGoogleIdentityServices();

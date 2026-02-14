@@ -122,6 +122,9 @@ export function setColorMode(mode) {
   localStorage.setItem(COLOR_MODE_KEY, mode);
   document.documentElement.setAttribute('data-mode', mode);
   syncThemeColorMeta();
+  if (typeof window.setStatusBarStyle === 'function') {
+    window.setStatusBarStyle(mode === 'dark');
+  }
   window.render();
 }
 
