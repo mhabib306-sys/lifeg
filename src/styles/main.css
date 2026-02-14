@@ -2768,6 +2768,90 @@ img.twemoji {
   .sidebar-item .opacity-0.group-hover\:opacity-100 {
     opacity: 1 !important;
   }
+
+  /* Touch target fixes — expand small buttons to 44px minimum */
+  .trigger-action-btn {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  .braindump-writer-back,
+  .braindump-writer-tool {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  .chip-remove {
+    width: 28px !important;
+    height: 28px !important;
+    position: relative;
+  }
+  .chip-remove::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+  .calendar-period-btn {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  .calendar-today-btn {
+    min-height: 44px !important;
+  }
+  .calendar-view-toggle-btn {
+    min-height: 44px !important;
+  }
+  .discussion-pool-link-btn {
+    min-height: 44px !important;
+  }
+  .braindump-item-check input[type="checkbox"] {
+    width: 20px !important;
+    height: 20px !important;
+    position: relative;
+  }
+  .braindump-item-check input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+  /* Review progress dots — expand touch area */
+  .review-progress-dot {
+    position: relative;
+  }
+  .review-progress-dot::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+  /* Widget edit buttons */
+  .widget-resize-btn,
+  .widget-hide-btn {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  /* Habits widget checkboxes — 44px touch area */
+  .habit-check {
+    position: relative;
+  }
+  .habit-check::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
 }
 
 /* iOS safe areas */

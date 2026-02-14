@@ -6,6 +6,7 @@
 // The user can click "Undo" to restore, or let the timer expire to confirm.
 
 import { state } from '../state.js';
+import { escapeHtml } from '../utils.js';
 
 /**
  * Start an undo countdown. Shows a floating toast with a 5s timer.
@@ -108,7 +109,7 @@ export function renderUndoToastHtml() {
           </svg>
           <span id="undo-countdown" class="undo-countdown-num">${remaining}</span>
         </div>
-        <span class="undo-toast-label">${label}</span>
+        <span class="undo-toast-label">${escapeHtml(label)}</span>
         <button onclick="executeUndo()" class="undo-toast-btn">Undo</button>
         <button onclick="dismissUndo()" class="undo-toast-dismiss" aria-label="Dismiss">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>

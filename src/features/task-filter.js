@@ -24,11 +24,14 @@ export function matchesInboxPerspective(task) {
 }
 
 export function matchesTodayPerspective(task, today, taskLabels = state.taskLabels) {
+  // Defer date is an availability filter - tasks deferred to future are hidden
   if (task.deferDate && task.deferDate > today) return false;
+
   const isDueToday = task.dueDate === today;
   const isOverdue = task.dueDate && task.dueDate < today;
-  const isScheduledForToday = task.deferDate && task.deferDate <= today;
-  const isTodayTask = task.today || isDueToday || isOverdue || isScheduledForToday;
+  const isDeferredToToday = task.deferDate === today; // Only tasks deferred specifically to today
+
+  const isTodayTask = task.today || isDueToday || isOverdue || isDeferredToToday;
   return isTodayTask || isNextTaggedTask(task, taskLabels);
 }
 

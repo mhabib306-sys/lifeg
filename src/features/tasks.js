@@ -254,16 +254,20 @@ export function toggleTaskComplete(taskId) {
       }
 
       // Undo toast for completion
-      const snapshot = { completed: false, completedAt: null, updatedAt: task.updatedAt, _spawnedRepeatId: null };
+      const snapshot = { taskId: task.id, completed: false, completedAt: null, updatedAt: task.updatedAt, _spawnedRepeatId: task._spawnedRepeatId };
       startUndoCountdown(`"${task.title}" completed`, snapshot, (snap) => {
-        task.completed = false;
-        task.completedAt = null;
-        task.updatedAt = new Date().toISOString();
+        // Verify task still exists (may have been deleted between completion and undo)
+        const currentTask = state.tasksData.find(t => taskIdEquals(t.id, snap.taskId));
+        if (!currentTask) return; // Task was deleted, nothing to undo
+
+        currentTask.completed = false;
+        currentTask.completedAt = null;
+        currentTask.updatedAt = new Date().toISOString();
         // Remove spawned repeat occurrence on undo
-        if (task._spawnedRepeatId) {
-          const idx = state.tasksData.findIndex(t => t.id === task._spawnedRepeatId);
+        if (snap._spawnedRepeatId) {
+          const idx = state.tasksData.findIndex(t => t.id === snap._spawnedRepeatId);
           if (idx !== -1) state.tasksData.splice(idx, 1);
-          task._spawnedRepeatId = null;
+          currentTask._spawnedRepeatId = null;
         }
         saveTasksData();
       });
@@ -277,19 +281,22 @@ export function toggleTaskComplete(taskId) {
     if (task.completed) {
       if (task.gcalEventId) {
         const eventIdToDelete = task.gcalEventId;
-        window.deleteGCalEventIfConnected?.(task)
-          .then(() => {
-            const current = state.tasksData.find(t => taskIdEquals(t.id, taskId));
-            if (!current) return;
-            if (current.gcalEventId !== eventIdToDelete) return;
-            current.gcalEventId = null;
-            current.updatedAt = new Date().toISOString();
-            saveTasksData();
-            window.render();
-          })
-          .catch((err) => {
-            console.warn('GCal completion cleanup failed:', err);
-          });
+        const deletePromise = window.deleteGCalEventIfConnected?.(task);
+        if (deletePromise) {
+          deletePromise
+            .then(() => {
+              const current = state.tasksData.find(t => taskIdEquals(t.id, taskId));
+              if (!current) return;
+              if (current.gcalEventId !== eventIdToDelete) return;
+              current.gcalEventId = null;
+              current.updatedAt = new Date().toISOString();
+              saveTasksData();
+              window.render();
+            })
+            .catch((err) => {
+              console.warn('GCal completion cleanup failed:', err);
+            });
+        }
       }
     } else if (!task.gcalEventId && (task.deferDate || task.dueDate)) {
       window.pushTaskToGCalIfConnected?.(task);

@@ -57,6 +57,18 @@ export function generateTaskId() {
 }
 
 /**
+ * Generate unique entity ID with given prefix using timestamp + random string
+ * Prevents ID collisions during rapid creation
+ * @param {string} prefix - Entity type prefix (e.g., 'cat', 'label', 'person')
+ * @returns {string} Unique entity identifier
+ */
+export function generateEntityId(prefix) {
+  const timestamp = Date.now();
+  const randomStr = Math.random().toString(36).slice(2, 8);
+  return `${prefix}_${timestamp}_${randomStr}`;
+}
+
+/**
  * Safely parse JSON from localStorage with fallback
  * Handles corrupted/missing data gracefully
  * @param {string} key - localStorage key to read

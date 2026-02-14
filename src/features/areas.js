@@ -1,6 +1,6 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
-import { getLocalDateString } from '../utils.js';
+import { getLocalDateString, generateEntityId } from '../utils.js';
 import { DELETED_ENTITY_TOMBSTONES_KEY, CATEGORIES_KEY } from '../constants.js';
 
 export function ensureEntityTombstones() {
@@ -38,7 +38,7 @@ export function createArea(name, emoji = '') {
   const nextColor = colors[state.taskAreas.length % colors.length];
   const now = new Date().toISOString();
   const area = {
-    id: 'cat_' + Date.now(),
+    id: generateEntityId('cat'),
     name: name,
     color: nextColor,
     emoji: emoji || '',
@@ -93,7 +93,7 @@ export function getAreaById(areaId) {
 export function createCategory(name, areaId, emoji = '') {
   const area = getAreaById(areaId);
   const category = {
-    id: 'subcat_' + Date.now(),
+    id: generateEntityId('subcat'),
     name: name,
     areaId: areaId,
     color: area ? area.color : '#6366F1',
@@ -138,7 +138,7 @@ export function getCategoriesByArea(areaId) {
 export function createLabel(name, color) {
   const now = new Date().toISOString();
   const label = {
-    id: 'label_' + Date.now(),
+    id: generateEntityId('label'),
     name: name,
     color: color || '#6B7280',
     createdAt: now,
@@ -179,7 +179,7 @@ export function getLabelById(labelId) {
 export function createPerson(name, email = '', jobTitle = '') {
   const now = new Date().toISOString();
   const person = {
-    id: 'person_' + Date.now(),
+    id: generateEntityId('person'),
     name: name,
     email: String(email || '').trim(),
     jobTitle: String(jobTitle || '').trim(),

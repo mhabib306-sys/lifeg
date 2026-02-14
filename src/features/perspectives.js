@@ -1,6 +1,7 @@
 import { state } from '../state.js';
 import { saveTasksData, saveViewState } from '../data/storage.js';
 import { ensureEntityTombstones, persistEntityTombstones } from './areas.js';
+import { generateEntityId } from '../utils.js';
 
 function markPerspectiveDeleted(id) {
   if (!id) return;
@@ -29,7 +30,7 @@ function clearPerspectiveDeleted(id) {
 export function createPerspective(name, icon, filter) {
   const now = new Date().toISOString();
   const perspective = {
-    id: 'custom_' + Date.now(),
+    id: generateEntityId('custom'),
     name: name,
     icon: icon || '\uD83D\uDCCC',
     filter: filter,

@@ -1,6 +1,6 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
-import { generateTaskId, escapeHtml, formatSmartDate, isTouchDevice } from '../utils.js';
+import { generateTaskId, generateEntityId, escapeHtml, formatSmartDate, isTouchDevice } from '../utils.js';
 import {
   TASK_CATEGORIES_KEY, TASK_LABELS_KEY, TASK_PEOPLE_KEY, COLLAPSED_NOTES_KEY,
   NOTE_INTEGRITY_SNAPSHOT_KEY, NOTE_LOCAL_BACKUP_KEY
@@ -19,6 +19,17 @@ let noteAcTriggerChar = null;
 let noteAcTriggerPos = -1;
 let noteAcNoteId = null;
 const NOTE_HISTORY_LIMIT = 60;
+
+/**
+ * Sanitize color values to prevent CSS injection attacks.
+ * Only allows valid hex colors (#RGB or #RRGGBB format).
+ */
+function sanitizeColor(color) {
+  if (!color || typeof color !== 'string') return '#6366f1';
+  const hex = color.trim();
+  if (/^#[0-9A-Fa-f]{3}$|^#[0-9A-Fa-f]{6}$/.test(hex)) return hex;
+  return '#6366f1';
+}
 
 function isNoteItem(item) {
   // Notes (isNote=true) OR tasks living in the outliner (noteLifecycleState='active')
@@ -146,7 +157,7 @@ function noteAcGetItems(query) {
 function noteAcGetCreateFn() {
   if (noteAcTriggerChar === '#') return (name) => {
     const now = new Date().toISOString();
-    const c = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '\uD83D\uDCC1', createdAt: now, updatedAt: now };
+    const c = { id: generateEntityId('cat'), name, color: '#6366f1', icon: '\uD83D\uDCC1', createdAt: now, updatedAt: now };
     state.taskAreas.push(c);
     localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
     debouncedSaveToGithubSafe();
@@ -155,7 +166,7 @@ function noteAcGetCreateFn() {
   if (noteAcTriggerChar === '@') return (name) => {
     const now = new Date().toISOString();
     const colors = ['#ef4444','#f59e0b','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
-    const l = { id: 'label_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)], createdAt: now, updatedAt: now };
+    const l = { id: generateEntityId('label'), name, color: colors[Math.floor(Math.random() * colors.length)], createdAt: now, updatedAt: now };
     state.taskLabels.push(l);
     localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
     debouncedSaveToGithubSafe();
@@ -164,7 +175,7 @@ function noteAcGetCreateFn() {
   if (noteAcTriggerChar === '&') return (name) => {
     const now = new Date().toISOString();
     const colors = ['#4A90A4','#6B8E5A','#E5533D','#C4943D','#7C6B8E'];
-    const p = { id: 'person_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)], email: '', createdAt: now, updatedAt: now };
+    const p = { id: generateEntityId('person'), name, color: colors[Math.floor(Math.random() * colors.length)], email: '', createdAt: now, updatedAt: now };
     state.taskPeople.push(p);
     localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
     debouncedSaveToGithubSafe();
@@ -271,11 +282,15 @@ function noteAcRenderPopup(items, query, el) {
     if (isDate) {
       icon = `<span class="ac-icon" style="background:#8b5cf620;color:#8b5cf6"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg></span>`;
     } else if (noteAcTriggerChar === '#') {
-      icon = `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">${item.emoji || '<svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}</span>`;
+      const safeColor = sanitizeColor(item.color);
+      const safeEmoji = item.emoji ? escapeHtml(item.emoji) : '<svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>';
+      icon = `<span class="ac-icon" style="background:${safeColor}20;color:${safeColor}">${safeEmoji}</span>`;
     } else if (noteAcTriggerChar === '@') {
-      icon = `<span class="w-3 h-3 rounded-full inline-block flex-shrink-0" style="background:${item.color}"></span>`;
+      const safeColor = sanitizeColor(item.color);
+      icon = `<span class="w-3 h-3 rounded-full inline-block flex-shrink-0" style="background:${safeColor}"></span>`;
     } else {
-      icon = `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">\uD83D\uDC64</span>`;
+      const safeColor = sanitizeColor(item.color);
+      icon = `<span class="ac-icon" style="background:${safeColor}20;color:${safeColor}">\uD83D\uDC64</span>`;
     }
     const dateLabel = isDate ? `<span style="margin-left:auto;font-size:11px;color:var(--text-muted)">${formatSmartDate(item.date)}</span>` : '';
     let nameHtml = escapeHtml(item.name);
@@ -1141,8 +1156,13 @@ export function deleteNoteWithUndo(noteId, focusAfterDeleteId) {
   startUndoCountdown(`"${note.title || 'Untitled'}" deleted`, { snapshot, wasCollapsed }, (snap) => {
     snap.snapshot.forEach(item => {
       const existing = getAnyNoteById(item.id);
-      if (!existing) return;
-      Object.assign(existing, item);
+      if (existing) {
+        // Note still exists in array (marked as deleted) - restore its properties
+        Object.assign(existing, item);
+      } else {
+        // Note was removed from array - push it back
+        state.tasksData.push(item);
+      }
     });
     if (snap.wasCollapsed) state.collapsedNotes.add(noteId);
     saveTasksData();
@@ -1540,7 +1560,8 @@ export function buildPageMetaChipsHtml(note) {
   if (note.areaId) {
     const area = state.taskAreas.find(a => a.id === note.areaId);
     if (area) {
-      chips += `<span class="note-page-chip" style="background:${area.color}12;border-color:${area.color}30;color:${area.color}">
+      const safeColor = sanitizeColor(area.color);
+      chips += `<span class="note-page-chip" style="background:${safeColor}12;border-color:${safeColor}30;color:${safeColor}">
         ${escapeHtml(area.name)}
         <span class="chip-remove" onclick="event.stopPropagation();removeNoteInlineMeta('${note.id}','category','${area.id}')" title="Remove">&times;</span>
       </span>`;
@@ -1558,7 +1579,8 @@ export function buildPageMetaChipsHtml(note) {
   (note.labels || []).forEach(lid => {
     const label = state.taskLabels.find(l => l.id === lid);
     if (label) {
-      chips += `<span class="note-page-chip" style="background:${label.color}12;border-color:${label.color}30;color:${label.color}">
+      const safeColor = sanitizeColor(label.color);
+      chips += `<span class="note-page-chip" style="background:${safeColor}12;border-color:${safeColor}30;color:${safeColor}">
         ${escapeHtml(label.name)}
         <span class="chip-remove" onclick="event.stopPropagation();removeNoteInlineMeta('${note.id}','label','${lid}')" title="Remove">&times;</span>
       </span>`;
@@ -1567,7 +1589,8 @@ export function buildPageMetaChipsHtml(note) {
   (note.people || []).forEach(pid => {
     const person = state.taskPeople.find(p => p.id === pid);
     if (person) {
-      chips += `<span class="note-page-chip" style="background:${person.color}12;border-color:${person.color}30;color:${person.color}">
+      const safeColor = sanitizeColor(person.color);
+      chips += `<span class="note-page-chip" style="background:${safeColor}12;border-color:${safeColor}30;color:${safeColor}">
         ${escapeHtml(person.name.split(' ')[0])}
         <span class="chip-remove" onclick="event.stopPropagation();removeNoteInlineMeta('${note.id}','person','${pid}')" title="Remove">&times;</span>
       </span>`;
@@ -1786,13 +1809,13 @@ export function handleDescriptionKeydown(event, noteId) {
 /** Handle description input — debounced auto-save. */
 export function handleDescriptionInput(event, noteId) {
   if (descriptionSaveTimer) clearTimeout(descriptionSaveTimer);
+  // Capture value immediately to avoid stale DOM reference after render()
+  const valueToSave = event.target.innerText.trim();
   descriptionSaveTimer = setTimeout(() => {
     const note = getActiveNoteById(noteId);
     if (!note) return;
-    const el = event.target;
-    const newNotes = el.innerText.trim();
-    if (newNotes !== (note.notes || '')) {
-      note.notes = newNotes;
+    if (valueToSave !== (note.notes || '')) {
+      note.notes = valueToSave;
       recordNoteChange(note, 'updated', { field: 'notes' });
       saveTasksData();
       debouncedSaveToGithubSafe();

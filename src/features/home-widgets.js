@@ -166,7 +166,9 @@ export function handleWidgetDrop(event, targetWidgetId) {
   if (dragIdx !== -1 && targetIdx !== -1) {
     // Swap positions
     const [draggedWidget] = state.homeWidgets.splice(dragIdx, 1);
-    state.homeWidgets.splice(targetIdx, 0, draggedWidget);
+    // Adjust target index if dragging upward (dragIdx < targetIdx)
+    const adjustedTargetIdx = dragIdx < targetIdx ? targetIdx - 1 : targetIdx;
+    state.homeWidgets.splice(adjustedTargetIdx, 0, draggedWidget);
     state.homeWidgets.forEach((w, i) => w.order = i);
     saveHomeWidgets();
     window.render();

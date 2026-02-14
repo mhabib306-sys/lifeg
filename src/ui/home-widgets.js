@@ -51,7 +51,8 @@ function normalizeGSheetResponseHtml(rawHtml) {
     'DIV', 'SPAN', 'STRONG', 'EM', 'BR', 'UL', 'OL', 'LI',
     'TABLE', 'TBODY', 'THEAD', 'TR', 'TD', 'TH'
   ]);
-  const allowedAttrs = new Set(['style', 'colspan', 'rowspan']);
+  // Note: 'style' removed to prevent CSS injection attacks (e.g., url() exfiltration, overlay attacks)
+  const allowedAttrs = new Set(['colspan', 'rowspan']);
 
   const allElements = Array.from(template.content.querySelectorAll('*'));
   for (const el of allElements) {
@@ -394,7 +395,7 @@ export function renderGlucoseWidget(today) {
         <div class="flex justify-between px-0.5 mt-0.5">${dayLabels}</div>
       </div>
     ` : ''}
-    <div class="grid ${eA1C ? 'grid-cols-4' : 'grid-cols-3'} gap-2">
+    <div class="grid ${eA1C ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3'} gap-2">
       <div class="text-center">
         <label class="text-[10px] text-[var(--text-muted)] font-medium block mb-1">Avg</label>
         ${libreConnected && glucoseData.avg
@@ -500,7 +501,7 @@ export function renderHabitsWidget(today) {
           '<span class="text-lg mb-1">' + h.icon + '</span>' +
           '<input type="checkbox" ' + (isChecked ? 'checked' : '') +
           ' onchange="toggleDailyField(\'habits\', \'' + h.field + '\')"' +
-          ' class="w-5 h-5 rounded border-2 border-[var(--notes-accent)]/40 text-[var(--notes-accent)] focus:ring-[var(--notes-accent)]/40 focus:ring-offset-0 cursor-pointer">' +
+          ' class="habit-check w-5 h-5 rounded border-2 border-[var(--notes-accent)]/40 text-[var(--notes-accent)] focus:ring-[var(--notes-accent)]/40 focus:ring-offset-0 cursor-pointer">' +
           '</label>';
       }).join('')}
     </div>
@@ -757,7 +758,7 @@ export function renderGSheetWidget(today) {
     const responseContent = isError ? escapeHtml(response) : normalizeGSheetResponseHtml(response);
     responseHtml = `
       <div class="max-h-[300px] overflow-y-auto">
-        <div class="gsheet-response text-sm leading-relaxed ${isError ? 'text-[var(--danger)]' : 'text-[var(--text-primary)]'}">${responseContent}</div>
+        <div class="gsheet-response text-sm leading-relaxed overflow-x-auto ${isError ? 'text-[var(--danger)]' : 'text-[var(--text-primary)]'}">${responseContent}</div>
       </div>
     `;
   } else {

@@ -138,7 +138,8 @@ export function reviewAddTask(areaId, status = 'anytime', today = false) {
 // ---------------------------------------------------------------------------
 
 export function renderReviewMode() {
-  const areas = state.taskAreas;
+  // Filter out any falsy/corrupted entries to prevent infinite recursion
+  const areas = state.taskAreas.filter(Boolean);
   if (areas.length === 0) {
     return `
       <div class="flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
@@ -209,7 +210,7 @@ export function renderReviewMode() {
         <div class="flex justify-between mt-2">
           ${areas.map((a, i) => `
             <button onclick="state.reviewAreaIndex=${i}; render()"
-              class="w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center transition
+              class="review-progress-dot w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center transition
                 ${state.reviewCompletedAreas.includes(a.id) ? 'bg-[var(--success)] text-white' : i === state.reviewAreaIndex ? 'ring-2 ring-offset-1' : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'}"
               style="${i === state.reviewAreaIndex ? `ring-color: ${a.color || '#147EFB'}; background: ${a.color || '#147EFB'}20; color: ${a.color || '#147EFB'}` : ''}"
               title="${escapeHtml(a.name)}">

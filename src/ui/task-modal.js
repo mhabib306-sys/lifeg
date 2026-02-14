@@ -1284,6 +1284,22 @@ export function saveTaskFromModal() {
 
   cleanupInlineAutocomplete('task-title');
   cleanupModalAutocomplete();
+
+  // Sheet dismiss animation on mobile (consistent with closeTaskModal)
+  if (isMobileViewport()) {
+    const overlay = document.querySelector('.modal-overlay');
+    if (overlay) {
+      overlay.classList.add('sheet-dismissing');
+      setTimeout(() => {
+        state.showTaskModal = false;
+        state.editingTaskId = null;
+        state.modalStateInitialized = false;
+        window.render();
+      }, 350);
+      return;
+    }
+  }
+
   state.showTaskModal = false;
   state.editingTaskId = null;
   state.modalStateInitialized = false;

@@ -405,13 +405,14 @@ export function toggleWorkspaceSidebar() {
 
 let _lastScrollY = 0;
 let _scrollHideAttached = false;
+let _scrollHandler = null;
 
 export function initBottomNavScrollHide() {
   if (_scrollHideAttached || window.innerWidth > 768) return;
   _scrollHideAttached = true;
   _lastScrollY = window.scrollY;
 
-  window.addEventListener('scroll', () => {
+  _scrollHandler = () => {
     const nav = document.querySelector('.mobile-bottom-nav');
     if (!nav) return;
 
@@ -425,7 +426,17 @@ export function initBottomNavScrollHide() {
     }
 
     _lastScrollY = currentY;
-  }, { passive: true });
+  };
+
+  window.addEventListener('scroll', _scrollHandler, { passive: true });
+}
+
+export function cleanupBottomNavScrollHide() {
+  if (_scrollHandler) {
+    window.removeEventListener('scroll', _scrollHandler);
+    _scrollHandler = null;
+    _scrollHideAttached = false;
+  }
 }
 
 export function scrollToContent() {

@@ -622,7 +622,7 @@ export function renderPerspectiveModalHtml() {
           <!-- Date Range -->
           <div class="modal-section">
             <div class="modal-section-label">Date Range</div>
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <select id="perspective-range-type" class="modal-input-enhanced text-[13px]">
                 <option value="either" ${sel(ef.dateRange?.type, 'either')}>Due or Defer</option>
                 <option value="due" ${sel(ef.dateRange?.type, 'due')}>Due only</option>

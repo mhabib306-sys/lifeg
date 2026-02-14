@@ -706,5 +706,5 @@ export async function forceHardRefresh() {
     console.warn('Cache clear error:', err);
   }
   // Force reload from network
-  window.location.reload(true);
+  window.location.reload();
 }

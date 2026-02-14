@@ -1,6 +1,6 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
-import { getLocalDateString } from '../utils.js';
+import { getLocalDateString, generateEntityId } from '../utils.js';
 import { DELETED_ENTITY_TOMBSTONES_KEY } from '../constants.js';
 
 function ensureEntityTombstones() {
@@ -38,7 +38,7 @@ export function createCategory(name, areaId = '', emoji = '') {
   const nextColor = colors[state.taskCategories.length % colors.length];
   const now = new Date().toISOString();
   const category = {
-    id: 'cat_' + Date.now(),
+    id: generateEntityId('cat'),
     name: name,
     color: nextColor,
     icon: emoji || '\uD83D\uDCC1',
@@ -79,7 +79,7 @@ export function getCategoryById(categoryId) {
 export function createLabel(name, color) {
   const now = new Date().toISOString();
   const label = {
-    id: 'label_' + Date.now(),
+    id: generateEntityId('label'),
     name: name,
     color: color || '#6B7280',
     createdAt: now,
@@ -120,7 +120,7 @@ export function getLabelById(labelId) {
 export function createPerson(name) {
   const now = new Date().toISOString();
   const person = {
-    id: 'person_' + Date.now(),
+    id: generateEntityId('person'),
     name: name,
     createdAt: now,
     updatedAt: now

@@ -8,13 +8,26 @@
 // calls back to task-modal functions via window.* bridge to avoid circular imports.
 
 import { state } from '../state.js';
-import { escapeHtml, formatSmartDate } from '../utils.js';
+import { escapeHtml, formatSmartDate, generateEntityId } from '../utils.js';
 import { TASK_CATEGORIES_KEY, TASK_LABELS_KEY, TASK_PEOPLE_KEY } from '../constants.js';
 
 function debouncedSaveToGithub() {
   if (typeof window.debouncedSaveToGithub === 'function') {
     window.debouncedSaveToGithub();
   }
+}
+
+/**
+ * Sanitize color values to prevent CSS injection attacks.
+ * Only allows valid hex colors (#RGB or #RRGGBB format).
+ * @param {string} color - Color value to sanitize
+ * @returns {string} Sanitized hex color or fallback
+ */
+function sanitizeColor(color) {
+  if (!color || typeof color !== 'string') return '#6366f1';
+  const hex = color.trim();
+  if (/^#[0-9A-Fa-f]{3}$|^#[0-9A-Fa-f]{6}$/.test(hex)) return hex;
+  return '#6366f1'; // fallback to default blue
 }
 
 // ============================================================================
@@ -221,7 +234,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
   function getCreateFn() {
     if (triggerChar === '#') return (name) => {
       const now = new Date().toISOString();
-      const c = { id: 'cat_' + Date.now(), name, color: '#6366f1', icon: '\uD83D\uDCC1', createdAt: now, updatedAt: now };
+      const c = { id: generateEntityId('cat'), name, color: '#6366f1', icon: '\uD83D\uDCC1', createdAt: now, updatedAt: now };
       state.taskAreas.push(c);
       localStorage.setItem(TASK_CATEGORIES_KEY, JSON.stringify(state.taskAreas));
       debouncedSaveToGithub();
@@ -230,7 +243,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
     if (triggerChar === '@') return (name) => {
       const now = new Date().toISOString();
       const colors = ['#ef4444','#f59e0b','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
-      const l = { id: 'label_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)], createdAt: now, updatedAt: now };
+      const l = { id: generateEntityId('label'), name, color: colors[Math.floor(Math.random() * colors.length)], createdAt: now, updatedAt: now };
       state.taskLabels.push(l);
       localStorage.setItem(TASK_LABELS_KEY, JSON.stringify(state.taskLabels));
       debouncedSaveToGithub();
@@ -239,7 +252,7 @@ export function setupInlineAutocomplete(inputId, config = {}) {
     if (triggerChar === '&') return (name) => {
       const now = new Date().toISOString();
       const colors = ['#4A90A4','#6B8E5A','#E5533D','#C4943D','#7C6B8E'];
-      const p = { id: 'person_' + Date.now(), name, color: colors[Math.floor(Math.random() * colors.length)], email: '', createdAt: now, updatedAt: now };
+      const p = { id: generateEntityId('person'), name, color: colors[Math.floor(Math.random() * colors.length)], email: '', createdAt: now, updatedAt: now };
       state.taskPeople.push(p);
       localStorage.setItem(TASK_PEOPLE_KEY, JSON.stringify(state.taskPeople));
       debouncedSaveToGithub();
@@ -336,11 +349,15 @@ export function setupInlineAutocomplete(inputId, config = {}) {
         const dateColor = triggerChar === '!!' ? '#ef4444' : '#8b5cf6';
         icon = `<span class="ac-icon" style="background:${dateColor}20;color:${dateColor}"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg></span>`;
       } else if (triggerChar === '#') {
-        icon = `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">${item.emoji || '<svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}</span>`;
+        const safeColor = sanitizeColor(item.color);
+        const safeEmoji = item.emoji ? escapeHtml(item.emoji) : '<svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>';
+        icon = `<span class="ac-icon" style="background:${safeColor}20;color:${safeColor}">${safeEmoji}</span>`;
       } else if (triggerChar === '@') {
-        icon = `<span class="w-3 h-3 rounded-full inline-block flex-shrink-0" style="background:${item.color}"></span>`;
+        const safeColor = sanitizeColor(item.color);
+        icon = `<span class="w-3 h-3 rounded-full inline-block flex-shrink-0" style="background:${safeColor}"></span>`;
       } else {
-        icon = `<span class="ac-icon" style="background:${item.color}20;color:${item.color}">\uD83D\uDC64</span>`;
+        const safeColor = sanitizeColor(item.color);
+        icon = `<span class="ac-icon" style="background:${safeColor}20;color:${safeColor}">\uD83D\uDC64</span>`;
       }
       const dateLabel = isDate ? `<span style="margin-left:auto;font-size:11px;color:var(--text-muted)">${formatSmartDate(item.date)}</span>` : '';
       // For categories, show parent area name as a subtle label
@@ -518,8 +535,10 @@ export function renderInlineChips(inputId) {
   if (meta.areaId) {
     const cat = state.taskAreas.find(c => c.id === meta.areaId);
     if (cat) {
-      html += `<span class="inline-meta-chip" style="background:${cat.color}20;color:${cat.color}">
-        ${cat.emoji || '<svg style="display:inline-block;vertical-align:middle;width:12px;height:12px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'} ${escapeHtml(cat.name)}
+      const safeColor = sanitizeColor(cat.color);
+      const safeEmoji = cat.emoji ? escapeHtml(cat.emoji) : '<svg style="display:inline-block;vertical-align:middle;width:12px;height:12px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>';
+      html += `<span class="inline-meta-chip" style="background:${safeColor}20;color:${safeColor}">
+        ${safeEmoji} ${escapeHtml(cat.name)}
         <span class="inline-meta-chip-remove" onclick="removeInlineMeta('${inputId}','category','${cat.id}')">
           <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </span>
@@ -530,7 +549,8 @@ export function renderInlineChips(inputId) {
   (meta.labels || []).forEach(lid => {
     const label = state.taskLabels.find(l => l.id === lid);
     if (label) {
-      html += `<span class="inline-meta-chip" style="background:${label.color}20;color:${label.color}">
+      const safeColor = sanitizeColor(label.color);
+      html += `<span class="inline-meta-chip" style="background:${safeColor}20;color:${safeColor}">
         ${escapeHtml(label.name)}
         <span class="inline-meta-chip-remove" onclick="removeInlineMeta('${inputId}','label','${label.id}')">
           <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -542,7 +562,8 @@ export function renderInlineChips(inputId) {
   (meta.people || []).forEach(pid => {
     const person = state.taskPeople.find(p => p.id === pid);
     if (person) {
-      html += `<span class="inline-meta-chip" style="background:${person.color}20;color:${person.color}">
+      const safeColor = sanitizeColor(person.color);
+      html += `<span class="inline-meta-chip" style="background:${safeColor}20;color:${safeColor}">
         \uD83D\uDC64 ${escapeHtml(person.name)}
         <span class="inline-meta-chip-remove" onclick="removeInlineMeta('${inputId}','person','${person.id}')">
           <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
