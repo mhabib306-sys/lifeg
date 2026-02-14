@@ -227,6 +227,25 @@ export function render() {
       return;
     }
 
+    // ---- Biometric lock gate ----
+    if (state.biometricLocked) {
+      resetBodyUiState();
+      app.innerHTML = `
+        <div class="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-primary)] px-6">
+          <svg class="w-16 h-16 mb-6 text-[var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="5" y="11" width="14" height="10" rx="2"/>
+            <path d="M8 11V7a4 4 0 018 0v4"/>
+          </svg>
+          <h2 class="text-lg font-semibold text-[var(--text-primary)] mb-2">Homebase Locked</h2>
+          <p class="text-sm text-[var(--text-muted)] mb-6">Authenticate to unlock</p>
+          <button type="button" onclick="unlockWithBiometric().then(ok => { if (ok) { state.biometricLocked = false; render(); } })"
+            class="px-6 py-3 bg-[var(--accent)] text-white rounded-lg font-medium text-sm">
+            Unlock
+          </button>
+        </div>`;
+      return;
+    }
+
     // ---- Auth gate: login screen ----
     if (!state.currentUser) {
       resetBodyUiState();

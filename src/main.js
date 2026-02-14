@@ -308,6 +308,27 @@ function bootstrap() {
         }
       });
     }).catch(() => {});
+
+    // L5 fix: App lifecycle — lock on background, sync on resume
+    import('@capacitor/app').then(({ App }) => {
+      App.addListener('appStateChange', ({ isActive }) => {
+        if (isActive) {
+          // Resume: attempt biometric unlock if enabled
+          if (state.biometricEnabled && state.biometricLocked) {
+            window.unlockWithBiometric?.().then(ok => {
+              if (ok) { state.biometricLocked = false; window.render?.(); }
+            });
+          }
+          // Sync on resume
+          window.debouncedSaveToGithub?.();
+        } else {
+          // Background: lock if biometric enabled
+          if (state.biometricEnabled) {
+            state.biometricLocked = true;
+          }
+        }
+      });
+    }).catch(() => {});
   }
 
   setupTwemojiObserver();

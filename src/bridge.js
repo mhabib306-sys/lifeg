@@ -14,6 +14,7 @@ import { state } from './state.js';
 import { isCapacitor, isIOS, getPlatform, isNative, platformFeatures } from './platform.js';
 import { nativeHaptic, hapticSync, setStatusBarStyle, initKeyboard, hideSplashScreen, openInAppBrowser, initAppLifecycle, initNative } from './native.js';
 import { animateTaskCompletion, animateTaskDeletion, sweepStaleClones } from './features/task-animations.js';
+import { isBiometricAvailable, verifyBiometric, enableBiometric, disableBiometric, unlockWithBiometric } from './native/biometric.js';
 
 // -- Utils --
 import { getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId, isMobileViewport, isTouchDevice, isMobile, haptic } from './utils.js';
@@ -319,6 +320,7 @@ Object.assign(window, {
   nativeHaptic, hapticSync, setStatusBarStyle, initKeyboard,
   hideSplashScreen, openInAppBrowser, initAppLifecycle, initNative,
   animateTaskCompletion, animateTaskDeletion, sweepStaleClones,
+  isBiometricAvailable, verifyBiometric, enableBiometric, disableBiometric, unlockWithBiometric,
 
   // Utils
   getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId,
@@ -573,6 +575,7 @@ const stateProxies = [
   'reviewMode', 'reviewAreaIndex', 'reviewCompletedAreas', 'lastWeeklyReview', 'lastSomedayReview',
   'showGlobalSearch', 'globalSearchQuery', 'globalSearchResults', 'globalSearchActiveIndex', 'globalSearchTypeFilter',
   'settingsIntegrationsOpen', 'settingsScoringOpen', 'settingsDevToolsOpen', 'settingsDataDiagOpen',
+  'biometricEnabled', 'biometricLocked',
 ];
 
 stateProxies.forEach(prop => {

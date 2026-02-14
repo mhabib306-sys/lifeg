@@ -521,6 +521,23 @@ export function renderSettingsTab() {
       </div>
       ` : ''}
 
+      ${window.isCapacitor?.() ? `
+      <!-- Security (native only) -->
+      <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
+        <h3 class="font-semibold text-[var(--text-primary)] text-sm mb-3">Security</h3>
+        <div class="flex items-center justify-between py-2">
+          <div>
+            <span class="text-sm text-[var(--text-primary)]">Biometric Lock</span>
+            <p class="text-xs text-[var(--text-muted)]">Require Face ID / Touch ID to unlock</p>
+          </div>
+          <div class="relative toggle-switch toggle-track" role="switch" aria-checked="${state.biometricEnabled}" aria-label="Biometric Lock" onclick="(async()=>{if(state.biometricEnabled){window.disableBiometric();state.biometricEnabled=false;}else{try{const ok=await window.enableBiometric();if(ok)state.biometricEnabled=true;}catch(e){}}window.render();})()">
+            <div class="w-[52px] h-8 rounded-full transition ${state.biometricEnabled ? 'toggle-on' : 'toggle-off'}"></div>
+            <div class="absolute left-0.5 top-0.5 w-7 h-7 bg-white rounded-full shadow transition" style="transform: translateX(${state.biometricEnabled ? '20' : '0'}px)"></div>
+          </div>
+        </div>
+      </div>
+      ` : ''}
+
       <!-- Appearance -->
       <div class="sb-card rounded-lg p-5 bg-[var(--bg-card)]">
         <h3 class="font-semibold text-[var(--text-primary)] text-sm mb-3">Appearance</h3>

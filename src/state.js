@@ -626,4 +626,8 @@ export const state = {
 
   // ---- Storage quota status ----
   quotaExceededError: false, // Set true when localStorage quota exceeded, shows UI banner
+
+  // ---- Biometric lock (iOS) ----
+  biometricEnabled: localStorage.getItem('nucleusBiometricEnabled') === 'true',
+  biometricLocked: false,  // True when app is locked, shows lock overlay
 };
