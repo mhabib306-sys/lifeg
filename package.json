@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/mhabib306-sys/lifeg#readme",
   "devDependencies": {
+    "@capacitor/cli": "^8.1.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@tauri-apps/cli": "^2.10.0",
     "@vitest/coverage-v8": "^4.0.18",
@@ -47,6 +48,7 @@
     "vitest": "^4.0.18"
   },
   "dependencies": {
+    "@capacitor/core": "^8.1.0",
     "chart.js": "^4.5.1",
     "firebase": "^12.9.0",
     "twemoji": "^14.0.2"
