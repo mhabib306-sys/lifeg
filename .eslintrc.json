@@ -1,0 +1,29 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["no-unsanitized"],
+  "rules": {
+    "no-unsanitized/property": [
+      "error",
+      {
+        "escape": {
+          "methods": ["escapeHtml", "sanitizeColor"]
+        }
+      }
+    ],
+    "no-unsanitized/method": "error",
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-console": "off"
+  },
+  "globals": {
+    "state": "readonly",
+    "twemoji": "readonly"
+  }
+}

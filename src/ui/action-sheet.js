@@ -5,6 +5,7 @@
 // Usage: showActionSheet({ title, items, cancelLabel })
 
 import { state } from '../state.js';
+import { escapeHtml } from '../utils.js';
 
 let activeSheet = null;
 
