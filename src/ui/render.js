@@ -249,7 +249,7 @@ export function render() {
     // ---- Authenticated: render full app ----
     const cachePromptHtml = state.showCacheRefreshPrompt ? `
       <div class="max-w-6xl mx-auto px-6 pt-4">
-        <div class="rounded-lg border px-4 py-3 flex items-center justify-between gap-3" style="border-color: color-mix(in srgb, var(--warning) 25%, transparent); background: color-mix(in srgb, var(--warning) 8%, transparent)">
+        <div class="rounded-lg border px-4 py-3 flex items-center justify-between gap-3" role="alert" aria-live="polite" aria-atomic="true" style="border-color: color-mix(in srgb, var(--warning) 25%, transparent); background: color-mix(in srgb, var(--warning) 8%, transparent)">
           <div>
             <p class="text-sm font-semibold" style="color: var(--warning)">New app update available</p>
             <p class="text-xs" style="color: var(--warning)">${escapeHtml(state.cacheRefreshPromptMessage || `Version ${APP_VERSION} is available. Refresh recommended to avoid stale cache.`)}</p>
@@ -265,7 +265,7 @@ export function render() {
     // Quota exceeded banner
     const quotaExceededBanner = state.quotaExceededError ? `
       <div class="max-w-6xl mx-auto px-6 pt-4">
-        <div class="rounded-lg border px-4 py-3 flex items-center justify-between gap-3" style="border-color: color-mix(in srgb, var(--danger) 25%, transparent); background: color-mix(in srgb, var(--danger) 8%, transparent)">
+        <div class="rounded-lg border px-4 py-3 flex items-center justify-between gap-3" role="alert" aria-live="assertive" aria-atomic="true" style="border-color: color-mix(in srgb, var(--danger) 25%, transparent); background: color-mix(in srgb, var(--danger) 8%, transparent)">
           <div>
             <p class="text-sm font-semibold" style="color: var(--danger)">Storage quota exceeded</p>
             <p class="text-xs" style="color: var(--danger)">Your device's localStorage is full. Export your data to free up space, or some changes may not save locally.</p>

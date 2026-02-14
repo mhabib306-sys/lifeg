@@ -97,7 +97,7 @@ export function renderUndoToastHtml() {
   const dashoffset = (1 - pct) * 88;
 
   return `
-    <div id="undo-toast" class="undo-toast" role="alert">
+    <div id="undo-toast" class="undo-toast" role="alert" aria-live="polite" aria-atomic="true">
       <div class="undo-toast-inner">
         <div class="undo-countdown-ring">
           <svg viewBox="0 0 32 32" class="w-7 h-7">
