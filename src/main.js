@@ -33,6 +33,7 @@ import { rebuildGamification, processGamification } from './features/scoring.js'
 import { APP_VERSION, APP_VERSION_SEEN_KEY } from './constants.js';
 import { isMobileViewport } from './utils.js';
 import { initNative } from './native.js';
+import { isCapacitor } from './platform.js';
 import twemoji from 'twemoji';
 
 // ============================================================================
@@ -293,6 +294,22 @@ function bootstrap() {
   // Apply theme immediately so login screen is styled
   applyStoredTheme();
   initNative();
+
+  // H1 fix: Listen for OAuth callback in Capacitor (SFSafariViewController redirect)
+  if (isCapacitor()) {
+    import('@capacitor/app').then(({ App }) => {
+      App.addListener('appUrlOpen', ({ url }) => {
+        if (url.includes('id_token=') || url.includes('access_token=')) {
+          const hash = url.split('#')[1];
+          if (hash) {
+            window.location.hash = '#' + hash;
+            window.handleOAuthCallback?.();
+          }
+        }
+      });
+    }).catch(() => {});
+  }
+
   setupTwemojiObserver();
   // Eagerly load GIS script so it's ready by the time any token refresh is needed
   preloadGoogleIdentityServices();

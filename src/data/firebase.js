@@ -73,7 +73,16 @@ export function signInWithGoogle() {
   });
 
   // Navigate directly to Google — no Firebase auth handler middleman
-  window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+
+  // H1 fix: use SFSafariViewController in Capacitor (WKWebView blocks OAuth)
+  if (typeof window.isCapacitor === 'function' && window.isCapacitor()) {
+    import('@capacitor/browser').then(({ Browser }) => {
+      Browser.open({ url: authUrl, presentationStyle: 'popover' });
+    }).catch(() => { window.location.href = authUrl; });
+    return;
+  }
+  window.location.href = authUrl;
 }
 
 export function signOutUser() {
