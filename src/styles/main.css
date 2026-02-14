@@ -6105,3 +6105,13 @@ mark.global-search-highlight {
   overflow: hidden;
 }
 #animation-overlay:empty { display: none; }
+
+/* View Transitions for tab switching */
+::view-transition-old(root) { animation: 120ms ease-out both vt-fade-out; }
+::view-transition-new(root) { animation: 200ms ease-out both vt-fade-in; }
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-fade-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none; }
+}

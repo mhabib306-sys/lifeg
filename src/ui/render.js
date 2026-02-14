@@ -684,8 +684,26 @@ export function switchTab(tab) {
   const nav = document.querySelector('.mobile-bottom-nav');
   if (nav) nav.classList.remove('nav-scroll-hidden');
   saveViewState();
-  render();
-  scrollToContent();
+
+  // View Transitions API for smooth tab switching (M4 fix: cross-fade fallback)
+  if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.startViewTransition(() => { render(); scrollToContent(); });
+  } else {
+    const app = document.getElementById('app');
+    if (app) {
+      app.style.opacity = '0.6';
+      requestAnimationFrame(() => {
+        render();
+        scrollToContent();
+        app.style.opacity = '';
+        app.style.transition = 'opacity 150ms ease-out';
+        setTimeout(() => { app.style.transition = ''; }, 200);
+      });
+    } else {
+      render();
+      scrollToContent();
+    }
+  }
 }
 
 // ============================================================================
