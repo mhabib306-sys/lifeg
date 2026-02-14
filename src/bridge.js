@@ -18,6 +18,8 @@ import { isBiometricAvailable, verifyBiometric, enableBiometric, disableBiometri
 import { initPushNotifications } from './native/push-notifications.js';
 import { scheduleTaskReminder, cancelTaskReminder, initLocalNotifications } from './native/local-notifications.js';
 import { updateWidgetData } from './native/widget-bridge.js';
+import { donateSiriShortcuts, handleSiriShortcut } from './native/siri-shortcuts.js';
+import { processSharedItems, handleSharedContent } from './native/share-extension.js';
 
 // -- Utils --
 import { getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId, isMobileViewport, isTouchDevice, isMobile, haptic } from './utils.js';
@@ -326,6 +328,8 @@ Object.assign(window, {
   isBiometricAvailable, verifyBiometric, enableBiometric, disableBiometric, unlockWithBiometric,
   initPushNotifications, scheduleTaskReminder, cancelTaskReminder, initLocalNotifications,
   updateWidgetData,
+  donateSiriShortcuts, handleSiriShortcut,
+  processSharedItems, handleSharedContent,
 
   // Utils
   getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId,
