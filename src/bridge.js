@@ -13,6 +13,7 @@ import { state } from './state.js';
 // -- Platform + Native --
 import { isCapacitor, isIOS, getPlatform, isNative, platformFeatures } from './platform.js';
 import { nativeHaptic, hapticSync, setStatusBarStyle, initKeyboard, hideSplashScreen, openInAppBrowser, initAppLifecycle, initNative } from './native.js';
+import { animateTaskCompletion, animateTaskDeletion, sweepStaleClones } from './features/task-animations.js';
 
 // -- Utils --
 import { getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId, isMobileViewport, isTouchDevice, isMobile, haptic } from './utils.js';
@@ -317,6 +318,7 @@ Object.assign(window, {
   isCapacitor, isIOS, getPlatform, isNative, platformFeatures,
   nativeHaptic, hapticSync, setStatusBarStyle, initKeyboard,
   hideSplashScreen, openInAppBrowser, initAppLifecycle, initNative,
+  animateTaskCompletion, animateTaskDeletion, sweepStaleClones,
 
   // Utils
   getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId,
