@@ -70,6 +70,15 @@ export function saveAreaFromModal() {
     return showFieldError('area-name', 'Please enter an area name');
   }
 
+  // Check for duplicate name (case-insensitive)
+  const duplicate = state.taskAreas.find(a =>
+    a.id !== state.editingAreaId &&
+    a.name.toLowerCase() === name.toLowerCase()
+  );
+  if (duplicate) {
+    return showFieldError('area-name', 'An area with this name already exists');
+  }
+
   if (state.editingAreaId) {
     updateArea(state.editingAreaId, { name, emoji, color });
   } else {
@@ -113,6 +122,16 @@ export function saveLabelFromModal() {
   if (!name) {
     return showFieldError('label-name', 'Please enter a tag name');
   }
+
+  // Check for duplicate label name
+  const duplicate = state.taskLabels.find(l =>
+    l.id !== state.editingLabelId &&
+    l.name.toLowerCase() === name.toLowerCase()
+  );
+  if (duplicate) {
+    return showFieldError('label-name', 'A label with this name already exists');
+  }
+
   const color = document.getElementById('label-color').value;
 
   if (state.editingLabelId) {
@@ -133,6 +152,15 @@ export function savePersonFromModal() {
   const email = document.getElementById('person-email').value.trim();
   if (!name) {
     return showFieldError('person-name', 'Please enter a name');
+  }
+
+  // Check for duplicate person name
+  const duplicate = state.taskPeople.find(p =>
+    p.id !== state.editingPersonId &&
+    p.name.toLowerCase() === name.toLowerCase()
+  );
+  if (duplicate) {
+    return showFieldError('person-name', 'A person with this name already exists');
   }
 
   if (state.editingPersonId) {
