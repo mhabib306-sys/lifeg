@@ -99,43 +99,78 @@ export function setTheme(themeName) {
  */
 export function applyStoredTheme() {
   const theme = getTheme();
-  const mode = getColorMode();
   document.documentElement.setAttribute('data-theme', theme);
-  document.documentElement.setAttribute('data-mode', mode);
+  // Resolve 'auto' to effective mode
+  const effectiveMode = getColorMode() === 'auto'
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : getColorMode();
+  document.documentElement.setAttribute('data-mode', effectiveMode);
   syncThemeColorMeta();
 }
 
 // ---------------------------------------------------------------------------
-// Color mode (light / dark)
+// Color mode (light / dark / auto)
 // ---------------------------------------------------------------------------
 
 /**
- * Get the stored color mode
- * @returns {'light'|'dark'} Color mode
+ * Get the stored color mode preference
+ * @returns {'light'|'dark'|'auto'} Color mode preference
  */
 export function getColorMode() {
   return localStorage.getItem(COLOR_MODE_KEY) || 'light';
 }
 
 /**
- * Set color mode, apply to document, and re-render
- * @param {'light'|'dark'} mode
+ * Resolve effective color mode (resolves 'auto' to system preference)
+ * @returns {'light'|'dark'}
+ */
+export function getEffectiveColorMode() {
+  const mode = getColorMode();
+  if (mode === 'auto') {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return mode;
+}
+
+/**
+ * Apply effective color mode to document (does not change stored preference)
+ * @param {'light'|'dark'} effectiveMode
+ */
+function applyEffectiveMode(effectiveMode) {
+  document.documentElement.setAttribute('data-mode', effectiveMode);
+  syncThemeColorMeta();
+  if (typeof window.setStatusBarStyle === 'function') {
+    window.setStatusBarStyle(effectiveMode === 'dark');
+  }
+}
+
+/**
+ * Set color mode preference, apply to document, and re-render
+ * @param {'light'|'dark'|'auto'} mode
  */
 export function setColorMode(mode) {
   localStorage.setItem(COLOR_MODE_KEY, mode);
-  document.documentElement.setAttribute('data-mode', mode);
-  syncThemeColorMeta();
-  if (typeof window.setStatusBarStyle === 'function') {
-    window.setStatusBarStyle(mode === 'dark');
-  }
+  applyEffectiveMode(getEffectiveColorMode());
   window.render();
 }
 
 /**
- * Toggle between light and dark mode
+ * Toggle between light, auto, and dark mode
  */
 export function toggleColorMode() {
-  setColorMode(getColorMode() === 'light' ? 'dark' : 'light');
+  const current = getColorMode();
+  const next = current === 'light' ? 'dark' : current === 'dark' ? 'auto' : 'light';
+  setColorMode(next);
+}
+
+// Listen for system color scheme changes (applies when mode is 'auto')
+if (typeof window !== 'undefined') {
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (getColorMode() === 'auto') {
+      applyEffectiveMode(getEffectiveColorMode());
+      window.render?.();
+    }
+  });
 }
 
 /**
