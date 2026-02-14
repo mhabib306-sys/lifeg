@@ -429,6 +429,11 @@ export function initBottomNavScrollHide() {
   };
 
   window.addEventListener('scroll', _scrollHandler, { passive: true });
+
+  // Register cleanup to prevent memory leaks on full DOM replacement
+  if (typeof window.registerCleanup === 'function') {
+    window.registerCleanup(cleanupBottomNavScrollHide);
+  }
 }
 
 export function cleanupBottomNavScrollHide() {

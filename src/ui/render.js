@@ -185,6 +185,12 @@ export function render() {
   const renderStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
   try {
     const app = document.getElementById('app');
+
+    // Run cleanup callbacks before DOM replacement to prevent memory leaks
+    if (typeof window.runCleanupCallbacks === 'function') {
+      window.runCleanupCallbacks();
+    }
+
     // Save scroll position before DOM replacement (restore only on same-tab renders)
     const isTabChange = _previousTab !== null && _previousTab !== state.activeTab;
     const savedScrollTop = !isTabChange ? (document.documentElement.scrollTop || document.body.scrollTop) : 0;

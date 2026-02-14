@@ -265,6 +265,37 @@ import {
 import { renderSettingsTab, createWeightInput } from './ui/settings.js';
 
 // ============================================================================
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+/**
+ * Register a cleanup function to be called before the next render().
+ * Use this for event listeners added after render to prevent memory leaks.
+ * @param {Function} cleanupFn - Function to call before next DOM replacement
+ */
+function registerCleanup(cleanupFn) {
+  if (typeof cleanupFn === 'function') {
+    state.cleanupCallbacks.push(cleanupFn);
+  }
+}
+
+/**
+ * Run all registered cleanup callbacks and clear the registry.
+ * Called by render() before innerHTML replacement.
+ */
+function runCleanupCallbacks() {
+  state.cleanupCallbacks.forEach(fn => {
+    try {
+      fn();
+    } catch (err) {
+      console.error('Cleanup callback error:', err);
+    }
+  });
+  state.cleanupCallbacks = [];
+}
+
+// ============================================================================
 // Assign ALL to window so onclick="functionName()" works from HTML strings
 // ============================================================================
 
@@ -275,6 +306,7 @@ Object.assign(window, {
   // Utils
   getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId,
   isMobileViewport, isTouchDevice, isMobile, haptic,
+  registerCleanup, runCleanupCallbacks,
 
   // Constants
   THINGS3_ICONS, GEIST_ICONS, getActiveIcons, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, defaultDayData,

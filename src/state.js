@@ -611,4 +611,8 @@ export const state = {
 
   // ---- Responsive ----
   _lastRenderWasMobile: false,
+
+  // ---- Event listener cleanup registry ----
+  // Functions to call before full DOM replacement to prevent memory leaks
+  cleanupCallbacks: [],
 };
