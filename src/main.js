@@ -307,12 +307,60 @@ function bootstrap() {
   if (isCapacitor()) {
     import('@capacitor/app').then(({ App }) => {
       App.addListener('appUrlOpen', ({ url }) => {
+        // OAuth callback
         if (url.includes('id_token=') || url.includes('access_token=')) {
           const hash = url.split('#')[1];
           if (hash) {
             window.location.hash = '#' + hash;
             window.handleOAuthCallback?.();
           }
+          return;
+        }
+
+        // Deep link routing: homebase://...
+        try {
+          const parsed = new URL(url);
+          const path = parsed.hostname || parsed.pathname?.replace(/^\//, '');
+
+          switch (path) {
+            case 'task': {
+              // homebase://task/{id} → open task modal
+              const taskId = parsed.pathname?.replace(/^\//, '') || parsed.searchParams?.get('id');
+              if (taskId) {
+                window.editingTaskId = taskId;
+                window.showTaskModal = true;
+                window.render?.();
+              }
+              break;
+            }
+            case 'tab': {
+              // homebase://tab/{name} → switch tab
+              const tab = parsed.pathname?.replace(/^\//, '');
+              if (tab && ['home', 'tasks', 'life', 'calendar', 'settings'].includes(tab)) {
+                window.switchTab?.(tab);
+              }
+              break;
+            }
+            case 'add-task': {
+              // homebase://add-task → open new task modal (Siri shortcut)
+              window.handleSiriShortcut?.('add-task');
+              break;
+            }
+            case 'agenda': {
+              // homebase://agenda → show home tab (Siri shortcut)
+              window.handleSiriShortcut?.('agenda');
+              break;
+            }
+            case 'share': {
+              // homebase://share?text=...&url=... → create inbox task
+              const text = parsed.searchParams?.get('text') || '';
+              const shareUrl = parsed.searchParams?.get('url') || '';
+              window.handleSharedContent?.(text, shareUrl);
+              break;
+            }
+          }
+        } catch (e) {
+          console.warn('[DeepLink] Failed to parse:', url, e);
         }
       });
     }).catch(() => {});
