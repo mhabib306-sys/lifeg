@@ -210,6 +210,7 @@ input[type="number"], input[type="text"], textarea, select {
   border: none;
   border-radius: calc(var(--border-radius) - 2px);
   color: var(--text-primary);
+  font-size: 1rem; /* Prevent iOS auto-zoom on focus (requires >= 16px) */
   transition: background var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
 }
 input[type="number"]:focus, input[type="text"]:focus, textarea:focus, select:focus {
