@@ -1,5 +1,23 @@
 # Round 2: Comprehensive Codebase Audit - 200+ Issues
 
+## Completed Issues (Progress: 7/200+)
+
+### Infrastructure (Phase 5) - COMPLETE ✅
+- [x] 220. Missing ESLint configuration → Installed ESLint 8.57 + eslint-plugin-no-unsanitized
+- [x] 228. No linting configuration → Created .eslintrc.json with no-unsanitized rules
+- [x] 230. No pre-commit hooks → Installed husky, created pre-commit hook running tests + lint
+- [x] NEW: No CI/CD pipeline → Created GitHub Actions workflow (.github/workflows/ci.yml)
+- [x] NEW: No XSS vulnerability scanner → Created scripts/check-xss.js
+
+### Security (Phase 2) - In Progress
+- [x] NEW: XSS in action-sheet.js → Fixed title, label, cancelLabel escaping with escapeHtml()
+
+### Performance (Phase 3) - In Progress
+- [x] 152. Memory leaks from event listeners → Implemented cleanup registry (registerCleanup, runCleanupCallbacks)
+- [x] 142. Missing font-display swap → Already implemented in Google Fonts URL
+
+---
+
 ## Accessibility Issues (40 issues)
 - [ ] 79. Missing ARIA labels on icon-only buttons
 - [ ] 80. No ARIA live regions for dynamic content
