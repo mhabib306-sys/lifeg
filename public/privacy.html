@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Homebase</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 24px; line-height: 1.6; color: #333; }
+    h1 { font-size: 24px; margin-bottom: 8px; }
+    h2 { font-size: 18px; margin-top: 32px; }
+    .date { color: #666; font-size: 14px; margin-bottom: 24px; }
+    ul { padding-left: 20px; }
+    a { color: #F59E0B; }
+  </style>
+</head>
+<body>
+  <h1>Privacy Policy</h1>
+  <p class="date">Last updated: February 2026</p>
+
+  <h2>Overview</h2>
+  <p>Homebase ("the App") is a personal task management and life tracking application. Your privacy is important to us. This policy explains what data is collected, how it is used, and your rights.</p>
+
+  <h2>Data Collection</h2>
+  <ul>
+    <li><strong>Authentication:</strong> We use Google Sign-In via Firebase Authentication. Your email address and display name are stored to identify your account.</li>
+    <li><strong>Task and Tracking Data:</strong> All your tasks, habits, scores, and tracking data are stored locally on your device and optionally synced to your private GitHub repository via the GitHub API.</li>
+    <li><strong>Weather Data:</strong> If you enable the weather widget, your approximate location (city-level) is used to fetch weather data from Open-Meteo. Location data is cached locally and never sent to our servers.</li>
+    <li><strong>Health Data:</strong> If you connect WHOOP or Libre integrations, health metrics are fetched via your personal API keys and stored locally.</li>
+  </ul>
+
+  <h2>Data Storage</h2>
+  <p>Your data is stored in three places:</p>
+  <ul>
+    <li><strong>Device localStorage:</strong> All app data is stored locally in your browser/app storage.</li>
+    <li><strong>GitHub (optional):</strong> If you configure a GitHub token, data syncs to a <code>data.json</code> file in your private repository.</li>
+    <li><strong>Firebase Authentication:</strong> Only authentication credentials (email, display name) are stored in Firebase.</li>
+  </ul>
+
+  <h2>Third-Party Services</h2>
+  <ul>
+    <li>Firebase Authentication (Google)</li>
+    <li>GitHub API (optional cloud sync)</li>
+    <li>Open-Meteo (weather data, no API key required)</li>
+    <li>Google Calendar API (optional integration)</li>
+    <li>WHOOP API (optional health integration)</li>
+  </ul>
+
+  <h2>Data Sharing</h2>
+  <p>We do not sell, share, or transfer your personal data to any third parties for advertising or marketing purposes. Data is only sent to the third-party services listed above as necessary for the features you enable.</p>
+
+  <h2>Your Rights</h2>
+  <ul>
+    <li><strong>Access:</strong> All your data is visible within the app and can be exported at any time via Settings > Export Data.</li>
+    <li><strong>Deletion:</strong> You can delete your account and all associated data from Settings > Delete Account.</li>
+    <li><strong>Portability:</strong> Export your data as JSON from the Settings tab.</li>
+  </ul>
+
+  <h2>Children's Privacy</h2>
+  <p>The App is not intended for children under 13. We do not knowingly collect data from children.</p>
+
+  <h2>Changes</h2>
+  <p>We may update this policy from time to time. Changes will be reflected in the "Last updated" date above.</p>
+
+  <h2>Contact</h2>
+  <p>For privacy questions, contact us at <a href="mailto:homebase-app@proton.me">homebase-app@proton.me</a>.</p>
+</body>
+</html>

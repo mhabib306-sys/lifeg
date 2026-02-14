@@ -59,5 +59,9 @@
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Homebase uses your location to show local weather conditions.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Homebase uses Face ID to keep your data secure.</string>
+	<key>NSSiriUsageDescription</key>
+	<string>Add tasks to Homebase using Siri.</string>
 </dict>
 </plist>
