@@ -374,9 +374,18 @@ export function renderCalendarView() {
               <span class="text-2xl text-[var(--accent)]">${getActiveIcons().calendar}</span>
               <h2 class="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
             </div>
-            <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center hover:bg-[var(--accent-dark)] transition shadow-sm" title="Add Task">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-            </button>
+            <div class="flex items-center gap-2">
+              <button onclick="toggleCalendarSidebar()" class="w-8 h-8 rounded-full border border-[var(--border-light)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] flex items-center justify-center transition" title="${state.calendarSidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  ${state.calendarSidebarCollapsed
+                    ? '<path d="M18 8l-6 6-6-6"/><path d="M21 4h-3"/><path d="M3 4h3"/>'
+                    : '<path d="M18 15l-6-6-6 6"/><path d="M21 20h-3"/><path d="M3 20h3"/>'}
+                </svg>
+              </button>
+              <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center hover:bg-[var(--accent-dark)] transition shadow-sm" title="Add Task">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+            </div>
           </div>
 
           <div class="px-5 py-3 calendar-toolbar border-b border-[var(--border-light)]">
@@ -413,7 +422,7 @@ export function renderCalendarView() {
           </div>
         </section>
 
-        <aside class="space-y-3">
+        <aside class="space-y-3 ${state.calendarSidebarCollapsed ? 'hidden' : ''}">
           <div class="bg-[var(--bg-card)] rounded-lg md:border md:border-[var(--border-light)] overflow-hidden">
             <button onclick="toggleCalendarMobilePanel('today')" class="calendar-mobile-panel-toggle px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between w-full text-left" aria-expanded="${state.calendarMobileShowToday ? 'true' : 'false'}">
               <h4 class="text-sm font-semibold text-[var(--text-primary)]">Today</h4>

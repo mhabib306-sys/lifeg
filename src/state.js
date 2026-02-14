@@ -433,6 +433,7 @@ export const state = {
   calendarYear: new Date().getFullYear(),
   calendarSelectedDate: getLocalDateString(),
   calendarViewMode: 'month',    // 'month' | 'week' | '3days'
+  calendarSidebarCollapsed: false, // Collapse sidebar to show full-width calendar
   calendarEventModalOpen: false,
   calendarEventModalCalendarId: null,
   calendarEventModalEventId: null,

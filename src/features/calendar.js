@@ -119,3 +119,11 @@ export function getTasksForDate(dateStr) {
     return t.dueDate === dateStr || t.deferDate === dateStr;
   });
 }
+
+/**
+ * Toggle the calendar sidebar visibility
+ */
+export function toggleCalendarSidebar() {
+  state.calendarSidebarCollapsed = !state.calendarSidebarCollapsed;
+  window.render();
+}

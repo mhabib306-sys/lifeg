@@ -164,7 +164,8 @@ import {
 
 import {
   calendarPrevMonth, calendarNextMonth, calendarGoToday,
-  calendarSelectDate, getTasksForDate, setCalendarViewMode
+  calendarSelectDate, getTasksForDate, setCalendarViewMode,
+  toggleCalendarSidebar
 } from './features/calendar.js';
 
 import {
@@ -448,6 +449,7 @@ Object.assign(window, {
   // Calendar
   calendarPrevMonth, calendarNextMonth, calendarGoToday,
   calendarSelectDate, getTasksForDate, setCalendarViewMode,
+  toggleCalendarSidebar,
 
   // Undo Toast
   startUndoCountdown, executeUndo, dismissUndo, renderUndoToastHtml,
@@ -526,6 +528,7 @@ const stateProxies = [
   'draggedTaskId', 'dragOverTaskId', 'dragPosition',
   'draggedSidebarItem', 'draggedSidebarType', 'sidebarDragPosition',
   'calendarMonth', 'calendarYear', 'calendarSelectedDate', 'calendarViewMode',
+  'calendarSidebarCollapsed',
   'calendarEventModalOpen', 'calendarEventModalCalendarId', 'calendarEventModalEventId',
   'draggedCalendarEvent',
   'calendarMeetingNotesEventKey', 'calendarMeetingNotesScope', 'meetingNotesByEvent',
