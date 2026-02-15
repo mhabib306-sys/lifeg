@@ -426,27 +426,12 @@ export function renderReviewMode() {
 
         <!-- Right: Tasks + Capture -->
         <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden flex flex-col">
-          <div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+          <div class="px-4 py-3 border-b border-[var(--border-light)]">
             <div class="flex items-center gap-2">
               <span class="review-step-badge text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-secondary)]">2</span>
               <svg class="w-4 h-4 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
               <span class="text-sm font-semibold text-[var(--text-primary)]">Tasks</span>
               <span class="text-xs text-[var(--text-muted)] ml-1">${staleTasks.length} to review</span>
-            </div>
-            <div class="flex items-center gap-1.5 review-add-chips">
-              <button onclick="window.reviewAddTask('${currentArea.id}', 'anytime', false)"
-                class="area-chip area-chip-action area-chip-anytime text-xs px-2 py-1" title="Add task (modal)">
-                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Task
-              </button>
-              <button onclick="window.reviewAddTask('${currentArea.id}', 'anytime', true)"
-                class="area-chip area-chip-action area-chip-today text-xs px-2 py-1" title="Add today task">
-                Today
-              </button>
-              <button onclick="window.reviewAddTask('${currentArea.id}', 'someday', false)"
-                class="area-chip area-chip-action area-chip-someday text-xs px-2 py-1" title="Add someday task">
-                Someday
-              </button>
             </div>
           </div>
           <!-- Direct quick-add: type and Enter to add task/note without modal -->

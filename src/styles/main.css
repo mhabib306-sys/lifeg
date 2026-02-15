@@ -5708,10 +5708,6 @@ mark.global-search-highlight {
   max-width: 720px;
   margin: 0 auto;
 }
-.review-add-chips .area-chip {
-  padding: 6px 10px;
-  font-size: 11px;
-}
 .review-action-btn {
   min-height: 44px;
   display: inline-flex;
