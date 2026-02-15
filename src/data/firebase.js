@@ -246,6 +246,11 @@ function handleOAuthCallback() {
     localStorage.setItem(GCAL_ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(GCAL_TOKEN_TIMESTAMP_KEY, String(Date.now()));
     localStorage.setItem(GCAL_CONNECTED_KEY, 'true');
+    const expiresIn = params.get('expires_in');
+    if (expiresIn) localStorage.setItem('nucleusGCalExpiresIn', expiresIn);
+    // Clear reconnect prompt — user just completed OAuth redirect
+    state.gcalTokenExpired = false;
+    state.gcalError = null;
     // Extract email from id_token for persistent login_hint
     try {
       const payload = JSON.parse(atob(idToken.split('.')[1]));

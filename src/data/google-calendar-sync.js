@@ -260,12 +260,14 @@ async function refreshAccessTokenSilent({ bypassCooldown = false } = {}) {
           return true;
         }
       }
+      const gisErr = window.getLastGisErrorType?.() || '';
+      console.warn(`[GCal] Silent refresh failed (attempt ${silentRefreshFailCount + 1}${gisErr ? `, GIS: ${gisErr}` : ''})`);
       silentRefreshFailCount++;
       silentRefreshFailedAt = Date.now();
       scheduleRefreshRetry();
       return false;
     } catch (err) {
-      console.warn('Silent token refresh error:', err);
+      console.warn('[GCal] Silent token refresh error:', err);
       silentRefreshFailCount++;
       silentRefreshFailedAt = Date.now();
       scheduleRefreshRetry();
@@ -280,12 +282,19 @@ async function refreshAccessTokenSilent({ bypassCooldown = false } = {}) {
 
 async function ensureValidToken() {
   if (isTokenValid()) return true;
+
+  // Token is locally stale — attempt silent refresh
   const refreshed = await refreshAccessTokenSilent();
-  if (!refreshed) {
-    handleTokenExpired();
-    return false;
-  }
-  return true;
+  if (refreshed) return true;
+
+  // Silent refresh failed. If a token string still exists, let the API call
+  // proceed — Google often honours tokens slightly beyond our local estimate.
+  // Actual expiry will surface as a 401 handled by gcalFetch's retry logic.
+  if (getAccessToken()) return true;
+
+  // No token at all — definitely expired
+  handleTokenExpired();
+  return false;
 }
 
 // ---- API helper ----

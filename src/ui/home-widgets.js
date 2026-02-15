@@ -232,7 +232,7 @@ export function renderTodayEventsWidget(today) {
     return `
       <div class="py-6 text-center">
         <p class="text-sm mb-2" style="color: var(--warning)">Calendar session expired</p>
-        <button onclick="switchTab('settings')" class="text-xs text-[var(--accent)] hover:underline font-medium">Reconnect Calendar &rarr;</button>
+        <button onclick="reconnectGCal()" class="text-xs text-[var(--accent)] hover:underline font-medium">Reconnect</button>
       </div>
     `;
   }
