@@ -5714,10 +5714,6 @@ mark.global-search-highlight {
 .review-capture-bar {
   min-height: 44px;
 }
-.review-capture-mode-btn {
-  min-height: 36px;
-  touch-action: manipulation;
-}
 .review-capture-trigger-btn {
   touch-action: manipulation;
 }

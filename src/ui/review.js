@@ -327,17 +327,15 @@ export function renderReviewMode() {
       <!-- Unified capture bar: add task, note, trigger -->
       <div class="review-capture-bar rounded-lg border-2 border-dashed border-[var(--border-light)] bg-[var(--bg-secondary)]/50 p-4 mb-6">
         <div class="flex flex-col sm:flex-row gap-3">
-          <div class="flex-1 flex items-center gap-2 min-h-[44px] px-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-light)]">
-            <button onclick="state.quickAddIsNote = false; render()" class="review-capture-mode-btn flex items-center gap-2 px-2 py-1.5 rounded text-sm font-medium transition ${!state.quickAddIsNote ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)]'}" title="Add task">
-              <span class="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center text-[10px]">T</span>
-              Task
-            </button>
-            <button onclick="state.quickAddIsNote = true; render()" class="review-capture-mode-btn flex items-center gap-2 px-2 py-1.5 rounded text-sm font-medium transition ${state.quickAddIsNote ? 'bg-[var(--notes-color)] text-white' : 'text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)]'}" title="Add note">
-              <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
-              Note
-            </button>
+          <div class="flex-1 flex items-center gap-3 min-h-[44px] px-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-light)]">
+            <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
+              class="quick-add-type-toggle cursor-pointer flex-shrink-0" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
+              ${state.quickAddIsNote
+                ? '<div class="w-1.5 h-1.5 rounded-full bg-[var(--notes-accent)]"></div>'
+                : '<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed border-[var(--text-muted)]/30 flex-shrink-0"></div>'}
+            </div>
             <input type="text" id="review-quick-add-input"
-              placeholder="${state.quickAddIsNote ? 'New note...' : 'New task...'} (Enter to add)"
+              placeholder="${state.quickAddIsNote ? 'New Note' : 'New To-Do'}"
               onkeydown="window.reviewHandleQuickAddKeydown(event, this, '${currentArea.id}')"
               class="flex-1 min-w-0 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]/50 bg-transparent border-0 outline-none focus:ring-0">
             <button onclick="window.reviewQuickAddTask('${currentArea.id}', document.getElementById('review-quick-add-input'), state.quickAddIsNote)"
