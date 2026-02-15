@@ -375,12 +375,13 @@ export function renderCalendarView() {
               <h2 class="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="toggleCalendarSidebar()" class="w-8 h-8 rounded-full border border-[var(--border-light)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] flex items-center justify-center transition" title="${state.calendarSidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <button onclick="toggleCalendarSidebar()" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--border-light)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition text-sm font-medium" title="${state.calendarSidebarCollapsed ? 'Show Today & Events sidebar' : 'Expand calendar (hide sidebar)'}">
+                <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                   ${state.calendarSidebarCollapsed
                     ? '<path d="M18 8l-6 6-6-6"/><path d="M21 4h-3"/><path d="M3 4h3"/>'
                     : '<path d="M18 15l-6-6-6 6"/><path d="M21 20h-3"/><path d="M3 20h3"/>'}
                 </svg>
+                <span>${state.calendarSidebarCollapsed ? 'Show sidebar' : 'Expand calendar'}</span>
               </button>
               <button onclick="openNewTaskModal()" class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center hover:bg-[var(--accent-dark)] transition shadow-sm" title="Add Task">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>

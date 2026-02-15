@@ -8,7 +8,7 @@ This file provides guidance to AI coding agents (Claude Code, Codex, etc.) when 
 
 ## Git Workflow
 
-This is a git repo with a GitHub remote. **Every change must be committed and pushed.** After completing any modification, commit with a descriptive message and `git push`. If the remote is ahead, `git pull --rebase` first.
+This is a git repo with a GitHub remote. **Every change must be committed and pushed.** After completing any modification, commit with a descriptive message and `git push`. If the remote is ahead, `git pull --rebase` first. **After pushing, run `npm run deploy`** so the live site (GitHub Pages) is updated — do this without the user having to ask.
 
 ## Versioning
 
