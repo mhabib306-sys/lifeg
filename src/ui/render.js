@@ -415,7 +415,7 @@ export function render() {
       ${cachePromptHtml}
       ${quotaExceededBanner}
 
-      <main class="max-w-6xl mx-auto px-6 py-8">
+      <main class="${state.activeTab === 'calendar' ? 'w-full max-w-none mx-auto px-4 sm:px-6 py-8' : 'max-w-6xl mx-auto px-6 py-8'}">
         ${state.activeTab === 'home' ? renderHomeTab() :
           state.activeTab === 'life' ? (state.activeSubTab === 'daily' ? renderTrackingTab() : state.activeSubTab === 'bulk' ? renderBulkEntryTab() : renderDashboardTab()) :
           state.activeTab === 'calendar' ? (typeof window.renderCalendarView === 'function' ? window.renderCalendarView() : skeletonLoading()) :
