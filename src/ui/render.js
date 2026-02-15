@@ -672,6 +672,8 @@ export function switchTab(tab) {
     document.body.classList.remove('drawer-open');
   }
   state.activeTab = tab;
+  // Calendar: always show sidebar when landing on the tab (expand is opt-in via button)
+  if (tab === 'calendar') state.calendarSidebarCollapsed = false;
   const nav = document.querySelector('.mobile-bottom-nav');
   if (nav) nav.classList.remove('nav-scroll-hidden');
   saveViewState();
