@@ -324,8 +324,9 @@ export function renderReviewMode() {
         </div>
       </div>
 
-      <!-- Unified capture bar: add task, note, trigger -->
-      <div class="review-capture-bar p-4 mb-6">
+      <!-- Fixed capture bar: always visible at bottom -->
+      <div class="review-capture-bar review-capture-bar-fixed">
+        <div class="review-capture-bar-inner p-4">
         <div class="flex flex-col sm:flex-row gap-3">
           <div class="flex-1 flex items-center gap-3 min-h-[44px]">
             <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
@@ -350,6 +351,7 @@ export function renderReviewMode() {
           </button>
         </div>
         <p class="text-[11px] text-[var(--text-muted)] mt-2">Supports #label +person due:date in the input</p>
+        </div>
       </div>
 
       <!-- Vertical layout: Tasks, Notes, Triggers (full width) -->

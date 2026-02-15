@@ -5711,6 +5711,7 @@ mark.global-search-highlight {
 .review-mode {
   max-width: 100%;
   margin: 0 auto;
+  padding-bottom: 130px;
 }
 .review-header-compact {
   padding-bottom: 0;
@@ -5718,6 +5719,32 @@ mark.global-search-highlight {
 .review-capture-bar {
   min-height: 44px;
 }
+
+/* Fixed at bottom - always visible while scrolling */
+.review-capture-bar-fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: calc(var(--z-sticky) - 1);
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-light);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.review-capture-bar-inner {
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+@media (max-width: 768px) {
+  .review-capture-bar-fixed {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+}
+
 .review-capture-bar > div > div:first-child {
   border: none !important;
   box-shadow: none !important;
