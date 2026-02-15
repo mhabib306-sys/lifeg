@@ -86,14 +86,14 @@ export function renderTrackingTab() {
   return `
     <!-- Date Navigation -->
     <div class="flex items-center justify-center gap-3 mb-6">
-      <button onclick="navigateTrackingDate(-1)" class="w-9 h-9 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--border)] flex items-center justify-center text-[var(--text-secondary)] active:scale-95 transition" title="Previous day">
+      <button onclick="navigateTrackingDate(-1)" class="min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--border)] flex items-center justify-center text-[var(--text-secondary)] active:scale-95 transition" title="Previous day" aria-label="Previous day">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
       </button>
       <div class="text-center min-w-[120px]">
         <div class="text-sm font-semibold text-[var(--text-primary)]">${dateLabel}</div>
         ${!isToday ? `<div class="text-[11px] text-[var(--text-muted)]">${fullDate}</div>` : ''}
       </div>
-      <button onclick="navigateTrackingDate(1)" class="w-9 h-9 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--border)] flex items-center justify-center text-[var(--text-secondary)] active:scale-95 transition" title="Next day">
+      <button onclick="navigateTrackingDate(1)" class="min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--border)] flex items-center justify-center text-[var(--text-secondary)] active:scale-95 transition" title="Next day" aria-label="Next day">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
       </button>
       ${!isToday ? `<button onclick="setToday()" class="text-xs font-medium text-[var(--accent)] hover:underline ml-1">Today</button>` : ''}
@@ -106,7 +106,7 @@ export function renderTrackingTab() {
       ${createScoreCard('Whoop', scores.whoop, state.MAX_SCORES.whoop, 'bg-[var(--notes-accent)]')}
       ${createScoreCard('Family', scores.family, state.MAX_SCORES.family, 'bg-[var(--warning)]')}
       ${createScoreCard('Habits', scores.habit, state.MAX_SCORES.habits, 'bg-[var(--text-muted)]')}
-      <div class="sb-card rounded-lg p-4 bg-[var(--bg-card)] border border-[var(--border-light)]">
+      <div class="sb-card rounded-lg p-4 bg-[var(--bg-card)] border border-[var(--border-light)]" aria-label="Total score: ${fmt(scores.total)} out of ${state.MAX_SCORES.total} (${Math.round((scores.total / state.MAX_SCORES.total) * 100)}%)">
         <div class="sb-section-title text-[var(--text-muted)] flex justify-between">
           <span>Total</span>
           <span>${Math.round((scores.total / state.MAX_SCORES.total) * 100)}%</span>
@@ -123,24 +123,27 @@ export function renderTrackingTab() {
 
       <!-- Prayers Section -->
       <section>
-        <div class="flex items-center gap-2 mb-4">
+        <div class="flex items-center gap-2 mb-2">
           <span class="text-base">🕌</span>
           <h3 class="text-sm font-semibold text-[var(--text-secondary)]">Prayers</h3>
           <span class="text-xs text-[var(--text-muted)]">${scores.prayer} pts</span>
         </div>
+        <p class="text-[11px] text-[var(--text-muted)] mb-3">Format X.Y: 1=on-time, 0.1=late (e.g. 1.2 = 1 on-time + 2 late)</p>
         <div class="flex gap-2 mb-4">
           ${['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map(p =>
             createPrayerInput(p, p.charAt(0).toUpperCase() + p.slice(1), data.prayers[p])
           ).join('')}
         </div>
         <div class="border-t border-[var(--border-light)] pt-4">
-          <div class="flex items-center justify-center gap-3">
+          <div class="flex items-center justify-center gap-3 flex-wrap">
             <span class="text-sm text-[var(--text-secondary)]">📖 Quran</span>
             <button onclick="updateData('prayers', 'quran', Math.max(0, ${parseInt(data.prayers.quran) || 0} - 1))"
-              class="w-10 h-10 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--border)] flex items-center justify-center font-bold text-[var(--text-muted)] active:scale-95 transition">−</button>
-            <span class="w-8 text-center font-semibold text-lg text-[var(--text-primary)]">${parseInt(data.prayers.quran) || 0}</span>
+              class="w-10 h-10 rounded-full bg-[var(--bg-secondary)] hover:bg-[var(--border)] flex items-center justify-center font-bold text-[var(--text-muted)] active:scale-95 transition" aria-label="Decrease">−</button>
+            <input type="number" min="0" value="${parseInt(data.prayers.quran) || 0}"
+              class="input-field w-14 text-center font-semibold text-lg"
+              onchange="updateData('prayers', 'quran', Math.max(0, parseInt(this.value) || 0))">
             <button onclick="updateData('prayers', 'quran', ${parseInt(data.prayers.quran) || 0} + 1)"
-              class="w-10 h-10 rounded-full bg-[var(--accent)] hover:opacity-80 text-white flex items-center justify-center font-bold active:scale-95 transition">+</button>
+              class="w-10 h-10 rounded-full bg-[var(--accent)] hover:opacity-80 text-white flex items-center justify-center font-bold active:scale-95 transition" aria-label="Increase">+</button>
             <span class="text-xs text-[var(--text-muted)]">pages · ${(parseInt(data.prayers.quran) || 0) * 5} pts</span>
           </div>
         </div>
@@ -258,11 +261,11 @@ export function renderTrackingTab() {
         <div class="flex items-center gap-2 mb-4">
           <span class="text-base">👨‍👩‍👧‍👦</span>
           <h3 class="text-sm font-semibold text-[var(--text-secondary)]">Family Check-ins</h3>
-          <span class="text-xs text-[var(--text-muted)]">${Object.values(data.family).filter(Boolean).length}/6</span>
+          <span class="text-xs text-[var(--text-muted)]">${Object.values(data.family || {}).filter(Boolean).length}/${(state.familyMembers || []).length}</span>
         </div>
         <div class="space-y-0.5">
-          ${['mom', 'dad', 'jana', 'tia', 'ahmed', 'eman'].map(p =>
-            createToggle(p.charAt(0).toUpperCase() + p.slice(1), data.family[p], 'family', p)
+          ${(state.familyMembers || []).map(m =>
+            createToggle(m.name, data.family[m.id], 'family', m.id)
           ).join('')}
         </div>
       </section>

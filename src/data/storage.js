@@ -18,6 +18,7 @@ import {
   LAST_UPDATED_KEY,
   COLLAPSED_NOTES_KEY,
   TRIGGERS_KEY,
+  FAMILY_MEMBERS_KEY,
   defaultDayData
 } from '../constants.js';
 import { getLocalDateString } from '../utils.js';
@@ -66,11 +67,23 @@ export function saveData() {
 }
 
 /**
+ * Build default day data with family structure from configurable family members
+ * @returns {object} Fresh default day data
+ */
+export function getDefaultDayData() {
+  const base = JSON.parse(JSON.stringify(defaultDayData));
+  const members = state.familyMembers || [];
+  base.family = {};
+  members.forEach(m => { base.family[m.id] = false; });
+  return base;
+}
+
+/**
  * Get today's tracking data from allData (or a fresh default copy)
  * @returns {object} Today's data object
  */
 export function getTodayData() {
-  return state.allData[state.currentDate] || JSON.parse(JSON.stringify(defaultDayData));
+  return state.allData[state.currentDate] || getDefaultDayData();
 }
 
 /**
@@ -133,6 +146,13 @@ export function saveTasksData() {
   // (e.g. initializeTaskOrders) make local appear newer than cloud,
   // preventing wholesale cloud data adoption on app startup.
   window.debouncedSaveToGithub();
+}
+
+/**
+ * Persist family members to localStorage
+ */
+export function saveFamilyMembers() {
+  safeLocalStorageSet(FAMILY_MEMBERS_KEY, state.familyMembers);
 }
 
 /**

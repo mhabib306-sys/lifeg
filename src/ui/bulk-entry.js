@@ -8,6 +8,7 @@
 import { state } from '../state.js';
 import { getLocalDateString, fmt } from '../utils.js';
 import { defaultDayData, THINGS3_ICONS, getActiveIcons } from '../constants.js';
+import { getDefaultDayData } from '../data/storage.js';
 import { calculateScores, invalidateScoresCache } from '../features/scoring.js';
 import { saveData } from '../data/storage.js';
 import { getAccentColor } from '../data/github-sync.js';
@@ -45,7 +46,7 @@ export function setBulkCategory(cat) {
  */
 export function updateBulkData(dateStr, category, field, value) {
   if (!state.allData[dateStr]) {
-    state.allData[dateStr] = JSON.parse(JSON.stringify(defaultDayData));
+    state.allData[dateStr] = getDefaultDayData();
   }
   if (category === 'family') {
     state.allData[dateStr][category][field] = value === '1' || value === true;
@@ -130,11 +131,14 @@ export function renderBulkEntryTab() {
   const autoSyncedWhoopFields = ['sleepPerf', 'recovery', 'strain'];
   const autoSyncedGlucoseFields = ['avg', 'tir'];
 
+  const familyMembers = state.familyMembers || [];
+  const familyFields = familyMembers.map(m => m.id);
+  const familyHeaders = familyMembers.map(m => m.name);
   const allCategories = {
     prayers: { label: '🕌 Prayers', fields: ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'quran'], headers: ['F', 'D', 'A', 'M', 'I', 'Q'] },
     glucose: { label: '💉 Glucose', fields: ['avg', 'tir', 'insulin'], headers: ['Avg', 'TIR', 'Insulin'] },
     whoop: { label: '⏱️ Whoop', fields: ['sleepPerf', 'recovery', 'strain'], headers: ['Sleep%', 'Rec', 'Strain'] },
-    family: { label: '👨‍👩‍👧‍👦 Family', fields: ['mom', 'dad', 'jana', 'tia', 'ahmed', 'eman'], headers: ['Mom', 'Dad', 'Jana', 'Tia', 'Ahmed', 'Eman'] },
+    family: { label: '👨‍👩‍👧‍👦 Family', fields: familyFields, headers: familyHeaders },
     habits: { label: '✨ Habits', fields: ['exercise', 'reading', 'meditation', 'water', 'vitamins', 'brushTeeth', 'nop'], headers: ['🏋️', '📚', '🧘', '💧', '💊', '🦷', '💤'] }
   };
 
@@ -186,9 +190,11 @@ export function renderBulkEntryTab() {
     return renderBulkShell(monthName, categoryColors, categories, allCategories, autoSyncNote, daysInMonth);
   }
 
-  // Generate month options (2026 and 2027)
+  // Generate month options (3 past years + current + next)
   let monthOptions = '';
-  [new Date().getFullYear(), new Date().getFullYear() + 1].forEach(function(year) {
+  const currentYear = new Date().getFullYear();
+  const years = [currentYear - 3, currentYear - 2, currentYear - 1, currentYear, currentYear + 1];
+  years.forEach(function(year) {
     for (let m = 0; m < 12; m++) {
       const label = new Date(year, m).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
       const selected = m === state.bulkMonth && year === state.bulkYear ? 'selected' : '';
@@ -200,7 +206,7 @@ export function renderBulkEntryTab() {
   let tableRows = '';
   for (let day = 1; day <= daysInMonth; day++) {
     const dateStr = state.bulkYear + '-' + String(state.bulkMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
-    const dayData = state.allData[dateStr] || JSON.parse(JSON.stringify(defaultDayData));
+    const dayData = state.allData[dateStr] || getDefaultDayData();
     const dayOfWeek = new Date(state.bulkYear, state.bulkMonth, day).toLocaleDateString('en-US', { weekday: 'short' });
     const isWeekend = [0, 6].includes(new Date(state.bulkYear, state.bulkMonth, day).getDay());
     const isToday = dateStr === getLocalDateString();
@@ -213,20 +219,21 @@ export function renderBulkEntryTab() {
       if (state.bulkCategory === 'family' || (state.bulkCategory === 'habits' && field === 'vitamins')) {
         const checked = value ? 'checked' : '';
         cells += '<td class="border border-[var(--border)] px-1 py-1 text-center">' +
+          '<label class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center cursor-pointer">' +
           '<input type="checkbox" ' + checked +
-          ' class="w-5 h-5 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)] cursor-pointer"' +
+          ' class="w-5 h-5 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)]"' +
           ' onchange="updateBulkData(\'' + dateStr + '\', \'' + state.bulkCategory + '\', \'' + field + '\', this.checked ? \'1\' : \'\')">' +
-          '</td>';
+          '</label></td>';
       } else if (state.bulkCategory === 'prayers' && field !== 'quran') {
-        cells += '<td class="border border-[var(--border)] px-1 py-1">' +
+        cells += '<td class="border border-[var(--border)] px-1 py-1 min-h-[44px]">' +
           '<input type="text" value="' + (value || '') + '" placeholder="X.Y"' +
-          ' class="input-field-sm w-full text-center font-mono border-0"' +
+          ' class="input-field-sm w-full min-h-[44px] text-center font-mono border-0"' +
           ' onchange="updateBulkData(\'' + dateStr + '\', \'' + state.bulkCategory + '\', \'' + field + '\', this.value)">' +
           '</td>';
       } else {
-        cells += '<td class="border border-[var(--border)] px-1 py-1">' +
+        cells += '<td class="border border-[var(--border)] px-1 py-1 min-h-[44px]">' +
           '<input type="number" step="any" value="' + (value || '') + '"' +
-          ' class="input-field-sm w-full text-center border-0"' +
+          ' class="input-field-sm w-full min-h-[44px] text-center border-0"' +
           ' onchange="updateBulkData(\'' + dateStr + '\', \'' + state.bulkCategory + '\', \'' + field + '\', this.value)">' +
           '</td>';
       }
@@ -339,9 +346,11 @@ export function renderBulkEntryTab() {
  * Render the bulk entry shell when all fields are auto-synced (no table needed).
  */
 function renderBulkShell(monthName, categoryColors, categories, allCategories, autoSyncNote, daysInMonth) {
-  // Generate month options
+  // Generate month options (3 past years + current + next)
   let monthOptions = '';
-  [new Date().getFullYear(), new Date().getFullYear() + 1].forEach(function(year) {
+  const currentYear = new Date().getFullYear();
+  const years = [currentYear - 3, currentYear - 2, currentYear - 1, currentYear, currentYear + 1];
+  years.forEach(function(year) {
     for (let m = 0; m < 12; m++) {
       const label = new Date(year, m).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
       const selected = m === state.bulkMonth && year === state.bulkYear ? 'selected' : '';
@@ -384,6 +393,7 @@ function renderBulkShell(monthName, categoryColors, categories, allCategories, a
       '<div class="flex gap-1.5 flex-wrap">' + catButtons + '</div>' +
     '</div>' +
     autoSyncNote +
+    (autoSyncNote ? '<p class="text-sm text-[var(--text-secondary)]">Switch to another category to log data, or <button type="button" onclick="window.switchTab(\'life\'); window.switchSubTab(\'daily\')" class="text-[var(--accent)] font-medium hover:underline">go to Daily Entry</button>.</p>' : '') +
     '<div class="grid grid-cols-2 md:grid-cols-4 gap-3">' +
       '<div class="bg-[var(--bg-secondary)] rounded-lg p-4 text-center border border-[var(--border-light)]">' +
         '<div id="bulk-days-logged" class="text-2xl font-bold text-[var(--text-primary)]">' + fmt(daysWithData) + '</div>' +

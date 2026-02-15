@@ -12,7 +12,7 @@
 
 import { state } from '../state.js';
 import { getLocalDateString } from '../utils.js';
-import { defaultDayData } from '../constants.js';
+import { getDefaultDayData } from './storage.js';
 
 const LS_WORKER_URL = 'nucleusWhoopWorkerUrl';
 const LS_API_KEY = 'nucleusWhoopApiKey';
@@ -113,7 +113,7 @@ export async function checkWhoopStatus() {
  */
 function writeWhoopToDate(dateKey, data) {
   if (!state.allData[dateKey]) {
-    state.allData[dateKey] = JSON.parse(JSON.stringify(defaultDayData));
+    state.allData[dateKey] = getDefaultDayData();
   }
   if (!state.allData[dateKey].whoop) {
     state.allData[dateKey].whoop = {};

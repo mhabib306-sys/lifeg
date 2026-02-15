@@ -74,6 +74,7 @@ import {
   calculateScores, getLast30DaysData, getLast30DaysStats, getPersonalBests,
   loadWeights as loadWeightsFromScoring, loadMaxScores as loadMaxScoresFromScoring,
   updateWeight, resetWeights, updateMaxScore, resetMaxScores,
+  addFamilyMember, removeFamilyMember, updateFamilyMember,
   getScoreTier, getLevel, getLevelInfo, getStreakMultiplier,
   calculateDailyXP, updateStreak, awardDailyXP,
   checkAchievements, markAchievementNotified,
@@ -373,6 +374,7 @@ Object.assign(window, {
   parsePrayer, calcPrayerScore, invalidateScoresCache,
   calculateScores, getLast30DaysData, getLast30DaysStats, getPersonalBests,
   updateWeight, resetWeights, updateMaxScore, resetMaxScores,
+  addFamilyMember, removeFamilyMember, updateFamilyMember,
   // Gamification
   getScoreTier, getLevel, getLevelInfo, getStreakMultiplier,
   calculateDailyXP, updateStreak, awardDailyXP,

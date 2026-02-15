@@ -113,6 +113,16 @@ export const GCONTACTS_LAST_SYNC_KEY = 'nucleusGoogleContactsLastSync';
 export const MEETING_NOTES_KEY = 'nucleusMeetingNotes';
 export const TRIGGERS_KEY = 'lifeGamificationTriggers';
 export const COLLAPSED_TRIGGERS_KEY = 'lifeGamificationCollapsedTriggers';
+export const FAMILY_MEMBERS_KEY = 'lifeGamificationFamilyMembers';
+
+export const DEFAULT_FAMILY_MEMBERS = [
+  { id: 'mom', name: 'Mom' },
+  { id: 'dad', name: 'Dad' },
+  { id: 'jana', name: 'Jana' },
+  { id: 'tia', name: 'Tia' },
+  { id: 'ahmed', name: 'Ahmed' },
+  { id: 'eman', name: 'Eman' }
+];
 
 // Credentials to sync across devices (encrypted in data.json)
 export const CRED_SYNC_KEYS = [

@@ -279,7 +279,7 @@ export function renderReviewMode() {
   const areaColor = currentArea.color || '#147EFB';
 
   return `
-    <div class="review-mode">
+    <div class="review-mode review-mode-scrollable">
       <!-- Compact header: Review title + progress + area -->
       <div class="review-header-compact mb-5">
         <div class="flex items-center justify-between mb-3">

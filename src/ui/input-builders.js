@@ -160,8 +160,9 @@ export function createScoreCard(label, score, max, colorClass) {
   const varMatch = colorClass?.match(/var\(([^)]+)\)/);
   const accent = varMatch ? `var(${varMatch[1]})` : (colorClass || 'var(--accent)');
   const pctDisplay = Math.round(pct);
+  const ariaLabel = `${label} score: ${fmt(score)} out of ${max} (${pctDisplay}%)`;
   return `
-    <div class="sb-card rounded-lg p-4">
+    <div class="sb-card rounded-lg p-4" aria-label="${ariaLabel}">
       <div class="flex justify-between items-center mb-1">
         <span class="sb-section-title text-[var(--text-muted)]">${label}</span>
         <span class="text-xs text-[var(--text-muted)]">${pctDisplay}%</span>

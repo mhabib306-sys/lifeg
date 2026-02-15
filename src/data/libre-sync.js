@@ -12,7 +12,7 @@
 
 import { state } from '../state.js';
 import { getLocalDateString } from '../utils.js';
-import { defaultDayData } from '../constants.js';
+import { getDefaultDayData } from './storage.js';
 
 const LS_WORKER_URL = 'nucleusLibreWorkerUrl';
 const LS_API_KEY = 'nucleusLibreApiKey';
@@ -109,7 +109,7 @@ export async function checkLibreStatus() {
  */
 function writeLibreToDate(dateKey, data) {
   if (!state.allData[dateKey]) {
-    state.allData[dateKey] = JSON.parse(JSON.stringify(defaultDayData));
+    state.allData[dateKey] = getDefaultDayData();
   }
 
   // Ensure glucose and libre sub-objects exist

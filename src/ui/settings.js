@@ -8,7 +8,7 @@ import { state } from '../state.js';
 import { escapeHtml } from '../utils.js';
 import { THEMES } from '../constants.js';
 import { getGithubToken, setGithubToken, getTheme, setTheme, getColorMode, toggleColorMode, getSyncHealth } from '../data/github-sync.js';
-import { updateWeight, resetWeights, updateMaxScore, resetMaxScores } from '../features/scoring.js';
+import { updateWeight, resetWeights, updateMaxScore, resetMaxScores, addFamilyMember, removeFamilyMember, updateFamilyMember } from '../features/scoring.js';
 import {
   isWhoopConnected, getWhoopWorkerUrl, getWhoopApiKey, getWhoopLastSync
 } from '../data/whoop-sync.js';
@@ -684,13 +684,26 @@ export function renderSettingsTab() {
                 ${createWeightInput('High strain green', state.WEIGHTS.whoop.strainHigh, 'whoop', 'strainHigh')}
               </div>
               <div class="bg-[var(--bg-secondary)] rounded-lg p-3 border border-[var(--border)]">
-                <h4 class="sb-section-title text-[var(--text-secondary)] mb-2 text-xs">Family</h4>
-                ${createWeightInput('Mom', state.WEIGHTS.family.mom, 'family', 'mom')}
-                ${createWeightInput('Dad', state.WEIGHTS.family.dad, 'family', 'dad')}
-                ${createWeightInput('Jana', state.WEIGHTS.family.jana, 'family', 'jana')}
-                ${createWeightInput('Tia', state.WEIGHTS.family.tia, 'family', 'tia')}
-                ${createWeightInput('Ahmed', state.WEIGHTS.family.ahmed, 'family', 'ahmed')}
-                ${createWeightInput('Eman', state.WEIGHTS.family.eman, 'family', 'eman')}
+                <h4 class="sb-section-title text-[var(--text-secondary)] mb-2 text-xs">Family Check-ins</h4>
+                <p class="text-[11px] text-[var(--text-muted)] mb-2">Customize who you track. Each check-in adds points.</p>
+                ${(state.familyMembers || []).map(m => `
+                  <div class="flex items-center gap-2 mb-2">
+                    <input type="number" inputmode="numeric" value="${state.WEIGHTS.family?.[m.id] ?? 1}" min="0" step="0.5"
+                      class="input-field-sm w-16 text-center"
+                      onchange="window.updateWeight('family', '${escapeHtml(m.id)}', this.value)">
+                    <input type="text" value="${escapeHtml(m.name)}" placeholder="Name"
+                      class="input-field-sm flex-1"
+                      onchange="window.updateFamilyMember('${escapeHtml(m.id)}', this.value)">
+                    <button type="button" onclick="window.removeFamilyMember('${escapeHtml(m.id)}')" class="p-1.5 text-[var(--text-muted)] hover:text-[var(--danger)] rounded transition" title="Remove" aria-label="Remove ${escapeHtml(m.name)}">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
+                `).join('')}
+                <div class="flex gap-2 mt-2">
+                  <input type="text" id="new-family-member-name" placeholder="Add person..." class="input-field-sm flex-1"
+                    onkeydown="if(event.key==='Enter'){event.preventDefault();window.addFamilyMember(document.getElementById('new-family-member-name').value);document.getElementById('new-family-member-name').value='';}">
+                  <button type="button" onclick="const i=document.getElementById('new-family-member-name');window.addFamilyMember(i.value);i.value='';" class="px-3 py-1.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-md text-xs font-medium hover:bg-[var(--accent)]/20 transition">Add</button>
+                </div>
               </div>
               <div class="bg-[var(--bg-secondary)] rounded-lg p-3 border border-[var(--border)]">
                 <h4 class="sb-section-title text-[var(--text-secondary)] mb-2 text-xs">Habits</h4>

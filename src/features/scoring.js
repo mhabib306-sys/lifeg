@@ -32,6 +32,7 @@ import {
   FOCUS_TIPS,
   defaultDayData
 } from '../constants.js';
+import { saveFamilyMembers } from '../data/storage.js';
 
 // ============================================================================
 // PRAYER HELPERS
@@ -299,9 +300,10 @@ export function calculateScores(data) {
 // DATA AGGREGATION
 // ============================================================================
 
-export function getLast30DaysData() {
+export function getLastNDaysData(n) {
+  n = Math.max(1, parseInt(n) || 30);
   const days = [];
-  for (let i = 29; i >= 0; i--) {
+  for (let i = n - 1; i >= 0; i--) {
     const date = new Date();
     date.setDate(date.getDate() - i);
     const dateStr = getLocalDateString(date);
@@ -318,10 +320,15 @@ export function getLast30DaysData() {
   return days;
 }
 
-export function getLast30DaysStats() {
+export function getLast30DaysData() {
+  return getLastNDaysData(30);
+}
+
+export function getLastNDaysStats(n) {
+  n = Math.max(1, parseInt(n) || 30);
   let stats = { totalScore: 0, daysLogged: 0, totalOnTimePrayers: 0, totalLatePrayers: 0, totalFamilyCheckins: 0, avgRHR: 0, avgSleep: 0, rhrCount: 0, sleepCount: 0 };
 
-  for (let i = 29; i >= 0; i--) {
+  for (let i = n - 1; i >= 0; i--) {
     const date = new Date();
     date.setDate(date.getDate() - i);
     const dateStr = getLocalDateString(date);
@@ -342,6 +349,10 @@ export function getLast30DaysStats() {
   stats.avgSleep = stats.sleepCount ? (stats.avgSleep / stats.sleepCount).toFixed(1) : 0;
   stats.avgDaily = stats.daysLogged ? Math.round(stats.totalScore / stats.daysLogged) : 0;
   return stats;
+}
+
+export function getLast30DaysStats() {
+  return getLastNDaysStats(30);
 }
 
 // ============================================================================
@@ -529,6 +540,64 @@ export function updateMaxScore(category, value) {
 export function resetMaxScores() {
   state.MAX_SCORES = JSON.parse(JSON.stringify(DEFAULT_MAX_SCORES));
   saveMaxScores();
+  invalidateScoresCache();
+  window.debouncedSaveToGithub();
+  window.render();
+}
+
+// ============================================================================
+// FAMILY MEMBERS (configurable)
+// ============================================================================
+
+function slugFromName(name) {
+  const base = String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  return base || 'member';
+}
+
+function nextUniqueId(baseId) {
+  const ids = new Set((state.familyMembers || []).map(m => m.id));
+  if (!ids.has(baseId)) return baseId;
+  let n = 1;
+  while (ids.has(baseId + n)) n++;
+  return baseId + n;
+}
+
+export function addFamilyMember(name) {
+  const trimmed = String(name || '').trim();
+  if (!trimmed) return;
+  const baseId = slugFromName(trimmed);
+  const id = nextUniqueId(baseId);
+  state.familyMembers.push({ id, name: trimmed });
+  if (!state.WEIGHTS.family) state.WEIGHTS.family = {};
+  if (state.WEIGHTS.family[id] === undefined) state.WEIGHTS.family[id] = 1;
+  saveFamilyMembers();
+  saveWeights();
+  invalidateScoresCache();
+  state.MAX_SCORES.family = Math.max(state.MAX_SCORES.family || 6, state.familyMembers.length);
+  window.debouncedSaveToGithub();
+  window.render();
+}
+
+export function removeFamilyMember(id) {
+  state.familyMembers = state.familyMembers.filter(m => m.id !== id);
+  if (state.WEIGHTS.family && state.WEIGHTS.family[id] !== undefined) {
+    delete state.WEIGHTS.family[id];
+  }
+  saveFamilyMembers();
+  saveWeights();
+  invalidateScoresCache();
+  state.MAX_SCORES.family = Math.max(1, (state.familyMembers || []).length);
+  window.debouncedSaveToGithub();
+  window.render();
+}
+
+export function updateFamilyMember(id, name) {
+  const m = state.familyMembers.find(m => m.id === id);
+  if (!m) return;
+  const trimmed = String(name || '').trim();
+  if (!trimmed) return;
+  m.name = trimmed;
+  saveFamilyMembers();
   invalidateScoresCache();
   window.debouncedSaveToGithub();
   window.render();

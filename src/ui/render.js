@@ -356,15 +356,15 @@ export function render() {
                 <p class="text-sm text-[var(--text-secondary)] mt-0.5">Your life, all in one place <span class="text-[var(--accent)]">\u2022</span> habits, health, productivity</p>
               </div>
             </a>
-            <div class="flex items-center gap-4">
-              <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-light)]" title="${getGithubToken() ? 'Data synced to GitHub cloud' : 'Data stored locally only — connect GitHub in Settings to sync'}">
+            <div class="flex items-center gap-4 header-actions">
+              <div class="header-sync-pill flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-light)]" title="${getGithubToken() ? 'Data synced to GitHub cloud' : 'Data stored locally only — connect GitHub in Settings to sync'}">
                 <div id="sync-indicator" class="w-2 h-2 rounded-full" style="background: ${getGithubToken() ? 'var(--success)' : 'var(--text-muted)'}"></div>
                 <span class="text-xs text-[var(--text-muted)]">${getGithubToken() ? 'Synced' : 'Local'}</span>
               </div>
               <input type="date" id="dateInput" value="${state.currentDate}"
                 onclick="this.showPicker()"
-                class="input-field">
-              <button type="button" onclick="setToday()" class="sb-btn px-4 py-2 rounded-lg text-sm font-medium">Today</button>
+                class="input-field header-date-input">
+              <button type="button" onclick="setToday()" class="sb-btn header-today-btn px-4 py-2 rounded-lg text-sm font-medium">Today</button>
             </div>
           </div>
         </div>
@@ -395,16 +395,16 @@ export function render() {
 
       ${state.activeTab === 'life' ? `
       <!-- Sub Navigation for Life Score -->
-      <div class="bg-[var(--bg-secondary)]/50 border-b border-[var(--border-light)]">
+      <div class="bg-[var(--bg-secondary)]/50 border-b border-[var(--border-light)]" role="tablist" aria-label="Life Score sections">
         <div class="life-sub-nav max-w-6xl mx-auto px-6">
           <div class="flex gap-1 py-2">
-            <button type="button" onclick="switchSubTab('dashboard')" class="px-4 py-1.5 text-sm rounded-lg transition ${state.activeSubTab === 'dashboard' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
+            <button type="button" role="tab" aria-selected="${state.activeSubTab === 'dashboard'}" onclick="switchSubTab('dashboard')" class="px-4 py-1.5 text-sm rounded-lg transition ${state.activeSubTab === 'dashboard' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
               Dashboard
             </button>
-            <button type="button" onclick="switchSubTab('daily')" class="px-4 py-1.5 text-sm rounded-lg transition ${state.activeSubTab === 'daily' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
+            <button type="button" role="tab" aria-selected="${state.activeSubTab === 'daily'}" onclick="switchSubTab('daily')" class="px-4 py-1.5 text-sm rounded-lg transition ${state.activeSubTab === 'daily' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
               Daily Entry
             </button>
-            <button type="button" onclick="switchSubTab('bulk')" class="px-4 py-1.5 text-sm rounded-lg transition ${state.activeSubTab === 'bulk' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
+            <button type="button" role="tab" aria-selected="${state.activeSubTab === 'bulk'}" onclick="switchSubTab('bulk')" class="px-4 py-1.5 text-sm rounded-lg transition ${state.activeSubTab === 'bulk' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50'}">
               Bulk Entry
             </button>
           </div>

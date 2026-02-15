@@ -6,7 +6,7 @@
 
 import { state } from '../state.js';
 import { fmt, getLocalDateString, isMobileViewport } from '../utils.js';
-import { getLast30DaysData, getLast30DaysStats, getPersonalBests, calculateScores, getLevelInfo, getScoreTier } from '../features/scoring.js';
+import { getLastNDaysData, getLastNDaysStats, getPersonalBests, calculateScores, getLevelInfo, getScoreTier } from '../features/scoring.js';
 import { getAccentColor } from '../data/github-sync.js';
 import { ACHIEVEMENTS, SCORE_TIERS, LEVEL_TIERS, STREAK_MULTIPLIERS, STREAK_MIN_THRESHOLD, DEFAULT_CATEGORY_WEIGHTS, defaultDayData } from '../constants.js';
 import Chart from 'chart.js/auto';
@@ -24,8 +24,10 @@ function getTierColor(score) {
 /**
  * Render a 30-day heatmap calendar (GitHub contribution-style)
  */
-function renderHeatmap(last30Data) {
-  const cells = last30Data.map(d => {
+function renderHeatmap(daysData) {
+  const n = daysData.length;
+  const cols = n <= 7 ? 7 : isMobileViewport() ? 6 : 10;
+  const cells = daysData.map(d => {
     const dayData = state.allData[d.date];
     if (!dayData) {
       return `<div class="heatmap-cell w-full aspect-square rounded-sm bg-[var(--bg-secondary)] border border-[var(--border-light)]" title="${d.label}: No data"></div>`;
@@ -37,7 +39,7 @@ function renderHeatmap(last30Data) {
   });
 
   return `
-    <div class="heatmap-grid grid gap-1" style="grid-template-columns: repeat(${isMobileViewport() ? 6 : 10}, 1fr);">
+    <div class="heatmap-grid grid gap-1" style="grid-template-columns: repeat(${cols}, 1fr);">
       ${cells.join('')}
     </div>
     <div class="flex items-center justify-end gap-2 mt-2">
@@ -75,7 +77,7 @@ function renderAchievementsGallery() {
                   <div class="min-w-0">
                     <div class="text-xs font-semibold text-[var(--text-primary)] truncate">${ach.name}</div>
                     <div class="text-[10px] text-[var(--text-muted)]">${ach.desc}</div>
-                    ${isUnlocked ? `<div class="text-[10px] text-[var(--warning)] mt-0.5">${unlockedDate}</div>` : ''}
+                              ${isUnlocked ? `<div class="text-[10px] text-[var(--warning)] mt-0.5">${unlockedDate}</div>` : `<div class="text-[10px] text-[var(--text-muted)] mt-0.5" title="Complete: ${ach.desc}">Locked — complete ${ach.desc} to unlock</div>`}
                   </div>
                 </div>
               </div>
@@ -172,7 +174,7 @@ function renderGuide() {
 
         <div>
           <h4 class="font-semibold text-[var(--text-primary)] mb-2">Heatmap & Trends</h4>
-          <p>The <strong>30-day heatmap</strong> on this page shows each day colored by your overall score tier. The <strong>Category Trends</strong> chart plots each category's percentage over 30 days so you can spot patterns and improvements.</p>
+          <p>The <strong>heatmap</strong> on this page shows each day colored by your overall score tier. Use the 7/30/90-day toggle to change the range. The <strong>Category Trends</strong> chart plots each category's percentage over the selected range so you can spot patterns and improvements.</p>
         </div>
 
       </div>
@@ -186,8 +188,9 @@ function renderGuide() {
  * @returns {string} HTML string for the dashboard tab
  */
 export function renderDashboardTab() {
-  const stats = getLast30DaysStats();
-  const last30Data = getLast30DaysData();
+  const range = state.dashboardDateRange || 30;
+  const stats = getLastNDaysStats(range);
+  const last30Data = getLastNDaysData(range);
   const bests = getPersonalBests();
   const levelInfo = getLevelInfo(state.xp?.total || 0);
   const streakCount = state.streak?.current || 0;
@@ -302,14 +305,24 @@ export function renderDashboardTab() {
         </div>
       </div>
 
-      <!-- 30-Day Heatmap -->
+      <!-- Date range toggle -->
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-sm text-[var(--text-muted)]">View:</span>
+        <div class="flex gap-1">
+          ${[7, 30, 90].map(n => `
+            <button type="button" onclick="state.dashboardDateRange=${n}; window.render()" class="px-3 py-1 text-sm rounded-lg transition ${range === n ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'}">${n} days</button>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Heatmap -->
       <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
-        <h3 class="font-semibold text-[var(--text-primary)] mb-4">Last 30 Days</h3>
+        <h3 class="font-semibold text-[var(--text-primary)] mb-4">Last ${range} Days</h3>
         ${renderHeatmap(last30Data)}
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 pt-4 border-t border-[var(--border-light)]">
           <div>
             <div class="text-xs text-[var(--text-muted)]">Days Logged</div>
-            <div class="text-xl font-bold text-[var(--text-primary)]">${stats.daysLogged}/30</div>
+            <div class="text-xl font-bold text-[var(--text-primary)]">${stats.daysLogged}/${range}</div>
           </div>
           <div>
             <div class="text-xs text-[var(--text-muted)]">Avg Daily</div>
@@ -329,7 +342,7 @@ export function renderDashboardTab() {
       <!-- Category Breakdown (Percentages) -->
       <div class="sb-card rounded-lg p-6 bg-[var(--bg-card)] border border-[var(--border-light)]">
         <h3 class="font-semibold text-[var(--text-primary)] mb-4">Category Trends (%)</h3>
-        <div class="${isMobileViewport() ? 'aspect-[3/2]' : 'h-72'}"><canvas id="breakdownChart"></canvas></div>
+        <div class="${isMobileViewport() ? 'aspect-[3/2]' : 'h-72'}" role="img" aria-label="Category trends chart showing percentage for Prayer, Glucose, Whoop, Family, and Habits over the last ${range} days"><canvas id="breakdownChart"></canvas></div>
       </div>
 
       <!-- Achievements Gallery -->

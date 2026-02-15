@@ -88,6 +88,7 @@
   --radius-xl: 0.75rem;  /* 12px */
   --radius-2xl: 1rem;    /* 16px */
   --radius-full: 9999px;
+  --border-radius: var(--radius-md); /* Slightly rounded across app */
 
   /* Animation durations */
   --duration-instant: 100ms;
@@ -200,14 +201,32 @@ a, a:hover { cursor: pointer; }
   font-size: 0.75rem;
   color: var(--text-secondary);
 }
-input[type="number"], input[type="text"], textarea, select {
+input[type="number"],
+input[type="text"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+textarea,
+select {
   background: var(--bg-input);
   border: none;
-  border-radius: calc(var(--border-radius) - 2px);
+  border-radius: var(--radius-md);
   color: var(--text-primary);
   transition: background var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
 }
-input[type="number"]:focus, input[type="text"]:focus, textarea:focus, select:focus {
+input[type="number"]:focus,
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+textarea:focus,
+select:focus {
   outline: none;
   box-shadow: var(--focus-ring);
   background: var(--bg-input);
@@ -241,13 +260,26 @@ input[type="number"]:focus, input[type="text"]:focus, textarea:focus, select:foc
 }
 [data-theme="things3"] input[type="number"],
 [data-theme="things3"] input[type="text"],
+[data-theme="things3"] input[type="date"],
+[data-theme="things3"] input[type="email"],
+[data-theme="things3"] input[type="password"],
+[data-theme="things3"] input[type="url"],
+[data-theme="things3"] input[type="search"],
+[data-theme="things3"] input[type="tel"],
 [data-theme="things3"] textarea,
 [data-theme="things3"] select {
   border: 1px solid var(--border);
   box-shadow: none;
+  border-radius: var(--radius-md);
 }
 [data-theme="things3"] input[type="number"]:focus,
 [data-theme="things3"] input[type="text"]:focus,
+[data-theme="things3"] input[type="date"]:focus,
+[data-theme="things3"] input[type="email"]:focus,
+[data-theme="things3"] input[type="password"]:focus,
+[data-theme="things3"] input[type="url"]:focus,
+[data-theme="things3"] input[type="search"]:focus,
+[data-theme="things3"] input[type="tel"]:focus,
 [data-theme="things3"] textarea:focus,
 [data-theme="things3"] select:focus {
   border-color: var(--accent);
@@ -1810,6 +1842,11 @@ img.twemoji {
   gap: var(--space-0\.5);
   padding: 0 6px;
 }
+@media (max-width: 767px) {
+  .mobile-bottom-nav-inner {
+    padding-right: 72px; /* Clear FAB zone so Settings isn't covered */
+  }
+}
 
 .mobile-nav-item {
   display: flex;
@@ -1985,9 +2022,10 @@ img.twemoji {
     padding: 0;
   }
 
-  /* Main content padding for bottom nav */
+  /* Main content padding for bottom nav and FAB (avoid overlap) */
   main, .main-content {
     padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+    padding-right: 72px !important; /* Clear FAB zone (52px + 20px) */
     scroll-padding-top: calc(64px + env(safe-area-inset-top));
   }
 
@@ -2052,14 +2090,14 @@ img.twemoji {
 
   /* Task list fullscreen */
   .task-list-container {
-    border-radius: 0 !important;
+    border-radius: var(--radius-sm) !important;
     border-left: none !important;
     border-right: none !important;
   }
 
   /* Things 3 flat task items */
   [data-theme="things3"] .task-item {
-    border-radius: 0;
+    border-radius: var(--radius-sm);
     margin: 0;
     border-bottom: 1px solid var(--border-light);
   }
@@ -2077,10 +2115,10 @@ img.twemoji {
     position: static !important;
   }
 
-  /* Standardize main content padding on mobile */
+  /* Standardize main content padding on mobile (72px right clears FAB zone) */
   main.max-w-6xl {
     padding-left: var(--space-4) !important;
-    padding-right: var(--space-4) !important;
+    padding-right: max(var(--space-4), 72px) !important;
     padding-top: var(--space-4) !important;
     min-width: 0;
   }
@@ -2119,7 +2157,7 @@ img.twemoji {
     padding: var(--space-2) 12px;
     min-height: 50px;
     margin: 0 !important;
-    border-radius: 0 !important;
+    border-radius: var(--radius-sm) !important;
   }
 
   .task-title {
@@ -2263,7 +2301,7 @@ img.twemoji {
   #quick-add-input {
     font-size: var(--text-md) !important;
     padding: var(--space-2) 0 !important;
-    border-radius: 0 !important;
+    border-radius: var(--radius-sm) !important;
   }
 
   /* Hide some elements on mobile */
@@ -4033,7 +4071,7 @@ body.mobile-keyboard-open .main-content {
 }
 .modal-token-shell .tag-input-container {
   border: none;
-  border-radius: 0;
+  border-radius: var(--radius-sm);
   background: transparent;
   min-height: 30px;
   padding: 0;
@@ -4212,6 +4250,22 @@ body.mobile-keyboard-open .main-content {
   outline: none;
   border-color: var(--accent);
   box-shadow: var(--focus-ring);
+}
+/* Header actions and similar inputs - ensure rounded corners */
+.header-sync-pill,
+.header-date-input,
+.header-today-btn {
+  border-radius: var(--radius-md) !important;
+}
+
+/* Scale rounded corners to all input-like components */
+.input-field,
+.input-field-sm,
+.modal-input-enhanced,
+.autocomplete-input,
+.tag-input-container,
+.modal-token-shell {
+  border-radius: var(--radius-md) !important;
 }
 
 /* --- Compact inputs (settings, integrations, API keys) --- */
@@ -4645,6 +4699,11 @@ body.mobile-keyboard-open .main-content {
 }
 .braindump-fab:active {
   transform: scale(0.95);
+}
+@media (max-width: 767px) {
+  .braindump-fab {
+    bottom: calc(88px + env(safe-area-inset-bottom) + 12px);
+  }
 }
 
 /* ============================================================================
@@ -5452,16 +5511,16 @@ mark.global-search-highlight {
   }
 }
 
-/* Mobile: full-screen search */
+/* Mobile: full-screen search, respect status bar safe area */
 @media (max-width: 768px) {
   .global-search-overlay {
-    padding-top: 0;
+    padding-top: max(12px, env(safe-area-inset-top));
     align-items: stretch;
   }
   .global-search-modal {
     max-width: 100%;
     max-height: 100dvh;
-    border-radius: 0;
+    border-radius: var(--radius-sm);
     border: none;
     height: 100dvh;
   }
@@ -5752,6 +5811,10 @@ mark.global-search-highlight {
 }
 .review-capture-bar .review-capture-trigger-btn {
   border: none !important;
+  border-radius: var(--radius-md) !important;
+}
+.review-capture-bar button {
+  border-radius: var(--radius-md) !important;
 }
 .review-capture-trigger-btn {
   touch-action: manipulation;
@@ -5808,6 +5871,7 @@ mark.global-search-highlight {
 .review-mark-done-btn {
   min-height: 48px;
   padding: 12px 24px;
+  border-radius: var(--radius-md) !important;
 }
 .review-mark-done-bar {
   padding-bottom: env(safe-area-inset-bottom, 0);
@@ -5910,6 +5974,12 @@ mark.global-search-highlight {
 /* --- Form Inputs — 1px border, blue glow on focus --- */
 [data-theme="geist"] input[type="number"],
 [data-theme="geist"] input[type="text"],
+[data-theme="geist"] input[type="date"],
+[data-theme="geist"] input[type="email"],
+[data-theme="geist"] input[type="password"],
+[data-theme="geist"] input[type="url"],
+[data-theme="geist"] input[type="search"],
+[data-theme="geist"] input[type="tel"],
 [data-theme="geist"] textarea,
 [data-theme="geist"] select {
   border: 1px solid var(--border);
@@ -5920,6 +5990,12 @@ mark.global-search-highlight {
 }
 [data-theme="geist"] input[type="number"]:focus,
 [data-theme="geist"] input[type="text"]:focus,
+[data-theme="geist"] input[type="date"]:focus,
+[data-theme="geist"] input[type="email"]:focus,
+[data-theme="geist"] input[type="password"]:focus,
+[data-theme="geist"] input[type="url"]:focus,
+[data-theme="geist"] input[type="search"]:focus,
+[data-theme="geist"] input[type="tel"]:focus,
 [data-theme="geist"] textarea:focus,
 [data-theme="geist"] select:focus {
   border-color: var(--geist-border-focus);

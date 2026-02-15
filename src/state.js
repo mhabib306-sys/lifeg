@@ -49,6 +49,8 @@ import {
   GITHUB_SYNC_DIRTY_KEY,
   SYNC_HEALTH_KEY,
   SYNC_SEQUENCE_KEY,
+  FAMILY_MEMBERS_KEY,
+  DEFAULT_FAMILY_MEMBERS,
 } from './constants.js';
 
 // ---------------------------------------------------------------------------
@@ -97,6 +99,19 @@ function loadMaxScores() {
   }
 }
 
+function loadFamilyMembers() {
+  try {
+    const stored = localStorage.getItem(FAMILY_MEMBERS_KEY);
+    if (!stored) return JSON.parse(JSON.stringify(DEFAULT_FAMILY_MEMBERS));
+    const saved = JSON.parse(stored);
+    if (!Array.isArray(saved)) return JSON.parse(JSON.stringify(DEFAULT_FAMILY_MEMBERS));
+    return saved.filter(m => m && m.id && m.name);
+  } catch (e) {
+    console.error('Error loading family members:', e);
+    return JSON.parse(JSON.stringify(DEFAULT_FAMILY_MEMBERS));
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Initial data loading: merge JANUARY_DATA with localStorage, run migration
 // ---------------------------------------------------------------------------
@@ -127,7 +142,8 @@ localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedData));
 const savedViewState = JSON.parse(localStorage.getItem(VIEW_STATE_KEY) || '{}');
 
 let initialActiveTab = savedViewState.activeTab || 'home';
-let initialActiveSubTab = savedViewState.activeSubTab || 'dashboard';
+const hasTrackedData = Object.keys(mergedData).some(k => /^\d{4}-\d{2}-\d{2}$/.test(k));
+let initialActiveSubTab = savedViewState.activeSubTab || (hasTrackedData ? 'daily' : 'dashboard');
 
 // Migrate old tab values to new structure
 if (initialActiveTab === 'track' || initialActiveTab === 'bulk' || initialActiveTab === 'dashboard') {
@@ -404,6 +420,12 @@ export const state = {
   bulkMonth: new Date().getMonth(),
   bulkYear: new Date().getFullYear(),
   bulkCategory: 'prayers',
+
+  // ---- Family check-ins (configurable) ----
+  familyMembers: loadFamilyMembers(),
+
+  // ---- Dashboard date range (7, 30, or 90 days) ----
+  dashboardDateRange: 30,
 
   // ---- Tasks system ----
   tasksData: initialTasksData,
