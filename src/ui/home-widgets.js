@@ -624,84 +624,45 @@ export function renderWeatherWidget() {
   };
 
   return `
-    <div class="weather-widget-content flex items-start gap-4">
+    <div class="weather-widget-content flex items-center gap-3">
+      <span class="text-2xl leading-none">${icon}</span>
       <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-3">
-          <span class="text-4xl leading-none">${icon}</span>
-          <div>
-            <div class="text-3xl font-bold text-[var(--text-primary)] leading-none">${temp}\u00B0</div>
-            <div class="text-sm text-[var(--text-secondary)] mt-0.5">${desc}</div>
-          </div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-2xl font-bold text-[var(--text-primary)] leading-none">${temp}\u00B0</span>
+          <span class="text-xs text-[var(--text-secondary)]">${desc}</span>
         </div>
-        <div class="text-xs text-[var(--text-muted)] mt-2">${city}</div>
+        <div class="text-[10px] text-[var(--text-muted)] mt-0.5">${city}</div>
       </div>
-      <div class="text-right flex-shrink-0">
-        <div class="flex items-center justify-end gap-1.5">
-          <svg class="w-3 h-3 text-[var(--warning)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.09 8.26L21 9.27L16 13.97L17.18 20.02L12 17.77L6.82 20.02L8 13.97L3 9.27L9.91 8.26L12 2Z"/></svg>
-          <span class="text-sm font-semibold text-[var(--text-primary)]">${tempMax}\u00B0</span>
-          <span class="text-[10px] text-[var(--text-muted)]">${maxHour}</span>
-        </div>
-        <div class="flex items-center justify-end gap-1.5 mt-1">
-          <svg class="w-3 h-3 text-[var(--accent)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22q-2.075 0-3.537-1.462Q7 19.075 7 17q0-1.3.612-2.4T9 12.55V5q0-1.25.875-2.125T12 2q1.25 0 2.125.875T15 5v7.55q.775.95 1.388 2.05T17 17q0 2.075-1.463 3.538Q14.075 22 12 22Z"/></svg>
-          <span class="text-sm font-semibold text-[var(--text-primary)]">${tempMin}\u00B0</span>
-          <span class="text-[10px] text-[var(--text-muted)]">${minHour}</span>
-        </div>
+      <div class="flex items-center gap-2.5 text-xs text-[var(--text-secondary)]">
+        <span class="flex items-center gap-0.5" title="High at ${maxHour}">
+          <svg class="w-2.5 h-2.5 text-[var(--warning)]" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14l5-5 5 5z"/></svg>
+          <span class="font-semibold text-[var(--text-primary)]">${tempMax}\u00B0</span>
+        </span>
+        <span class="flex items-center gap-0.5" title="Low at ${minHour}">
+          <svg class="w-2.5 h-2.5 text-[var(--accent)]" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+          <span class="font-semibold text-[var(--text-primary)]">${tempMin}\u00B0</span>
+        </span>
       </div>
     </div>
-    <div class="weather-widget-detail-grid grid grid-cols-2 gap-2 mt-4">
-      <div class="bg-[var(--bg-secondary)] rounded-lg px-3 py-2">
-        <div class="flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5 text-[var(--accent)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
-          <span class="text-[11px] text-[var(--text-muted)]">Humidity</span>
-        </div>
-        <div class="flex items-center gap-2 mt-1.5">
-          <div class="flex-1 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
-            <div class="h-full bg-[var(--accent)] rounded-full" style="width: ${humidityBar}%"></div>
-          </div>
-          <span class="text-xs font-semibold text-[var(--text-primary)]">${humidity}%</span>
-        </div>
-      </div>
-      <div class="bg-[var(--bg-secondary)] rounded-lg px-3 py-2">
-        <div class="flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 17c0 1.65-1.35 3-3 3s-3-1.35-3-3c0-1.17.67-2.18 1.65-2.67L9.5 2h4l-.65 12.33c.98.49 1.65 1.5 1.65 2.67z"/></svg>
-          <span class="text-[11px] text-[var(--text-muted)]">Wind</span>
-        </div>
-        <div class="mt-1.5">
-          <span class="text-xs font-semibold text-[var(--text-primary)]">${windSpeed} km/h</span>
-          <span class="text-[10px] text-[var(--text-muted)] ml-1">${windDesc}</span>
-        </div>
-      </div>
+    <div class="flex items-center gap-3 mt-2 text-[11px] text-[var(--text-muted)]">
+      <span class="flex items-center gap-1">
+        <svg class="w-3 h-3 text-[var(--accent)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+        ${humidity}%
+      </span>
+      <span class="flex items-center gap-1">
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 17c0 1.65-1.35 3-3 3s-3-1.35-3-3c0-1.17.67-2.18 1.65-2.67L9.5 2h4l-.65 12.33c.98.49 1.65 1.5 1.65 2.67z"/></svg>
+        ${windSpeed} km/h · ${windDesc}
+      </span>
     </div>
-
     ${tomorrow ? `
-    <div class="mt-4 pt-4 border-t border-[var(--border-light)]">
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">Tomorrow</span>
-          <span class="text-lg">${tomorrowIcon}</span>
-        </div>
-        <span class="text-xs text-[var(--text-secondary)]">${tomorrowDesc}</span>
-      </div>
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="text-center">
-            <div class="text-xs text-[var(--text-muted)] mb-0.5">High</div>
-            <div class="text-lg font-bold text-[var(--text-primary)]">${tomorrow.tempMax}°</div>
-          </div>
-          <div class="text-center">
-            <div class="text-xs text-[var(--text-muted)] mb-0.5">Low</div>
-            <div class="text-lg font-bold text-[var(--text-primary)]">${tomorrow.tempMin}°</div>
-          </div>
-        </div>
-        <div class="text-right">
-          <div class="text-xs font-medium" style="color: ${getDeltaColor(tomorrow.avgDelta)}">
-            ${tomorrow.avgDelta === 0 ? 'Same as today' : getDeltaText(tomorrow.avgDelta)}
-          </div>
-          <div class="text-[10px] text-[var(--text-muted)] mt-0.5">
-            ${tomorrow.maxDelta > 0 ? '+' : ''}${tomorrow.maxDelta}° high, ${tomorrow.minDelta > 0 ? '+' : ''}${tomorrow.minDelta}° low
-          </div>
-        </div>
-      </div>
+    <div class="flex items-center gap-2 mt-2 pt-2 border-t border-[var(--border-light)] text-[11px]">
+      <span class="text-[var(--text-muted)] font-medium">Tmrw</span>
+      <span>${tomorrowIcon}</span>
+      <span class="text-[var(--text-secondary)]">${tomorrowDesc}</span>
+      <span class="ml-auto flex items-center gap-2">
+        <span class="font-semibold text-[var(--text-primary)]">${tomorrow.tempMax}°<span class="text-[var(--text-muted)] font-normal">/</span>${tomorrow.tempMin}°</span>
+        <span class="font-medium" style="color: ${getDeltaColor(tomorrow.avgDelta)}">${tomorrow.avgDelta === 0 ? 'same' : getDeltaText(tomorrow.avgDelta)}</span>
+      </span>
     </div>
     ` : ''}
   `;
