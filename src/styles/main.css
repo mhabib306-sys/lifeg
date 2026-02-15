@@ -5734,16 +5734,31 @@ mark.global-search-highlight {
   flex-shrink: 0;
 }
 .review-triggers-section {
-  min-height: 50vh;
+  min-height: 0;
 }
 .review-triggers-section .rounded-lg {
   display: flex;
   flex-direction: column;
-  min-height: 45vh;
+  min-height: 0;
 }
 .review-triggers-section .overflow-y-auto {
-  min-height: 35vh;
-  max-height: 65vh;
+  min-height: 0;
+  max-height: 50vh;
+}
+/* Tighter trigger rows in review mode */
+.review-triggers-content .trigger-row {
+  min-height: 28px;
+  padding: 4px 12px 4px calc(12px + (var(--trigger-depth) * 24px));
+}
+.review-triggers-content .trigger-bullet {
+  height: 18px;
+  min-width: 18px;
+  margin-top: 2px;
+}
+.review-triggers-content .trigger-input {
+  min-height: 20px;
+  line-height: 1.4;
+  padding: 2px 0;
 }
 .review-action-btn {
   min-height: 44px;

@@ -437,7 +437,7 @@ export function renderReviewMode() {
         <div class="review-triggers-section">
           <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden flex flex-col flex-1 min-h-0">
             <button onclick="state.reviewTriggersCollapsed = !state.reviewTriggersCollapsed; render()"
-              class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[var(--bg-secondary)]/30 transition flex-shrink-0" style="background: #FFCC0008">
+              class="w-full px-4 py-2 flex items-center justify-between text-left hover:bg-[var(--bg-secondary)]/30 transition flex-shrink-0" style="background: #FFCC0008">
               <div class="flex items-center gap-2">
                 <span style="color: #FFCC00">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
                 <span class="text-sm font-semibold text-[var(--text-primary)]">Triggers</span>
@@ -452,7 +452,7 @@ export function renderReviewMode() {
               <p class="text-xs text-[var(--text-muted)]">Click to expand — review triggers for new ideas</p>
             </div>
             ` : `
-            <div class="border-t border-[var(--border-light)] flex items-center justify-between px-4 py-2 flex-shrink-0" style="background: #FFCC0005">
+            <div class="border-t border-[var(--border-light)] flex items-center justify-between px-4 py-1.5 flex-shrink-0" style="background: #FFCC0005">
               <span class="text-xs text-[var(--text-muted)]">Read each — does anything need a new task?</span>
               <button onclick="event.stopPropagation(); window.createRootTrigger({areaId:'${currentArea.id}'})"
                 class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[#FFCC00] hover:bg-[#FFCC0010] rounded-lg transition">
@@ -460,7 +460,7 @@ export function renderReviewMode() {
                 Add
               </button>
             </div>
-            <div class="py-2 flex-1 overflow-y-auto min-h-[300px]">
+            <div class="review-triggers-content py-1.5 flex-1 overflow-y-auto min-h-[200px]">
               ${renderTriggersOutliner({ areaId: currentArea.id })}
             </div>
             `}
