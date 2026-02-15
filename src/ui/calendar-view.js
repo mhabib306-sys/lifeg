@@ -378,8 +378,8 @@ export function renderCalendarView() {
               <button onclick="toggleCalendarSidebar()" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--border-light)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition text-sm font-medium" title="${state.calendarSidebarCollapsed ? 'Show Today & Events sidebar' : 'Expand calendar (hide sidebar)'}">
                 <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                   ${state.calendarSidebarCollapsed
-                    ? '<path d="M18 8l-6 6-6-6"/><path d="M21 4h-3"/><path d="M3 4h3"/>'
-                    : '<path d="M18 15l-6-6-6 6"/><path d="M21 20h-3"/><path d="M3 20h3"/>'}
+                    ? '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/>'
+                    : '<rect width="18" height="18" x="3" y="3" rx="2"/>'}
                 </svg>
                 <span>${state.calendarSidebarCollapsed ? 'Show sidebar' : 'Expand calendar'}</span>
               </button>
