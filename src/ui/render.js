@@ -506,6 +506,12 @@ export function render() {
       if (document.getElementById('home-quick-add-input')) {
         setupInlineAutocomplete('home-quick-add-input');
       }
+      if (document.getElementById('review-quick-add-input') && state.reviewMode) {
+        const area = state.taskAreas[state.reviewAreaIndex];
+        setupInlineAutocomplete('review-quick-add-input', {
+          initialMeta: area ? { areaId: area.id } : {}
+        });
+      }
     });
 
     if (state.activeTab === 'calendar') {

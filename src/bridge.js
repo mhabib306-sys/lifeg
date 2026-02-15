@@ -147,6 +147,7 @@ import {
 import {
   renderReviewMode, startReview, exitReview, reviewNextArea, reviewPrevArea,
   reviewEngageTask, reviewPassTask, reviewMarkAreaDone, reviewAddTask,
+  reviewQuickAddTask, reviewHandleQuickAddKeydown,
   getStaleTasksForArea, getTotalStaleTaskCount,
   isWeeklyReviewOverdue, getDaysSinceReview
 } from './ui/review.js';
@@ -436,6 +437,7 @@ Object.assign(window, {
   // Review Mode
   renderReviewMode, startReview, exitReview, reviewNextArea, reviewPrevArea,
   reviewEngageTask, reviewPassTask, reviewMarkAreaDone, reviewAddTask,
+  reviewQuickAddTask, reviewHandleQuickAddKeydown,
   getStaleTasksForArea, getTotalStaleTaskCount,
   isWeeklyReviewOverdue, getDaysSinceReview,
 

@@ -10,6 +10,7 @@ import { escapeHtml, getLocalDateString } from '../utils.js';
 import { getAreaById } from '../features/areas.js';
 import { renderTriggersOutliner } from '../features/triggers.js';
 import { saveTasksData } from '../data/storage.js';
+import { createTask } from '../features/tasks.js';
 
 // ---------------------------------------------------------------------------
 // Stale task criteria
@@ -160,6 +161,55 @@ export function reviewAddTask(areaId, status = 'anytime', today = false) {
     const titleInput = document.getElementById('task-title');
     if (titleInput) titleInput.focus();
   }, 50);
+}
+
+/**
+ * Quick-add a task or note directly in review mode (no modal).
+ * Supports inline autocomplete: #label +person due:date in the input.
+ * @param {string} areaId - Current area being reviewed
+ * @param {HTMLInputElement} inputElement - The quick-add input
+ * @param {boolean} isNote - If true, create a note; otherwise a task
+ */
+export function reviewQuickAddTask(areaId, inputElement, isNote) {
+  const title = inputElement?.value?.trim();
+  if (!title) return;
+
+  const options = {
+    areaId,
+    status: isNote ? 'anytime' : 'inbox',
+    isNote: !!isNote,
+  };
+
+  const inlineMeta = state.inlineAutocompleteMeta.get('review-quick-add-input');
+  if (inlineMeta) {
+    if (inlineMeta.labels?.length) options.labels = inlineMeta.labels;
+    if (inlineMeta.people?.length) options.people = inlineMeta.people;
+    if (inlineMeta.deferDate) options.deferDate = inlineMeta.deferDate;
+    if (inlineMeta.dueDate) options.dueDate = inlineMeta.dueDate;
+  }
+
+  createTask(title, options);
+
+  inputElement.value = '';
+  window.cleanupInlineAutocomplete?.('review-quick-add-input');
+  if (typeof window.render === 'function') window.render();
+
+  setTimeout(() => {
+    const input = document.getElementById('review-quick-add-input');
+    if (input) input.focus();
+  }, 50);
+}
+
+/**
+ * Handle Enter key in review quick-add input.
+ * Respects _inlineAcHandled from inline autocomplete.
+ */
+export function reviewHandleQuickAddKeydown(event, inputElement, areaId) {
+  if (event._inlineAcHandled) return;
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    reviewQuickAddTask(areaId, inputElement, state.quickAddIsNote);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -358,7 +408,7 @@ export function renderReviewMode() {
             </div>
             <div class="flex items-center gap-1.5">
               <button onclick="window.reviewAddTask('${currentArea.id}', 'anytime', false)"
-                class="area-chip area-chip-action area-chip-anytime" title="Add task">
+                class="area-chip area-chip-action area-chip-anytime" title="Add task (modal)">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Task
               </button>
@@ -371,6 +421,23 @@ export function renderReviewMode() {
                 Someday
               </button>
             </div>
+          </div>
+          <!-- Direct quick-add: type and Enter to add task/note without modal -->
+          <div class="quick-add-section px-4 py-2.5 border-b border-[var(--border-light)] flex items-center gap-2">
+            <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
+              class="quick-add-type-toggle flex-shrink-0 cursor-pointer" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
+              ${state.quickAddIsNote
+                ? '<div class="w-1.5 h-1.5 rounded-full bg-[var(--notes-color)]"></div>'
+                : '<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed border-[var(--text-muted)]/30"></div>'}
+            </div>
+            <input type="text" id="review-quick-add-input"
+              placeholder="New ${state.quickAddIsNote ? 'note' : 'task'} in ${escapeHtml(currentArea.name)}..."
+              onkeydown="window.reviewHandleQuickAddKeydown(event, this, '${currentArea.id}')"
+              class="flex-1 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]/50 bg-transparent border-0 outline-none focus:ring-0">
+            <button onclick="window.reviewQuickAddTask('${currentArea.id}', document.getElementById('review-quick-add-input'), state.quickAddIsNote)"
+              class="text-[var(--text-muted)] hover:text-[var(--accent)] transition p-1 flex-shrink-0" title="${state.quickAddIsNote ? 'Add note' : 'Add task'}">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
           </div>
           <div class="flex-1 overflow-y-auto" style="max-height: 60vh">
             ${staleTasks.length > 0 ? `
