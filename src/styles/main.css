@@ -266,12 +266,16 @@ input:focus, textarea:focus {
 /* Quick add inputs should always be borderless (default/hover/focus) */
 #quick-add-input,
 #home-quick-add-input,
+#review-quick-add-input,
 #quick-add-input:hover,
 #home-quick-add-input:hover,
+#review-quick-add-input:hover,
 #quick-add-input:focus,
 #home-quick-add-input:focus,
+#review-quick-add-input:focus,
 #quick-add-input:active,
-#home-quick-add-input:active {
+#home-quick-add-input:active,
+#review-quick-add-input:active {
   border: 0 !important;
   outline: none !important;
   box-shadow: none !important;
@@ -5713,6 +5717,14 @@ mark.global-search-highlight {
 }
 .review-capture-bar {
   min-height: 44px;
+}
+.review-capture-bar > div > div:first-child {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+.review-capture-bar .review-capture-trigger-btn {
+  border: none !important;
 }
 .review-capture-trigger-btn {
   touch-action: manipulation;

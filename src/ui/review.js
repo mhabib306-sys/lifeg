@@ -325,7 +325,7 @@ export function renderReviewMode() {
       </div>
 
       <!-- Unified capture bar: add task, note, trigger -->
-      <div class="review-capture-bar rounded-lg bg-[var(--bg-secondary)]/50 p-4 mb-6">
+      <div class="review-capture-bar p-4 mb-6">
         <div class="flex flex-col sm:flex-row gap-3">
           <div class="flex-1 flex items-center gap-3 min-h-[44px]">
             <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
@@ -339,7 +339,7 @@ export function renderReviewMode() {
               onkeydown="window.reviewHandleQuickAddKeydown(event, this, '${currentArea.id}')"
               class="flex-1 min-w-0 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]/50 bg-transparent border-0 outline-none focus:ring-0">
             <button onclick="window.reviewQuickAddTask('${currentArea.id}', document.getElementById('review-quick-add-input'), state.quickAddIsNote)"
-              class="flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition min-h-[44px] flex items-center justify-center" style="background: ${areaColor}15; color: ${areaColor}" title="Add">
+              class="flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition min-h-[44px] flex items-center justify-center border-0" style="background: ${areaColor}15; color: ${areaColor}" title="Add">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
           </div>
