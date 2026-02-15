@@ -66,8 +66,8 @@ export function startReview() {
   state.reviewMode = true;
   state.reviewAreaIndex = 0;
   state.reviewCompletedAreas = [];
-  state.reviewTriggersCollapsed = true;
-  state.reviewProjectsCollapsed = true;
+  state.reviewTriggersCollapsed = false;
+  state.reviewProjectsCollapsed = false;
   if (typeof window.render === 'function') window.render();
 }
 
@@ -389,46 +389,13 @@ export function renderReviewMode() {
       <!-- Step guidance -->
       <p class="text-xs text-[var(--text-muted)] mb-4">Review each task, then mark the area done.</p>
 
-      <!-- Two-column layout: Triggers | Tasks -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-        <!-- Left: Triggers (collapsible) -->
-        <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden flex flex-col">
-          <button onclick="state.reviewTriggersCollapsed = !state.reviewTriggersCollapsed; render()"
-            class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[var(--bg-secondary)]/30 transition" style="background: #FFCC0008">
-            <div class="flex items-center gap-2">
-              <span class="review-step-badge text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-secondary)]">1</span>
-              <span style="color: #FFCC00">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Triggers</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${areaTriggers.length}</span>
-            </div>
-            <span class="text-[var(--text-muted)] transition-transform ${state.reviewTriggersCollapsed ? '' : 'rotate-180'}">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </span>
-          </button>
-          ${state.reviewTriggersCollapsed ? `
-          <div class="px-4 py-3 border-t border-[var(--border-light)]">
-            <p class="text-xs text-[var(--text-muted)]">Click to expand — review triggers for new ideas</p>
-          </div>
-          ` : `
-          <div class="border-t border-[var(--border-light)] flex items-center justify-between px-4 py-2" style="background: #FFCC0005">
-            <span class="text-xs text-[var(--text-muted)]">Read each — does anything need a new task?</span>
-            <button onclick="event.stopPropagation(); window.createRootTrigger({areaId:'${currentArea.id}'})"
-              class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[#FFCC00] hover:bg-[#FFCC0010] rounded-lg transition">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-              Add
-            </button>
-          </div>
-          <div class="py-2 flex-1 overflow-y-auto" style="max-height: 60vh">
-            ${renderTriggersOutliner({ areaId: currentArea.id })}
-          </div>
-          `}
-        </div>
-
-        <!-- Right: Tasks + Capture -->
-        <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden flex flex-col">
+      <!-- Vertical layout: Tasks above, Triggers below (full width) -->
+      <div class="review-mode-content flex flex-col gap-5 mb-6">
+        <!-- Tasks first (above) -->
+        <div class="review-tasks-section rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden flex flex-col">
           <div class="px-4 py-3 border-b border-[var(--border-light)]">
             <div class="flex items-center gap-2">
-              <span class="review-step-badge text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-secondary)]">2</span>
+              <span class="review-step-badge text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-secondary)]">1</span>
               <svg class="w-4 h-4 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
               <span class="text-sm font-semibold text-[var(--text-primary)]">Tasks</span>
               <span class="text-xs text-[var(--text-muted)] ml-1">${staleTasks.length} to review</span>
@@ -451,7 +418,7 @@ export function renderReviewMode() {
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
           </div>
-          <div class="flex-1 overflow-y-auto" style="max-height: 60vh">
+          <div class="flex-1 overflow-y-auto" style="max-height: 50vh">
             ${staleTasks.length > 0 ? `
               <div class="divide-y divide-[var(--border-light)]">
                 ${staleTasks.map(task => `
@@ -485,6 +452,41 @@ export function renderReviewMode() {
                   Continue to next area
                 </button>
               </div>
+            `}
+          </div>
+        </div>
+
+        <!-- Triggers below (full width, expanded, takes remaining space) -->
+        <div class="review-triggers-section">
+          <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden flex flex-col flex-1 min-h-0">
+            <button onclick="state.reviewTriggersCollapsed = !state.reviewTriggersCollapsed; render()"
+              class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[var(--bg-secondary)]/30 transition flex-shrink-0" style="background: #FFCC0008">
+              <div class="flex items-center gap-2">
+                <span class="review-step-badge text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-secondary)]">2</span>
+                <span style="color: #FFCC00">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
+                <span class="text-sm font-semibold text-[var(--text-primary)]">Triggers</span>
+                <span class="text-xs text-[var(--text-muted)] ml-1">${areaTriggers.length}</span>
+              </div>
+              <span class="text-[var(--text-muted)] transition-transform ${state.reviewTriggersCollapsed ? '' : 'rotate-180'}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+              </span>
+            </button>
+            ${state.reviewTriggersCollapsed ? `
+            <div class="px-4 py-3 border-t border-[var(--border-light)]">
+              <p class="text-xs text-[var(--text-muted)]">Click to expand — review triggers for new ideas</p>
+            </div>
+            ` : `
+            <div class="border-t border-[var(--border-light)] flex items-center justify-between px-4 py-2 flex-shrink-0" style="background: #FFCC0005">
+              <span class="text-xs text-[var(--text-muted)]">Read each — does anything need a new task?</span>
+              <button onclick="event.stopPropagation(); window.createRootTrigger({areaId:'${currentArea.id}'})"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[#FFCC00] hover:bg-[#FFCC0010] rounded-lg transition">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Add
+              </button>
+            </div>
+            <div class="py-2 flex-1 overflow-y-auto min-h-[300px]">
+              ${renderTriggersOutliner({ areaId: currentArea.id })}
+            </div>
             `}
           </div>
         </div>
