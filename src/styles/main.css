@@ -3231,6 +3231,10 @@ body.mobile-keyboard-open .main-content {
   grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
   gap: var(--space-4);
 }
+/* When "Expand calendar" is active: single column so calendar takes full width */
+.calendar-page-grid-expanded {
+  grid-template-columns: 1fr;
+}
 .calendar-side-list {
   max-height: 320px;
   overflow-y: auto;

@@ -367,7 +367,7 @@ export function renderCalendarView() {
 
   return `
     <div class="flex-1">
-      <div class="calendar-page-grid">
+      <div class="calendar-page-grid ${state.calendarSidebarCollapsed ? 'calendar-page-grid-expanded' : ''}">
         <section class="bg-[var(--bg-card)] rounded-lg md:border md:border-[var(--border-light)]">
           <div class="px-5 py-4 flex items-center justify-between border-b border-[var(--border-light)]">
             <div class="flex items-center gap-3">
