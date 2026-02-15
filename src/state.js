@@ -594,6 +594,7 @@ export const state = {
   reviewCompletedAreas: [],
   reviewTriggersCollapsed: false, // Triggers expanded by default
   reviewProjectsCollapsed: false, // Projects/tasks expanded by default
+  reviewNotesCollapsed: false, // Notes expanded by default
   lastWeeklyReview: localStorage.getItem('nucleusLastWeeklyReview') || null,
   lastSomedayReview: localStorage.getItem('nucleusLastSomedayReview') || null,
 

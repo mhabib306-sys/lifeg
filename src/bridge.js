@@ -561,7 +561,7 @@ const stateProxies = [
   'CATEGORY_WEIGHTS', 'xp', 'streak', 'achievements', 'dailyFocusDismissed',
   'gsheetData', 'gsheetSyncing', 'gsheetError', 'gsheetPrompt', 'gsheetResponse', 'gsheetAsking', 'gsheetEditingPrompt',
   'triggers', 'editingTriggerId', 'collapsedTriggers', 'zoomedTriggerId', 'triggersBreadcrumb',
-  'reviewMode', 'reviewAreaIndex', 'reviewCompletedAreas', 'reviewTriggersCollapsed', 'reviewProjectsCollapsed', 'lastWeeklyReview', 'lastSomedayReview',
+  'reviewMode', 'reviewAreaIndex', 'reviewCompletedAreas', 'reviewTriggersCollapsed', 'reviewProjectsCollapsed', 'reviewNotesCollapsed', 'lastWeeklyReview', 'lastSomedayReview',
   'showGlobalSearch', 'globalSearchQuery', 'globalSearchResults', 'globalSearchActiveIndex', 'globalSearchTypeFilter',
   'settingsIntegrationsOpen', 'settingsScoringOpen', 'settingsDevToolsOpen', 'settingsDataDiagOpen',
 ];

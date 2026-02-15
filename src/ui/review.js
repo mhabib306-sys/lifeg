@@ -5,10 +5,10 @@
 // engage or pass each item.
 
 import { state } from '../state.js';
-import { THINGS3_ICONS, getActiveIcons } from '../constants.js';
-import { escapeHtml, getLocalDateString } from '../utils.js';
-import { getAreaById } from '../features/areas.js';
+import { getActiveIcons } from '../constants.js';
+import { escapeHtml } from '../utils.js';
 import { renderTriggersOutliner } from '../features/triggers.js';
+import { renderNotesOutliner } from '../features/notes.js';
 import { saveTasksData } from '../data/storage.js';
 import { createTask } from '../features/tasks.js';
 
@@ -68,6 +68,7 @@ export function startReview() {
   state.reviewCompletedAreas = [];
   state.reviewTriggersCollapsed = false;
   state.reviewProjectsCollapsed = false;
+  state.reviewNotesCollapsed = false;
   if (typeof window.render === 'function') window.render();
 }
 
@@ -260,6 +261,11 @@ export function renderReviewMode() {
     !t.completed
   );
 
+  // Get notes for current area (all notes, no staleness)
+  const areaNotes = state.tasksData.filter(t =>
+    t.isNote && t.areaId === currentArea.id && !t.completed && t.noteLifecycleState !== 'deleted'
+  );
+
   // Time since last reviewed
   function formatTimeSince(isoStr) {
     if (!isoStr) return 'Never reviewed';
@@ -274,35 +280,41 @@ export function renderReviewMode() {
 
   return `
     <div class="review-mode">
-      <!-- Header -->
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <span class="w-10 h-10 flex items-center justify-center rounded-lg" style="background: ${areaColor}15; color: ${areaColor}">
-            ${getActiveIcons().review}
-          </span>
-          <div>
-            <h2 class="text-xl font-bold text-[var(--text-primary)]">Weekly Review</h2>
-            <p class="text-sm text-[var(--text-muted)]">One area at a time — take your time</p>
+      <!-- Compact header: Review title + progress + area -->
+      <div class="review-header-compact mb-5">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-3">
+            <span class="w-9 h-9 flex items-center justify-center rounded-lg" style="background: ${areaColor}15; color: ${areaColor}">
+              ${getActiveIcons().review}
+            </span>
+            <div>
+              <h2 class="text-lg font-bold text-[var(--text-primary)]">Weekly Review</h2>
+              <p class="text-xs text-[var(--text-muted)]">${completedCount} of ${totalAreas} areas</p>
+            </div>
+          </div>
+          <button onclick="exitReview()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition">
+            Exit
+          </button>
+        </div>
+        <div class="flex items-center gap-3 flex-wrap">
+          <div class="flex items-center gap-2 min-w-0 flex-1">
+            <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base flex-shrink-0" style="background: ${areaColor}15">
+              ${currentArea.emoji || getActiveIcons().area.replace('w-5 h-5', 'w-5 h-5')}
+            </span>
+            <div class="min-w-0">
+              <h3 class="text-base font-bold text-[var(--text-primary)] truncate">${escapeHtml(currentArea.name)}</h3>
+              <p class="text-xs text-[var(--text-muted)]">${areaProjects.length} projects · ${areaTriggers.length} triggers · ${staleTasks.length} tasks · ${areaNotes.length} notes</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            ${state.reviewAreaIndex > 0 ? `<button onclick="reviewPrevArea()" class="p-2 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] transition" aria-label="Previous area"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>` : ''}
+            ${state.reviewAreaIndex < areas.length - 1 ? `<button onclick="reviewNextArea()" class="p-2 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] transition" aria-label="Next area"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>` : ''}
           </div>
         </div>
-        <button onclick="exitReview()" class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition" title="Leave review (progress is saved)" aria-label="Leave review (progress is saved)">
-          Exit Review
-        </button>
-      </div>
-
-      <!-- Progress bar -->
-      <div class="review-progress-bar mb-6">
-        <div class="flex items-center justify-between mb-1.5">
-          <span class="text-xs font-medium text-[var(--text-muted)]">${completedCount} of ${totalAreas} areas</span>
-          ${progressPercent > 0 ? `<span class="text-xs text-[var(--text-muted)]">${progressPercent}%</span>` : ''}
-        </div>
-        <div class="h-2.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
-          <div class="h-full rounded-full transition-all duration-300" style="width: ${progressPercent}%; background: ${areaColor}"></div>
-        </div>
-        <div class="flex justify-between mt-2">
+        <div class="flex gap-1.5 mt-3">
           ${areas.map((a, i) => `
             <button onclick="state.reviewAreaIndex=${i}; render()"
-              class="review-progress-dot w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center transition
+              class="review-progress-dot w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center transition flex-shrink-0
                 ${state.reviewCompletedAreas.includes(a.id) ? 'bg-[var(--success)] text-white' : i === state.reviewAreaIndex ? 'ring-2 ring-offset-1' : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'}"
               style="${i === state.reviewAreaIndex ? `ring-color: ${a.color || '#147EFB'}; background: ${a.color || '#147EFB'}20; color: ${a.color || '#147EFB'}` : ''}"
               title="${escapeHtml(a.name)}">
@@ -312,111 +324,46 @@ export function renderReviewMode() {
         </div>
       </div>
 
-      <!-- Current Area Header -->
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <span class="w-10 h-10 rounded-lg flex items-center justify-center text-lg" style="background: ${areaColor}15">
-            ${currentArea.emoji || getActiveIcons().area.replace('w-5 h-5', 'w-6 h-6')}
-          </span>
-          <div>
-            <h3 class="text-lg font-bold text-[var(--text-primary)]">${escapeHtml(currentArea.name)}</h3>
-            <p class="text-sm text-[var(--text-muted)]">${areaProjects.length} projects, ${areaTriggers.length} triggers, ${staleTasks.length} tasks to review</p>
+      <!-- Unified capture bar: add task, note, trigger -->
+      <div class="review-capture-bar rounded-lg border-2 border-dashed border-[var(--border-light)] bg-[var(--bg-secondary)]/50 p-4 mb-6">
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="flex-1 flex items-center gap-2 min-h-[44px] px-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-light)]">
+            <button onclick="state.quickAddIsNote = false; render()" class="review-capture-mode-btn flex items-center gap-2 px-2 py-1.5 rounded text-sm font-medium transition ${!state.quickAddIsNote ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)]'}" title="Add task">
+              <span class="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center text-[10px]">T</span>
+              Task
+            </button>
+            <button onclick="state.quickAddIsNote = true; render()" class="review-capture-mode-btn flex items-center gap-2 px-2 py-1.5 rounded text-sm font-medium transition ${state.quickAddIsNote ? 'bg-[var(--notes-color)] text-white' : 'text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)]'}" title="Add note">
+              <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+              Note
+            </button>
+            <input type="text" id="review-quick-add-input"
+              placeholder="${state.quickAddIsNote ? 'New note...' : 'New task...'} (Enter to add)"
+              onkeydown="window.reviewHandleQuickAddKeydown(event, this, '${currentArea.id}')"
+              class="flex-1 min-w-0 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]/50 bg-transparent border-0 outline-none focus:ring-0">
+            <button onclick="window.reviewQuickAddTask('${currentArea.id}', document.getElementById('review-quick-add-input'), state.quickAddIsNote)"
+              class="flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition min-h-[44px] flex items-center justify-center" style="background: ${areaColor}15; color: ${areaColor}" title="Add">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
           </div>
+          <button onclick="window.createRootTrigger({areaId:'${currentArea.id}'})"
+            class="review-capture-trigger-btn flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium min-h-[44px] transition" style="background: #FFCC0015; color: #B8860B" title="Add trigger">
+            <span style="color: #FFCC00">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
+            Add trigger
+          </button>
         </div>
-        <div class="flex items-center gap-2">
-          ${state.reviewAreaIndex > 0 ? `
-            <button onclick="reviewPrevArea()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-lg text-sm hover:bg-[var(--bg-tertiary)] transition">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-            </button>
-          ` : ''}
-          ${state.reviewAreaIndex < areas.length - 1 ? `
-            <button onclick="reviewNextArea()" class="px-3 py-1.5 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-lg text-sm hover:bg-[var(--bg-tertiary)] transition">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-            </button>
-          ` : ''}
-        </div>
+        <p class="text-[11px] text-[var(--text-muted)] mt-2">Supports #label +person due:date in the input</p>
       </div>
 
-      <!-- Projects Section (collapsible) -->
-      ${areaProjects.length > 0 ? `
-        <div class="mb-6 rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden">
-          <button onclick="state.reviewProjectsCollapsed = !state.reviewProjectsCollapsed; render()"
-            class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[var(--bg-secondary)]/30 transition">
-            <div class="flex items-center gap-2">
-              <span>📋</span>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Projects</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${areaProjects.length}</span>
-            </div>
-            <span class="text-[var(--text-muted)] transition-transform ${state.reviewProjectsCollapsed ? '' : 'rotate-180'}">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </span>
-          </button>
-          ${!state.reviewProjectsCollapsed ? `
-          <div class="px-4 py-2 border-t border-[var(--border-light)]">
-            <p class="text-xs text-[var(--text-muted)] italic">Check progress and next steps</p>
-          </div>
-          <div class="divide-y divide-[var(--border-light)]">
-            ${areaProjects.map(project => {
-              const completion = window.getProjectCompletion?.(project.id) || 0;
-              const subTasksCount = window.getProjectSubTasks?.(project.id)?.length || 0;
-              const isStalled = window.isProjectStalled?.(project.id) || false;
-              return `
-                <div class="px-4 py-3 hover:bg-[var(--bg-secondary)]/30 transition cursor-pointer" onclick="reviewEngageTask('${project.id}')">
-                  <div class="flex items-start gap-3">
-                    <span class="w-5 h-5 mt-0.5 text-lg flex-shrink-0">📋</span>
-                    <div class="flex-1 min-w-0">
-                      <div class="flex items-center gap-2 mb-1">
-                        <p class="text-sm font-medium text-[var(--text-primary)] truncate">${escapeHtml(project.title || 'Untitled Project')}</p>
-                        ${isStalled ? `<span class="px-1.5 py-0.5 bg-[var(--warning)]/15 text-[var(--warning)] text-[10px] font-medium rounded">Stalled</span>` : ''}
-                      </div>
-                      <div class="flex items-center gap-2">
-                        <div class="flex-1 h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
-                          <div class="h-full rounded-full transition-all" style="width: ${completion}%; background: ${areaColor}"></div>
-                        </div>
-                        <span class="text-xs text-[var(--text-muted)] tabular-nums">${completion}%</span>
-                      </div>
-                      <p class="text-xs text-[var(--text-muted)] mt-1">${subTasksCount} ${subTasksCount === 1 ? 'task' : 'tasks'} · ${project.projectType === 'sequential' ? '📝 Sequential' : '📋 Parallel'}</p>
-                    </div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-          ` : ''}
-        </div>
-      ` : ''}
-
-      <!-- Step guidance -->
-      <p class="text-xs text-[var(--text-muted)] mb-4">Review each task, then mark the area done.</p>
-
-      <!-- Vertical layout: Tasks above, Triggers below (full width) -->
+      <!-- Vertical layout: Tasks, Notes, Triggers (full width) -->
       <div class="review-mode-content flex flex-col gap-5 mb-6">
-        <!-- Tasks first (above) -->
+        <!-- Tasks -->
         <div class="review-tasks-section rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden flex flex-col">
           <div class="px-4 py-3 border-b border-[var(--border-light)]">
             <div class="flex items-center gap-2">
-              <span class="review-step-badge text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-secondary)]">1</span>
               <svg class="w-4 h-4 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
-              <span class="text-sm font-semibold text-[var(--text-primary)]">Tasks</span>
-              <span class="text-xs text-[var(--text-muted)] ml-1">${staleTasks.length} to review</span>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Tasks to review</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${staleTasks.length}</span>
             </div>
-          </div>
-          <!-- Direct quick-add: type and Enter to add task/note without modal -->
-          <div class="quick-add-section px-4 py-2.5 border-b border-[var(--border-light)] flex items-center gap-2">
-            <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
-              class="quick-add-type-toggle flex-shrink-0 cursor-pointer" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
-              ${state.quickAddIsNote
-                ? '<div class="w-1.5 h-1.5 rounded-full bg-[var(--notes-color)]"></div>'
-                : '<div class="w-[18px] h-[18px] rounded-full border-2 border-dashed border-[var(--text-muted)]/30"></div>'}
-            </div>
-            <input type="text" id="review-quick-add-input"
-              placeholder="Add a quick task or note..."
-              onkeydown="window.reviewHandleQuickAddKeydown(event, this, '${currentArea.id}')"
-              class="flex-1 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]/50 bg-transparent border-0 outline-none focus:ring-0">
-            <button onclick="window.reviewQuickAddTask('${currentArea.id}', document.getElementById('review-quick-add-input'), state.quickAddIsNote)"
-              class="text-[var(--text-muted)] hover:text-[var(--accent)] transition p-1 flex-shrink-0" title="${state.quickAddIsNote ? 'Add note' : 'Add task'}">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </button>
           </div>
           <div class="flex-1 overflow-y-auto" style="max-height: 50vh">
             ${staleTasks.length > 0 ? `
@@ -447,7 +394,7 @@ export function renderReviewMode() {
               <div class="px-4 py-8 text-center">
                 <svg class="w-8 h-8 mx-auto mb-2 text-[var(--success)] opacity-60" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                 <p class="text-sm font-medium text-[var(--text-primary)]">All caught up in this area</p>
-                <p class="text-xs text-[var(--text-muted)] mt-0.5">Nothing to review here — or add a quick task below</p>
+                <p class="text-xs text-[var(--text-muted)] mt-0.5">Nothing to review — add above when ready</p>
                 <button onclick="reviewMarkAreaDone()" class="mt-3 text-xs font-medium text-[var(--accent)] hover:underline">
                   Continue to next area
                 </button>
@@ -456,13 +403,44 @@ export function renderReviewMode() {
           </div>
         </div>
 
-        <!-- Triggers below (full width, expanded, takes remaining space) -->
+        <!-- Notes -->
+        <div class="review-notes-section rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden flex flex-col">
+          <button onclick="state.reviewNotesCollapsed = !state.reviewNotesCollapsed; render()"
+            class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[var(--bg-secondary)]/30 transition">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-[var(--notes-color)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Notes</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${areaNotes.length}</span>
+            </div>
+            <span class="text-[var(--text-muted)] transition-transform ${state.reviewNotesCollapsed ? '' : 'rotate-180'}">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          ${state.reviewNotesCollapsed ? `
+          <div class="px-4 py-3 border-t border-[var(--border-light)]">
+            <p class="text-xs text-[var(--text-muted)]">Click to expand — review notes in this area</p>
+          </div>
+          ` : `
+          <div class="border-t border-[var(--border-light)] flex items-center justify-between px-4 py-2 flex-shrink-0" style="background: color-mix(in srgb, var(--notes-color) 8%, transparent)">
+            <span class="text-xs text-[var(--text-muted)]">Review and edit notes</span>
+            <button onclick="event.stopPropagation(); window.createRootNote({areaId:'${currentArea.id}'})"
+              class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-lg transition" style="color: var(--notes-color); background: color-mix(in srgb, var(--notes-color) 12%, transparent)">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add note
+            </button>
+          </div>
+          <div class="py-2 flex-1 overflow-y-auto min-h-[200px]" style="max-height: 45vh">
+            ${renderNotesOutliner({ areaId: currentArea.id })}
+          </div>
+          `}
+        </div>
+
+        <!-- Triggers (full width, expanded, takes remaining space) -->
         <div class="review-triggers-section">
           <div class="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden flex flex-col flex-1 min-h-0">
             <button onclick="state.reviewTriggersCollapsed = !state.reviewTriggersCollapsed; render()"
               class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[var(--bg-secondary)]/30 transition flex-shrink-0" style="background: #FFCC0008">
               <div class="flex items-center gap-2">
-                <span class="review-step-badge text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-secondary)]">2</span>
                 <span style="color: #FFCC00">${getActiveIcons().trigger.replace('w-5 h-5', 'w-4 h-4')}</span>
                 <span class="text-sm font-semibold text-[var(--text-primary)]">Triggers</span>
                 <span class="text-xs text-[var(--text-muted)] ml-1">${areaTriggers.length}</span>
@@ -491,6 +469,52 @@ export function renderReviewMode() {
           </div>
         </div>
       </div>
+
+      <!-- Projects (collapsible, at bottom to reduce clutter) -->
+      ${areaProjects.length > 0 ? `
+        <div class="mb-6 rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden">
+          <button onclick="state.reviewProjectsCollapsed = !state.reviewProjectsCollapsed; render()"
+            class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[var(--bg-secondary)]/30 transition">
+            <div class="flex items-center gap-2">
+              <span>📋</span>
+              <span class="text-sm font-semibold text-[var(--text-primary)]">Projects</span>
+              <span class="text-xs text-[var(--text-muted)] ml-1">${areaProjects.length}</span>
+            </div>
+            <span class="text-[var(--text-muted)] transition-transform ${state.reviewProjectsCollapsed ? '' : 'rotate-180'}">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          ${!state.reviewProjectsCollapsed ? `
+          <div class="divide-y divide-[var(--border-light)]">
+            ${areaProjects.map(project => {
+              const completion = window.getProjectCompletion?.(project.id) || 0;
+              const subTasksCount = window.getProjectSubTasks?.(project.id)?.length || 0;
+              const isStalled = window.isProjectStalled?.(project.id) || false;
+              return `
+                <div class="px-4 py-3 hover:bg-[var(--bg-secondary)]/30 transition cursor-pointer" onclick="reviewEngageTask('${project.id}')">
+                  <div class="flex items-start gap-3">
+                    <span class="w-5 h-5 mt-0.5 text-lg flex-shrink-0">📋</span>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2 mb-1">
+                        <p class="text-sm font-medium text-[var(--text-primary)] truncate">${escapeHtml(project.title || 'Untitled Project')}</p>
+                        ${isStalled ? `<span class="px-1.5 py-0.5 bg-[var(--warning)]/15 text-[var(--warning)] text-[10px] font-medium rounded">Stalled</span>` : ''}
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <div class="flex-1 h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
+                          <div class="h-full rounded-full transition-all" style="width: ${completion}%; background: ${areaColor}"></div>
+                        </div>
+                        <span class="text-xs text-[var(--text-muted)] tabular-nums">${completion}%</span>
+                      </div>
+                      <p class="text-xs text-[var(--text-muted)] mt-1">${subTasksCount} ${subTasksCount === 1 ? 'task' : 'tasks'} · ${project.projectType === 'sequential' ? '📝 Sequential' : '📋 Parallel'}</p>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          ` : ''}
+        </div>
+      ` : ''}
 
       <!-- Area Complete Button (sticky on mobile) -->
       <div class="review-mark-done-bar flex items-center justify-center gap-3 mt-6">

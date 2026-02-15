@@ -5708,6 +5708,27 @@ mark.global-search-highlight {
   max-width: 100%;
   margin: 0 auto;
 }
+.review-header-compact {
+  padding-bottom: 0;
+}
+.review-capture-bar {
+  min-height: 44px;
+}
+.review-capture-mode-btn {
+  min-height: 36px;
+  touch-action: manipulation;
+}
+.review-capture-trigger-btn {
+  touch-action: manipulation;
+}
+@media (max-width: 640px) {
+  .review-capture-bar .flex-col.sm\:flex-row {
+    flex-direction: column;
+  }
+  .review-capture-trigger-btn {
+    width: 100%;
+  }
+}
 .review-mode-content {
   display: flex;
   flex-direction: column;
