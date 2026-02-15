@@ -325,9 +325,9 @@ export function renderReviewMode() {
       </div>
 
       <!-- Unified capture bar: add task, note, trigger -->
-      <div class="review-capture-bar rounded-lg border-2 border-dashed border-[var(--border-light)] bg-[var(--bg-secondary)]/50 p-4 mb-6">
+      <div class="review-capture-bar rounded-lg bg-[var(--bg-secondary)]/50 p-4 mb-6">
         <div class="flex flex-col sm:flex-row gap-3">
-          <div class="flex-1 flex items-center gap-3 min-h-[44px] px-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-light)]">
+          <div class="flex-1 flex items-center gap-3 min-h-[44px]">
             <div onclick="state.quickAddIsNote = !state.quickAddIsNote; render()"
               class="quick-add-type-toggle cursor-pointer flex-shrink-0" title="${state.quickAddIsNote ? 'Switch to Task' : 'Switch to Note'}">
               ${state.quickAddIsNote
