@@ -592,6 +592,8 @@ export const state = {
   reviewMode: false,
   reviewAreaIndex: 0,
   reviewCompletedAreas: [],
+  reviewTriggersCollapsed: true, // Triggers collapsed by default; Tasks (primary) always visible
+  reviewProjectsCollapsed: true, // Projects collapsed by default
   lastWeeklyReview: localStorage.getItem('nucleusLastWeeklyReview') || null,
   lastSomedayReview: localStorage.getItem('nucleusLastSomedayReview') || null,
 

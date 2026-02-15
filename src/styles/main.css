@@ -5708,6 +5708,34 @@ mark.global-search-highlight {
   max-width: 720px;
   margin: 0 auto;
 }
+.review-add-chips .area-chip {
+  padding: 6px 10px;
+  font-size: 11px;
+}
+.review-action-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.review-mark-done-btn {
+  min-height: 48px;
+  padding: 12px 24px;
+}
+.review-mark-done-bar {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+@media (max-width: 768px) {
+  .review-mark-done-bar {
+    position: sticky;
+    bottom: 0;
+    padding: 16px 0;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0));
+    background: linear-gradient(to top, var(--bg-primary) 85%, transparent);
+    margin-top: 16px;
+    z-index: 10;
+  }
+}
 .review-step-badge {
   display: inline-flex;
   align-items: center;
