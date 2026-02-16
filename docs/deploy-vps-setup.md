@@ -24,25 +24,13 @@ cat ~/.ssh/github_deploy.pub >> ~/.ssh/authorized_keys
 
 Then copy the **private** key (`~/.ssh/github_deploy`) and paste it into the `VPS_SSH_KEY` secret.
 
-### 3. Allow passwordless sudo for chown
+### 3. Allow passwordless sudo for permissions script
 
-The deploy script runs `sudo chown -R www-data:www-data dist`. Add:
+The deploy script runs `sudo scripts/fix-dist-permissions.sh`. Add:
 
 ```bash
-sudo visudo
-```
-
-Append (replace `muhammad` with your user):
-
-```
-muhammad ALL=(ALL) NOPASSWD: /usr/bin/chown -R www-data\:www-data /var/www/myapp/lifeg/dist
-muhammad ALL=(ALL) NOPASSWD: /usr/bin/chmod -R u+rX,g+rX,o+rX /var/www/myapp/lifeg/dist
-```
-
-Or for broader access (less secure):
-
-```
-muhammad ALL=(ALL) NOPASSWD: ALL
+echo 'muhammad ALL=(ALL) NOPASSWD: /var/www/myapp/lifeg/scripts/fix-dist-permissions.sh' | sudo tee /etc/sudoers.d/lifeg-deploy
+sudo chmod 440 /etc/sudoers.d/lifeg-deploy
 ```
 
 ### 4. Ensure repo exists on VPS

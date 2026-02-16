@@ -21,7 +21,6 @@ echo "==> Building..."
 npm run build
 
 echo "==> Fixing permissions for nginx (www-data)..."
-sudo chown -R www-data:www-data dist
-sudo chmod -R u+rX,g+rX,o+rX dist
+sudo "$(dirname "$0")/fix-dist-permissions.sh"
 
 echo "==> Done. App served from dist/"
