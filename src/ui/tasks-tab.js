@@ -426,6 +426,10 @@ export function renderTaskItem(task, showDueDate = true, compact = false) {
         </div>
         <div class="swipe-row-content">${taskInnerHtml}</div>
         <div class="swipe-actions-right">
+          <button class="swipe-action-btn swipe-action-edit" onclick="event.stopPropagation(); window.editingTaskId='${task.id}'; window.showTaskModal=true; window.render()">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <span>Edit</span>
+          </button>
           <button class="swipe-action-btn swipe-action-flag" onclick="event.stopPropagation(); window.toggleFlag('${task.id}')">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="${task.flagged ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
             <span>${task.flagged ? 'Unflag' : 'Flag'}</span>
