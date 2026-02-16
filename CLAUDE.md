@@ -46,12 +46,11 @@ npm run preview  # Preview production build locally
 npm run deploy   # Build + force-push dist/ to gh-pages branch (GitHub Pages)
 ```
 
-**Deployment target (always):**
-- Live URL: `https://mhabib306-sys.github.io/lifeg/`
-- Deployment branch: `gh-pages`
-- Deploy command: `npm run deploy`
+**Deployment targets:**
+- GitHub Pages: `https://mhabib306-sys.github.io/lifeg/` — `npm run deploy` (manual)
+- VPS (muhammadhabib.com/lifeg/): **automatic** — on push to main, CI runs; if it passes, GitHub Actions SSHs to VPS and runs `./scripts/deploy-vps.sh`. One-time setup: see [docs/deploy-vps-setup.md](docs/deploy-vps-setup.md).
 
-**Always run `npm run build` after changes to verify the build succeeds.** After committing and pushing to main, **always run `npm run deploy`** to deploy to GitHub Pages. Every change must go live.
+**Always run `npm run build` after changes to verify the build succeeds.** After committing and pushing to main, run `npm run deploy` for GitHub Pages. VPS deploys automatically.
 
 ## Module Structure
 
