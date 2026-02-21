@@ -388,7 +388,7 @@ export const state = {
         parsed.recentEvents = Array.isArray(parsed.recentEvents) ? parsed.recentEvents.slice(0, 20) : [];
         return parsed;
       }
-    } catch (_) {}
+    } catch (_e) { /* malformed JSON in storage */ }
     return {
       totalSaves: 0, successfulSaves: 0, failedSaves: 0,
       totalLoads: 0, successfulLoads: 0, failedLoads: 0,

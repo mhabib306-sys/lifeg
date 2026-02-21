@@ -35,7 +35,12 @@ export function getLibreWorkerUrl() {
 }
 
 export function setLibreWorkerUrl(url) {
-  localStorage.setItem(LS_WORKER_URL, url.replace(/\/+$/, ''));
+  const trimmed = url.replace(/\/+$/, '');
+  if (trimmed && !trimmed.startsWith('https://')) {
+    console.warn('[LibreView] Worker URL must use HTTPS. URL not saved.');
+    return;
+  }
+  localStorage.setItem(LS_WORKER_URL, trimmed);
 }
 
 export function getLibreApiKey() {

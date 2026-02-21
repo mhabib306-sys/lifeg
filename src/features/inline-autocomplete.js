@@ -8,7 +8,7 @@
 // calls back to task-modal functions via window.* bridge to avoid circular imports.
 
 import { state } from '../state.js';
-import { escapeHtml, formatSmartDate, generateEntityId } from '../utils.js';
+import { escapeHtml, formatSmartDate, generateEntityId, sanitizeColor } from '../utils.js';
 import { TASK_CATEGORIES_KEY, TASK_LABELS_KEY, TASK_PEOPLE_KEY } from '../constants.js';
 import { createArea, createLabel, createPerson } from './areas.js';
 
@@ -18,18 +18,6 @@ function debouncedSaveToGithub() {
   }
 }
 
-/**
- * Sanitize color values to prevent CSS injection attacks.
- * Only allows valid hex colors (#RGB or #RRGGBB format).
- * @param {string} color - Color value to sanitize
- * @returns {string} Sanitized hex color or fallback
- */
-function sanitizeColor(color) {
-  if (!color || typeof color !== 'string') return '#6366f1';
-  const hex = color.trim();
-  if (/^#[0-9A-Fa-f]{3}$|^#[0-9A-Fa-f]{6}$/.test(hex)) return hex;
-  return '#6366f1'; // fallback to default blue
-}
 
 // ============================================================================
 // DATE QUERY PARSER (for ! trigger in inline autocomplete)
@@ -363,6 +351,8 @@ export function setupInlineAutocomplete(inputId, config = {}) {
       const isActive = activeIndex === createIdx ? ' active' : '';
       html += `<div class="inline-ac-create${isActive}" data-idx="${createIdx}">+ Create ${typeLabel} "${escapeHtml(query)}"</div>`;
     }
+    // safe: content is built from escapeHtml()-sanitized user data + static template strings
+    // eslint-disable-next-line no-unsanitized/property
     popup.innerHTML = html;
 
     // Click handlers
@@ -581,6 +571,8 @@ export function renderInlineChips(inputId) {
       </span>
     </span>`;
   }
+  // safe: html is built from escapeHtml()-sanitized label text + static SVG
+  // eslint-disable-next-line no-unsanitized/property
   chipsEl.innerHTML = html;
 }
 

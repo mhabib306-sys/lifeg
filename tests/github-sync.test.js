@@ -571,7 +571,7 @@ describe('updateSyncStatus', () => {
     document.body.appendChild(indicator);
 
     updateSyncStatus('error', 'Sync failed');
-    expect(indicator.className).toContain('bg-red-500');
+    expect(indicator.className).toContain('bg-[var(--danger)]');
     expect(indicator.title).toBe('Sync failed');
 
     document.body.removeChild(indicator);
@@ -583,7 +583,7 @@ describe('updateSyncStatus', () => {
     document.body.appendChild(indicator);
 
     updateSyncStatus('syncing');
-    expect(indicator.className).toContain('bg-amber-400');
+    expect(indicator.className).toContain('bg-[var(--warning)]');
     expect(indicator.className).toContain('animate-pulse');
 
     document.body.removeChild(indicator);
@@ -595,7 +595,7 @@ describe('updateSyncStatus', () => {
     document.body.appendChild(indicator);
 
     updateSyncStatus('success');
-    expect(indicator.className).toContain('bg-green-500');
+    expect(indicator.className).toContain('bg-[var(--success)]');
 
     document.body.removeChild(indicator);
   });

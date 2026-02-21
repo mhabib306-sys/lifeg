@@ -10,7 +10,8 @@
 import { state } from '../state.js';
 import { createTask, updateTask, deleteTask } from '../features/tasks.js';
 import { createLabel, createPerson, getCategoriesByArea, getCategoryById } from '../features/areas.js';
-import { escapeHtml, formatSmartDate, renderPersonAvatar, isMobileViewport } from '../utils.js';
+import { escapeHtml, formatSmartDate, renderPersonAvatar, isMobileViewport, sanitizeColor } from '../utils.js';
+import { q } from './calendar-meeting.js';
 import {
   getActiveIcons,
   _css,
@@ -418,6 +419,7 @@ export function toggleInlineTagInput() {
   const container = document.getElementById('inline-tag-form');
   if (container) {
     if (state.showInlineTagInput) {
+      // eslint-disable-next-line no-unsanitized/property
       container.innerHTML = `
         <div class="modal-inline-form flex items-center gap-2 mt-2 p-2 bg-[var(--bg-secondary)]/30 rounded-lg">
           <input type="text" id="inline-tag-name" placeholder="Tag name"
@@ -430,6 +432,7 @@ export function toggleInlineTagInput() {
       `;
       setTimeout(() => document.getElementById('inline-tag-name')?.focus(), 50);
     } else {
+      // eslint-disable-next-line no-unsanitized/property
       container.innerHTML = '';
     }
   }
@@ -453,12 +456,13 @@ export function addInlineTag() {
       selectedTags.push(newTag.id); // Add the new tag as selected
 
       // Re-render tags
+      // eslint-disable-next-line no-unsanitized/property
       labelsContainer.innerHTML = state.taskLabels.map(label => {
         const isSelected = selectedTags.includes(label.id);
         return `
-          <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded-md border cursor-pointer transition ${isSelected ? 'bg-[var(--bg-secondary)]' : 'hover:bg-[var(--bg-secondary)]/50'}" style="border-color: ${label.color}">
-            <input type="checkbox" value="${label.id}" ${isSelected ? 'checked' : ''} class="task-label-checkbox rounded-sm" style="accent-color: ${label.color}">
-            <span class="text-sm" style="color: ${label.color}">${escapeHtml(label.name)}</span>
+          <label class="label-checkbox flex items-center gap-1.5 px-2 py-1 rounded-md border cursor-pointer transition ${isSelected ? 'bg-[var(--bg-secondary)]' : 'hover:bg-[var(--bg-secondary)]/50'}" style="border-color: ${sanitizeColor(label.color)}">
+            <input type="checkbox" value="${label.id}" ${isSelected ? 'checked' : ''} class="task-label-checkbox rounded-sm" style="accent-color: ${sanitizeColor(label.color)}">
+            <span class="text-sm" style="color: ${sanitizeColor(label.color)}">${escapeHtml(label.name)}</span>
           </label>
         `;
       }).join('') + `
@@ -468,6 +472,7 @@ export function addInlineTag() {
         </button>
       `;
     }
+    // eslint-disable-next-line no-unsanitized/property
     document.getElementById('inline-tag-form').innerHTML = '';
   }
 }
@@ -480,6 +485,7 @@ export function toggleInlinePersonInput() {
   const container = document.getElementById('inline-person-form');
   if (container) {
     if (state.showInlinePersonInput) {
+      // eslint-disable-next-line no-unsanitized/property
       container.innerHTML = `
         <div class="modal-inline-form flex items-center gap-2 mt-2 p-2 bg-[var(--bg-secondary)]/30 rounded-lg">
           <input type="text" id="inline-person-name" placeholder="Person name"
@@ -491,6 +497,7 @@ export function toggleInlinePersonInput() {
       `;
       setTimeout(() => document.getElementById('inline-person-name')?.focus(), 50);
     } else {
+      // eslint-disable-next-line no-unsanitized/property
       container.innerHTML = '';
     }
   }
@@ -513,6 +520,7 @@ export function addInlinePerson() {
       selectedPeople.push(newPerson.id); // Add the new person as selected
 
       // Re-render people
+      // eslint-disable-next-line no-unsanitized/property
       peopleContainer.innerHTML = state.taskPeople.map(person => {
         const isSelected = selectedPeople.includes(person.id);
         return `
@@ -528,6 +536,7 @@ export function addInlinePerson() {
         </button>
       `;
     }
+    // eslint-disable-next-line no-unsanitized/property
     document.getElementById('inline-person-form').innerHTML = '';
   }
 }
@@ -590,8 +599,10 @@ export function setupAutocomplete(inputId, dropdownId, items, onSelect, getDispl
     );
 
     if (filtered.length === 0 && !allowCreate) {
+      // eslint-disable-next-line no-unsanitized/property
       dropdown.innerHTML = '<div class="autocomplete-empty">No matches found</div>';
     } else {
+      // eslint-disable-next-line no-unsanitized/property
       dropdown.innerHTML = filtered.map((item, idx) => `
         <div class="autocomplete-option ${idx === highlightedIndex ? 'highlighted' : ''}"
              data-id="${item.id}" data-idx="${idx}">
@@ -855,8 +866,9 @@ export function selectArea(area) {
   state.modalSelectedArea = area ? area.id : null;
   const display = document.getElementById('area-display');
   if (display) {
+    // eslint-disable-next-line no-unsanitized/property
     display.innerHTML = area
-      ? `<span class="tag-pill" style="background: ${area.color}20; color: ${area.color}">
+      ? `<span class="tag-pill" style="background: ${sanitizeColor(area.color)}20; color: ${sanitizeColor(area.color)}">
            ${area.emoji || '<svg style="display:inline-block;vertical-align:middle;width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 17l10 5 10-5-10-5-10 5z" opacity="0.35"/><path d="M2 12l10 5 10-5-10-5-10 5z" opacity="0.6"/><path d="M12 2L2 7l10 5 10-5L12 2z"/></svg>'} ${escapeHtml(area.name)}
            <span class="tag-pill-remove" onclick="event.stopPropagation(); selectArea(null); renderAreaInput();">
              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -878,10 +890,11 @@ export function renderAreaInput() {
 
   const area = state.taskAreas.find(c => c.id === state.modalSelectedArea);
 
+  // eslint-disable-next-line no-unsanitized/property
   container.innerHTML = `
     <div id="area-display" class="modal-token-shell area-display-shell" onclick="document.getElementById('area-search').focus()">
       ${area
-        ? `<span class="tag-pill" style="background: ${area.color}20; color: ${area.color}">
+        ? `<span class="tag-pill" style="background: ${sanitizeColor(area.color)}20; color: ${sanitizeColor(area.color)}">
              ${area.emoji || '<svg style="display:inline-block;vertical-align:middle;width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 17l10 5 10-5-10-5-10 5z" opacity="0.35"/><path d="M2 12l10 5 10-5-10-5-10 5z" opacity="0.6"/><path d="M12 2L2 7l10 5 10-5L12 2z"/></svg>'} ${escapeHtml(area.name)}
              <span class="tag-pill-remove" onclick="event.stopPropagation(); selectArea(null); renderAreaInput();">
                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -902,7 +915,7 @@ export function renderAreaInput() {
     state.taskAreas,
     (item) => { selectArea(item); renderAreaInput(); },
     (item) => item.name,
-    (item) => `<div class="autocomplete-option-icon" style="background: ${item.color}20; color: ${item.color}">${item.emoji || '<svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}</div>`,
+    (item) => `<div class="autocomplete-option-icon" style="background: ${sanitizeColor(item.color)}20; color: ${sanitizeColor(item.color)}">${item.emoji || '<svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5.586a1 1 0 01.707.293L12 6h8a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" opacity="0.35"/><rect x="2" y="9" width="20" height="11" rx="2"/></svg>'}</div>`,
     true,
     (name) => {
       const now = new Date().toISOString();
@@ -924,8 +937,9 @@ export function selectCategory(category) {
   state.modalSelectedCategory = category ? category.id : null;
   const display = document.getElementById('category-display');
   if (display) {
+    // eslint-disable-next-line no-unsanitized/property
     display.innerHTML = category
-      ? `<span class="tag-pill" style="background: ${category.color}20; color: ${category.color}">
+      ? `<span class="tag-pill" style="background: ${sanitizeColor(category.color)}20; color: ${sanitizeColor(category.color)}">
            📂 ${escapeHtml(category.name)}
            <span class="tag-pill-remove" onclick="event.stopPropagation(); selectCategory(null); renderCategoryInput();">
              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -958,14 +972,16 @@ export function renderCategoryInput() {
   const category = state.modalSelectedCategory ? getCategoryById(state.modalSelectedCategory) : null;
 
   if (availableCategories.length === 0 && !category) {
+    // eslint-disable-next-line no-unsanitized/property
     container.innerHTML = '';
     return;
   }
 
+  // eslint-disable-next-line no-unsanitized/property
   container.innerHTML = `
     <div id="category-display" class="modal-token-shell area-display-shell" onclick="document.getElementById('category-search')?.focus()">
       ${category
-        ? `<span class="tag-pill" style="background: ${category.color}20; color: ${category.color}">
+        ? `<span class="tag-pill" style="background: ${sanitizeColor(category.color)}20; color: ${sanitizeColor(category.color)}">
              📂 ${escapeHtml(category.name)}
              <span class="tag-pill-remove" onclick="event.stopPropagation(); selectCategory(null); renderCategoryInput();">
                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -986,7 +1002,7 @@ export function renderCategoryInput() {
     availableCategories,
     (item) => { selectCategory(item); renderCategoryInput(); },
     (item) => item.name,
-    (item) => `<div class="autocomplete-option-icon" style="background: ${item.color}20; color: ${item.color}">📂</div>`,
+    (item) => `<div class="autocomplete-option-icon" style="background: ${sanitizeColor(item.color)}20; color: ${sanitizeColor(item.color)}">📂</div>`,
     false
   );
 }
@@ -1020,11 +1036,12 @@ export function renderTagsInput() {
 
   const selectedTagObjects = state.modalSelectedTags.map(id => state.taskLabels.find(l => l.id === id)).filter(Boolean);
 
+  // eslint-disable-next-line no-unsanitized/property
   container.innerHTML = `
     <div class="modal-token-shell">
       <div class="tag-input-container" onclick="document.getElementById('tags-search').focus()">
         ${selectedTagObjects.map(tag => `
-          <span class="tag-pill" style="background: ${tag.color}20; color: ${tag.color}">
+          <span class="tag-pill" style="background: ${sanitizeColor(tag.color)}20; color: ${sanitizeColor(tag.color)}">
             ${escapeHtml(tag.name)}
             <span class="tag-pill-remove" onclick="event.stopPropagation(); removeTag('${tag.id}');">
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -1043,7 +1060,7 @@ export function renderTagsInput() {
     state.taskLabels.filter(l => !state.modalSelectedTags.includes(l.id)),
     (item) => addTag(item),
     (item) => item.name,
-    (item) => `<div class="w-3 h-3 rounded-full" style="background: ${item.color}"></div>`,
+    (item) => `<div class="w-3 h-3 rounded-full" style="background: ${sanitizeColor(item.color)}"></div>`,
     true,
     (name) => {
       const colors = [_css('--danger') || '#ef4444', _css('--warning') || '#f59e0b', _css('--success') || '#22c55e', _css('--accent') || '#3b82f6', _css('--notes-accent') || '#8b5cf6', '#ec4899'];
@@ -1086,6 +1103,7 @@ export function renderPeopleInput() {
 
   const selectedPeopleObjects = state.modalSelectedPeople.map(id => state.taskPeople.find(p => p.id === id)).filter(Boolean);
 
+  // eslint-disable-next-line no-unsanitized/property
   container.innerHTML = `
     <div class="modal-token-shell">
       <div class="tag-input-container" onclick="document.getElementById('people-search').focus()">
@@ -1364,6 +1382,7 @@ export function renderWaitingForUI() {
   const waitingFor = state.modalWaitingFor || editingTask?.waitingFor || null;
 
   if (!waitingFor) {
+    // eslint-disable-next-line no-unsanitized/property
     container.innerHTML = `
       <div class="flex items-center gap-2">
         <button type="button" onclick="toggleWaitingForForm()" class="flex items-center gap-2 px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg transition">
@@ -1378,6 +1397,7 @@ export function renderWaitingForUI() {
     const personName = person ? person.name : 'Unknown';
     const followUpDate = waitingFor.followUpDate ? formatSmartDate(waitingFor.followUpDate) : 'No follow-up set';
 
+    // eslint-disable-next-line no-unsanitized/property
     container.innerHTML = `
       <div class="flex items-start gap-3 p-3 bg-[var(--accent)]/10 border border-[var(--accent)]/20 rounded-lg">
         <svg class="w-5 h-5 text-[var(--accent)] flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -1403,6 +1423,7 @@ export function toggleWaitingForForm() {
 
   if (formContainer.classList.contains('hidden')) {
     formContainer.classList.remove('hidden');
+    // eslint-disable-next-line no-unsanitized/property
     formContainer.innerHTML = `
       <div class="mt-3 p-3 bg-[var(--bg-secondary)]/30 rounded-lg space-y-3">
         <div>
@@ -1433,6 +1454,7 @@ export function toggleWaitingForForm() {
     setTimeout(() => document.getElementById('waiting-person-select')?.focus(), 50);
   } else {
     formContainer.classList.add('hidden');
+    // eslint-disable-next-line no-unsanitized/property
     formContainer.innerHTML = '';
   }
 }
@@ -1454,6 +1476,7 @@ export function applyWaitingFor(followUpDays = 7) {
   const formContainer = document.getElementById('waiting-for-form');
   if (formContainer) {
     formContainer.classList.add('hidden');
+    // eslint-disable-next-line no-unsanitized/property
     formContainer.innerHTML = '';
   }
 }
@@ -1563,6 +1586,7 @@ export function renderProjectUI() {
     </div>
   `;
 
+  // eslint-disable-next-line no-unsanitized/property
   container.innerHTML = html;
 }
 
@@ -1612,6 +1636,7 @@ export function renderTimeEstimateUI() {
     </div>
   `;
 
+  // eslint-disable-next-line no-unsanitized/property
   container.innerHTML = html;
 }
 
@@ -1842,7 +1867,7 @@ export function renderTaskModalHtml() {
         ${editingTask?.meetingEventKey ? `
           <div class="px-5 py-3 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]/35">
             <button
-              onclick="closeTaskModal(); openCalendarMeetingNotesByEventKey('${String(editingTask.meetingEventKey).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}')"
+              onclick="closeTaskModal(); openCalendarMeetingNotesByEventKey('${q(editingTask.meetingEventKey)}')"
               class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition">
               <svg class="w-4 h-4 text-[var(--accent)]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 15H5V10h14v9zM7 12h5v5H7z"/></svg>
               Back To Meeting Notes

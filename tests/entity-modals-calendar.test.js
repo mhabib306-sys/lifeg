@@ -158,6 +158,12 @@ vi.mock('../src/utils.js', () => ({
   }),
   formatEventDateLabel: vi.fn(e => e?.start?.date || '2026-01-15'),
   fmt: vi.fn(n => String(n)),
+  isMobileViewport: vi.fn(() => false),
+  sanitizeColor: vi.fn((c, fallback = '') => c || fallback),
+  safeOpenUrl: vi.fn(),
+  haptic: vi.fn(),
+  generateEntityId: vi.fn(() => 'entity_test_id'),
+  safeJsonParse: vi.fn((k, d) => d),
 }));
 
 vi.mock('../src/features/areas.js', () => ({

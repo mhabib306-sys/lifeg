@@ -55,8 +55,9 @@ let _swipeDragging = false;
 
 function _handleSwipeStart(e) {
   const x = e.touches[0].clientX;
-  // Skip if touch starts in OS gesture zones (iOS back gesture, Android edge)
-  if (x < 20 || x > window.innerWidth - 20) {
+  // Skip if touch starts in OS gesture zones (iOS back gesture at <40px, Android edge at <24px)
+  // Increased from 20px to 40px to avoid conflicts with system gestures
+  if (x < 40 || x > window.innerWidth - 40) {
     _swipeDragging = false;
     return;
   }
@@ -419,9 +420,11 @@ export function initBottomNavScrollHide() {
     const currentY = window.scrollY;
     const delta = currentY - _lastScrollY;
 
-    if (delta > 20 && currentY > 100) {
+    // Increased thresholds: 50px to hide (was 20px), 20px to show (was 10px)
+    // Less aggressive hiding to prevent accidental nav disappearance
+    if (delta > 50 && currentY > 150) {
       nav.classList.add('nav-scroll-hidden');
-    } else if (delta < -10 || currentY < 50) {
+    } else if (delta < -20 || currentY < 80) {
       nav.classList.remove('nav-scroll-hidden');
     }
 

@@ -141,6 +141,10 @@ function resetState() {
   mockState.undoTimerRemaining = 0;
   mockState.undoTimerId = null;
   mockState.xp = { total: 0, history: [] };
+  // familyMembers drives getDefaultDayData() family structure
+  mockState.familyMembers = [
+    { id: 'mom' }, { id: 'dad' }, { id: 'jana' }, { id: 'tia' }, { id: 'ahmed' }, { id: 'eman' },
+  ];
 }
 
 beforeEach(() => {

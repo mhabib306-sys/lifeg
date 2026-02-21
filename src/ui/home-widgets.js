@@ -6,6 +6,7 @@
 
 import { state } from '../state.js';
 import { getLocalDateString, formatEventTime, escapeHtml } from '../utils.js';
+import { q } from './calendar-meeting.js';
 import { THINGS3_ICONS, getActiveIcons, WEATHER_ICONS, WEATHER_DESCRIPTIONS, defaultDayData, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, GSHEET_SAVED_PROMPT_KEY, GSHEET_RESPONSE_CACHE_KEY } from '../constants.js';
 
 // ---------------------------------------------------------------------------
@@ -45,7 +46,9 @@ function normalizeGSheetResponseHtml(rawHtml) {
   // Parse in an isolated template so malformed/unbalanced tags are repaired
   // before insertion into the widget card.
   const template = document.createElement('template');
-  template.innerHTML = html;
+  /* eslint-disable no-unsanitized/property */
+  template.innerHTML = html; // intentional parse step — sanitizeNode() below strips dangerous nodes/attributes
+  /* eslint-enable no-unsanitized/property */
 
   const allowedTags = new Set([
     'DIV', 'SPAN', 'STRONG', 'EM', 'BR', 'UL', 'OL', 'LI',
@@ -244,7 +247,7 @@ export function renderTodayEventsWidget(today) {
     <div class="max-h-[300px] overflow-y-auto space-y-1">
       ${events.slice(0, 6).map(event => `
         <button
-          onclick="${event.htmlLink ? `window.open(decodeURIComponent('${encodeURIComponent(event.htmlLink)}'),'_blank')` : `switchTab('calendar'); calendarSelectDate('${today}')`}"
+          onclick="${event.htmlLink ? `safeOpenUrl('${q(event.htmlLink)}')` : `switchTab('calendar'); calendarSelectDate('${today}')`}"
           class="w-full text-left rounded-lg px-2.5 py-2 hover:bg-[var(--bg-secondary)] transition border border-transparent hover:border-[var(--border-light)]">
           <div class="flex items-start gap-2.5">
             <span class="mt-1 w-2 h-2 rounded-full flex-shrink-0" style="background: var(--success)"></span>

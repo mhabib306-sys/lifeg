@@ -2170,7 +2170,7 @@ describe('updateSyncStatus edge cases', () => {
     document.body.appendChild(indicator);
 
     updateSyncStatus('syncing', 'Saving...');
-    expect(indicator.className).toContain('bg-amber-400');
+    expect(indicator.className).toContain('bg-[var(--warning)]');
     expect(indicator.className).toContain('animate-pulse');
 
     document.body.removeChild(indicator);

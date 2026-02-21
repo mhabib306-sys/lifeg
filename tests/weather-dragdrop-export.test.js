@@ -247,8 +247,9 @@ describe('weather.js', () => {
         wind_speed_10m: 12.3
       },
       daily: {
-        temperature_2m_max: [28.7],
-        temperature_2m_min: [18.2]
+        temperature_2m_max: [28.7, 27.0],
+        temperature_2m_min: [18.2, 17.0],
+        weather_code: [0, 1]
       },
       hourly: {
         temperature_2m: [20, 22, 24, 26, 28, 27, 25, 23, 21, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5],

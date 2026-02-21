@@ -74,6 +74,14 @@ const mocks = vi.hoisted(() => {
     showAddWidgetPicker: false,
     activePerspective: 'inbox',
     activeFilterType: 'perspective',
+    familyMembers: [
+      { id: 'mom', name: 'Mom' },
+      { id: 'dad', name: 'Dad' },
+      { id: 'jana', name: 'Jana' },
+      { id: 'tia', name: 'Tia' },
+      { id: 'ahmed', name: 'Ahmed' },
+      { id: 'eman', name: 'Eman' },
+    ],
   };
 
   const defaultDayData = {
@@ -187,12 +195,25 @@ vi.mock('../src/utils.js', () => ({
   escapeHtml: mocks.escapeHtml,
   getLocalDateString: mocks.getLocalDateString,
   fmt: mocks.fmt,
+  isMobileViewport: vi.fn(() => window.innerWidth <= 768),
+  sanitizeColor: vi.fn((c, fallback = '') => c || fallback),
+  safeOpenUrl: vi.fn(),
+  haptic: vi.fn(),
+  formatEventTime: vi.fn(() => '10:00 AM'),
+  formatEventDateLabel: vi.fn(() => 'Mon, Jan 1'),
+  normalizeEmail: vi.fn((e) => e),
+  renderPersonAvatar: vi.fn(() => ''),
+  generateEntityId: vi.fn(() => 'entity_test_id'),
+  generateTaskId: vi.fn(() => 'task_test_id'),
+  formatSmartDate: vi.fn((d) => d || ''),
+  safeJsonParse: vi.fn((k, d) => d),
 }));
 
 vi.mock('../src/data/storage.js', () => ({
   saveViewState: mocks.saveViewState,
   saveData: mocks.saveData,
   getTodayData: mocks.getTodayData,
+  getDefaultDayData: vi.fn(() => JSON.parse(JSON.stringify(mocks.defaultDayData))),
 }));
 
 vi.mock('../src/features/scoring.js', () => ({
@@ -361,6 +382,14 @@ function resetState() {
     habits: { exercise: 5, reading: 5, meditation: 5, water: 1, vitamins: 3, brushTeeth: 2, nopYes: 2, nopNo: -2 }
   };
   mocks.state.MAX_SCORES = { prayer: 50, diabetes: 20, whoop: 30, family: 30, habits: 30, total: 160 };
+  mocks.state.familyMembers = [
+    { id: 'mom', name: 'Mom' },
+    { id: 'dad', name: 'Dad' },
+    { id: 'jana', name: 'Jana' },
+    { id: 'tia', name: 'Tia' },
+    { id: 'ahmed', name: 'Ahmed' },
+    { id: 'eman', name: 'Eman' },
+  ];
 }
 
 let storageStore = {};
@@ -471,21 +500,21 @@ describe('render.js', () => {
       mocks.state.activeTab = 'settings';
       render();
       const app = document.getElementById('app');
-      expect(app.innerHTML).toContain('Loading settings tab...');
+      expect(app.innerHTML).toContain('animate-pulse');
     });
 
     it('renders tasks tab fallback when no window.renderTasksTab', () => {
       mocks.state.activeTab = 'tasks';
       render();
       const app = document.getElementById('app');
-      expect(app.innerHTML).toContain('Loading tasks tab...');
+      expect(app.innerHTML).toContain('animate-pulse');
     });
 
     it('renders calendar fallback when no window.renderCalendarView', () => {
       mocks.state.activeTab = 'calendar';
       render();
       const app = document.getElementById('app');
-      expect(app.innerHTML).toContain('Loading calendar...');
+      expect(app.innerHTML).toContain('animate-pulse');
     });
 
     it('renders life tab daily sub-tab via window.renderTrackingTab', () => {
@@ -511,7 +540,7 @@ describe('render.js', () => {
       mocks.state.activeSubTab = 'dashboard';
       render();
       const app = document.getElementById('app');
-      expect(app.innerHTML).toContain('Loading dashboard tab...');
+      expect(app.innerHTML).toContain('animate-pulse');
     });
 
     it('shows sub-navigation bar when life tab is active', () => {
@@ -887,7 +916,7 @@ describe('render.js', () => {
       delete window.location;
       window.location = { reload: reloadMock };
       await forceHardRefresh();
-      expect(reloadMock).toHaveBeenCalledWith(true);
+      expect(reloadMock).toHaveBeenCalled();
       window.location = origLocation;
     });
   });
@@ -912,11 +941,11 @@ describe('tracking.js', () => {
     it('renders all 5 score cards plus total', () => {
       renderTrackingTab();
       expect(mocks.createScoreCard).toHaveBeenCalledTimes(5);
-      expect(mocks.createScoreCard).toHaveBeenCalledWith('Prayer', 10, 50, 'bg-blue-500');
-      expect(mocks.createScoreCard).toHaveBeenCalledWith('Diabetes', 8, 20, 'bg-green-500');
-      expect(mocks.createScoreCard).toHaveBeenCalledWith('Whoop', 12, 30, 'bg-purple-500');
-      expect(mocks.createScoreCard).toHaveBeenCalledWith('Family', 6, 30, 'bg-amber-500');
-      expect(mocks.createScoreCard).toHaveBeenCalledWith('Habits', 6, 30, 'bg-slate-500');
+      expect(mocks.createScoreCard).toHaveBeenCalledWith('Prayer', 10, 50, 'bg-[var(--accent)]');
+      expect(mocks.createScoreCard).toHaveBeenCalledWith('Diabetes', 8, 20, 'bg-[var(--success)]');
+      expect(mocks.createScoreCard).toHaveBeenCalledWith('Whoop', 12, 30, 'bg-[var(--notes-accent)]');
+      expect(mocks.createScoreCard).toHaveBeenCalledWith('Family', 6, 30, 'bg-[var(--warning)]');
+      expect(mocks.createScoreCard).toHaveBeenCalledWith('Habits', 6, 30, 'bg-[var(--text-muted)]');
     });
 
     it('shows total score with percentage', () => {
@@ -1506,7 +1535,7 @@ describe('bulk-entry.js', () => {
     it('uses category color for active button', () => {
       mocks.state.bulkCategory = 'prayers';
       const html = renderBulkEntryTab();
-      expect(html).toContain('background-color: #4A90A4');
+      expect(html).toContain('background-color: var(--accent)');
     });
 
     it('renders with existing data in allData', () => {

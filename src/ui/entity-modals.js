@@ -279,7 +279,7 @@ export function selectAreaEmoji(emoji) {
   const input = document.getElementById('area-emoji');
   const preview = document.getElementById('area-folder-preview');
   if (input) input.value = emoji;
-  if (preview) preview.innerHTML = emoji;
+  if (preview) preview.textContent = emoji; // emojis are plain text — no innerHTML needed
   const picker = document.querySelector('.emoji-picker-dropdown');
   if (picker) picker.remove();
 }
@@ -295,7 +295,7 @@ export function selectCategoryEmoji(emoji) {
   const input = document.getElementById('category-emoji');
   const preview = document.getElementById('cat-folder-preview');
   if (input) input.value = emoji;
-  if (preview) preview.innerHTML = emoji;
+  if (preview) preview.textContent = emoji; // emojis are plain text — no innerHTML needed
   const picker = document.querySelector('.emoji-picker-dropdown');
   if (picker) picker.remove();
 }
@@ -408,7 +408,8 @@ export function toggleEmojiPicker(type) {
     // Remove any existing picker first
     const existing = container.querySelector('.emoji-picker-dropdown');
     if (existing) existing.remove();
-    container.insertAdjacentHTML('beforeend', pickerHtml);
+    // eslint-disable-next-line no-unsanitized/method
+    container.insertAdjacentHTML('beforeend', pickerHtml); // safe: renderEmojiPicker uses only static/escaped content
     // Focus the search input
     setTimeout(() => {
       const searchInput = document.getElementById('emoji-search-input');
@@ -437,7 +438,9 @@ export function updateEmojiGrid(query) {
   const gridHtml = buildEmojiGridHtml(query, selectFn);
   const gridContainer = document.getElementById('emoji-grid-content');
   if (gridContainer) {
-    gridContainer.innerHTML = gridHtml || '<p class="text-center text-[13px] text-[var(--text-muted)] py-4">No matches</p>';
+    const safeGrid = gridHtml || '<p class="text-center text-[13px] text-[var(--text-muted)] py-4">No matches</p>';
+    /* eslint-disable-next-line no-unsanitized/property */
+    gridContainer.innerHTML = safeGrid; // safe: buildEmojiGridHtml uses static emoji codepoints only
   }
 }
 

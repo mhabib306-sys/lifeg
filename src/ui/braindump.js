@@ -6,7 +6,7 @@
 //   Step 2 (review): Classified items with editable metadata
 
 import { state } from '../state.js';
-import { escapeHtml, isMobileViewport } from '../utils.js';
+import { escapeHtml, isMobileViewport, sanitizeColor } from '../utils.js';
 import { parseBraindump, getAnthropicKey, refineVoiceTranscriptWithAI, submitBraindumpItems } from '../features/braindump.js';
 
 let speechRecognition = null;
@@ -26,7 +26,7 @@ function mergeTranscript(text) {
 
 function stopSpeechRecognitionInternal() {
   if (speechRecognition) {
-    try { speechRecognition.stop(); } catch {}
+    try { speechRecognition.stop(); } catch (_e) { /* recognition already stopped */ }
   }
 }
 
@@ -161,6 +161,7 @@ export function startBraindumpVoiceCapture() {
     const btn = document.getElementById('braindump-voice-btn');
     if (btn) {
       btn.classList.add('voice-recording-active');
+      // eslint-disable-next-line no-unsanitized/property
       btn.innerHTML = '<svg class="w-5 h-5 text-[var(--danger)] animate-pulse" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/></svg>';
     }
     const errEl = document.getElementById('braindump-voice-error');
@@ -598,7 +599,7 @@ function renderBraindumpItemCard(item, index) {
             ${item.people.map(pid => {
               const person = state.taskPeople.find(p => p.id === pid);
               return person ? `
-                <span class="braindump-pill" style="--pill-color: ${person.color}">
+                <span class="braindump-pill" style="--pill-color: ${sanitizeColor(person.color)}">
                   ${escapeHtml(person.name)}
                   <button onclick="event.stopPropagation(); removeBraindumpItemPerson(${index}, '${pid}')" class="braindump-pill-remove">&times;</button>
                 </span>
@@ -619,7 +620,7 @@ function renderBraindumpItemCard(item, index) {
             ${item.labels.map(lid => {
               const label = state.taskLabels.find(l => l.id === lid);
               return label ? `
-                <span class="braindump-pill" style="--pill-color: ${label.color}">
+                <span class="braindump-pill" style="--pill-color: ${sanitizeColor(label.color)}">
                   ${escapeHtml(label.name)}
                   <button onclick="event.stopPropagation(); removeBraindumpItemLabel(${index}, '${lid}')" class="braindump-pill-remove">&times;</button>
                 </span>

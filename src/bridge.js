@@ -11,7 +11,7 @@
 import { state } from './state.js';
 
 // -- Utils --
-import { getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId, isMobileViewport, isTouchDevice, isMobile, haptic } from './utils.js';
+import { getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId, isMobileViewport, isTouchDevice, isMobile, haptic, safeOpenUrl } from './utils.js';
 
 // -- Constants (some referenced directly in onclick handlers) --
 import { THINGS3_ICONS, GEIST_ICONS, getActiveIcons, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE, defaultDayData } from './constants.js';
@@ -314,7 +314,7 @@ Object.assign(window, {
 
   // Utils
   getLocalDateString, escapeHtml, fmt, formatSmartDate, generateTaskId,
-  isMobileViewport, isTouchDevice, isMobile, haptic,
+  isMobileViewport, isTouchDevice, isMobile, haptic, safeOpenUrl,
   registerCleanup, runCleanupCallbacks,
 
   // Constants
@@ -570,7 +570,7 @@ const stateProxies = [
 ];
 
 stateProxies.forEach(prop => {
-  if (window.hasOwnProperty(prop)) return; // Don't override functions already set
+  if (Object.prototype.hasOwnProperty.call(window, prop)) return; // Don't override functions already set
   Object.defineProperty(window, prop, {
     get() { return state[prop]; },
     set(v) { state[prop] = v; },

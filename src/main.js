@@ -353,7 +353,7 @@ window.onerror = (message, source, lineno, colno, error) => {
       });
       if (health.recentEvents.length > 20) health.recentEvents.length = 20;
     }
-  } catch (_) {}
+  } catch (_e) { /* ignore errors in error handler */ }
 };
 
 window.onunhandledrejection = (event) => {
@@ -370,7 +370,7 @@ window.onunhandledrejection = (event) => {
       });
       if (health.recentEvents.length > 20) health.recentEvents.length = 20;
     }
-  } catch (_) {}
+  } catch (_e) { /* ignore errors in rejection handler */ }
 };
 
 // Start when DOM is ready

@@ -38,7 +38,12 @@ export function getWhoopWorkerUrl() {
 }
 
 export function setWhoopWorkerUrl(url) {
-  localStorage.setItem(LS_WORKER_URL, url.replace(/\/+$/, ''));
+  const trimmed = url.replace(/\/+$/, '');
+  if (trimmed && !trimmed.startsWith('https://')) {
+    console.warn('[WHOOP] Worker URL must use HTTPS. URL not saved.');
+    return;
+  }
+  localStorage.setItem(LS_WORKER_URL, trimmed);
 }
 
 export function getWhoopApiKey() {

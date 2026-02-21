@@ -1442,7 +1442,7 @@ img.twemoji {
   border-radius: var(--radius-md);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .note-row {
     min-height: 44px;
     padding: var(--space-2) 12px 8px calc(8px + (var(--note-depth) * 16px));
@@ -2091,6 +2091,13 @@ img.twemoji {
 
   .workspace-overflow-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Sidebar: Edit icon always visible on mobile (viewport ≤768px) */
+  .sidebar-edit-btn {
+    opacity: 1 !important;
+    min-width: var(--touch-min);
+    min-height: var(--touch-min);
   }
 
   /* Task list fullscreen */

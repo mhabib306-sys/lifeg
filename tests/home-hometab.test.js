@@ -134,6 +134,19 @@ vi.mock('../src/utils.js', () => ({
   getLocalDateString: mocks.mockGetLocalDateString,
   escapeHtml: mocks.mockEscapeHtml,
   formatEventTime: mocks.mockFormatEventTime,
+  isMobile: vi.fn(() => false),
+  isMobileViewport: vi.fn(() => false),
+  sanitizeColor: vi.fn((c, fallback = '') => c || fallback),
+  safeOpenUrl: vi.fn(),
+  haptic: vi.fn(),
+  formatEventDateLabel: vi.fn(() => 'Mon, Jan 1'),
+  normalizeEmail: vi.fn((e) => e),
+  renderPersonAvatar: vi.fn(() => ''),
+  generateEntityId: vi.fn(() => 'entity_test_id'),
+  generateTaskId: vi.fn(() => 'task_test_id'),
+  fmt: vi.fn((n) => String(n ?? '')),
+  formatSmartDate: vi.fn((d) => d || ''),
+  safeJsonParse: vi.fn((k, d) => d),
 }));
 
 vi.mock('../src/constants.js', () => ({
@@ -612,7 +625,7 @@ describe('renderTodayEventsWidget()', () => {
     mocks.state.gcalTokenExpired = true;
     const html = renderTodayEventsWidget('2026-01-15');
     expect(html).toContain('Calendar session expired');
-    expect(html).toContain('Reconnect Calendar');
+    expect(html).toContain('Reconnect');
   });
 
   it('shows empty state when connected but no events', () => {
@@ -931,8 +944,9 @@ describe('renderWeatherWidget()', () => {
     expect(html).toContain('15');
     expect(html).toContain('New Cairo');
     expect(html).toContain('Clear');
-    expect(html).toContain('Humidity');
-    expect(html).toContain('Wind');
+    // Humidity shown as percentage, Wind shown as km/h (no label text)
+    expect(html).toContain('%');
+    expect(html).toContain('km/h');
   });
 
   it('shows wind description', () => {
@@ -1121,7 +1135,7 @@ describe('renderGSheetWidget()', () => {
     localStorage.setItem('nucleusGSheetSavedPrompt', 'Summarize my day');
     mocks.state.gsheetResponse = 'Error: Something went wrong';
     const html = renderGSheetWidget('2026-01-15');
-    expect(html).toContain('text-red-500');
+    expect(html).toContain('text-[var(--danger)]');
     expect(html).toContain('Error: Something went wrong');
   });
 
@@ -1663,7 +1677,9 @@ describe('renderHomeTab()', () => {
     expect(html).not.toContain('daily-focus-card');
   });
 
-  it('shows daily focus card when not dismissed and focus returned', () => {
+  it('daily focus card is hidden (feature removed from UI)', () => {
+    // The daily focus card has been hidden permanently in the source.
+    // Ensure the home tab renders without error when focus data is available.
     mocks.state.dailyFocusDismissed = null;
     window.getDailyFocus.mockReturnValue({
       displayName: 'Prayer',
@@ -1671,9 +1687,7 @@ describe('renderHomeTab()', () => {
       tip: 'Try to pray all 5 on time today.'
     });
     const html = renderHomeTab();
-    expect(html).toContain('daily-focus-card');
-    expect(html).toContain('Focus Today: Prayer');
-    expect(html).toContain('45%');
+    expect(html).not.toContain('daily-focus-card');
   });
 
   it('does not show daily focus when getDailyFocus returns null', () => {

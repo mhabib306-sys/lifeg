@@ -1,6 +1,6 @@
 import { state } from '../state.js';
 import { saveTasksData } from '../data/storage.js';
-import { generateTaskId, generateEntityId, escapeHtml, formatSmartDate, isTouchDevice } from '../utils.js';
+import { generateTaskId, generateEntityId, escapeHtml, formatSmartDate, isTouchDevice, sanitizeColor } from '../utils.js';
 import {
   TASK_CATEGORIES_KEY, TASK_LABELS_KEY, TASK_PEOPLE_KEY, COLLAPSED_NOTES_KEY,
   NOTE_INTEGRITY_SNAPSHOT_KEY, NOTE_LOCAL_BACKUP_KEY
@@ -21,16 +21,6 @@ let noteAcTriggerPos = -1;
 let noteAcNoteId = null;
 const NOTE_HISTORY_LIMIT = 60;
 
-/**
- * Sanitize color values to prevent CSS injection attacks.
- * Only allows valid hex colors (#RGB or #RRGGBB format).
- */
-function sanitizeColor(color) {
-  if (!color || typeof color !== 'string') return '#6366f1';
-  const hex = color.trim();
-  if (/^#[0-9A-Fa-f]{3}$|^#[0-9A-Fa-f]{6}$/.test(hex)) return hex;
-  return '#6366f1';
-}
 
 function isNoteItem(item) {
   // Notes (isNote=true) OR tasks living in the outliner (noteLifecycleState='active')
@@ -295,7 +285,8 @@ function noteAcRenderPopup(items, query, el) {
     const isActive = noteAcActiveIndex === createIdx ? ' active' : '';
     html += `<div class="inline-ac-create${isActive}" data-idx="${createIdx}">+ Create ${typeLabel} "${escapeHtml(query)}"</div>`;
   }
-  noteAcPopup.innerHTML = html;
+  // eslint-disable-next-line no-unsanitized/property
+  noteAcPopup.innerHTML = html; // safe: escapeHtml() applied to all user values above
 
   noteAcPopup.querySelectorAll('.inline-ac-option').forEach(el => {
     el.addEventListener('click', () => noteAcSelectItem(filtered[parseInt(el.dataset.idx)]));
@@ -372,6 +363,7 @@ function renderNoteMetaChipsDOM(noteId, note) {
   const container = document.querySelector(`[data-note-id="${noteId}"] .note-meta-chips`);
   if (!container) return;
   // Safe: buildNoteMetaChipsHtml uses escapeHtml on all user content
+  // eslint-disable-next-line no-unsanitized/property
   container.innerHTML = buildNoteMetaChipsHtml(note);
 }
 
@@ -380,6 +372,7 @@ function renderPageMetaChipsDOM(noteId, note) {
   const container = document.querySelector('.note-page-meta');
   if (!container || state.zoomedNoteId !== noteId) return;
   // Safe: buildPageMetaChipsHtml uses escapeHtml on all user content
+  // eslint-disable-next-line no-unsanitized/property
   container.innerHTML = buildPageMetaChipsHtml(note);
 }
 

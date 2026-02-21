@@ -66,6 +66,7 @@ vi.mock('../src/data/storage.js', () => ({
   saveTasksData: vi.fn(),
   saveData: vi.fn(),
   saveWeights: vi.fn(),
+  getDefaultDayData: vi.fn(() => ({ prayers: { fajr: '', dhuhr: '', asr: '', maghrib: '', isha: '', quran: 0 } })),
 }));
 
 // Setup global mocks

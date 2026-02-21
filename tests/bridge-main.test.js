@@ -187,6 +187,17 @@ vi.mock('../src/utils.js', () => ({
   formatSmartDate: vi.fn((d) => d),
   generateTaskId: vi.fn(() => 'task_mock_1'),
   safeJsonParse: vi.fn((key, def) => def),
+  isMobileViewport: vi.fn(() => false),
+  isTouchDevice: vi.fn(() => false),
+  isMobile: vi.fn(() => false),
+  sanitizeColor: vi.fn((c, fallback = '') => c || fallback),
+  safeOpenUrl: vi.fn(),
+  haptic: vi.fn(),
+  formatEventTime: vi.fn(() => '10:00 AM'),
+  formatEventDateLabel: vi.fn(() => 'Mon, Jan 1'),
+  normalizeEmail: vi.fn((e) => e),
+  renderPersonAvatar: vi.fn(() => ''),
+  generateEntityId: vi.fn(() => 'entity_test_id'),
 }));
 
 vi.mock('../src/constants.js', () => ({
@@ -383,6 +394,7 @@ vi.mock('../src/features/scoring.js', () => ({
   invalidateScoresCache: vi.fn(),
   calculateScores: vi.fn(),
   getLast30DaysData: vi.fn(),
+  getLastNDaysStats: vi.fn(() => ({ daysLogged: 0, avgDaily: 0, totalFamilyCheckins: 0, totalOnTimePrayers: 0, totalScore: 0 })),
   getLast30DaysStats: vi.fn(),
   getPersonalBests: vi.fn(),
   loadWeights: vi.fn(),
@@ -409,6 +421,9 @@ vi.mock('../src/features/scoring.js', () => ({
   updateCategoryWeight: vi.fn(),
   resetCategoryWeights: vi.fn(),
   rebuildGamification: vi.fn(),
+  addFamilyMember: vi.fn(),
+  removeFamilyMember: vi.fn(),
+  updateFamilyMember: vi.fn(),
 }));
 
 vi.mock('../src/features/areas.js', () => ({
@@ -438,12 +453,19 @@ vi.mock('../src/features/tasks.js', () => ({
   deleteTask: vi.fn(),
   confirmDeleteTask: vi.fn(),
   toggleTaskComplete: vi.fn(),
+  toggleFlag: vi.fn(),
   calculateNextRepeatDate: vi.fn(),
   createNextRepeatOccurrence: vi.fn(),
   getRepeatUnitLabel: vi.fn(),
   updateRepeatUI: vi.fn(),
   moveTaskTo: vi.fn(),
   migrateTodayFlag: vi.fn(),
+  recordTaskDeletionTombstone: vi.fn(),
+  clearTaskDeletionTombstone: vi.fn(),
+  getProjectSubTasks: vi.fn(() => []),
+  getProjectCompletion: vi.fn(() => ({ completed: 0, total: 0, percent: 0 })),
+  getNextSequentialTask: vi.fn(),
+  isProjectStalled: vi.fn(),
 }));
 
 vi.mock('../src/features/task-filter.js', () => ({
@@ -500,6 +522,18 @@ vi.mock('../src/features/notes.js', () => ({
   reorderNotes: vi.fn(),
   renderNoteItem: vi.fn(),
   renderNotesOutliner: vi.fn(),
+  toggleNoteTask: vi.fn(),
+  createChildNoteAndReturn: vi.fn(),
+  handleNotePaste: vi.fn(),
+  buildPageMetaChipsHtml: vi.fn(() => ''),
+  focusPageTitleForMeta: vi.fn(),
+  focusPageDescription: vi.fn(),
+  focusPageTitle: vi.fn(),
+  handlePageTitleBlur: vi.fn(),
+  handlePageTitleKeydown: vi.fn(),
+  handleDescriptionBlur: vi.fn(),
+  handleDescriptionKeydown: vi.fn(),
+  handleDescriptionInput: vi.fn(),
 }));
 
 vi.mock('../src/features/drag-drop.js', () => ({
@@ -572,6 +606,7 @@ vi.mock('../src/features/calendar.js', () => ({
   calendarSelectDate: vi.fn(),
   getTasksForDate: vi.fn(),
   setCalendarViewMode: vi.fn(),
+  toggleCalendarSidebar: vi.fn(),
 }));
 
 vi.mock('../src/features/undo.js', () => ({
@@ -618,6 +653,7 @@ vi.mock('../src/ui/home.js', () => ({
 
 vi.mock('../src/ui/tracking.js', () => ({
   renderTrackingTab: vi.fn(),
+  navigateTrackingDate: vi.fn(),
 }));
 
 vi.mock('../src/ui/bulk-entry.js', () => ({
@@ -637,6 +673,7 @@ vi.mock('../src/ui/tasks-tab.js', () => ({
 
 vi.mock('../src/ui/calendar-view.js', () => ({
   renderCalendarView: vi.fn(),
+  attachCalendarSwipe: vi.fn(),
   openCalendarEventActions: vi.fn(),
   closeCalendarEventActions: vi.fn(),
   openCalendarMeetingNotes: vi.fn(),
@@ -678,6 +715,8 @@ vi.mock('../src/ui/mobile.js', () => ({
   showAllPeoplePage: vi.fn(),
   toggleSidebarAreaCollapse: vi.fn(),
   toggleWorkspaceSidebar: vi.fn(),
+  initBottomNavScrollHide: vi.fn(),
+  cleanupBottomNavScrollHide: vi.fn(),
 }));
 
 vi.mock('../src/ui/task-modal.js', () => ({
@@ -685,6 +724,12 @@ vi.mock('../src/ui/task-modal.js', () => ({
   saveInlineEdit: vi.fn(),
   cancelInlineEdit: vi.fn(),
   handleInlineEditKeydown: vi.fn(),
+  handleTaskInlineFocus: vi.fn(),
+  handleTaskInlineBlur: vi.fn(),
+  handleTaskInlineKeydown: vi.fn(),
+  handleTaskInlineInput: vi.fn(),
+  handleTaskInlinePaste: vi.fn(),
+  focusTaskInlineTitle: vi.fn(),
   openNewTaskModal: vi.fn(),
   quickAddTask: vi.fn(),
   handleQuickAddKeydown: vi.fn(),
@@ -713,8 +758,19 @@ vi.mock('../src/ui/task-modal.js', () => ({
   toggleRepeat: vi.fn(),
   initModalAutocomplete: vi.fn(),
   cleanupModalAutocomplete: vi.fn(),
+  setupAutocomplete: vi.fn(),
   closeTaskModal: vi.fn(),
   saveTaskFromModal: vi.fn(),
+  setWaitingFor: vi.fn(),
+  renderWaitingForUI: vi.fn(() => ''),
+  toggleWaitingForForm: vi.fn(),
+  applyWaitingFor: vi.fn(),
+  toggleProjectMode: vi.fn(),
+  setProjectType: vi.fn(),
+  linkToProject: vi.fn(),
+  renderProjectUI: vi.fn(() => ''),
+  setTimeEstimate: vi.fn(),
+  renderTimeEstimateUI: vi.fn(() => ''),
   renderTaskModalHtml: vi.fn(() => ''),
 }));
 
@@ -787,8 +843,12 @@ vi.mock('../src/ui/review.js', () => ({
   reviewPassTask: vi.fn(),
   reviewMarkAreaDone: vi.fn(),
   reviewAddTask: vi.fn(),
+  reviewQuickAddTask: vi.fn(),
+  reviewHandleQuickAddKeydown: vi.fn(),
   getStaleTasksForArea: vi.fn(),
   getTotalStaleTaskCount: vi.fn(),
+  isWeeklyReviewOverdue: vi.fn(),
+  getDaysSinceReview: vi.fn(),
 }));
 
 vi.mock('../src/styles/main.css', () => ({}));

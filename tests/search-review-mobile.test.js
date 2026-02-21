@@ -113,6 +113,19 @@ vi.mock('../src/utils.js', () => ({
   },
   getLocalDateString: () => '2026-02-12',
   generateTaskId: () => `task_${Date.now()}_test`,
+  sanitizeColor: vi.fn((c, fallback = '') => c || fallback),
+  isMobileViewport: vi.fn(() => false),
+  isMobile: vi.fn(() => false),
+  safeOpenUrl: vi.fn(),
+  haptic: vi.fn(),
+  formatEventTime: vi.fn(() => '10:00 AM'),
+  formatEventDateLabel: vi.fn(() => 'Mon, Jan 1'),
+  normalizeEmail: vi.fn((e) => e),
+  renderPersonAvatar: vi.fn(() => ''),
+  generateEntityId: vi.fn(() => 'entity_test_id'),
+  fmt: vi.fn((n) => String(n ?? '')),
+  formatSmartDate: vi.fn((d) => d || ''),
+  safeJsonParse: vi.fn((k, d) => d),
 }));
 
 vi.mock('../src/data/storage.js', () => ({
@@ -1336,8 +1349,9 @@ describe('Review Mode (src/ui/review.js)', () => {
       const html = renderReviewMode();
       expect(html).toContain('Work');
       expect(html).toContain('Weekly Review');
+      // triggers count and tasks count shown in breadcrumb: "N projects · N triggers · N tasks · N notes"
       expect(html).toContain('0 triggers');
-      expect(html).toContain('0 tasks to review');
+      expect(html).toContain('Tasks to review');
     });
 
     it('renders progress bar and area dots', () => {
@@ -1350,8 +1364,10 @@ describe('Review Mode (src/ui/review.js)', () => {
       mockState.tasksData = [];
 
       const html = renderReviewMode();
-      expect(html).toContain('review-progress-bar');
-      expect(html).toContain('1/2 areas reviewed');
+      // New UI uses numbered dot buttons (review-progress-dot) not a bar
+      expect(html).toContain('review-progress-dot');
+      // Progress shown as "X of Y areas"
+      expect(html).toContain('1 of 2 areas');
     });
 
     it('renders stale tasks with engage and pass buttons', () => {
@@ -1377,7 +1393,8 @@ describe('Review Mode (src/ui/review.js)', () => {
       mockState.reviewAreaIndex = 0;
 
       const html = renderReviewMode();
-      expect(html).toContain('All tasks reviewed');
+      // New UI shows 'All caught up in this area' when no stale tasks
+      expect(html).toContain('All caught up in this area');
     });
 
     it('renders Mark Area Reviewed button when area not completed', () => {
@@ -1387,7 +1404,8 @@ describe('Review Mode (src/ui/review.js)', () => {
       mockState.reviewCompletedAreas = [];
 
       const html = renderReviewMode();
-      expect(html).toContain('Mark Area Reviewed');
+      // New UI uses 'Mark area done' button text
+      expect(html).toContain('Mark area done');
     });
 
     it('shows area reviewed checkmark when area is completed', () => {
@@ -1397,7 +1415,8 @@ describe('Review Mode (src/ui/review.js)', () => {
       mockState.reviewCompletedAreas = ['a1'];
 
       const html = renderReviewMode();
-      expect(html).toContain('Area reviewed');
+      // New UI shows 'Area done' text when area is completed
+      expect(html).toContain('Area done');
     });
 
     it('shows review complete message when all areas reviewed', () => {
@@ -1408,8 +1427,9 @@ describe('Review Mode (src/ui/review.js)', () => {
       mockState.reviewAreaIndex = 0;
 
       const html = renderReviewMode();
-      expect(html).toContain('Review Complete');
-      expect(html).toContain('All 1 areas have been reviewed');
+      // New UI text: 'Review complete!' and 'All N areas done — great work.'
+      expect(html).toContain('Review complete!');
+      expect(html).toContain('All 1 areas done');
     });
 
     it('renders prev/next navigation buttons appropriately', () => {
@@ -1450,16 +1470,16 @@ describe('Review Mode (src/ui/review.js)', () => {
       expect(renderTriggersOutlinerMock).toHaveBeenCalledWith({ areaId: 'a1' });
     });
 
-    it('renders capture task buttons (Task, Today, Someday, Note)', () => {
+    it('renders capture task input and add button', () => {
       mockState.taskAreas = [{ id: 'a1', name: 'Work', color: '#147EFB' }];
       mockState.triggers = [];
       mockState.tasksData = [];
 
       const html = renderReviewMode();
-      expect(html).toContain('Task');
-      expect(html).toContain('Today');
-      expect(html).toContain('Someday');
-      expect(html).toContain('Note');
+      // New UI uses a text input (review-quick-add-input) + Add button instead of separate status buttons
+      expect(html).toContain('review-quick-add-input');
+      expect(html).toContain('reviewHandleQuickAddKeydown');
+      expect(html).toContain('Add trigger');
     });
 
     it('escapes area name for XSS safety', () => {

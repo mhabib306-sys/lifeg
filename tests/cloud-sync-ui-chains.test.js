@@ -244,6 +244,13 @@ vi.mock('../src/utils.js', () => ({
   normalizeEmail: mocks.normalizeEmail,
   formatEventTime: mocks.formatEventTime,
   formatEventDateLabel: mocks.formatEventDateLabel,
+  isMobileViewport: vi.fn(() => false),
+  sanitizeColor: vi.fn((c, fallback = '') => c || fallback),
+  safeOpenUrl: vi.fn(),
+  haptic: vi.fn(),
+  generateEntityId: vi.fn(() => 'entity_test_id'),
+  fmt: vi.fn((n) => String(n ?? '')),
+  safeJsonParse: vi.fn((k, d) => d),
 }));
 
 vi.mock('../src/constants.js', () => ({

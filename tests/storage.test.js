@@ -135,6 +135,10 @@ beforeEach(() => {
   mockState.MAX_SCORES = { prayer: 35 };
   mockState.scoresCache = new Map([['key1', 'val1']]);
   mockState.scoresCacheVersion = 0;
+  // familyMembers drives getDefaultDayData() family structure
+  mockState.familyMembers = [
+    { id: 'mom' }, { id: 'dad' }, { id: 'jana' }, { id: 'tia' }, { id: 'ahmed' }, { id: 'eman' },
+  ];
 
   window.render = vi.fn();
   window.debouncedSaveToGithub = vi.fn();

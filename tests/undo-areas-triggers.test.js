@@ -56,6 +56,18 @@ vi.mock('../src/utils.js', () => ({
   escapeHtml: escapeHtmlMock,
   generateTaskId: generateTaskIdMock,
   getLocalDateString: getLocalDateStringMock,
+  generateEntityId: vi.fn((prefix) => `${prefix}_test_${Date.now()}_abc`),
+  sanitizeColor: vi.fn((c, fallback = '') => c || fallback),
+  isMobileViewport: vi.fn(() => false),
+  safeOpenUrl: vi.fn(),
+  haptic: vi.fn(),
+  formatEventTime: vi.fn(() => '10:00 AM'),
+  formatEventDateLabel: vi.fn(() => 'Mon, Jan 1'),
+  normalizeEmail: vi.fn((e) => e),
+  renderPersonAvatar: vi.fn(() => ''),
+  fmt: vi.fn((n) => String(n ?? '')),
+  formatSmartDate: vi.fn((d) => d || ''),
+  safeJsonParse: vi.fn((k, d) => d),
 }));
 vi.mock('../src/constants.js', () => ({
   DELETED_ENTITY_TOMBSTONES_KEY,

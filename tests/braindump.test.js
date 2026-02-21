@@ -64,6 +64,18 @@ vi.mock('../src/utils.js', () => ({
   },
   generateTaskId: () => `task_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
   getLocalDateString: () => '2026-02-12',
+  isMobileViewport: vi.fn(() => false),
+  sanitizeColor: vi.fn((c, fallback = '') => c || fallback),
+  safeOpenUrl: vi.fn(),
+  haptic: vi.fn(),
+  formatEventTime: vi.fn(() => '10:00 AM'),
+  formatEventDateLabel: vi.fn(() => 'Mon, Jan 1'),
+  normalizeEmail: vi.fn((e) => e),
+  renderPersonAvatar: vi.fn(() => ''),
+  generateEntityId: vi.fn(() => 'entity_test_id'),
+  fmt: vi.fn((n) => String(n ?? '')),
+  safeJsonParse: vi.fn((k, d) => d),
+  formatSmartDate: vi.fn((d) => d || ''),
 }));
 
 // ---------------------------------------------------------------------------

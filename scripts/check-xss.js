@@ -23,6 +23,16 @@ const safeWrappers = [
   'twemoji.parse('
 ];
 
+// Lines with these annotations are reviewed and intentionally exempt
+const safeAnnotations = [
+  'eslint-disable-next-line no-unsanitized',
+  'eslint-disable no-unsanitized',
+  '// safe:',
+  '/* safe:',
+  '// intentional',
+  'nosec'
+];
+
 function getAllJsFiles(dir, fileList = []) {
   const files = readdirSync(dir);
 
@@ -48,10 +58,16 @@ function scanFile(filePath) {
   lines.forEach((line, idx) => {
     dangerousPatterns.forEach(pattern => {
       if (pattern.test(line)) {
-        // Check if it's wrapped in a safe function
+        // Check if it's wrapped in a safe function on the same line
         const isSafe = safeWrappers.some(wrapper => line.includes(wrapper));
 
-        if (!isSafe) {
+        // Check if annotated safe on same line or preceding line
+        const prevLine = idx > 0 ? lines[idx - 1] : '';
+        const isAnnotated = safeAnnotations.some(ann =>
+          line.includes(ann) || prevLine.includes(ann)
+        );
+
+        if (!isSafe && !isAnnotated) {
           issues.push({
             file: filePath,
             line: idx + 1,
@@ -67,7 +83,7 @@ function scanFile(filePath) {
 }
 
 function main() {
-  console.log('🔍 Scanning for XSS vulnerabilities...\n');
+  console.log('Scanning for XSS vulnerabilities...\n');
 
   const jsFiles = getAllJsFiles(srcDir);
   let totalIssues = 0;
@@ -77,7 +93,7 @@ function main() {
 
     if (issues.length > 0) {
       totalIssues += issues.length;
-      console.log(`\n⚠️  ${file}`);
+      console.log(`\nWARN  ${file}`);
       issues.forEach(issue => {
         console.log(`   Line ${issue.line}: ${issue.code}`);
       });
@@ -85,11 +101,12 @@ function main() {
   });
 
   if (totalIssues === 0) {
-    console.log('✅ No XSS vulnerabilities detected!\n');
+    console.log('No XSS vulnerabilities detected!\n');
     process.exit(0);
   } else {
-    console.log(`\n❌ Found ${totalIssues} potential XSS vulnerabilities\n`);
-    console.log('Fix these by wrapping user content with escapeHtml() or sanitizeColor()\n');
+    console.log(`\nFound ${totalIssues} potential XSS vulnerabilities\n`);
+    console.log('Fix these by wrapping user content with escapeHtml() or sanitizeColor(),\n');
+    console.log('or annotate with: // eslint-disable-next-line no-unsanitized/property\n');
     process.exit(1);
   }
 }

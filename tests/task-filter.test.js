@@ -75,8 +75,12 @@ describe('matchesTodayPerspective', () => {
     expect(matchesTodayPerspective(makeTask({ dueDate: '2026-02-10' }), today, labels)).toBe(true);
   });
 
-  it('matches tasks deferred to today or earlier', () => {
-    expect(matchesTodayPerspective(makeTask({ deferDate: '2026-02-11' }), today, labels)).toBe(true);
+  it('matches tasks deferred exactly to today', () => {
+    expect(matchesTodayPerspective(makeTask({ deferDate: today }), today, labels)).toBe(true);
+  });
+
+  it('does not match tasks deferred to an earlier date (just makes them available, not Today)', () => {
+    expect(matchesTodayPerspective(makeTask({ deferDate: '2026-02-11' }), today, labels)).toBe(false);
   });
 
   it('matches next-labeled tasks', () => {

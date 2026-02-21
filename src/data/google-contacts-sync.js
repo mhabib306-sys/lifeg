@@ -302,6 +302,7 @@ export async function syncGoogleContactsNow({ forceFullResync = false } = {}) {
     let authRefreshAttempted = false;
 
     // ── Fetch "My Contacts" ──
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const data = await fetchConnectionsPage({
         pageToken,
@@ -361,6 +362,7 @@ export async function syncGoogleContactsNow({ forceFullResync = false } = {}) {
 
     // ── Fetch "Other Contacts" (people interacted with but not saved) ──
     let otherPageToken = '';
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const other = await fetchOtherContactsPage(otherPageToken);
       if (!other || other.authExpired || other.otherContactsUnavailable || other.error) break;

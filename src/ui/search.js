@@ -5,7 +5,7 @@
 // perspectives, and triggers. Supports type-filter chips and keyboard nav.
 
 import { state } from '../state.js';
-import { escapeHtml } from '../utils.js';
+import { escapeHtml, sanitizeColor } from '../utils.js';
 import { BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
 
 // ---------------------------------------------------------------------------
@@ -34,15 +34,7 @@ let debounceTimer = null;
 // Helpers: sanitize user-supplied values for safe HTML insertion
 // ---------------------------------------------------------------------------
 
-/** Sanitize a CSS color value — allow only safe color formats */
-function safeColor(color) {
-  if (!color || typeof color !== 'string') return '';
-  // Allow hex colors, rgb/rgba, hsl/hsla, and CSS var() references
-  if (/^#[0-9a-fA-F]{3,8}$/.test(color)) return color;
-  if (/^(rgb|hsl)a?\([^)]+\)$/.test(color)) return color;
-  if (/^var\(--[\w-]+\)$/.test(color)) return color;
-  return '';
-}
+const safeColor = (c) => sanitizeColor(c);
 
 /** Strip query prefix (#, @, &) to get the actual search term */
 function stripPrefix(query) {
@@ -484,13 +476,15 @@ function scrollActiveIntoView() {
 function updateResultsDOM() {
   const container = document.getElementById('global-search-results');
   if (!container) return;
-  container.innerHTML = renderResultsInnerHtml();
+  /* eslint-disable-next-line no-unsanitized/property */
+  container.innerHTML = renderResultsInnerHtml(); // safe: escapeHtml on all user-supplied content
 }
 
 function updateChipsDOM() {
   const container = document.getElementById('global-search-type-filters');
   if (!container) return;
-  container.innerHTML = renderChipsInnerHtml();
+  /* eslint-disable-next-line no-unsanitized/property */
+  container.innerHTML = renderChipsInnerHtml(); // safe: static strings only
 }
 
 // ---------------------------------------------------------------------------

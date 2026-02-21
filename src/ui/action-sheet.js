@@ -31,6 +31,7 @@ export function showActionSheet({ title, items, cancelLabel = 'Cancel' }) {
     </button>
   `).join('');
 
+  /* eslint-disable-next-line no-unsanitized/property */
   overlay.innerHTML = `
     <div class="action-sheet">
       <div class="action-sheet-group">

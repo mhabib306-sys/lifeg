@@ -230,7 +230,7 @@ function recordSyncEvent(type, status, latencyMs = 0, details = '') {
       state.syncHealth.lastError = { message: details, timestamp: event.timestamp, type };
     }
   }
-  try { localStorage.setItem(SYNC_HEALTH_KEY, JSON.stringify(state.syncHealth)); } catch (_) {}
+  try { localStorage.setItem(SYNC_HEALTH_KEY, JSON.stringify(state.syncHealth)); } catch (_e) { /* quota exceeded or private mode */ }
 }
 
 export function getSyncHealth() {
@@ -957,7 +957,7 @@ export function flushPendingSave(options = {}) {
 
     // Ensure dirty flag is set so next session knows to sync
     state.githubSyncDirty = true;
-    try { localStorage.setItem(GITHUB_SYNC_DIRTY_KEY, 'true'); } catch (_) {}
+    try { localStorage.setItem(GITHUB_SYNC_DIRTY_KEY, 'true'); } catch (_e) { /* storage unavailable */ }
 
     // Attempt the save — it may or may not complete before unload
     saveToGithub(options).catch(err => console.error('Flush save failed:', err));

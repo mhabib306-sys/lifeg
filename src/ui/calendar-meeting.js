@@ -173,7 +173,9 @@ function renderSafeEventHtml(rawHtml) {
   const allowedAttrs = new Set(['href', 'title', 'target', 'rel']);
 
   const template = document.createElement('template');
-  template.innerHTML = input;
+  /* eslint-disable no-unsanitized/property */
+  template.innerHTML = input; // intentional parse step — content sanitized by sanitizeNode() below
+  /* eslint-enable no-unsanitized/property */
 
   const sanitizeNode = (node) => {
     if (node.nodeType === Node.TEXT_NODE) return;
@@ -507,10 +509,10 @@ export function renderMeetingNotesPage() {
         </div>
         <div class="calendar-meeting-notes-actions flex items-center gap-2">
           <button onclick="closeCalendarMeetingNotes()" class="calendar-meeting-btn calendar-meeting-btn-neutral px-3 py-1.5 rounded-lg text-sm font-medium hover:opacity-90 transition">Back</button>
-          <button onclick="window.open('${q(event.htmlLink)}','_blank')" class="calendar-meeting-btn calendar-meeting-btn-accent px-3 py-1.5 rounded-lg text-sm font-medium hover:opacity-90 transition ${event.htmlLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.htmlLink ? '' : 'disabled'}>
+          <button onclick="safeOpenUrl('${q(event.htmlLink)}')" class="calendar-meeting-btn calendar-meeting-btn-accent px-3 py-1.5 rounded-lg text-sm font-medium hover:opacity-90 transition ${event.htmlLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.htmlLink ? '' : 'disabled'}>
             Open Event
           </button>
-          <button onclick="window.open('${q(event.meetingLink)}','_blank')" class="calendar-meeting-btn calendar-meeting-btn-success px-3 py-1.5 rounded-lg text-sm font-medium hover:opacity-90 transition ${event.meetingLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.meetingLink ? '' : 'disabled'}>
+          <button onclick="safeOpenUrl('${q(event.meetingLink)}')" class="calendar-meeting-btn calendar-meeting-btn-success px-3 py-1.5 rounded-lg text-sm font-medium hover:opacity-90 transition ${event.meetingLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.meetingLink ? '' : 'disabled'}>
             ${event.meetingProvider ? `Join ${escapeHtml(event.meetingProvider)}` : 'Join Meeting'}
           </button>
         </div>
@@ -686,13 +688,13 @@ export function renderEventActionsModal(event) {
 
         <div class="modal-body-enhanced space-y-3">
           <div class="calendar-event-quick-actions">
-            <button onclick="window.open('${q(event.htmlLink)}', '_blank'); closeCalendarEventActions()" class="calendar-icon-action ${event.htmlLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.htmlLink ? '' : 'disabled'}>
+            <button onclick="safeOpenUrl('${q(event.htmlLink)}'); closeCalendarEventActions()" class="calendar-icon-action ${event.htmlLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.htmlLink ? '' : 'disabled'}>
               <span class="calendar-icon-action-glyph">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
               </span>
               <span class="calendar-icon-action-label">Google Calendar</span>
             </button>
-            <button onclick="window.open('${q(event.meetingLink)}', '_blank'); closeCalendarEventActions()" class="calendar-icon-action ${event.meetingLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.meetingLink ? '' : 'disabled'}>
+            <button onclick="safeOpenUrl('${q(event.meetingLink)}'); closeCalendarEventActions()" class="calendar-icon-action ${event.meetingLink ? '' : 'opacity-50 cursor-not-allowed'}" ${event.meetingLink ? '' : 'disabled'}>
               <span class="calendar-icon-action-glyph">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
               </span>

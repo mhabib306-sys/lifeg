@@ -39,6 +39,9 @@ const mocks = vi.hoisted(() => {
   const getLast30DaysStats = vi.fn(() => ({
     daysLogged: 0, avgDaily: 0, totalFamilyCheckins: 0, totalOnTimePrayers: 0, totalScore: 0,
   }));
+  const getLastNDaysStats = vi.fn(() => ({
+    daysLogged: 0, avgDaily: 0, totalFamilyCheckins: 0, totalOnTimePrayers: 0, totalScore: 0,
+  }));
   const getPersonalBests = vi.fn(() => null);
   const calculateScores = vi.fn(() => ({ normalized: { overall: 0 } }));
   const getLevelInfo = vi.fn(() => ({
@@ -84,6 +87,7 @@ const mocks = vi.hoisted(() => {
     state,
     getLast30DaysData,
     getLast30DaysStats,
+    getLastNDaysStats,
     getPersonalBests,
     calculateScores,
     getLevelInfo,
@@ -112,11 +116,22 @@ vi.mock('../src/state.js', () => ({ state: mocks.state }));
 vi.mock('../src/utils.js', () => ({
   fmt: mocks.fmt,
   getLocalDateString: mocks.getLocalDateString,
+  isMobileViewport: vi.fn(() => false),
+  isMobile: vi.fn(() => false),
+  isTouchDevice: vi.fn(() => false),
+  sanitizeColor: vi.fn((c, fallback = '') => c || fallback),
+  safeOpenUrl: vi.fn(),
+  haptic: vi.fn(),
+  escapeHtml: vi.fn(s => s || ''),
+  formatSmartDate: vi.fn(d => d || ''),
+  generateEntityId: vi.fn(prefix => `${prefix}_test_id`),
 }));
 
 vi.mock('../src/features/scoring.js', () => ({
   getLast30DaysData: mocks.getLast30DaysData,
   getLast30DaysStats: mocks.getLast30DaysStats,
+  getLastNDaysData: mocks.getLast30DaysData,
+  getLastNDaysStats: mocks.getLastNDaysStats,
   getPersonalBests: mocks.getPersonalBests,
   calculateScores: mocks.calculateScores,
   getLevelInfo: mocks.getLevelInfo,
@@ -247,6 +262,9 @@ describe('Dashboard — renderDashboardTab & helpers', () => {
       tierName: 'Ember', tierIcon: '\uD83D\uDD25',
     });
     mocks.getLast30DaysStats.mockReturnValue({
+      daysLogged: 0, avgDaily: 0, totalFamilyCheckins: 0, totalOnTimePrayers: 0, totalScore: 0,
+    });
+    mocks.getLastNDaysStats.mockReturnValue({
       daysLogged: 0, avgDaily: 0, totalFamilyCheckins: 0, totalOnTimePrayers: 0, totalScore: 0,
     });
     mocks.getLast30DaysData.mockReturnValue([]);
@@ -668,7 +686,7 @@ describe('Dashboard — renderDashboardTab & helpers', () => {
     });
 
     it('renders 30-day stats section', () => {
-      mocks.getLast30DaysStats.mockReturnValue({
+      mocks.getLastNDaysStats.mockReturnValue({
         daysLogged: 15, avgDaily: 42.5, totalFamilyCheckins: 8, totalOnTimePrayers: 60,
       });
       const html = renderDashboardTab();

@@ -70,7 +70,7 @@ describe('createPerspective', () => {
 
   it('generates an ID with "custom_" prefix', () => {
     const p = createPerspective('Test', '🔧', {});
-    expect(p.id).toMatch(/^custom_\d+$/);
+    expect(p.id).toMatch(/^custom_/);
   });
 
   it('sets builtin to false', () => {

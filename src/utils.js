@@ -31,6 +31,39 @@ export function escapeHtml(text) {
 }
 
 /**
+ * Security: Sanitize a CSS color value for safe insertion into style attributes.
+ * Allows hex colors (#rgb, #rrggbb, #rrggbbaa), rgb/rgba/hsl/hsla functions,
+ * and CSS custom property references (var(--name)). Rejects anything else.
+ * @param {string} color - Raw color value from user data
+ * @param {string} [fallback=''] - Value returned when color is invalid
+ * @returns {string} Safe color string or fallback
+ */
+export function sanitizeColor(color, fallback = '') {
+  if (!color || typeof color !== 'string') return fallback;
+  const c = color.trim();
+  if (/^#[0-9a-fA-F]{3,8}$/.test(c)) return c;
+  if (/^(rgb|hsl)a?\([^)]{0,150}\)$/i.test(c)) return c;
+  if (/^var\(--[\w-]+\)$/.test(c)) return c;
+  return fallback;
+}
+
+/**
+ * Security: Open a URL in a new tab only if it uses http: or https: protocol.
+ * Prevents javascript:, data:, and other dangerous URI schemes.
+ * @param {string} url - URL to open
+ */
+export function safeOpenUrl(url) {
+  if (!url) return;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return;
+  } catch {
+    return;
+  }
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+/**
  * Format numbers with commas for 4+ digits
  * Returns em-dash for null/undefined/empty/NaN values
  * @param {number|string|null|undefined} num - Number to format
@@ -147,7 +180,7 @@ export function renderPersonAvatar(person, size = 32, extraClasses = '') {
   const initials = words.length >= 2
     ? (words[0][0] + words[words.length - 1][0]).toUpperCase()
     : (words[0]?.[0] || '?').toUpperCase();
-  const bg = person.color || 'var(--accent)';
+  const bg = sanitizeColor(person.color, 'var(--accent)');
   const fontSize = Math.max(Math.round(size * 0.4), 10);
   return `<span style="width:${size}px;height:${size}px;background:${bg};font-size:${fontSize}px" class="rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold leading-none ${extraClasses}">${initials}</span>`;
 }

@@ -1962,12 +1962,20 @@ describe('ensureValidToken (via syncGCalNow)', () => {
 
   it('sets gcalTokenExpired when refresh fails', async () => {
     setConnected();
-    mockLocalStorage._storage.set(MOCK_CONSTANTS.GCAL_ACCESS_TOKEN_KEY, 'old-token');
+    // No access token — ensures ensureValidToken calls handleTokenExpired after failed refresh
+    mockLocalStorage._storage.delete(MOCK_CONSTANTS.GCAL_ACCESS_TOKEN_KEY);
     mockLocalStorage._storage.set(MOCK_CONSTANTS.GCAL_TOKEN_TIMESTAMP_KEY, String(Date.now() - 2 * 60 * 60 * 1000));
     mockState.gcalCalendarList = [{ id: 'cal1' }];
     window.signInWithGoogleCalendar.mockResolvedValue(null);
 
-    await syncGCalNow();
+    vi.useFakeTimers();
+    const syncPromise = syncGCalNow();
+    // Advance past the 1000ms brief-delay retry inside gcalFetch (line 332)
+    await vi.advanceTimersByTimeAsync(2000);
+    // Clear any scheduled retry timers to avoid infinite loop in runAllTimersAsync
+    vi.clearAllTimers();
+    await syncPromise;
+    vi.useRealTimers();
     expect(mockState.gcalTokenExpired).toBe(true);
   });
 });
@@ -2011,7 +2019,8 @@ describe('refreshAccessTokenSilent (via expired token scenarios)', () => {
 
   it('handles signInWithGoogleCalendar throwing an error', async () => {
     setConnected();
-    mockLocalStorage._storage.set(MOCK_CONSTANTS.GCAL_ACCESS_TOKEN_KEY, 'expired');
+    // No access token — ensures ensureValidToken calls handleTokenExpired after failed refresh
+    mockLocalStorage._storage.delete(MOCK_CONSTANTS.GCAL_ACCESS_TOKEN_KEY);
     mockLocalStorage._storage.set(MOCK_CONSTANTS.GCAL_TOKEN_TIMESTAMP_KEY, '0');
     mockState.gcalCalendarList = [{ id: 'cal1' }];
     window.signInWithGoogleCalendar.mockRejectedValue(new Error('GIS error'));

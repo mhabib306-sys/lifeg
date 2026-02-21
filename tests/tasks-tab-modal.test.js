@@ -155,6 +155,16 @@ vi.mock('../src/utils.js', () => ({
   generateTaskId: mocks.generateTaskIdMock,
   fmt: vi.fn(n => String(n)),
   safeJsonParse: vi.fn((k, d) => d),
+  formatEventTime: vi.fn(() => '10:00 AM'),
+  formatEventDateLabel: vi.fn(() => 'Mon, Jan 1'),
+  isMobileViewport: vi.fn(() => false),
+  isTouchDevice: vi.fn(() => false),
+  isMobile: vi.fn(() => false),
+  sanitizeColor: vi.fn((c, fallback = '') => c || fallback),
+  safeOpenUrl: vi.fn(),
+  haptic: vi.fn(),
+  normalizeEmail: vi.fn((e) => e),
+  generateEntityId: vi.fn(() => 'entity_test_id'),
 }));
 
 vi.mock('../src/features/areas.js', () => ({
@@ -491,12 +501,12 @@ describe('renderTaskItem', () => {
     expect(html).toContain('Repeats');
   });
 
-  it('renders inline edit input when task is being edited', () => {
+  it('renders inline title as contenteditable (always present)', () => {
     const task = makeTask({ title: 'Edit me', id: 'task_edit' });
-    mocks.state.inlineEditingTaskId = 'task_edit';
     const html = renderTaskItem(task);
-    expect(html).toContain('inline-edit-input');
-    expect(html).toContain('handleInlineEditKeydown');
+    // The new inline editing uses a contenteditable div instead of an input
+    expect(html).toContain('task-inline-title');
+    expect(html).toContain('handleTaskInlineKeydown');
   });
 
   it('renders indented tasks with padding', () => {
@@ -1218,11 +1228,10 @@ describe('toggleModalFlagged', () => {
 // --------------------------------------------------------------------------
 describe('updateDateDisplay', () => {
   it('updates defer display with formatted date', () => {
-    document.body.innerHTML = `
-      <input id="task-defer" value="2026-02-01">
-      <span id="defer-display">None</span>
-      <button id="defer-clear-btn" class="hidden"></button>
-    `;
+    document.body.innerHTML = '<input id="task-defer" value="2026-02-01"><span id="defer-display">None</span><button id="defer-clear-btn" class="hidden"></button>';
+    // Reset queue (vi.clearAllMocks does not flush mockReturnValueOnce queues)
+    mocks.formatSmartDateMock.mockReset();
+    mocks.formatSmartDateMock.mockImplementation(d => d || '');
     mocks.formatSmartDateMock.mockReturnValueOnce('Feb 1');
     updateDateDisplay('defer');
     expect(document.getElementById('defer-display').textContent).toBe('Feb 1');
@@ -1230,11 +1239,9 @@ describe('updateDateDisplay', () => {
   });
 
   it('updates due display with formatted date', () => {
-    document.body.innerHTML = `
-      <input id="task-due" value="2026-03-15">
-      <span id="due-display">None</span>
-      <button id="due-clear-btn" class="hidden"></button>
-    `;
+    document.body.innerHTML = '<input id="task-due" value="2026-03-15"><span id="due-display">None</span><button id="due-clear-btn" class="hidden"></button>';
+    mocks.formatSmartDateMock.mockReset();
+    mocks.formatSmartDateMock.mockImplementation(d => d || '');
     mocks.formatSmartDateMock.mockReturnValueOnce('Mar 15');
     updateDateDisplay('due');
     expect(document.getElementById('due-display').textContent).toBe('Mar 15');

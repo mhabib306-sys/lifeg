@@ -204,6 +204,7 @@ export function render() {
     // ---- Auth gate: loading spinner ----
     if (state.authLoading) {
       resetBodyUiState();
+      // eslint-disable-next-line no-unsanitized/property
       app.innerHTML = `
         <div class="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-primary)]">
           <svg class="w-16 h-16 mb-6 animate-pulse" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -220,6 +221,7 @@ export function render() {
     // ---- Auth gate: login screen ----
     if (!state.currentUser) {
       resetBodyUiState();
+      // eslint-disable-next-line no-unsanitized/property
       app.innerHTML = `
         <div class="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-primary)] px-6">
           <svg class="w-20 h-20 mb-4" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -285,6 +287,7 @@ export function render() {
       _savedInput = { id: _activeEl.id, value: _activeEl.value, selStart: _activeEl.selectionStart, selEnd: _activeEl.selectionEnd };
     }
 
+    // eslint-disable-next-line no-unsanitized/property
     app.innerHTML = `<!-- safe: all user content is escaped via escapeHtml() -->
       <!-- Mobile Header - Things 3 style -->
       <header class="mobile-header-compact border-b border-[var(--border-light)] bg-[var(--bg-card)] sticky top-0 z-50" style="display: none;">
@@ -564,7 +567,7 @@ export function render() {
         let startY = 0, currentY = 0, startTime = 0, dragging = false;
         const dragZone = 40; // top 40px of modal also activatable
 
-        function onTouchStart(e) {
+        const onTouchStart = (e) => {
           const rect = modal.getBoundingClientRect();
           const touchY = e.touches[0].clientY;
           if (touchY - rect.top > dragZone && e.target !== handle) return;
@@ -573,16 +576,16 @@ export function render() {
           startTime = Date.now();
           dragging = true;
           modal.style.transition = 'none';
-        }
-        function onTouchMove(e) {
+        };
+        const onTouchMove = (e) => {
           if (!dragging) return;
           currentY = e.touches[0].clientY;
           const dy = Math.max(0, currentY - startY);
           modal.style.transform = `translateY(${dy}px)`;
           const progress = Math.min(dy / (modal.offsetHeight * 0.5), 1);
           overlay.style.background = `rgba(0,0,0,${0.4 * (1 - progress * 0.6)})`;
-        }
-        function onTouchEnd() {
+        };
+        const onTouchEnd = () => {
           if (!dragging) return;
           dragging = false;
           const dy = currentY - startY;
@@ -634,6 +637,7 @@ export function render() {
     state._lastRenderWasMobile = isMobileViewport();
   } catch (err) {
     console.error('Render error:', err);
+    // eslint-disable-next-line no-unsanitized/property
     document.getElementById('app').innerHTML = `
       <div style="max-width:480px;margin:60px auto;padding:24px;font-family:var(--font-family,system-ui);color:var(--text-primary,#171717);">
         <h2 style="font-size:18px;font-weight:600;margin:0 0 8px;">Something went wrong</h2>

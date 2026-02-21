@@ -6,7 +6,7 @@
 
 import { state } from '../state.js';
 import { THINGS3_ICONS, getActiveIcons, BUILTIN_PERSPECTIVES, NOTES_PERSPECTIVE } from '../constants.js';
-import { escapeHtml, formatSmartDate, getLocalDateString, renderPersonAvatar, isTouchDevice } from '../utils.js';
+import { escapeHtml, formatSmartDate, getLocalDateString, renderPersonAvatar, isTouchDevice, sanitizeColor } from '../utils.js';
 import { getAreaById, getLabelById, getPersonById, getTasksByPerson, getCategoriesByArea, getCategoryById } from '../features/areas.js';
 import { saveViewState } from '../data/storage.js';
 
@@ -477,7 +477,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
   const filterExpr = `t.areaId === '${currentCategory.id}'`;
 
   const completionRate = activeTasks + completedTasks > 0 ? Math.round((completedTasks / (activeTasks + completedTasks)) * 100) : 0;
-  const categoryColor = currentCategory.color || 'var(--accent)';
+  const categoryColor = sanitizeColor(currentCategory.color, 'var(--accent)');
 
   return `
     <div class="flex-1 space-y-4">
@@ -593,7 +593,7 @@ export function buildAreaTaskListHtml(currentCategory, filteredTasks, todayDate)
           <div class="divide-y divide-[var(--border-light)]">
             ${subcats.map(sc => {
               const scTaskCount = state.tasksData.filter(t => t.categoryId === sc.id && !t.completed && !t.isNote).length;
-              const scColor = sc.color || categoryColor;
+              const scColor = sanitizeColor(sc.color, categoryColor);
               return `
               <button onclick="window.showCategoryTasks('${sc.id}')"
                 class="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-[var(--bg-secondary)] transition group">
@@ -673,7 +673,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
     !(t.dueDate && t.dueDate < todayDate) && (t.today || t.dueDate === todayDate)).length;
 
   const completionRate = activeTasks + completedTasks > 0 ? Math.round((completedTasks / (activeTasks + completedTasks)) * 100) : 0;
-  const categoryColor = category.color || 'var(--accent)';
+  const categoryColor = sanitizeColor(category.color, 'var(--accent)');
 
   const createPropsExpr = `areaId: '${category.areaId}', categoryId: '${category.id}'`;
   const filterExpr = `t.categoryId === '${category.id}'`;
@@ -692,7 +692,7 @@ export function buildCategoryTaskListHtml(category, filteredTasks, todayDate) {
               <div class="flex items-center gap-2 mt-1">
                 ${parentArea ? `
                   <button onclick="window.showAreaTasks('${parentArea.id}')" class="inline-flex items-center gap-1.5 text-[13px] text-[var(--text-muted)] hover:text-[var(--accent)] transition">
-                    <span class="w-2 h-2 rounded-full" style="background:${parentArea.color || 'var(--accent)'}"></span>
+                    <span class="w-2 h-2 rounded-full" style="background:${sanitizeColor(parentArea.color, 'var(--accent)')}"></span>
                     ${escapeHtml(parentArea.name)}
                   </button>
                   <span class="text-[var(--text-muted)]">&middot;</span>
@@ -816,7 +816,7 @@ export function buildLabelTaskListHtml(label, filteredTasks, todayDate) {
   const showTasks = state.workspaceContentMode !== 'notes';
   const showNotes = state.workspaceContentMode !== 'tasks';
   const activeTasks = taskItems.length;
-  const labelColor = label.color || 'var(--notes-color)';
+  const labelColor = sanitizeColor(label.color, 'var(--notes-color)');
 
   const overdueCt = taskItems.filter(t => t.dueDate && t.dueDate < todayDate).length;
   const todayCt = taskItems.filter(t => t.today || t.dueDate === todayDate).length;
@@ -1210,7 +1210,7 @@ export function buildCustomPerspectiveTaskListHtml(perspective, filteredTasks, t
   if (!perspective) return '';
 
   const activeItems = filteredTasks.length;
-  const perspColor = perspective.color || 'var(--accent)';
+  const perspColor = sanitizeColor(perspective.color, 'var(--accent)');
 
   return `
     <div class="flex-1 space-y-4">
@@ -1438,7 +1438,7 @@ export function renderTasksTab() {
             <span class="workspace-area-name">All Areas</span>
           </button>
           ${state.taskAreas.map(area => `
-            <button onclick="window.showAreaTasks('${area.id}')" class="workspace-area-chip ${isAreaActive(area.id) || selectedAreaId === area.id ? 'active' : ''}" style="--area-color:${area.color || 'var(--accent)'}">
+            <button onclick="window.showAreaTasks('${area.id}')" class="workspace-area-chip ${isAreaActive(area.id) || selectedAreaId === area.id ? 'active' : ''}" style="--area-color:${sanitizeColor(area.color, 'var(--accent)')}">
               <span class="workspace-area-emoji">${area.emoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M2 17l10 5 10-5-10-5-10 5z" opacity="0.35"/><path d="M2 12l10 5 10-5-10-5-10 5z" opacity="0.6"/><path d="M12 2L2 7l10 5 10-5L12 2z"/></svg>'}</span>
               <span class="workspace-area-name">${escapeHtml(area.name)}</span>
               <span class="workspace-area-count">${categoryCounts[area.id] || ''}</span>
@@ -1473,7 +1473,7 @@ export function renderTasksTab() {
               <div class="workspace-overflow-list">
                 ${state.taskLabels.map(label => `
                   <button onclick="window.showLabelTasks('${label.id}')" class="workspace-overflow-item ${isLabelActive(label.id) ? 'active' : ''}">
-                    <span class="workspace-dot" style="background:${label.color || 'var(--text-muted)'}"></span>
+                    <span class="workspace-dot" style="background:${sanitizeColor(label.color, 'var(--text-muted)')}"></span>
                     <span>${escapeHtml(label.name)}</span>
                     <span class="workspace-chip-count">${labelCounts[label.id] || ''}</span>
                   </button>
@@ -1560,8 +1560,10 @@ export function renderTasksTab() {
               <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 text-lg text-[var(--text-muted)]">${p.icon}</span>
               <span class="flex-1 text-[14px] ${isPerspectiveActive(p.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(p.name)}</span>
               <span class="min-w-[20px] text-right text-xs group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${taskCounts[p.id] || ''}</span>
-              <span onclick="event.stopPropagation(); window.editCustomPerspective('${p.id}')"
-                class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
+              <span role="button" tabindex="0" onclick="event.stopPropagation(); window.editCustomPerspective('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();window.editCustomPerspective('${p.id}');}" aria-label="Edit ${escapeHtml(p.name)}"
+                class="sidebar-edit-btn absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] cursor-pointer">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </span>
             </button>
           `).join('') : `
             <div class="px-3 py-6 text-center text-[var(--text-muted)] text-[13px]">
@@ -1595,7 +1597,7 @@ export function renderTasksTab() {
                 draggable="true"
                 data-id="${cat.id}"
                 data-type="area">
-                <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm relative" style="background: ${cat.color}20; color: ${cat.color}">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm relative" style="background: ${sanitizeColor(cat.color)}20; color: ${sanitizeColor(cat.color)}">
                   ${areaEmoji || '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>'}
                   ${hasSubcats ? `
                     <span onclick="event.stopPropagation(); window.toggleSidebarAreaCollapse('${cat.id}')"
@@ -1606,8 +1608,10 @@ export function renderTasksTab() {
                 </span>
                 <span class="flex-1 text-[14px] truncate ${isAreaActive(cat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(cat.name)}</span>
                 <span class="min-w-[20px] text-right text-xs group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${categoryCounts[cat.id] || ''}</span>
-                <span onclick="event.stopPropagation(); window.editingAreaId='${cat.id}'; window.showAreaModal=true; window.render()"
-                  class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
+                <button type="button" onclick="event.stopPropagation(); window.editingAreaId='${cat.id}'; window.showAreaModal=true; window.render()" aria-label="Edit ${escapeHtml(cat.name)}"
+                  class="sidebar-edit-btn absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
               </div>
             ${!isCollapsed ? `
               ${subcats.map(subcat => {
@@ -1615,12 +1619,14 @@ export function renderTasksTab() {
                 return `
                 <div onclick="window.showCategoryTasks('${subcat.id}')"
                   class="sidebar-item w-full pl-10 pr-3 py-1.5 flex items-center gap-2.5 text-left rounded-lg group relative cursor-pointer select-none transition-all ${isSubcatActive(subcat.id) ? 'active bg-[var(--accent-light)]' : 'hover:bg-[var(--bg-secondary)]'}">
-                  <span class="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-xs" style="background: ${subcat.color}20; color: ${subcat.color}">
+                  <span class="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-xs" style="background: ${sanitizeColor(subcat.color)}20; color: ${sanitizeColor(subcat.color)}">
                     ${subcatEmoji || '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'}
                   </span>
                   <span class="flex-1 text-[13px] truncate ${isSubcatActive(subcat.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(subcat.name)}</span>
-                  <span onclick="event.stopPropagation(); window.editingCategoryId='${subcat.id}'; window.showCategoryModal=true; window.render()"
-                    class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
+                  <button type="button" onclick="event.stopPropagation(); window.editingCategoryId='${subcat.id}'; window.showCategoryModal=true; window.render()" aria-label="Edit ${escapeHtml(subcat.name)}"
+                    class="sidebar-edit-btn absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
                 </div>
               `}).join('')}
               ${isAreaActive(cat.id) ? `
@@ -1670,12 +1676,14 @@ export function renderTasksTab() {
               data-id="${label.id}"
               data-type="label">
               <span class="w-6 h-6 flex items-center justify-center flex-shrink-0">
-                <span class="w-3 h-3 rounded-full" style="background-color: ${label.color}"></span>
+                <span class="w-3 h-3 rounded-full" style="background-color: ${sanitizeColor(label.color)}"></span>
               </span>
               <span class="flex-1 text-[14px] ${isLabelActive(label.id) ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}">${escapeHtml(label.name)}</span>
               <span class="min-w-[20px] text-right text-xs group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${labelCounts[label.id] || ''}</span>
-              <span onclick="event.stopPropagation(); window.editingLabelId='${label.id}'; window.showLabelModal=true; window.render()"
-                class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
+              <button type="button" onclick="event.stopPropagation(); window.editingLabelId='${label.id}'; window.showLabelModal=true; window.render()" aria-label="Edit ${escapeHtml(label.name)}"
+                class="sidebar-edit-btn absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
             </div>
           `).join('')}
           ${hiddenCount > 0 ? `
@@ -1725,8 +1733,10 @@ export function renderTasksTab() {
                 ${person.jobTitle ? `<span class="block text-[11px] truncate text-[var(--text-muted)]">${escapeHtml(person.jobTitle)}</span>` : ''}
               </span>
               <span class="min-w-[20px] text-right text-xs group-hover:opacity-0 transition-opacity text-[var(--text-muted)]">${peopleCounts[person.id] || ''}</span>
-              <span onclick="event.stopPropagation(); window.editingPersonId='${person.id}'; window.showPersonModal=true; window.render()"
-                class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 rounded-md hover:bg-[var(--bg-secondary)]">Edit</span>
+              <button type="button" onclick="event.stopPropagation(); window.editingPersonId='${person.id}'; window.showPersonModal=true; window.render()" aria-label="Edit ${escapeHtml(person.name)}"
+                class="sidebar-edit-btn absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
             </div>
           `).join('')}
           ${hiddenCount > 0 ? `
@@ -1775,7 +1785,7 @@ export function renderTasksTab() {
       <div class="bg-[var(--bg-card)] rounded-lg md:border md:border-[var(--border-light)]">
         <div class="task-list-header-desktop px-5 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <span class="text-2xl" ${viewInfo.color ? `style="color: ${viewInfo.color}"` : ''}>${viewInfo.icon}</span>
+            <span class="text-2xl" ${sanitizeColor(viewInfo.color) ? `style="color: ${sanitizeColor(viewInfo.color)}"` : ''}>${viewInfo.icon}</span>
             <div>
               <h2 class="text-xl font-semibold text-[var(--text-primary)]">${viewInfo.name}</h2>
               ${viewInfo.jobTitle || viewInfo.email ? `<p class="text-sm text-[var(--text-muted)]">${[viewInfo.jobTitle, viewInfo.email].filter(Boolean).join(' \u00B7 ')}</p>` : ''}
@@ -1932,7 +1942,7 @@ export function renderTasksTab() {
                 <div class="flex items-center gap-2">
                   ${activeNotesCategory ? `
                     <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-[var(--accent-light)] text-[var(--accent)]">
-                      <span class="w-2 h-2 rounded-full" style="background:${activeNotesCategory.color || 'var(--notes-color)'}"></span>
+                      <span class="w-2 h-2 rounded-full" style="background:${sanitizeColor(activeNotesCategory.color, 'var(--notes-color)')}"></span>
                       ${escapeHtml(activeNotesCategory.name)}
                     </span>
                   ` : ''}
