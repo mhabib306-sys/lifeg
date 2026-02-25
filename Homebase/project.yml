@@ -21,6 +21,7 @@ targets:
         CURRENT_PROJECT_VERSION: "1"
         SUPPORTED_INTERFACE_ORIENTATIONS: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortraitUpsideDown"
         SUPPORTED_INTERFACE_ORIENTATIONS~ipad: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortraitUpsideDown"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     info:
       path: Homebase/Info.plist
       properties:
