@@ -27,7 +27,6 @@ protocol URLSessionProtocol: Sendable {
     func data(for request: URLRequest) async throws -> (Data, URLResponse)
 }
 
-extension URLSession: @retroactive @unchecked Sendable {}
 extension URLSession: URLSessionProtocol {}
 
 final class GitHubAPI: Sendable {

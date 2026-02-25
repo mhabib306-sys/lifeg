@@ -19,8 +19,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.homebase.app
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: "1"
-        SUPPORTED_INTERFACE_ORIENTATIONS: "UIInterfaceOrientationPortrait"
-        SUPPORTED_INTERFACE_ORIENTATIONS~ipad: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        SUPPORTED_INTERFACE_ORIENTATIONS: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortraitUpsideDown"
+        SUPPORTED_INTERFACE_ORIENTATIONS~ipad: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortraitUpsideDown"
     info:
       path: Homebase/Info.plist
       properties:
