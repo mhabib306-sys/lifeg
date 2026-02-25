@@ -1,6 +1,6 @@
 import Foundation
 
-struct FilterDefinition: Codable, Equatable {
+struct FilterDefinition: Codable, Equatable, Sendable {
     enum MatchMode: String, Codable { case all, any, none }
     enum Availability: String, Codable { case available, remaining, completed }
 
