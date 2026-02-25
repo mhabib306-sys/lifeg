@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 import Observation
 
-@Observable
+@MainActor @Observable
 final class SyncCoordinator {
     let engine: SyncEngine
     private var lifecycleObservers: [Any] = []

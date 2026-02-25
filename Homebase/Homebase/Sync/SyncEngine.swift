@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 import Observation
 
-@Observable
+@MainActor @Observable
 final class SyncEngine {
     let container: ModelContainer
     private let api: GitHubAPI?
@@ -49,7 +49,6 @@ final class SyncEngine {
 
     // MARK: - Push (full sync)
 
-    @MainActor
     func push() async {
         guard let api else { return }
         guard isDirty else { return }
@@ -146,7 +145,6 @@ final class SyncEngine {
 
     // MARK: - Pull (fetch cloud into local)
 
-    @MainActor
     func pull() async {
         guard let api else { return }
         isSyncing = true

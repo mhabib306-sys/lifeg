@@ -13,13 +13,14 @@ struct GitHubFile {
     let content: Data   // Decoded from base64
 }
 
-protocol URLSessionProtocol {
+protocol URLSessionProtocol: Sendable {
     func data(for request: URLRequest) async throws -> (Data, URLResponse)
 }
 
+extension URLSession: @retroactive @unchecked Sendable {}
 extension URLSession: URLSessionProtocol {}
 
-final class GitHubAPI {
+final class GitHubAPI: Sendable {
     private let token: String
     private let owner: String
     private let repo: String

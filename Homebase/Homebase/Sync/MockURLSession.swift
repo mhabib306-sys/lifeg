@@ -1,7 +1,7 @@
 import Foundation
 
 /// Test-only mock for URLSessionProtocol, allowing tests to run without hitting the network.
-final class MockURLSession: URLSessionProtocol {
+final class MockURLSession: URLSessionProtocol, Sendable {
     let data: Data
     let statusCode: Int
 
