@@ -163,8 +163,21 @@ final class SyncEngine {
         defer { isSyncing = false }
 
         do {
-            let file = try await api.fetchFile(path: "data.json")
-            let cloudPayload = try PayloadCoder.decode(file.content)
+            let file: GitHubFile
+            do {
+                file = try await api.fetchFile(path: "data.json")
+            } catch {
+                lastError = "Fetch: \(error.localizedDescription)"
+                return
+            }
+
+            let cloudPayload: CloudPayload
+            do {
+                cloudPayload = try PayloadCoder.decode(file.content)
+            } catch {
+                lastError = "Decode: \(error.localizedDescription)"
+                return
+            }
 
             let context = ModelContext(container)
             let localTasks = exportTasks(from: context)
@@ -209,7 +222,7 @@ final class SyncEngine {
             try context.save()
             lastError = nil
         } catch {
-            lastError = error.localizedDescription
+            lastError = "Pull: \(error.localizedDescription)"
         }
     }
 

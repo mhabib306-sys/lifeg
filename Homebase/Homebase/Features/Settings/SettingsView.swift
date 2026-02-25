@@ -54,7 +54,9 @@ struct SettingsView: View {
                     } else if let error = sync.engine.lastError {
                         Text(error)
                             .foregroundStyle(.red)
-                            .font(HBTheme.subtitleFont)
+                            .font(.caption2)
+                            .textSelection(.enabled)
+                            .lineLimit(5)
                     } else {
                         Text("Idle")
                             .foregroundStyle(HBTheme.textSecondary)

@@ -81,7 +81,16 @@ enum PayloadCoder {
     ]
 
     static func decode(_ data: Data) throws -> CloudPayload {
-        let json = try JSONSerialization.jsonObject(with: data) as! [String: Any]
+        let raw: Any
+        do {
+            raw = try JSONSerialization.jsonObject(with: data)
+        } catch {
+            let preview = String(data: data.prefix(200), encoding: .utf8) ?? "<non-utf8, \(data.count) bytes>"
+            throw GitHubAPIError.decodingError("JSON parse failed (\(data.count) bytes). Preview: \(preview)")
+        }
+        guard let json = raw as? [String: Any] else {
+            throw GitHubAPIError.decodingError("Expected JSON object, got \(type(of: raw))")
+        }
         let decoder = JSONDecoder()
 
         func decodeArray<T: Decodable>(_ key: String) -> [T] {
