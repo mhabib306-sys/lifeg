@@ -5,7 +5,7 @@ import Observation
 @MainActor @Observable
 final class SyncEngine {
     let container: ModelContainer
-    private let api: GitHubAPI?
+    private(set) var api: GitHubAPI?
     private let dirtyKey = "syncDirty"
     private let sequenceKey = "syncSequence"
     private var debounceTask: Task<Void, Never>?
@@ -17,9 +17,15 @@ final class SyncEngine {
         UserDefaults.standard.bool(forKey: dirtyKey)
     }
 
+    var isConfigured: Bool { api != nil }
+
     init(container: ModelContainer, api: GitHubAPI?) {
         self.container = container
         self.api = api
+    }
+
+    func updateAPI(_ newAPI: GitHubAPI?) {
+        self.api = newAPI
     }
 
     func markDirty() {
@@ -50,7 +56,10 @@ final class SyncEngine {
     // MARK: - Push (full sync)
 
     func push() async {
-        guard let api else { return }
+        guard let api else {
+            lastError = "Not configured — enter credentials in Settings"
+            return
+        }
         guard isDirty else { return }
         isSyncing = true
         defer { isSyncing = false }
@@ -146,7 +155,10 @@ final class SyncEngine {
     // MARK: - Pull (fetch cloud into local)
 
     func pull() async {
-        guard let api else { return }
+        guard let api else {
+            lastError = "Not configured — enter credentials in Settings"
+            return
+        }
         isSyncing = true
         defer { isSyncing = false }
 

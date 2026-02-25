@@ -8,16 +8,26 @@ final class SyncCoordinator {
     private var lifecycleObservers: [Any] = []
 
     init(container: ModelContainer) {
+        let api = Self.buildAPI()
+        self.engine = SyncEngine(container: container, api: api)
+        setupLifecycleObservers()
+    }
+
+    /// Re-reads credentials from Keychain/UserDefaults and updates the engine.
+    func reloadCredentials() {
+        let api = Self.buildAPI()
+        engine.updateAPI(api)
+    }
+
+    private static func buildAPI() -> GitHubAPI? {
         let token = KeychainHelper.load(key: "githubToken")
         let owner = UserDefaults.standard.string(forKey: "githubOwner") ?? ""
         let repo = UserDefaults.standard.string(forKey: "githubRepo") ?? ""
 
-        let api: GitHubAPI? = token.flatMap { t in
+        return token.flatMap { t in
             guard !owner.isEmpty, !repo.isEmpty else { return nil }
             return GitHubAPI(token: t, owner: owner, repo: repo)
         }
-        self.engine = SyncEngine(container: container, api: api)
-        setupLifecycleObservers()
     }
 
     private func setupLifecycleObservers() {

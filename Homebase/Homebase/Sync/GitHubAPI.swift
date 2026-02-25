@@ -1,11 +1,21 @@
 import Foundation
 
-enum GitHubAPIError: Error, Equatable {
+enum GitHubAPIError: Error, Equatable, LocalizedError {
     case rateLimited
     case conflict           // 409 — SHA mismatch
     case unauthorized       // 401
     case networkError(String)
     case decodingError(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .rateLimited: "GitHub rate limited (403)"
+        case .conflict: "SHA conflict (409) — retry"
+        case .unauthorized: "Unauthorized (401) — check token"
+        case .networkError(let msg): "Network: \(msg)"
+        case .decodingError(let msg): "Decode: \(msg)"
+        }
+    }
 }
 
 struct GitHubFile {

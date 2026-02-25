@@ -26,16 +26,17 @@ struct SettingsView: View {
                 TextField("Repository", text: $repo)
                     .autocapitalization(.none)
 
-                Button("Save") {
+                Button("Save & Apply") {
                     KeychainHelper.save(key: "githubToken", value: token)
                     UserDefaults.standard.set(owner, forKey: "githubOwner")
                     UserDefaults.standard.set(repo, forKey: "githubRepo")
+                    sync.reloadCredentials()
                     saveConfirmed = true
                 }
                 .disabled(token.isEmpty || owner.isEmpty || repo.isEmpty)
 
                 if saveConfirmed {
-                    Text("Saved. Restart app to apply.")
+                    Text("Saved and applied.")
                         .font(HBTheme.subtitleFont)
                         .foregroundStyle(HBTheme.logbook)
                 }
@@ -73,6 +74,34 @@ struct SettingsView: View {
 
                 Button("Pull from Cloud") {
                     Task { await sync.engine.pull() }
+                }
+            }
+
+            Section("Diagnostics") {
+                HStack {
+                    Text("API Configured")
+                    Spacer()
+                    Text(sync.engine.isConfigured ? "Yes" : "No")
+                        .foregroundStyle(sync.engine.isConfigured ? HBTheme.logbook : .red)
+                }
+                HStack {
+                    Text("Token in Keychain")
+                    Spacer()
+                    let stored = KeychainHelper.load(key: "githubToken")
+                    Text(stored != nil ? "\(stored!.prefix(4))..." : "None")
+                        .foregroundStyle(stored != nil ? HBTheme.textSecondary : .red)
+                }
+                HStack {
+                    Text("Owner")
+                    Spacer()
+                    Text(UserDefaults.standard.string(forKey: "githubOwner") ?? "—")
+                        .foregroundStyle(HBTheme.textSecondary)
+                }
+                HStack {
+                    Text("Repo")
+                    Spacer()
+                    Text(UserDefaults.standard.string(forKey: "githubRepo") ?? "—")
+                        .foregroundStyle(HBTheme.textSecondary)
                 }
             }
 
