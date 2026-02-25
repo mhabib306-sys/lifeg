@@ -60,10 +60,57 @@ final class GitHubAPI: Sendable {
         default: throw GitHubAPIError.networkError("HTTP \(status)")
         }
 
-        let json = try JSONSerialization.jsonObject(with: data) as! [String: Any]
-        let sha = json["sha"] as! String
-        let base64 = (json["content"] as! String).replacingOccurrences(of: "\n", with: "")
-        let content = Data(base64Encoded: base64)!
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let sha = json["sha"] as? String else {
+            throw GitHubAPIError.decodingError("Missing sha in contents response")
+        }
+
+        let encoding = json["encoding"] as? String ?? ""
+
+        // Files > 1MB: GitHub returns encoding:"none" with no content.
+        // Fall back to the Git Blob API which supports up to 100MB.
+        if encoding == "none" || encoding.isEmpty {
+            return try await fetchBlob(sha: sha)
+        }
+
+        guard let base64Raw = json["content"] as? String else {
+            throw GitHubAPIError.decodingError("Missing content in contents response")
+        }
+        let base64 = base64Raw.replacingOccurrences(of: "\n", with: "")
+                               .replacingOccurrences(of: "\r", with: "")
+        guard let content = Data(base64Encoded: base64) else {
+            throw GitHubAPIError.decodingError("Invalid base64 content")
+        }
+
+        return GitHubFile(sha: sha, content: content)
+    }
+
+    /// Fetch file content via the Git Blob API (supports files up to 100MB).
+    private func fetchBlob(sha: String) async throws -> GitHubFile {
+        var request = URLRequest(url: URL(string: "\(baseURL)/repos/\(owner)/\(repo)/git/blobs/\(sha)")!)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/vnd.github.v3+json", forHTTPHeaderField: "Accept")
+        request.timeoutInterval = 60
+
+        let (data, response) = try await session.data(for: request)
+        let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+
+        switch status {
+        case 200: break
+        case 401: throw GitHubAPIError.unauthorized
+        case 403: throw GitHubAPIError.rateLimited
+        default: throw GitHubAPIError.networkError("Blob HTTP \(status)")
+        }
+
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let base64Raw = json["content"] as? String else {
+            throw GitHubAPIError.decodingError("Missing content in blob response")
+        }
+        let base64 = base64Raw.replacingOccurrences(of: "\n", with: "")
+                               .replacingOccurrences(of: "\r", with: "")
+        guard let content = Data(base64Encoded: base64) else {
+            throw GitHubAPIError.decodingError("Invalid base64 in blob response")
+        }
 
         return GitHubFile(sha: sha, content: content)
     }
@@ -93,8 +140,11 @@ final class GitHubAPI: Sendable {
         default: throw GitHubAPIError.networkError("HTTP \(status)")
         }
 
-        let json = try JSONSerialization.jsonObject(with: data) as! [String: Any]
-        let contentObj = json["content"] as! [String: Any]
-        return contentObj["sha"] as! String
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let contentObj = json["content"] as? [String: Any],
+              let newSha = contentObj["sha"] as? String else {
+            throw GitHubAPIError.decodingError("Missing sha in put response")
+        }
+        return newSha
     }
 }
