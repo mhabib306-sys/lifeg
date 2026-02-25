@@ -37,6 +37,13 @@ struct SidebarView: View {
         }
         .listStyle(.sidebar)
         .navigationTitle("Homebase")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button { router.showSearch = true } label: {
+                    Image(systemName: "magnifyingglass")
+                }
+            }
+        }
     }
 
     private func badgeCount(for perspective: PerspectiveType) -> Int {

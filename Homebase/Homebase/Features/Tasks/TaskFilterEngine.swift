@@ -35,6 +35,8 @@ enum TaskFilterEngine {
                 return task.completed
             case .notes:
                 return false // Notes handled separately
+            case .home:
+                return false // Home handled separately
             }
         }
     }

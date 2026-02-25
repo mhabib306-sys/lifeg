@@ -8,15 +8,21 @@ struct ContentView: View {
             SidebarView(router: router)
         } detail: {
             if let perspective = router.selectedPerspective {
-                if perspective == .notes {
+                switch perspective {
+                case .home:
+                    HomeView()
+                case .notes:
                     OutlinerView()
-                } else {
+                default:
                     TaskListView(perspective: perspective, router: router)
                 }
             } else {
                 Text("Select a perspective")
                     .foregroundStyle(HBTheme.textTertiary)
             }
+        }
+        .sheet(isPresented: $router.showSearch) {
+            GlobalSearchView(isPresented: $router.showSearch)
         }
     }
 }

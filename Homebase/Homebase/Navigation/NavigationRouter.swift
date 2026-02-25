@@ -1,12 +1,13 @@
 import SwiftUI
 
 enum PerspectiveType: String, CaseIterable, Identifiable {
-    case inbox, today, flagged, anytime, someday, upcoming, logbook, notes
+    case home, inbox, today, flagged, anytime, someday, upcoming, logbook, notes
 
     var id: String { rawValue }
 
     var displayName: String {
         switch self {
+        case .home: "Home"
         case .inbox: "Inbox"
         case .today: "Today"
         case .flagged: "Flagged"
@@ -20,6 +21,7 @@ enum PerspectiveType: String, CaseIterable, Identifiable {
 
     var icon: String {
         switch self {
+        case .home: "house.fill"
         case .inbox: "tray"
         case .today: "star.fill"
         case .flagged: "flag.fill"
@@ -33,6 +35,7 @@ enum PerspectiveType: String, CaseIterable, Identifiable {
 
     var color: Color {
         switch self {
+        case .home: HBTheme.accent
         case .inbox: HBTheme.inbox
         case .today: HBTheme.today
         case .flagged: HBTheme.flagged
@@ -47,10 +50,11 @@ enum PerspectiveType: String, CaseIterable, Identifiable {
 
 @Observable
 class NavigationRouter {
-    var selectedPerspective: PerspectiveType? = .inbox
+    var selectedPerspective: PerspectiveType? = .home
     var selectedTaskID: String?
     var presentedSheet: SheetType?
     var noteBreadcrumb: [String] = []
+    var showSearch = false
 
     enum SheetType: Identifiable {
         case taskEditor(String?)  // task ID or nil for new

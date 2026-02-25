@@ -8,10 +8,17 @@ struct AreaListView: View {
     @Environment(\.modelContext) private var context
     @Environment(SyncCoordinator.self) private var sync
     @State private var showEditor = false
+    @State private var searchText = ""
+
+    private var filtered: [HBArea] {
+        guard !searchText.isEmpty else { return areas }
+        let q = searchText.lowercased()
+        return areas.filter { $0.name.lowercased().contains(q) }
+    }
 
     var body: some View {
         List {
-            ForEach(areas, id: \.id) { area in
+            ForEach(filtered, id: \.id) { area in
                 NavigationLink {
                     EntityDetailView(entityType: .area(area.id))
                 } label: {
@@ -26,11 +33,13 @@ struct AreaListView: View {
                 }
             }
             .onDelete { indexSet in
-                for i in indexSet { context.delete(areas[i]) }
+                let items = filtered
+                for i in indexSet { context.delete(items[i]) }
                 sync.engine.markDirty()
             }
         }
         .navigationTitle("Areas")
+        .searchable(text: $searchText, prompt: "Search areas...")
         .toolbar {
             Button { showEditor = true } label: { Image(systemName: "plus") }
         }
@@ -47,10 +56,17 @@ struct LabelListView: View {
     @Environment(\.modelContext) private var context
     @Environment(SyncCoordinator.self) private var sync
     @State private var showEditor = false
+    @State private var searchText = ""
+
+    private var filtered: [HBLabel] {
+        guard !searchText.isEmpty else { return labels }
+        let q = searchText.lowercased()
+        return labels.filter { $0.name.lowercased().contains(q) }
+    }
 
     var body: some View {
         List {
-            ForEach(labels, id: \.id) { label in
+            ForEach(filtered, id: \.id) { label in
                 NavigationLink {
                     EntityDetailView(entityType: .label(label.id))
                 } label: {
@@ -62,11 +78,13 @@ struct LabelListView: View {
                 }
             }
             .onDelete { indexSet in
-                for i in indexSet { context.delete(labels[i]) }
+                let items = filtered
+                for i in indexSet { context.delete(items[i]) }
                 sync.engine.markDirty()
             }
         }
         .navigationTitle("Labels")
+        .searchable(text: $searchText, prompt: "Search labels...")
         .toolbar {
             Button { showEditor = true } label: { Image(systemName: "plus") }
         }
@@ -83,10 +101,19 @@ struct PersonListView: View {
     @Environment(\.modelContext) private var context
     @Environment(SyncCoordinator.self) private var sync
     @State private var showEditor = false
+    @State private var searchText = ""
+
+    private var filtered: [HBPerson] {
+        guard !searchText.isEmpty else { return people }
+        let q = searchText.lowercased()
+        return people.filter {
+            $0.name.lowercased().contains(q) || $0.email.lowercased().contains(q)
+        }
+    }
 
     var body: some View {
         List {
-            ForEach(people, id: \.id) { person in
+            ForEach(filtered, id: \.id) { person in
                 NavigationLink {
                     EntityDetailView(entityType: .person(person.id))
                 } label: {
@@ -106,11 +133,13 @@ struct PersonListView: View {
                 }
             }
             .onDelete { indexSet in
-                for i in indexSet { context.delete(people[i]) }
+                let items = filtered
+                for i in indexSet { context.delete(items[i]) }
                 sync.engine.markDirty()
             }
         }
         .navigationTitle("People")
+        .searchable(text: $searchText, prompt: "Search people...")
         .toolbar {
             Button { showEditor = true } label: { Image(systemName: "plus") }
         }
@@ -127,10 +156,17 @@ struct CategoryListView: View {
     @Environment(\.modelContext) private var context
     @Environment(SyncCoordinator.self) private var sync
     @State private var showEditor = false
+    @State private var searchText = ""
+
+    private var filtered: [HBCategory] {
+        guard !searchText.isEmpty else { return categories }
+        let q = searchText.lowercased()
+        return categories.filter { $0.name.lowercased().contains(q) }
+    }
 
     var body: some View {
         List {
-            ForEach(categories, id: \.id) { category in
+            ForEach(filtered, id: \.id) { category in
                 NavigationLink {
                     EntityDetailView(entityType: .category(category.id))
                 } label: {
@@ -141,11 +177,13 @@ struct CategoryListView: View {
                 }
             }
             .onDelete { indexSet in
-                for i in indexSet { context.delete(categories[i]) }
+                let items = filtered
+                for i in indexSet { context.delete(items[i]) }
                 sync.engine.markDirty()
             }
         }
         .navigationTitle("Categories")
+        .searchable(text: $searchText, prompt: "Search categories...")
         .toolbar {
             Button { showEditor = true } label: { Image(systemName: "plus") }
         }
@@ -172,6 +210,7 @@ struct EntityDetailView: View {
     @Environment(\.modelContext) private var context
     @Environment(SyncCoordinator.self) private var sync
     @State private var editingTaskId: String?
+    @State private var searchText = ""
 
     private var entityName: String {
         switch entityType {
@@ -207,16 +246,22 @@ struct EntityDetailView: View {
         }
     }
 
-    private var incompleteTasks: [HBTask] { relatedTasks.filter { !$0.completed } }
-    private var completedTasks: [HBTask] { relatedTasks.filter { $0.completed } }
+    private func matchesSearch(_ task: HBTask) -> Bool {
+        guard !searchText.isEmpty else { return true }
+        return task.title.lowercased().contains(searchText.lowercased())
+    }
+
+    private var incompleteTasks: [HBTask] { relatedTasks.filter { !$0.completed && matchesSearch($0) } }
+    private var completedTasks: [HBTask] { relatedTasks.filter { $0.completed && matchesSearch($0) } }
+    private var filteredNotes: [HBTask] { relatedNotes.filter { matchesSearch($0) } }
 
     var body: some View {
         List {
             Section {
                 HStack(spacing: 20) {
-                    StatBadge(icon: "checklist", label: "Tasks", count: incompleteTasks.count, color: HBTheme.accent)
+                    StatBadge(icon: "checklist", label: "Tasks", count: relatedTasks.filter { !$0.completed }.count, color: HBTheme.accent)
                     StatBadge(icon: "doc.text", label: "Notes", count: relatedNotes.count, color: HBTheme.anytime)
-                    StatBadge(icon: "checkmark.circle", label: "Done", count: completedTasks.count, color: HBTheme.logbook)
+                    StatBadge(icon: "checkmark.circle", label: "Done", count: relatedTasks.filter { $0.completed }.count, color: HBTheme.logbook)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
@@ -241,9 +286,9 @@ struct EntityDetailView: View {
                 }
             }
 
-            if !relatedNotes.isEmpty {
+            if !filteredNotes.isEmpty {
                 Section("Notes") {
-                    ForEach(relatedNotes.sorted { $0.order < $1.order }, id: \.id) { note in
+                    ForEach(filteredNotes.sorted { $0.order < $1.order }, id: \.id) { note in
                         HStack {
                             Image(systemName: "doc.text")
                                 .font(.system(size: 12))
@@ -267,9 +312,9 @@ struct EntityDetailView: View {
                 }
             }
 
-            if incompleteTasks.isEmpty && relatedNotes.isEmpty && completedTasks.isEmpty {
+            if incompleteTasks.isEmpty && filteredNotes.isEmpty && completedTasks.isEmpty {
                 Section {
-                    Text("No tasks or notes assigned")
+                    Text(searchText.isEmpty ? "No tasks or notes assigned" : "No results")
                         .foregroundStyle(HBTheme.textTertiary)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.vertical, 20)
@@ -278,6 +323,7 @@ struct EntityDetailView: View {
         }
         .listStyle(.insetGrouped)
         .navigationTitle(entityName)
+        .searchable(text: $searchText, prompt: "Search in \(entityName)...")
         .sheet(item: $editingTaskId) { taskId in
             TaskDetailView(taskId: taskId, context: context)
         }
