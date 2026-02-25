@@ -1,7 +1,9 @@
 import SwiftUI
+import SwiftData
 
 struct TaskRowView: View {
     let task: HBTask
+    @Environment(\.modelContext) private var context
 
     var body: some View {
         HStack(spacing: 12) {
@@ -49,6 +51,13 @@ struct TaskRowView: View {
                             .font(HBTheme.subtitleFont)
                             .foregroundStyle(due < Date() ? .red : HBTheme.textSecondary)
                     }
+                }
+
+                if let subtitle = EntityResolver.subtitle(for: task, in: context) {
+                    Text(subtitle)
+                        .font(HBTheme.subtitleFont)
+                        .foregroundStyle(HBTheme.textTertiary)
+                        .lineLimit(1)
                 }
             }
 

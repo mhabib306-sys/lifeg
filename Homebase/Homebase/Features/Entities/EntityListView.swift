@@ -12,13 +12,17 @@ struct AreaListView: View {
     var body: some View {
         List {
             ForEach(areas, id: \.id) { area in
-                HStack {
-                    Circle().fill(Color(hex: area.color)).frame(width: 12, height: 12)
-                    Text(area.name)
-                    if let emoji = area.emoji {
-                        Text(emoji)
+                NavigationLink {
+                    EntityDetailView(entityType: .area(area.id))
+                } label: {
+                    HStack {
+                        Circle().fill(Color(hex: area.color)).frame(width: 12, height: 12)
+                        Text(area.name)
+                        if let emoji = area.emoji {
+                            Text(emoji)
+                        }
+                        Spacer()
                     }
-                    Spacer()
                 }
             }
             .onDelete { indexSet in
@@ -47,10 +51,14 @@ struct LabelListView: View {
     var body: some View {
         List {
             ForEach(labels, id: \.id) { label in
-                HStack {
-                    Circle().fill(Color(hex: label.color)).frame(width: 12, height: 12)
-                    Text(label.name)
-                    Spacer()
+                NavigationLink {
+                    EntityDetailView(entityType: .label(label.id))
+                } label: {
+                    HStack {
+                        Circle().fill(Color(hex: label.color)).frame(width: 12, height: 12)
+                        Text(label.name)
+                        Spacer()
+                    }
                 }
             }
             .onDelete { indexSet in
@@ -79,18 +87,22 @@ struct PersonListView: View {
     var body: some View {
         List {
             ForEach(people, id: \.id) { person in
-                HStack {
-                    Image(systemName: "person.circle.fill")
-                        .foregroundStyle(HBTheme.textTertiary)
-                    VStack(alignment: .leading) {
-                        Text(person.name)
-                        if !person.email.isEmpty {
-                            Text(person.email)
-                                .font(HBTheme.subtitleFont)
-                                .foregroundStyle(HBTheme.textSecondary)
+                NavigationLink {
+                    EntityDetailView(entityType: .person(person.id))
+                } label: {
+                    HStack {
+                        Image(systemName: "person.circle.fill")
+                            .foregroundStyle(HBTheme.textTertiary)
+                        VStack(alignment: .leading) {
+                            Text(person.name)
+                            if !person.email.isEmpty {
+                                Text(person.email)
+                                    .font(HBTheme.subtitleFont)
+                                    .foregroundStyle(HBTheme.textSecondary)
+                            }
                         }
+                        Spacer()
                     }
-                    Spacer()
                 }
             }
             .onDelete { indexSet in
@@ -119,12 +131,13 @@ struct CategoryListView: View {
     var body: some View {
         List {
             ForEach(categories, id: \.id) { category in
-                HStack {
-                    Text(category.name)
-                    Spacer()
-                    Text(category.areaId)
-                        .font(HBTheme.subtitleFont)
-                        .foregroundStyle(HBTheme.textTertiary)
+                NavigationLink {
+                    EntityDetailView(entityType: .category(category.id))
+                } label: {
+                    HStack {
+                        Text(category.name)
+                        Spacer()
+                    }
                 }
             }
             .onDelete { indexSet in

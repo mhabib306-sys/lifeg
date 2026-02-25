@@ -7,6 +7,7 @@ struct OutlinerView: View {
 
     @State private var breadcrumb: [String] = [] // Stack of parent IDs
     @State private var editMode: EditMode = .inactive
+    @State private var editingNoteId: String?
     @Environment(\.modelContext) private var context
     @Environment(SyncCoordinator.self) private var sync
 
@@ -32,6 +33,8 @@ struct OutlinerView: View {
                         .tint(.blue)
                 }
                 .swipeActions(edge: .trailing) {
+                    Button { editingNoteId = note.id } label: { Label("Edit", systemImage: "pencil") }
+                        .tint(HBTheme.accent)
                     Button { outdentNote(note) } label: { Label("Outdent", systemImage: "arrow.left") }
                         .tint(.orange)
                     Button(role: .destructive) { deleteNote(note) } label: { Label("Delete", systemImage: "trash") }
@@ -44,6 +47,9 @@ struct OutlinerView: View {
         .listStyle(.plain)
         .navigationTitle(currentTitle)
         .environment(\.editMode, $editMode)
+        .sheet(item: $editingNoteId) { noteId in
+            TaskDetailView(taskId: noteId, context: context)
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { addNote() } label: { Image(systemName: "plus") }

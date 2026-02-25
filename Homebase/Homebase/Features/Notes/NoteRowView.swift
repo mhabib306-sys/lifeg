@@ -1,9 +1,11 @@
 import SwiftUI
+import SwiftData
 
 struct NoteRowView: View {
     let note: HBTask
     let childCount: Int
     let onZoomIn: () -> Void
+    @Environment(\.modelContext) private var context
     @State private var isEditing = false
     @State private var editText = ""
 
@@ -23,18 +25,27 @@ struct NoteRowView: View {
                     .padding(.horizontal, 4)
             }
 
-            if isEditing {
-                TextField("Note", text: $editText, onCommit: {
-                    note.title = editText
-                    note.touch()
-                    isEditing = false
-                })
-                .font(HBTheme.titleFont)
-            } else {
-                Text(note.title.isEmpty ? "Untitled" : note.title)
+            VStack(alignment: .leading, spacing: 2) {
+                if isEditing {
+                    TextField("Note", text: $editText, onCommit: {
+                        note.title = editText
+                        note.touch()
+                        isEditing = false
+                    })
                     .font(HBTheme.titleFont)
-                    .foregroundStyle(note.title.isEmpty ? HBTheme.textTertiary : HBTheme.textPrimary)
-                    .onTapGesture { editText = note.title; isEditing = true }
+                } else {
+                    Text(note.title.isEmpty ? "Untitled" : note.title)
+                        .font(HBTheme.titleFont)
+                        .foregroundStyle(note.title.isEmpty ? HBTheme.textTertiary : HBTheme.textPrimary)
+                        .onTapGesture { editText = note.title; isEditing = true }
+                }
+
+                if let subtitle = EntityResolver.subtitle(for: note, in: context) {
+                    Text(subtitle)
+                        .font(HBTheme.subtitleFont)
+                        .foregroundStyle(HBTheme.textTertiary)
+                        .lineLimit(1)
+                }
             }
 
             Spacer()

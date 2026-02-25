@@ -15,6 +15,15 @@ struct TaskDetailView: View {
     @State private var deferDate: Date?
     @State private var showDuePicker = false
     @State private var showDeferPicker = false
+    @State private var selectedAreaId: String?
+    @State private var selectedCategoryId: String?
+    @State private var selectedLabels: Set<String> = []
+    @State private var selectedPeople: Set<String> = []
+
+    @Query(sort: \HBArea.order) private var allAreas: [HBArea]
+    @Query(sort: \HBCategory.order) private var allCategories: [HBCategory]
+    @Query(sort: \HBLabel.order) private var allLabels: [HBLabel]
+    @Query(sort: \HBPerson.order) private var allPeople: [HBPerson]
 
     private var existingTask: HBTask? {
         guard let taskId else { return nil }
@@ -40,6 +49,81 @@ struct TaskDetailView: View {
                     }
                     Toggle("Today", isOn: $today)
                     Toggle("Flagged", isOn: $flagged)
+                }
+
+                Section("Organization") {
+                    Picker("Area", selection: $selectedAreaId) {
+                        Text("None").tag(String?.none)
+                        ForEach(allAreas, id: \.id) { area in
+                            HStack {
+                                Circle().fill(Color(hex: area.color)).frame(width: 8, height: 8)
+                                Text(area.name)
+                            }
+                            .tag(Optional(area.id))
+                        }
+                    }
+                    .onChange(of: selectedAreaId) { _, newValue in
+                        if let catId = selectedCategoryId {
+                            let catBelongs = allCategories.contains { $0.id == catId && $0.areaId == (newValue ?? "") }
+                            if !catBelongs { selectedCategoryId = nil }
+                        }
+                    }
+
+                    let filteredCategories = allCategories.filter { $0.areaId == (selectedAreaId ?? "") }
+                    Picker("Category", selection: $selectedCategoryId) {
+                        Text("None").tag(String?.none)
+                        ForEach(filteredCategories, id: \.id) { cat in
+                            Text(cat.name).tag(Optional(cat.id))
+                        }
+                    }
+                    .disabled(selectedAreaId == nil)
+
+                    DisclosureGroup("Labels (\(selectedLabels.count))") {
+                        ForEach(allLabels, id: \.id) { label in
+                            Button {
+                                if selectedLabels.contains(label.id) {
+                                    selectedLabels.remove(label.id)
+                                } else {
+                                    selectedLabels.insert(label.id)
+                                }
+                            } label: {
+                                HStack {
+                                    Circle().fill(Color(hex: label.color)).frame(width: 8, height: 8)
+                                    Text(label.name)
+                                        .foregroundStyle(HBTheme.textPrimary)
+                                    Spacer()
+                                    if selectedLabels.contains(label.id) {
+                                        Image(systemName: "checkmark")
+                                            .foregroundStyle(HBTheme.accent)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    DisclosureGroup("People (\(selectedPeople.count))") {
+                        ForEach(allPeople, id: \.id) { person in
+                            Button {
+                                if selectedPeople.contains(person.id) {
+                                    selectedPeople.remove(person.id)
+                                } else {
+                                    selectedPeople.insert(person.id)
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "person.circle.fill")
+                                        .foregroundStyle(HBTheme.textTertiary)
+                                    Text(person.name)
+                                        .foregroundStyle(HBTheme.textPrimary)
+                                    Spacer()
+                                    if selectedPeople.contains(person.id) {
+                                        Image(systemName: "checkmark")
+                                            .foregroundStyle(HBTheme.accent)
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Section("Dates") {
@@ -71,6 +155,10 @@ struct TaskDetailView: View {
         flagged = task.flagged
         dueDate = task.dueDate
         deferDate = task.deferDate
+        selectedAreaId = task.areaId
+        selectedCategoryId = task.categoryId
+        selectedLabels = Set(task.labels)
+        selectedPeople = Set(task.people)
     }
 
     private func save() {
@@ -82,6 +170,10 @@ struct TaskDetailView: View {
             task.flagged = flagged
             task.dueDate = dueDate
             task.deferDate = deferDate
+            task.areaId = selectedAreaId
+            task.categoryId = selectedCategoryId
+            task.labels = Array(selectedLabels)
+            task.people = Array(selectedPeople)
             task.touch()
         } else {
             let task = HBTask(title: title, status: status)
@@ -90,6 +182,10 @@ struct TaskDetailView: View {
             task.flagged = flagged
             task.dueDate = dueDate
             task.deferDate = deferDate
+            task.areaId = selectedAreaId
+            task.categoryId = selectedCategoryId
+            task.labels = Array(selectedLabels)
+            task.people = Array(selectedPeople)
             context.insert(task)
         }
         sync.engine.markDirty()
