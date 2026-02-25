@@ -6,6 +6,7 @@ struct OutlinerView: View {
     private var allNotes: [HBTask]
 
     @State private var breadcrumb: [String] = [] // Stack of parent IDs
+    @State private var editMode: EditMode = .inactive
     @Environment(\.modelContext) private var context
     @Environment(SyncCoordinator.self) private var sync
 
@@ -36,12 +37,19 @@ struct OutlinerView: View {
                     Button(role: .destructive) { deleteNote(note) } label: { Label("Delete", systemImage: "trash") }
                 }
             }
+            .onMove { source, destination in
+                moveNote(from: source, to: destination)
+            }
         }
         .listStyle(.plain)
         .navigationTitle(currentTitle)
+        .environment(\.editMode, $editMode)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { addNote() } label: { Image(systemName: "plus") }
+            }
+            ToolbarItem(placement: .topBarLeading) {
+                EditButton()
             }
             if !breadcrumb.isEmpty {
                 ToolbarItem(placement: .navigation) {
@@ -67,6 +75,16 @@ struct OutlinerView: View {
         note.indent = breadcrumb.count
         note.order = visibleNotes.count
         context.insert(note)
+        sync.engine.markDirty()
+    }
+
+    private func moveNote(from source: IndexSet, to destination: Int) {
+        var notes = visibleNotes
+        notes.move(fromOffsets: source, toOffset: destination)
+        for (index, note) in notes.enumerated() {
+            note.order = index
+            note.touch()
+        }
         sync.engine.markDirty()
     }
 
