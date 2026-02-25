@@ -9,6 +9,29 @@ struct NoteRowView: View {
     @State private var isEditing = false
     @State private var editText = ""
 
+    private var entitySubtitle: String? {
+        var parts: [String] = []
+        if let areaId = note.areaId {
+            let d = FetchDescriptor<HBArea>(predicate: #Predicate { $0.id == areaId })
+            if let name = (try? context.fetch(d))?.first?.name { parts.append(name) }
+        }
+        if let catId = note.categoryId {
+            let d = FetchDescriptor<HBCategory>(predicate: #Predicate { $0.id == catId })
+            if let name = (try? context.fetch(d))?.first?.name { parts.append(name) }
+        }
+        if !note.labels.isEmpty {
+            let d = FetchDescriptor<HBLabel>()
+            let all = (try? context.fetch(d)) ?? []
+            parts.append(contentsOf: all.filter { note.labels.contains($0.id) }.map(\.name))
+        }
+        if !note.people.isEmpty {
+            let d = FetchDescriptor<HBPerson>()
+            let all = (try? context.fetch(d)) ?? []
+            parts.append(contentsOf: all.filter { note.people.contains($0.id) }.map { "@\($0.name)" })
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
+    }
+
     var body: some View {
         HStack(spacing: 8) {
             if childCount > 0 {
@@ -40,7 +63,7 @@ struct NoteRowView: View {
                         .onTapGesture { editText = note.title; isEditing = true }
                 }
 
-                if let subtitle = EntityResolver.subtitle(for: note, in: context) {
+                if let subtitle = entitySubtitle {
                     Text(subtitle)
                         .font(HBTheme.subtitleFont)
                         .foregroundStyle(HBTheme.textTertiary)

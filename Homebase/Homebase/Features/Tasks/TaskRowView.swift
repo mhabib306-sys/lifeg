@@ -5,6 +5,29 @@ struct TaskRowView: View {
     let task: HBTask
     @Environment(\.modelContext) private var context
 
+    private var entitySubtitle: String? {
+        var parts: [String] = []
+        if let areaId = task.areaId {
+            let d = FetchDescriptor<HBArea>(predicate: #Predicate { $0.id == areaId })
+            if let name = (try? context.fetch(d))?.first?.name { parts.append(name) }
+        }
+        if let catId = task.categoryId {
+            let d = FetchDescriptor<HBCategory>(predicate: #Predicate { $0.id == catId })
+            if let name = (try? context.fetch(d))?.first?.name { parts.append(name) }
+        }
+        if !task.labels.isEmpty {
+            let d = FetchDescriptor<HBLabel>()
+            let all = (try? context.fetch(d)) ?? []
+            parts.append(contentsOf: all.filter { task.labels.contains($0.id) }.map(\.name))
+        }
+        if !task.people.isEmpty {
+            let d = FetchDescriptor<HBPerson>()
+            let all = (try? context.fetch(d)) ?? []
+            parts.append(contentsOf: all.filter { task.people.contains($0.id) }.map { "@\($0.name)" })
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             // Circular checkbox
@@ -53,7 +76,7 @@ struct TaskRowView: View {
                     }
                 }
 
-                if let subtitle = EntityResolver.subtitle(for: task, in: context) {
+                if let subtitle = entitySubtitle {
                     Text(subtitle)
                         .font(HBTheme.subtitleFont)
                         .foregroundStyle(HBTheme.textTertiary)

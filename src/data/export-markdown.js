@@ -15,6 +15,7 @@ import { getAreaById, getCategoryById, getLabelById, getPersonById } from '../fe
 function sanitizeFilename(name) {
   if (!name) return 'Untitled';
   return name
+    // eslint-disable-next-line no-control-regex
     .replace(/[<>:"/\\|?*\x00-\x1F]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
