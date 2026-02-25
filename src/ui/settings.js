@@ -369,6 +369,7 @@ function renderDataManagementSection() {
       <h4 class="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-2.5">Data Management</h4>
       <div class="flex flex-col sm:flex-row flex-wrap gap-2">
         <button onclick="window.exportData()" class="sb-btn px-3 py-2 sm:py-1.5 rounded-md text-xs font-medium">Export Data</button>
+        <button onclick="window.exportMarkdown()" class="sb-btn px-3 py-2 sm:py-1.5 rounded-md text-xs font-medium">Export Markdown</button>
         <label class="sb-btn px-3 py-2 sm:py-1.5 rounded-md text-xs font-medium cursor-pointer text-center">
           Import Data
           <input type="file" accept=".json" class="hidden" onchange="window.importData(event)">

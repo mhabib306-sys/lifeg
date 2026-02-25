@@ -33,6 +33,7 @@ import {
 } from './data/github-sync.js';
 
 import { exportData, importData } from './data/export-import.js';
+import { exportMarkdown } from './data/export-markdown.js';
 
 import { getCredentialSyncStatus } from './data/credential-sync.js';
 
@@ -333,7 +334,7 @@ Object.assign(window, {
   getSyncHealth, loadCloudDataWithRetry,
 
   // Export/Import
-  exportData, importData,
+  exportData, importData, exportMarkdown,
 
   // Credential Sync
   getCredentialSyncStatus,
