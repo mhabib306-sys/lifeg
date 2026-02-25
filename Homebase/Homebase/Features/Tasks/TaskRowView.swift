@@ -4,6 +4,10 @@ import SwiftData
 struct TaskRowView: View {
     let task: HBTask
     @Environment(\.modelContext) private var context
+    @Environment(SyncCoordinator.self) private var sync
+    @State private var isEditing = false
+    @State private var editText = ""
+    @FocusState private var isFocused: Bool
 
     private var entitySubtitle: String? {
         var parts: [String] = []
@@ -37,6 +41,7 @@ struct TaskRowView: View {
                 } else {
                     task.markCompleted()
                 }
+                sync.engine.markDirty()
             } label: {
                 Circle()
                     .strokeBorder(task.completed ? HBTheme.checkboxFill : HBTheme.checkboxBorder, lineWidth: 1.5)
@@ -53,10 +58,30 @@ struct TaskRowView: View {
             .buttonStyle(.plain)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(task.title)
-                    .font(HBTheme.titleFont)
-                    .foregroundStyle(task.completed ? HBTheme.textTertiary : HBTheme.textPrimary)
-                    .strikethrough(task.completed)
+                if isEditing {
+                    TextField("Task title", text: $editText)
+                        .font(HBTheme.titleFont)
+                        .focused($isFocused)
+                        .onSubmit {
+                            task.title = editText
+                            task.touch()
+                            sync.engine.markDirty()
+                            isEditing = false
+                        }
+                        .onChange(of: isFocused) { _, focused in
+                            if !focused {
+                                task.title = editText
+                                task.touch()
+                                sync.engine.markDirty()
+                                isEditing = false
+                            }
+                        }
+                } else {
+                    Text(task.title)
+                        .font(HBTheme.titleFont)
+                        .foregroundStyle(task.completed ? HBTheme.textTertiary : HBTheme.textPrimary)
+                        .strikethrough(task.completed)
+                }
 
                 HStack(spacing: 6) {
                     if task.today {
@@ -87,5 +112,11 @@ struct TaskRowView: View {
             Spacer()
         }
         .padding(.vertical, 4)
+    }
+
+    func beginEditing() {
+        editText = task.title
+        isEditing = true
+        isFocused = true
     }
 }

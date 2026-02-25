@@ -19,16 +19,28 @@ struct TaskDetailView: View {
     @State private var selectedCategoryId: String?
     @State private var selectedLabels: Set<String> = []
     @State private var selectedPeople: Set<String> = []
+    @State private var editingChildId: String?
 
     @Query(sort: \HBArea.order) private var allAreas: [HBArea]
     @Query(sort: \HBCategory.order) private var allCategories: [HBCategory]
     @Query(sort: \HBLabel.order) private var allLabels: [HBLabel]
     @Query(sort: \HBPerson.order) private var allPeople: [HBPerson]
+    @Query(filter: #Predicate<HBTask> { $0.isNote && $0.noteLifecycleState == "active" })
+    private var allNotes: [HBTask]
 
     private var existingTask: HBTask? {
         guard let taskId else { return nil }
         let descriptor = FetchDescriptor<HBTask>(predicate: #Predicate { $0.id == taskId })
         return try? context.fetch(descriptor).first
+    }
+
+    private var childNotes: [HBTask] {
+        guard let taskId else { return [] }
+        return allNotes.filter { $0.parentId == taskId }.sorted { $0.order < $1.order }
+    }
+
+    private var isNote: Bool {
+        existingTask?.isNote ?? false
     }
 
     var body: some View {
@@ -41,14 +53,16 @@ struct TaskDetailView: View {
                         .lineLimit(3...10)
                 }
 
-                Section("Status") {
-                    Picker("Status", selection: $status) {
-                        Text("Inbox").tag("inbox")
-                        Text("Anytime").tag("anytime")
-                        Text("Someday").tag("someday")
+                if !isNote {
+                    Section("Status") {
+                        Picker("Status", selection: $status) {
+                            Text("Inbox").tag("inbox")
+                            Text("Anytime").tag("anytime")
+                            Text("Someday").tag("someday")
+                        }
+                        Toggle("Today", isOn: $today)
+                        Toggle("Flagged", isOn: $flagged)
                     }
-                    Toggle("Today", isOn: $today)
-                    Toggle("Flagged", isOn: $flagged)
                 }
 
                 Section("Organization") {
@@ -126,12 +140,38 @@ struct TaskDetailView: View {
                     }
                 }
 
-                Section("Dates") {
-                    DatePickerRow(label: "Due", date: $dueDate, isExpanded: $showDuePicker)
-                    DatePickerRow(label: "Defer", date: $deferDate, isExpanded: $showDeferPicker)
+                if !isNote {
+                    Section("Dates") {
+                        DatePickerRow(label: "Due", date: $dueDate, isExpanded: $showDuePicker)
+                        DatePickerRow(label: "Defer", date: $deferDate, isExpanded: $showDeferPicker)
+                    }
+                }
+
+                // Child notes section — shown when editing an existing note
+                if isNote && taskId != nil {
+                    Section {
+                        ForEach(childNotes, id: \.id) { child in
+                            ChildNoteRow(note: child, onEdit: { editingChildId = child.id })
+                        }
+
+                        Button {
+                            addChildNote()
+                        } label: {
+                            Label("Add Sub-note", systemImage: "plus")
+                                .foregroundStyle(HBTheme.accent)
+                        }
+                    } header: {
+                        HStack {
+                            Text("Sub-notes")
+                            Spacer()
+                            Text("\(childNotes.count)")
+                                .font(HBTheme.badgeFont)
+                                .foregroundStyle(HBTheme.textTertiary)
+                        }
+                    }
                 }
             }
-            .navigationTitle(taskId == nil ? "New Task" : "Edit Task")
+            .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -143,7 +183,15 @@ struct TaskDetailView: View {
                 }
             }
             .onAppear { loadExisting() }
+            .sheet(item: $editingChildId) { childId in
+                TaskDetailView(taskId: childId, context: context)
+            }
         }
+    }
+
+    private var navigationTitle: String {
+        if taskId == nil { return "New Task" }
+        return isNote ? "Edit Note" : "Edit Task"
     }
 
     private func loadExisting() {
@@ -190,7 +238,74 @@ struct TaskDetailView: View {
         }
         sync.engine.markDirty()
     }
+
+    private func addChildNote() {
+        guard let taskId else { return }
+        let child = HBTask.createNote(title: "")
+        child.parentId = taskId
+        child.indent = (existingTask?.indent ?? 0) + 1
+        child.order = childNotes.count
+        context.insert(child)
+        sync.engine.markDirty()
+        editingChildId = child.id
+    }
 }
+
+// MARK: - Child Note Row (inline editable)
+
+private struct ChildNoteRow: View {
+    let note: HBTask
+    let onEdit: () -> Void
+    @Environment(SyncCoordinator.self) private var sync
+    @State private var isEditing = false
+    @State private var editText = ""
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "doc.text")
+                .font(.system(size: 12))
+                .foregroundStyle(HBTheme.textTertiary)
+
+            if isEditing {
+                TextField("Note title", text: $editText)
+                    .font(HBTheme.titleFont)
+                    .focused($isFocused)
+                    .onSubmit { commitEdit() }
+                    .onChange(of: isFocused) { _, focused in
+                        if !focused { commitEdit() }
+                    }
+            } else {
+                Text(note.title.isEmpty ? "Untitled" : note.title)
+                    .font(HBTheme.titleFont)
+                    .foregroundStyle(note.title.isEmpty ? HBTheme.textTertiary : HBTheme.textPrimary)
+                    .onTapGesture {
+                        editText = note.title
+                        isEditing = true
+                        isFocused = true
+                    }
+            }
+
+            Spacer()
+
+            Button { onEdit() } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12))
+                    .foregroundStyle(HBTheme.textTertiary)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private func commitEdit() {
+        note.title = editText
+        note.touch()
+        sync.engine.markDirty()
+        isEditing = false
+    }
+}
+
+// MARK: - Date Picker Row
 
 struct DatePickerRow: View {
     let label: String

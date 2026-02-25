@@ -20,6 +20,8 @@ struct TaskListView: View {
                 TaskRowView(task: task)
                     .contentShape(Rectangle())
                     .onTapGesture {
+                        // Inline editing — find the row view and trigger edit
+                        // Use the full editor via sheet instead for tap
                         router.presentedSheet = .taskEditor(task.id)
                     }
                     .swipeActions(edge: .leading) {
@@ -32,6 +34,13 @@ struct TaskListView: View {
                         .tint(HBTheme.logbook)
                     }
                     .swipeActions(edge: .trailing) {
+                        Button {
+                            router.presentedSheet = .taskEditor(task.id)
+                        } label: {
+                            Label("Edit", systemImage: "pencil")
+                        }
+                        .tint(HBTheme.accent)
+
                         Button {
                             task.flagged.toggle()
                             task.touch()
