@@ -25,6 +25,7 @@ targets:
       path: Homebase/Info.plist
       properties:
         UILaunchScreen: {}
+        UIRequiresFullScreen: true
 
   HomebaseTests:
     type: bundle.unit-test
