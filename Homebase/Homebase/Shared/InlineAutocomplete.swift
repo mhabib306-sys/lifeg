@@ -435,17 +435,17 @@ struct InlineAutocompleteField: View {
     }
 }
 
-// MARK: - Keyboard Shortcut Bar
+// MARK: - Keyboard Accessory Bar (Todoist-style)
 
 struct ShortcutKeyboardBar: View {
     var onInsert: (String) -> Void
 
-    private let shortcuts: [(label: String, icon: String, trigger: String)] = [
-        ("#", "folder", "#"),
-        ("@", "tag", "@"),
-        ("&", "person", "&"),
-        ("!", "clock", "!"),
-        ("!!", "calendar", "!!"),
+    private let shortcuts: [(icon: String, trigger: String, color: Color)] = [
+        ("folder",  "#",  HBTheme.accent),
+        ("tag",     "@",  .purple),
+        ("person",  "&",  .cyan),
+        ("clock",   "!",  .orange),
+        ("calendar","!!", .red),
     ]
 
     var body: some View {
@@ -455,22 +455,13 @@ struct ShortcutKeyboardBar: View {
                     onInsert(shortcut.trigger)
                     Haptic.selection()
                 } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: shortcut.icon)
-                            .font(.system(size: 12))
-                        Text(shortcut.label)
-                            .font(.system(size: 15, weight: .semibold, design: .monospaced))
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(Color(.systemGray5))
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    Image(systemName: shortcut.icon)
+                        .font(.system(size: 18))
+                        .foregroundStyle(shortcut.color.opacity(0.85))
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-
-                if shortcut.trigger != shortcuts.last?.trigger {
-                    Spacer()
-                }
             }
         }
     }
