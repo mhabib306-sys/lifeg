@@ -5,7 +5,7 @@ struct OutlinerView: View {
     @Query(filter: #Predicate<HBTask> { $0.isNote && $0.noteLifecycleState == "active" })
     private var allNotes: [HBTask]
 
-    @State private var breadcrumb: [String] = [] // Stack of parent IDs
+    @State private var breadcrumb: [String] = []
     @State private var editMode: EditMode = .inactive
     @State private var editingNoteId: String?
     @Environment(\.modelContext) private var context
@@ -26,15 +26,21 @@ struct OutlinerView: View {
                 NoteRowView(
                     note: note,
                     childCount: OutlinerEngine.children(of: note.id, in: allNotes).count,
-                    onZoomIn: { breadcrumb.append(note.id) }
+                    onZoomIn: { breadcrumb.append(note.id) },
+                    isEditing: editingNoteId == note.id,
+                    onEditDone: { editingNoteId = nil }
                 )
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if editingNoteId != note.id {
+                        editingNoteId = note.id
+                    }
+                }
                 .swipeActions(edge: .leading) {
                     Button { indentNote(note) } label: { Label("Indent", systemImage: "arrow.right") }
                         .tint(.blue)
                 }
                 .swipeActions(edge: .trailing) {
-                    Button { editingNoteId = note.id } label: { Label("Edit", systemImage: "pencil") }
-                        .tint(HBTheme.accent)
                     Button { outdentNote(note) } label: { Label("Outdent", systemImage: "arrow.left") }
                         .tint(.orange)
                     Button(role: .destructive) { deleteNote(note) } label: { Label("Delete", systemImage: "trash") }
@@ -47,9 +53,6 @@ struct OutlinerView: View {
         .listStyle(.plain)
         .navigationTitle(currentTitle)
         .environment(\.editMode, $editMode)
-        .sheet(item: $editingNoteId) { noteId in
-            TaskDetailView(taskId: noteId, context: context)
-        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { addNote() } label: { Image(systemName: "plus") }
@@ -82,6 +85,8 @@ struct OutlinerView: View {
         note.order = visibleNotes.count
         context.insert(note)
         sync.engine.markDirty()
+        // Start editing the new note
+        editingNoteId = note.id
     }
 
     private func moveNote(from source: IndexSet, to destination: Int) {

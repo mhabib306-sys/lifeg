@@ -1,6 +1,40 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - Widget Type
+
+enum WidgetType: String, Codable, CaseIterable, Identifiable {
+    case weather, stats, today, next
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .weather: "Weather"
+        case .stats: "Stats"
+        case .today: "Today"
+        case .next: "Next"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .weather: "cloud.sun.fill"
+        case .stats: "chart.bar.fill"
+        case .today: "star.fill"
+        case .next: "square.stack"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .weather: HBTheme.today
+        case .stats: HBTheme.accent
+        case .today: HBTheme.today
+        case .next: HBTheme.anytime
+        }
+    }
+}
+
 // MARK: - Home View
 
 struct HomeView: View {
@@ -9,6 +43,8 @@ struct HomeView: View {
     @Environment(SyncCoordinator.self) private var sync
     @State private var weather: WeatherData?
     @State private var editingTaskId: String?
+    @State private var widgetOrder: [WidgetType] = HomeView.loadWidgetOrder()
+    @State private var editMode: EditMode = .inactive
 
     private var greeting: String {
         let hour = Calendar.current.component(.hour, from: Date())
@@ -52,9 +88,9 @@ struct HomeView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                // Header
+        List {
+            // Header (not draggable)
+            Section {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(greeting)
                         .font(.system(.largeTitle, weight: .bold))
@@ -63,53 +99,103 @@ struct HomeView: View {
                         .font(HBTheme.subtitleFont)
                         .foregroundStyle(HBTheme.textSecondary)
                 }
-                .padding(.horizontal)
-
-                // Widget Grid
-                LazyVGrid(columns: [
-                    GridItem(.flexible(), spacing: 12),
-                    GridItem(.flexible(), spacing: 12)
-                ], spacing: 12) {
-                    // Weather Widget (half)
-                    WeatherWidget(weather: weather)
-
-                    // Quick Stats Widget (half)
-                    QuickStatsWidget(
-                        inboxCount: inboxCount,
-                        todayCount: todayTasks.count,
-                        completedCount: completedTodayCount
-                    )
-
-                    // Today Widget (full)
-                    TodayWidget(
-                        tasks: todayTasks,
-                        onComplete: { task in
-                            task.markCompleted()
-                            sync.engine.markDirty()
-                        },
-                        onTap: { task in editingTaskId = task.id }
-                    )
-
-                    // Next Widget (full)
-                    NextWidget(
-                        tasks: Array(nextTasks.prefix(5)),
-                        onTap: { task in editingTaskId = task.id }
-                    )
-                }
-                .padding(.horizontal)
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 4, trailing: 16))
             }
-            .padding(.vertical)
+
+            // Widgets (draggable)
+            Section {
+                ForEach(widgetOrder) { type in
+                    widgetView(for: type)
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                }
+                .onMove { source, destination in
+                    widgetOrder.move(fromOffsets: source, toOffset: destination)
+                    saveWidgetOrder()
+                }
+            }
         }
+        .listStyle(.plain)
+        .environment(\.editMode, $editMode)
         .background(HBTheme.secondaryBackground)
+        .scrollContentBackground(.hidden)
         .navigationTitle("Home")
         .task { await loadWeather() }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    withAnimation {
+                        editMode = editMode == .active ? .inactive : .active
+                    }
+                } label: {
+                    Image(systemName: editMode == .active ? "checkmark" : "arrow.up.arrow.down")
+                }
+            }
+        }
         .sheet(item: $editingTaskId) { taskId in
             TaskDetailView(taskId: taskId, context: context)
         }
     }
 
+    @ViewBuilder
+    private func widgetView(for type: WidgetType) -> some View {
+        switch type {
+        case .weather:
+            WidgetCard(title: type.title, icon: type.icon, color: type.color) {
+                WeatherContent(weather: weather)
+            }
+        case .stats:
+            WidgetCard(title: type.title, icon: type.icon, color: type.color) {
+                QuickStatsContent(
+                    inboxCount: inboxCount,
+                    todayCount: todayTasks.count,
+                    completedCount: completedTodayCount
+                )
+            }
+        case .today:
+            WidgetCard(title: type.title, icon: type.icon, color: type.color) {
+                TodayContent(
+                    tasks: todayTasks,
+                    onComplete: { task in
+                        task.markCompleted()
+                        sync.engine.markDirty()
+                    },
+                    onTap: { task in editingTaskId = task.id }
+                )
+            }
+        case .next:
+            WidgetCard(title: type.title, icon: type.icon, color: type.color) {
+                NextContent(
+                    tasks: Array(nextTasks.prefix(5)),
+                    onTap: { task in editingTaskId = task.id }
+                )
+            }
+        }
+    }
+
+    // MARK: - Widget Order Persistence
+
+    private static func loadWidgetOrder() -> [WidgetType] {
+        guard let data = UserDefaults.standard.data(forKey: "hb_widget_order"),
+              let order = try? JSONDecoder().decode([WidgetType].self, from: data),
+              Set(order) == Set(WidgetType.allCases) else {
+            return WidgetType.allCases
+        }
+        return order
+    }
+
+    private func saveWidgetOrder() {
+        if let data = try? JSONEncoder().encode(widgetOrder) {
+            UserDefaults.standard.set(data, forKey: "hb_widget_order")
+        }
+    }
+
+    // MARK: - Weather
+
     private func loadWeather() async {
-        // Check cache
         if let cached = UserDefaults.standard.data(forKey: "hb_weather_cache"),
            let entry = try? JSONDecoder().decode(WeatherCache.self, from: cached),
            Date().timeIntervalSince(entry.timestamp) < 1800 {
@@ -117,7 +203,6 @@ struct HomeView: View {
             return
         }
 
-        // Fetch from Open-Meteo (default: New Cairo)
         let lat = UserDefaults.standard.double(forKey: "hb_weather_lat").nonZero ?? 30.03
         let lon = UserDefaults.standard.double(forKey: "hb_weather_lon").nonZero ?? 31.47
 
@@ -138,7 +223,6 @@ struct HomeView: View {
             let wind = current["wind_speed_10m"] as? Double ?? 0
             let humidity = current["relative_humidity_2m"] as? Int ?? 0
 
-            // Find max/min hours from hourly data
             var maxHour = ""
             var minHour = ""
             if let hourlyTemps = (json?["hourly"] as? [String: Any])?["temperature_2m"] as? [Double],
@@ -167,18 +251,14 @@ struct HomeView: View {
             )
             weather = w
 
-            // Cache
             let cache = WeatherCache(data: w, timestamp: Date())
             if let encoded = try? JSONEncoder().encode(cache) {
                 UserDefaults.standard.set(encoded, forKey: "hb_weather_cache")
             }
-        } catch {
-            // Silently fail — widget shows placeholder
-        }
+        } catch {}
     }
 
     private func formatHour(_ iso: String) -> String {
-        // "2026-02-25T14:00" → "2pm"
         guard iso.count >= 13 else { return "" }
         let hourStr = String(iso.suffix(from: iso.index(iso.startIndex, offsetBy: 11)).prefix(2))
         guard let hour = Int(hourStr) else { return "" }
@@ -250,173 +330,12 @@ private extension Double {
     var nonZero: Double? { self == 0 ? nil : self }
 }
 
-// MARK: - Weather Widget
-
-private struct WeatherWidget: View {
-    let weather: WeatherData?
-
-    var body: some View {
-        WidgetCard(title: "Weather", icon: "cloud.sun.fill", color: HBTheme.today, span: 1) {
-            if let w = weather {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 8) {
-                        Image(systemName: w.icon)
-                            .font(.system(size: 28))
-                            .foregroundStyle(HBTheme.today)
-                        Text("\(Int(w.temp))°")
-                            .font(.system(size: 32, weight: .semibold))
-                            .foregroundStyle(HBTheme.textPrimary)
-                    }
-
-                    Text(w.description)
-                        .font(HBTheme.subtitleFont)
-                        .foregroundStyle(HBTheme.textSecondary)
-
-                    HStack(spacing: 12) {
-                        Label("\(Int(w.tempMax))°", systemImage: "arrow.up")
-                            .font(HBTheme.badgeFont)
-                            .foregroundStyle(.red)
-                        Label("\(Int(w.tempMin))°", systemImage: "arrow.down")
-                            .font(HBTheme.badgeFont)
-                            .foregroundStyle(HBTheme.accent)
-                    }
-
-                    if let tmMax = w.tomorrowMax, let tmMin = w.tomorrowMin {
-                        let delta = Int(((tmMax + tmMin) / 2) - ((w.tempMax + w.tempMin) / 2))
-                        let sign = delta > 0 ? "+" : ""
-                        Text("Tomorrow \(sign)\(delta)°")
-                            .font(HBTheme.badgeFont)
-                            .foregroundStyle(HBTheme.textTertiary)
-                    }
-                }
-            } else {
-                VStack(spacing: 8) {
-                    ProgressView()
-                    Text("Loading...")
-                        .font(HBTheme.badgeFont)
-                        .foregroundStyle(HBTheme.textTertiary)
-                }
-                .frame(maxWidth: .infinity)
-            }
-        }
-    }
-}
-
-// MARK: - Quick Stats Widget
-
-private struct QuickStatsWidget: View {
-    let inboxCount: Int
-    let todayCount: Int
-    let completedCount: Int
-
-    var body: some View {
-        WidgetCard(title: "Stats", icon: "chart.bar.fill", color: HBTheme.accent, span: 1) {
-            VStack(spacing: 10) {
-                StatRow(icon: "tray", label: "Inbox", value: "\(inboxCount)", color: HBTheme.inbox)
-                StatRow(icon: "star.fill", label: "Today", value: "\(todayCount)", color: HBTheme.today)
-                StatRow(icon: "checkmark.circle", label: "Done today", value: "\(completedCount)", color: HBTheme.logbook)
-            }
-        }
-    }
-}
-
-private struct StatRow: View {
-    let icon: String
-    let label: String
-    let value: String
-    let color: Color
-
-    var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .font(.system(size: 12))
-                .foregroundStyle(color)
-                .frame(width: 16)
-            Text(label)
-                .font(HBTheme.subtitleFont)
-                .foregroundStyle(HBTheme.textSecondary)
-            Spacer()
-            Text(value)
-                .font(.system(.footnote, weight: .semibold))
-                .foregroundStyle(HBTheme.textPrimary)
-        }
-    }
-}
-
-// MARK: - Today Widget
-
-private struct TodayWidget: View {
-    let tasks: [HBTask]
-    let onComplete: (HBTask) -> Void
-    let onTap: (HBTask) -> Void
-
-    var body: some View {
-        WidgetCard(title: "Today", icon: "star.fill", color: HBTheme.today, span: 2) {
-            if tasks.isEmpty {
-                Text("Nothing scheduled for today")
-                    .font(HBTheme.subtitleFont)
-                    .foregroundStyle(HBTheme.textTertiary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, 8)
-            } else {
-                VStack(spacing: 0) {
-                    ForEach(tasks.prefix(8), id: \.id) { task in
-                        WidgetTaskRow(task: task, onComplete: { onComplete(task) })
-                            .contentShape(Rectangle())
-                            .onTapGesture { onTap(task) }
-                        if task.id != tasks.prefix(8).last?.id {
-                            Divider().padding(.leading, 30)
-                        }
-                    }
-                    if tasks.count > 8 {
-                        Text("+\(tasks.count - 8) more")
-                            .font(HBTheme.badgeFont)
-                            .foregroundStyle(HBTheme.textTertiary)
-                            .padding(.top, 6)
-                    }
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Next Widget
-
-private struct NextWidget: View {
-    let tasks: [HBTask]
-    let onTap: (HBTask) -> Void
-
-    var body: some View {
-        WidgetCard(title: "Next", icon: "square.stack", color: HBTheme.anytime, span: 2) {
-            if tasks.isEmpty {
-                Text("No upcoming tasks")
-                    .font(HBTheme.subtitleFont)
-                    .foregroundStyle(HBTheme.textTertiary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, 8)
-            } else {
-                VStack(spacing: 0) {
-                    ForEach(tasks, id: \.id) { task in
-                        WidgetTaskRow(task: task, onComplete: nil)
-                            .contentShape(Rectangle())
-                            .onTapGesture { onTap(task) }
-                        if task.id != tasks.last?.id {
-                            Divider().padding(.leading, 30)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Widget Card Container
+// MARK: - Widget Card Container (full-width)
 
 private struct WidgetCard<Content: View>: View {
     let title: String
     let icon: String
     let color: Color
-    let span: Int
     @ViewBuilder let content: Content
 
     var body: some View {
@@ -437,7 +356,161 @@ private struct WidgetCard<Content: View>: View {
         .background(HBTheme.background)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
-        .gridCellColumns(span)
+    }
+}
+
+// MARK: - Weather Content
+
+private struct WeatherContent: View {
+    let weather: WeatherData?
+
+    var body: some View {
+        if let w = weather {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Image(systemName: w.icon)
+                        .font(.system(size: 28))
+                        .foregroundStyle(HBTheme.today)
+                    Text("\(Int(w.temp))°")
+                        .font(.system(size: 32, weight: .semibold))
+                        .foregroundStyle(HBTheme.textPrimary)
+
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(w.description)
+                            .font(HBTheme.subtitleFont)
+                            .foregroundStyle(HBTheme.textSecondary)
+                        HStack(spacing: 12) {
+                            Label("\(Int(w.tempMax))°", systemImage: "arrow.up")
+                                .font(HBTheme.badgeFont)
+                                .foregroundStyle(.red)
+                            Label("\(Int(w.tempMin))°", systemImage: "arrow.down")
+                                .font(HBTheme.badgeFont)
+                                .foregroundStyle(HBTheme.accent)
+                        }
+                    }
+                }
+
+                if let tmMax = w.tomorrowMax, let tmMin = w.tomorrowMin {
+                    let delta = Int(((tmMax + tmMin) / 2) - ((w.tempMax + w.tempMin) / 2))
+                    let sign = delta > 0 ? "+" : ""
+                    Text("Tomorrow \(sign)\(delta)°")
+                        .font(HBTheme.badgeFont)
+                        .foregroundStyle(HBTheme.textTertiary)
+                }
+            }
+        } else {
+            VStack(spacing: 8) {
+                ProgressView()
+                Text("Loading...")
+                    .font(HBTheme.badgeFont)
+                    .foregroundStyle(HBTheme.textTertiary)
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+}
+
+// MARK: - Quick Stats Content
+
+private struct QuickStatsContent: View {
+    let inboxCount: Int
+    let todayCount: Int
+    let completedCount: Int
+
+    var body: some View {
+        HStack(spacing: 0) {
+            StatCell(icon: "tray", label: "Inbox", value: "\(inboxCount)", color: HBTheme.inbox)
+            Spacer()
+            StatCell(icon: "star.fill", label: "Today", value: "\(todayCount)", color: HBTheme.today)
+            Spacer()
+            StatCell(icon: "checkmark.circle", label: "Done", value: "\(completedCount)", color: HBTheme.logbook)
+        }
+    }
+}
+
+private struct StatCell: View {
+    let icon: String
+    let label: String
+    let value: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundStyle(color)
+            Text(value)
+                .font(.system(.title3, weight: .semibold))
+                .foregroundStyle(HBTheme.textPrimary)
+            Text(label)
+                .font(HBTheme.badgeFont)
+                .foregroundStyle(HBTheme.textSecondary)
+        }
+    }
+}
+
+// MARK: - Today Content
+
+private struct TodayContent: View {
+    let tasks: [HBTask]
+    let onComplete: (HBTask) -> Void
+    let onTap: (HBTask) -> Void
+
+    var body: some View {
+        if tasks.isEmpty {
+            Text("Nothing scheduled for today")
+                .font(HBTheme.subtitleFont)
+                .foregroundStyle(HBTheme.textTertiary)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, 8)
+        } else {
+            VStack(spacing: 0) {
+                ForEach(tasks.prefix(8), id: \.id) { task in
+                    WidgetTaskRow(task: task, onComplete: { onComplete(task) })
+                        .contentShape(Rectangle())
+                        .onTapGesture { onTap(task) }
+                    if task.id != tasks.prefix(8).last?.id {
+                        Divider().padding(.leading, 30)
+                    }
+                }
+                if tasks.count > 8 {
+                    Text("+\(tasks.count - 8) more")
+                        .font(HBTheme.badgeFont)
+                        .foregroundStyle(HBTheme.textTertiary)
+                        .padding(.top, 6)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Next Content
+
+private struct NextContent: View {
+    let tasks: [HBTask]
+    let onTap: (HBTask) -> Void
+
+    var body: some View {
+        if tasks.isEmpty {
+            Text("No upcoming tasks")
+                .font(HBTheme.subtitleFont)
+                .foregroundStyle(HBTheme.textTertiary)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, 8)
+        } else {
+            VStack(spacing: 0) {
+                ForEach(tasks, id: \.id) { task in
+                    WidgetTaskRow(task: task, onComplete: nil)
+                        .contentShape(Rectangle())
+                        .onTapGesture { onTap(task) }
+                    if task.id != tasks.last?.id {
+                        Divider().padding(.leading, 30)
+                    }
+                }
+            }
+        }
     }
 }
 

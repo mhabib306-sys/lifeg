@@ -3,12 +3,14 @@ import SwiftData
 
 struct TaskRowView: View {
     let task: HBTask
+    var isEditing: Bool = false
+    var onEditDone: (() -> Void)?
+
     @Environment(SyncCoordinator.self) private var sync
-    @State private var isEditing = false
     @State private var editText = ""
     @State private var editMetadata = TaskInlineMetadata()
-    @FocusState private var isFocused: Bool
     @State private var pendingCompletion = false
+    @State private var didSetup = false
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
@@ -29,6 +31,20 @@ struct TaskRowView: View {
                         onSubmit: { commitEdit() },
                         onBlur: { commitEdit() }
                     )
+                    .onAppear {
+                        if !didSetup {
+                            editText = task.title
+                            editMetadata = TaskInlineMetadata(
+                                areaId: task.areaId,
+                                labels: task.labels,
+                                people: task.people,
+                                deferDate: task.deferDate,
+                                dueDate: task.dueDate
+                            )
+                            didSetup = true
+                        }
+                    }
+                    .onDisappear { didSetup = false }
                 } else {
                     Text(task.title)
                         .font(HBTheme.titleFont)
@@ -37,7 +53,7 @@ struct TaskRowView: View {
                         .opacity(task.completed ? 0.6 : 1.0)
                 }
 
-                if !task.completed {
+                if !task.completed && !isEditing {
                     HStack(spacing: 6) {
                         if task.today {
                             Image(systemName: "star.fill")
@@ -60,7 +76,7 @@ struct TaskRowView: View {
                         }
                         if let subtitle = sync.entityCache.subtitle(for: task) {
                             if task.today || task.flagged || task.dueDate != nil {
-                                Text("·")
+                                Text("\u{00B7}")
                                     .font(HBTheme.subtitleFont)
                                     .foregroundStyle(HBTheme.textTertiary)
                             }
@@ -95,35 +111,21 @@ struct TaskRowView: View {
         }
     }
 
-    func beginEditing() {
-        editText = task.title
-        editMetadata = TaskInlineMetadata(
-            areaId: task.areaId,
-            labels: task.labels,
-            people: task.people,
-            deferDate: task.deferDate,
-            dueDate: task.dueDate
-        )
-        isEditing = true
-    }
-
     private func commitEdit() {
         let trimmed = editText.trimmingCharacters(in: .whitespaces)
         if !trimmed.isEmpty {
             task.title = trimmed
         }
-        // Apply any metadata changes from inline shortcuts
         task.areaId = editMetadata.areaId
         task.labels = editMetadata.labels
         task.people = editMetadata.people
         task.deferDate = editMetadata.deferDate
         task.dueDate = editMetadata.dueDate
-        // Update status based on area
         if task.status != "someday" {
             task.status = task.areaId != nil ? "anytime" : "inbox"
         }
         task.touch()
         sync.engine.markDirty()
-        isEditing = false
+        onEditDone?()
     }
 }

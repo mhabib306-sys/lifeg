@@ -5,9 +5,13 @@ struct NoteRowView: View {
     let note: HBTask
     let childCount: Int
     let onZoomIn: () -> Void
+    var isEditing: Bool = false
+    var onEditDone: (() -> Void)?
+
     @Environment(SyncCoordinator.self) private var sync
-    @State private var isEditing = false
     @State private var editText = ""
+    @State private var editMetadata = TaskInlineMetadata()
+    @State private var didSetup = false
 
     var body: some View {
         HStack(spacing: 8) {
@@ -27,18 +31,31 @@ struct NoteRowView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 if isEditing {
-                    TextField("Note", text: $editText, onCommit: {
-                        note.title = editText
-                        note.touch()
-                        sync.engine.markDirty()
-                        isEditing = false
-                    })
-                    .font(HBTheme.titleFont)
+                    InlineAutocompleteField(
+                        text: $editText,
+                        metadata: $editMetadata,
+                        placeholder: "Note",
+                        onSubmit: { commitEdit() },
+                        onBlur: { commitEdit() }
+                    )
+                    .onAppear {
+                        if !didSetup {
+                            editText = note.title
+                            editMetadata = TaskInlineMetadata(
+                                areaId: note.areaId,
+                                labels: note.labels,
+                                people: note.people,
+                                deferDate: note.deferDate,
+                                dueDate: note.dueDate
+                            )
+                            didSetup = true
+                        }
+                    }
+                    .onDisappear { didSetup = false }
                 } else {
                     Text(note.title.isEmpty ? "Untitled" : note.title)
                         .font(HBTheme.titleFont)
                         .foregroundStyle(note.title.isEmpty ? HBTheme.textTertiary : HBTheme.textPrimary)
-                        .onTapGesture { editText = note.title; isEditing = true }
                 }
 
                 if let subtitle = sync.entityCache.subtitle(for: note) {
@@ -58,5 +75,20 @@ struct NoteRowView: View {
             }
         }
         .padding(.leading, CGFloat(note.indent) * 16)
+    }
+
+    private func commitEdit() {
+        let trimmed = editText.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty {
+            note.title = trimmed
+        }
+        note.areaId = editMetadata.areaId
+        note.labels = editMetadata.labels
+        note.people = editMetadata.people
+        note.deferDate = editMetadata.deferDate
+        note.dueDate = editMetadata.dueDate
+        note.touch()
+        sync.engine.markDirty()
+        onEditDone?()
     }
 }

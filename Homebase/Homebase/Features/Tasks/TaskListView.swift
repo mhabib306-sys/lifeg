@@ -8,6 +8,7 @@ struct TaskListView: View {
     @Environment(\.modelContext) private var context
     @Environment(SyncCoordinator.self) private var sync
     @State private var editMode: EditMode = .inactive
+    @State private var editingTaskId: String?
 
     private var filteredTasks: [HBTask] {
         TaskFilterEngine.filter(allTasks, for: perspective)
@@ -25,42 +26,47 @@ struct TaskListView: View {
             } else {
                 List {
                     ForEach(filteredTasks, id: \.id) { task in
-                        TaskRowView(task: task)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                router.presentedSheet = .taskEditor(task.id)
+                        TaskRowView(task: task, isEditing: editingTaskId == task.id) {
+                            editingTaskId = nil
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            // Things 3 style: tap to inline edit
+                            if editingTaskId != task.id {
+                                editingTaskId = task.id
                             }
-                            .swipeActions(edge: .leading) {
-                                Button {
-                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                                        task.markCompleted()
-                                        sync.engine.markDirty()
-                                    }
-                                    Haptic.taskCompleted()
-                                } label: {
-                                    Label("Complete", systemImage: "checkmark")
-                                }
-                                .tint(HBTheme.logbook)
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button {
-                                    router.presentedSheet = .taskEditor(task.id)
-                                } label: {
-                                    Label("Edit", systemImage: "pencil")
-                                }
-                                .tint(HBTheme.accent)
-
-                                Button {
-                                    task.flagged.toggle()
-                                    task.touch()
+                        }
+                        .swipeActions(edge: .leading) {
+                            Button {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                    task.markCompleted()
                                     sync.engine.markDirty()
-                                } label: {
-                                    Label("Flag", systemImage: "flag.fill")
                                 }
-                                .tint(HBTheme.flagged)
+                                Haptic.taskCompleted()
+                            } label: {
+                                Label("Complete", systemImage: "checkmark")
                             }
-                            .listRowSeparatorTint(HBTheme.separator)
-                            .alignmentGuide(.listRowSeparatorLeading) { d in d[.leading] + 50 }
+                            .tint(HBTheme.logbook)
+                        }
+                        .swipeActions(edge: .trailing) {
+                            Button {
+                                router.presentedSheet = .taskEditor(task.id)
+                            } label: {
+                                Label("Details", systemImage: "info.circle")
+                            }
+                            .tint(HBTheme.accent)
+
+                            Button {
+                                task.flagged.toggle()
+                                task.touch()
+                                sync.engine.markDirty()
+                            } label: {
+                                Label("Flag", systemImage: "flag.fill")
+                            }
+                            .tint(HBTheme.flagged)
+                        }
+                        .listRowSeparatorTint(HBTheme.separator)
+                        .alignmentGuide(.listRowSeparatorLeading) { d in d[.leading] + 50 }
                     }
                     .onMove { source, destination in
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
@@ -178,7 +184,6 @@ private struct QuickAddRow: View {
         if perspective == .today { task.today = true }
         if perspective == .flagged { task.flagged = true }
 
-        // Apply inline metadata
         task.areaId = metadata.areaId
         task.labels = metadata.labels
         task.people = metadata.people
