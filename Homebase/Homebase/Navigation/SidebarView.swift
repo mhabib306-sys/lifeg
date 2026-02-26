@@ -3,13 +3,10 @@ import SwiftData
 
 struct SidebarView: View {
     @Bindable var router: NavigationRouter
-    // Step 12: Filter query for badge counting — exclude notes and completed
-    @Query(filter: #Predicate<HBTask> { !$0.isNote && !$0.completed }) private var activeTasks: [HBTask]
     @Query private var tasks: [HBTask]
 
     var body: some View {
         List(selection: $router.selectedPerspective) {
-            // Step 6: Split into main and library sections
             Section {
                 ForEach(PerspectiveType.mainCases, id: \.self) { perspective in
                     PerspectiveRow(
@@ -68,11 +65,11 @@ struct SidebarView: View {
     private func badgeCount(for perspective: PerspectiveType) -> Int {
         switch perspective {
         case .inbox:
-            activeTasks.filter { $0.areaId == nil }.count
+            tasks.filter { !$0.isNote && !$0.completed && $0.areaId == nil }.count
         case .today:
-            activeTasks.filter { $0.today }.count
+            tasks.filter { !$0.isNote && !$0.completed && $0.today }.count
         case .flagged:
-            activeTasks.filter { $0.flagged }.count
+            tasks.filter { !$0.isNote && !$0.completed && $0.flagged }.count
         default: 0
         }
     }
