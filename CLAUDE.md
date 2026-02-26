@@ -214,6 +214,16 @@ When adding a new function that will be called from `onclick` handlers in HTML s
 - Defer date controls availability; due date is a deadline signal.
 - Anytime excludes tasks with future due dates or deferred to the future.
 
+## Pre-commit Hook (Smart)
+
+The `.husky/pre-commit` hook is optimized to only run relevant checks:
+
+- **JS/CSS/HTML changes**: runs `vitest related <changed-files>` (seconds, not minutes)
+- **src/ changes**: also runs `npm run lint`
+- **Swift-only / docs-only / config-only**: skips all checks entirely
+
+Never use `vi.useFakeTimers()` with code that calls `fetchWithTimeout` — the AbortController's 30s setTimeout deadlocks under CPU pressure. Use real timers with `maxRetries=0` to test retry logic without delays.
+
 ## Common Pitfalls
 
 - The `render()` function replaces the entire DOM, so any `addEventListener` calls must be re-attached in post-render `setTimeout` blocks
