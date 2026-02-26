@@ -38,7 +38,7 @@ struct SettingsView: View {
                     repo = trimmedRepo
                     sync.reloadCredentials()
                     saveConfirmed = true
-                    // Trigger immediate sync to validate credentials
+                    // Trigger immediate pull to validate credentials and fetch data
                     Task { await sync.engine.pull() }
                 }
                 .disabled(token.isEmpty || owner.isEmpty || repo.isEmpty)
@@ -48,6 +48,10 @@ struct SettingsView: View {
                         Text(error)
                             .font(HBTheme.subtitleFont)
                             .foregroundStyle(.red)
+                    } else if let info = sync.engine.lastSyncInfo {
+                        Text(info)
+                            .font(HBTheme.subtitleFont)
+                            .foregroundStyle(HBTheme.logbook)
                     } else {
                         Text("Saved and connected.")
                             .font(HBTheme.subtitleFont)
@@ -77,6 +81,16 @@ struct SettingsView: View {
                     }
                 }
 
+                if let info = sync.engine.lastSyncInfo {
+                    HStack {
+                        Text("Last Sync")
+                        Spacer()
+                        Text(info)
+                            .foregroundStyle(HBTheme.logbook)
+                            .font(.caption2)
+                    }
+                }
+
                 HStack {
                     Text("Dirty")
                     Spacer()
@@ -85,7 +99,7 @@ struct SettingsView: View {
                 }
 
                 Button("Sync Now") {
-                    Task { await sync.engine.push() }
+                    Task { await sync.engine.syncNow() }
                 }
 
                 Button("Pull from Cloud") {

@@ -117,6 +117,25 @@ final class GitHubAPI: Sendable {
         return GitHubFile(sha: sha, content: content)
     }
 
+    /// Check if the repo is accessible (distinguishes bad creds from missing file).
+    func verifyRepo() async throws {
+        var request = URLRequest(url: URL(string: "\(baseURL)/repos/\(owner)/\(repo)")!)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/vnd.github.v3+json", forHTTPHeaderField: "Accept")
+        request.timeoutInterval = 15
+
+        let (_, response) = try await session.data(for: request)
+        let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+
+        switch status {
+        case 200: return // Repo accessible
+        case 401: throw GitHubAPIError.unauthorized
+        case 403: throw GitHubAPIError.rateLimited
+        case 404: throw GitHubAPIError.notFound
+        default: throw GitHubAPIError.networkError("HTTP \(status)")
+        }
+    }
+
     func putFile(path: String, content: Data, sha: String?, message: String) async throws -> String {
         var request = URLRequest(url: URL(string: "\(baseURL)/repos/\(owner)/\(repo)/contents/\(path)")!)
         request.httpMethod = "PUT"

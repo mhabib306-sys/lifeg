@@ -13,6 +13,7 @@ final class SyncEngine {
 
     var isSyncing = false
     var lastError: String?
+    var lastSyncInfo: String?
 
     var isDirty: Bool {
         UserDefaults.standard.bool(forKey: dirtyKey)
@@ -54,6 +55,16 @@ final class SyncEngine {
         }
     }
 
+    // MARK: - Sync Now (push if dirty, otherwise pull)
+
+    func syncNow() async {
+        if isDirty {
+            await push()
+        } else {
+            await pull()
+        }
+    }
+
     // MARK: - Push (full sync)
 
     func push() async {
@@ -61,9 +72,13 @@ final class SyncEngine {
             lastError = "Not configured — enter credentials in Settings"
             return
         }
-        guard isDirty else { return }
+        guard isDirty else {
+            print("[Sync] push() skipped — not dirty")
+            return
+        }
         isSyncing = true
         defer { isSyncing = false }
+        print("[Sync] push() starting...")
 
         do {
             let context = container.mainContext
@@ -75,8 +90,11 @@ final class SyncEngine {
                 let file = try await api.fetchFile(path: "data.json")
                 cloudFile = file
                 cloudPayload = try PayloadCoder.decode(file.content)
+                print("[Sync] Fetched cloud: \(cloudPayload?.tasks.count ?? 0) tasks")
             } catch GitHubAPIError.notFound {
-                // File doesn't exist yet — first sync, we'll create it
+                // Verify the repo itself is accessible
+                try await api.verifyRepo()
+                print("[Sync] data.json not found — will create on first push")
                 cloudFile = nil
                 cloudPayload = nil
             }
@@ -89,6 +107,7 @@ final class SyncEngine {
             let localPeople = exportPeople(from: context)
             let localPerspectives = exportPerspectives(from: context)
             let localTombstones = exportTombstones(from: context)
+            print("[Sync] Local: \(localTasks.count) tasks, \(localAreas.count) areas")
 
             // 3. Merge with cloud (or use local-only if no cloud data)
             let mergedTasks: [TaskDTO]
@@ -148,6 +167,7 @@ final class SyncEngine {
             importPerspectives(mergedPerspectives, into: context)
             try context.save()
             onDataImported?()
+            print("[Sync] Imported \(mergedTasks.count) merged tasks")
 
             // 5. Build payload
             sequence += 1
@@ -174,6 +194,8 @@ final class SyncEngine {
             // 7. Success
             clearDirty()
             lastError = nil
+            lastSyncInfo = "Pushed \(mergedTasks.count) tasks"
+            print("[Sync] push() success — \(mergedTasks.count) tasks pushed")
         } catch GitHubAPIError.conflict {
             lastError = "Conflict — retrying"
             await retryWithBackoff()
@@ -182,6 +204,7 @@ final class SyncEngine {
             try? await Task.sleep(for: .seconds(60))
         } catch {
             lastError = error.localizedDescription
+            print("[Sync] push() error: \(error)")
         }
     }
 
@@ -194,25 +217,41 @@ final class SyncEngine {
         }
         isSyncing = true
         defer { isSyncing = false }
+        print("[Sync] pull() starting...")
 
         do {
             let file: GitHubFile
             do {
                 file = try await api.fetchFile(path: "data.json")
+                print("[Sync] Fetched data.json (\(file.content.count) bytes)")
             } catch GitHubAPIError.notFound {
-                // File doesn't exist yet — nothing to pull
-                lastError = nil
-                return
+                // 404 could mean file missing OR repo missing/bad creds.
+                // Verify the repo is accessible.
+                do {
+                    try await api.verifyRepo()
+                    // Repo exists, file just doesn't exist yet
+                    lastError = nil
+                    lastSyncInfo = "Cloud empty — no data.json yet"
+                    print("[Sync] pull() — data.json not found, repo accessible")
+                    return
+                } catch {
+                    lastError = "Cannot access repo — check owner, repo name, and token: \(error.localizedDescription)"
+                    print("[Sync] pull() — repo verify failed: \(error)")
+                    return
+                }
             } catch {
                 lastError = "Fetch: \(error.localizedDescription)"
+                print("[Sync] pull() fetch error: \(error)")
                 return
             }
 
             let cloudPayload: CloudPayload
             do {
                 cloudPayload = try PayloadCoder.decode(file.content)
+                print("[Sync] Decoded: \(cloudPayload.tasks.count) tasks, \(cloudPayload.areas.count) areas, \(cloudPayload.labels.count) labels")
             } catch {
                 lastError = "Decode: \(error.localizedDescription)"
+                print("[Sync] pull() decode error: \(error)")
                 return
             }
 
@@ -259,8 +298,11 @@ final class SyncEngine {
             try context.save()
             onDataImported?()
             lastError = nil
+            lastSyncInfo = "Pulled \(mergedTasks.count) tasks, \(mergedAreas.count) areas"
+            print("[Sync] pull() success — \(mergedTasks.count) tasks, \(mergedAreas.count) areas imported")
         } catch {
             lastError = "Pull: \(error.localizedDescription)"
+            print("[Sync] pull() error: \(error)")
         }
     }
 
