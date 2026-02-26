@@ -97,8 +97,7 @@ struct TaskRowView: View {
 
             Spacer()
         }
-        .padding(.vertical, isEditing ? 12 : 8)
-        .padding(.horizontal, isEditing ? 4 : 0)
+        .padding(.vertical, 8)
         .background(
             RoundedRectangle(cornerRadius: 10)
                 .fill(isEditing ? HBTheme.editingBackground : .clear)

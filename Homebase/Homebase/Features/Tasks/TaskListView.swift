@@ -190,8 +190,7 @@ private struct QuickAddRow: View {
 
             Spacer()
         }
-        .padding(.vertical, isActive ? 12 : 8)
-        .padding(.horizontal, isActive ? 4 : 0)
+        .padding(.vertical, 8)
         .background(
             RoundedRectangle(cornerRadius: 10)
                 .fill(isActive ? HBTheme.editingBackground : .clear)

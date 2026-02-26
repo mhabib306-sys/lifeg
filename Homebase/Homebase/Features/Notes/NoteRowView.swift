@@ -80,8 +80,7 @@ struct NoteRowView: View {
                     .foregroundStyle(HBTheme.textTertiary)
             }
         }
-        .padding(.vertical, isEditing ? 10 : 6)
-        .padding(.horizontal, isEditing ? 4 : 0)
+        .padding(.vertical, 6)
         .background(
             RoundedRectangle(cornerRadius: 8)
                 .fill(isEditing ? HBTheme.editingBackground : .clear)
