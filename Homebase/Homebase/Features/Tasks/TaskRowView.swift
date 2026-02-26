@@ -6,6 +6,7 @@ struct TaskRowView: View {
     @Environment(SyncCoordinator.self) private var sync
     @State private var isEditing = false
     @State private var editText = ""
+    @State private var editMetadata = TaskInlineMetadata()
     @FocusState private var isFocused: Bool
     @State private var pendingCompletion = false
 
@@ -21,23 +22,13 @@ struct TaskRowView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 if isEditing {
-                    TextField("Task title", text: $editText)
-                        .font(HBTheme.titleFont)
-                        .focused($isFocused)
-                        .onSubmit {
-                            task.title = editText
-                            task.touch()
-                            sync.engine.markDirty()
-                            isEditing = false
-                        }
-                        .onChange(of: isFocused) { _, focused in
-                            if !focused {
-                                task.title = editText
-                                task.touch()
-                                sync.engine.markDirty()
-                                isEditing = false
-                            }
-                        }
+                    InlineAutocompleteField(
+                        text: $editText,
+                        metadata: $editMetadata,
+                        placeholder: "Task title",
+                        onSubmit: { commitEdit() },
+                        onBlur: { commitEdit() }
+                    )
                 } else {
                     Text(task.title)
                         .font(HBTheme.titleFont)
@@ -106,7 +97,33 @@ struct TaskRowView: View {
 
     func beginEditing() {
         editText = task.title
+        editMetadata = TaskInlineMetadata(
+            areaId: task.areaId,
+            labels: task.labels,
+            people: task.people,
+            deferDate: task.deferDate,
+            dueDate: task.dueDate
+        )
         isEditing = true
-        isFocused = true
+    }
+
+    private func commitEdit() {
+        let trimmed = editText.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty {
+            task.title = trimmed
+        }
+        // Apply any metadata changes from inline shortcuts
+        task.areaId = editMetadata.areaId
+        task.labels = editMetadata.labels
+        task.people = editMetadata.people
+        task.deferDate = editMetadata.deferDate
+        task.dueDate = editMetadata.dueDate
+        // Update status based on area
+        if task.status != "someday" {
+            task.status = task.areaId != nil ? "anytime" : "inbox"
+        }
+        task.touch()
+        sync.engine.markDirty()
+        isEditing = false
     }
 }

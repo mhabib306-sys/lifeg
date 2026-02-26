@@ -117,31 +117,31 @@ private struct QuickAddRow: View {
     @Environment(SyncCoordinator.self) private var sync
     @State private var isActive = false
     @State private var text = ""
+    @State private var metadata = TaskInlineMetadata()
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        HStack(spacing: 14) {
+        HStack(alignment: .top, spacing: 14) {
             if isActive {
                 Circle()
                     .strokeBorder(HBTheme.checkboxBorder, lineWidth: 2)
                     .frame(width: 24, height: 24)
                     .padding(.top, 2)
 
-                TextField("New Task", text: $text)
-                    .font(HBTheme.titleFont)
-                    .focused($isFocused)
-                    .onSubmit {
-                        submitTask()
-                    }
-                    .onChange(of: isFocused) { _, focused in
-                        if !focused && text.trimmingCharacters(in: .whitespaces).isEmpty {
+                InlineAutocompleteField(
+                    text: $text,
+                    metadata: $metadata,
+                    placeholder: "New Task — type # @ & ! for shortcuts",
+                    onSubmit: { submitTask() },
+                    onBlur: {
+                        if text.trimmingCharacters(in: .whitespaces).isEmpty && !hasMetadata {
                             isActive = false
                         }
                     }
+                )
             } else {
                 Button {
                     isActive = true
-                    isFocused = true
                 } label: {
                     HStack(spacing: 10) {
                         Image(systemName: "plus")
@@ -161,21 +161,36 @@ private struct QuickAddRow: View {
         .listRowSeparator(.hidden)
     }
 
+    private var hasMetadata: Bool {
+        metadata.areaId != nil || !metadata.labels.isEmpty ||
+        !metadata.people.isEmpty || metadata.deferDate != nil || metadata.dueDate != nil
+    }
+
     private func submitTask() {
         let trimmed = text.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else {
-            isActive = false
+            if !hasMetadata { isActive = false }
             return
         }
 
-        let task = HBTask(title: trimmed, status: defaultStatus)
+        let status = metadata.areaId != nil ? "anytime" : defaultStatus
+        let task = HBTask(title: trimmed, status: status)
         if perspective == .today { task.today = true }
         if perspective == .flagged { task.flagged = true }
+
+        // Apply inline metadata
+        task.areaId = metadata.areaId
+        task.labels = metadata.labels
+        task.people = metadata.people
+        task.deferDate = metadata.deferDate
+        task.dueDate = metadata.dueDate
+
         context.insert(task)
         sync.engine.markDirty()
         Haptic.lightTap()
 
         text = ""
+        metadata = TaskInlineMetadata()
     }
 
     private var defaultStatus: String {
