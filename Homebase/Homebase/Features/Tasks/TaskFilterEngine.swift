@@ -11,8 +11,10 @@ enum TaskFilterEngine {
 
             switch perspective {
             case .inbox:
-                return !task.completed && task.status == "inbox" && task.categoryId == nil
+                // Tasks without an area assigned
+                return !task.completed && task.areaId == nil
             case .today:
+                // Tasks flagged as Today OR due today/overdue
                 guard !task.completed else { return false }
                 if task.today { return true }
                 if let due = task.dueDate, due <= todayEnd { return true }
@@ -20,13 +22,15 @@ enum TaskFilterEngine {
             case .flagged:
                 return !task.completed && task.flagged
             case .anytime:
-                guard !task.completed && task.status == "anytime" else { return false }
+                // Available tasks: not completed, not someday, not deferred, not in upcoming
+                guard !task.completed && task.status != "someday" else { return false }
                 if let defer_ = task.deferDate, defer_ > now { return false }
                 if let due = task.dueDate, due > todayEnd { return false }
                 return true
             case .someday:
                 return !task.completed && task.status == "someday"
             case .upcoming:
+                // Tasks with future due dates or deferred
                 guard !task.completed else { return false }
                 if let due = task.dueDate, due > todayEnd { return true }
                 if let defer_ = task.deferDate, defer_ > now { return true }

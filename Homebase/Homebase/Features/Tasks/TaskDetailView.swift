@@ -54,14 +54,22 @@ struct TaskDetailView: View {
                 }
 
                 if !isNote {
-                    Section("Status") {
-                        Picker("Status", selection: $status) {
-                            Text("Inbox").tag("inbox")
-                            Text("Anytime").tag("anytime")
-                            Text("Someday").tag("someday")
+                    Section {
+                        Toggle(isOn: $today) {
+                            Label("Today", systemImage: "star.fill")
+                                .foregroundStyle(today ? HBTheme.today : HBTheme.textPrimary)
                         }
-                        Toggle("Today", isOn: $today)
-                        Toggle("Flagged", isOn: $flagged)
+                        Toggle(isOn: $flagged) {
+                            Label("Flagged", systemImage: "flag.fill")
+                                .foregroundStyle(flagged ? HBTheme.flagged : HBTheme.textPrimary)
+                        }
+                        Toggle(isOn: Binding(
+                            get: { status == "someday" },
+                            set: { status = $0 ? "someday" : "anytime" }
+                        )) {
+                            Label("Someday", systemImage: "archivebox")
+                                .foregroundStyle(status == "someday" ? HBTheme.someday : HBTheme.textPrimary)
+                        }
                     }
                 }
 
