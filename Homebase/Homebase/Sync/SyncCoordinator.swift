@@ -11,6 +11,9 @@ final class SyncCoordinator {
     init(container: ModelContainer) {
         let api = Self.buildAPI()
         self.engine = SyncEngine(container: container, api: api)
+        engine.onDataImported = { [weak self] in
+            self?.entityCache.reload(from: container.mainContext)
+        }
         setupLifecycleObservers()
     }
 
@@ -56,7 +59,6 @@ final class SyncCoordinator {
             } else {
                 await engine.pull()
             }
-            entityCache.reload(from: engine.container.mainContext)
         }
     }
 }

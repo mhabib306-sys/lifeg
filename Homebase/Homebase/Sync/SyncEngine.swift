@@ -9,6 +9,7 @@ final class SyncEngine {
     private let dirtyKey = "syncDirty"
     private let sequenceKey = "syncSequence"
     private var debounceTask: Task<Void, Never>?
+    var onDataImported: (() -> Void)?
 
     var isSyncing = false
     var lastError: String?
@@ -65,7 +66,7 @@ final class SyncEngine {
         defer { isSyncing = false }
 
         do {
-            let context = ModelContext(container)
+            let context = container.mainContext
 
             // 1. Try to fetch cloud file (may not exist yet)
             var cloudFile: GitHubFile?
@@ -146,6 +147,7 @@ final class SyncEngine {
             importPeople(mergedPeople, into: context)
             importPerspectives(mergedPerspectives, into: context)
             try context.save()
+            onDataImported?()
 
             // 5. Build payload
             sequence += 1
@@ -214,7 +216,7 @@ final class SyncEngine {
                 return
             }
 
-            let context = ModelContext(container)
+            let context = container.mainContext
             let localTasks = exportTasks(from: context)
             let localAreas = exportAreas(from: context)
             let localCategories = exportCategories(from: context)
@@ -255,6 +257,7 @@ final class SyncEngine {
             importPeople(mergedPeople, into: context)
             importPerspectives(mergedPerspectives, into: context)
             try context.save()
+            onDataImported?()
             lastError = nil
         } catch {
             lastError = "Pull: \(error.localizedDescription)"
