@@ -53,6 +53,13 @@ struct TaskDetailView: View {
                     TextField("Title", text: $title)
                         .font(HBTheme.editorTitleFont)
                         .focused($titleFocused)
+                        .toolbar {
+                            ToolbarItemGroup(placement: .keyboard) {
+                                ShortcutKeyboardBar { trigger in
+                                    title += trigger
+                                }
+                            }
+                        }
                         .padding(.horizontal, 20)
                         .padding(.top, 16)
                         .padding(.bottom, 4)

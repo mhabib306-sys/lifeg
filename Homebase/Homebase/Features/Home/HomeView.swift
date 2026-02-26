@@ -43,6 +43,7 @@ struct HomeView: View {
     @Environment(SyncCoordinator.self) private var sync
     @State private var weather: WeatherData?
     @State private var editingTaskId: String?
+    @State private var showNewTask = false
     @State private var widgetOrder: [WidgetType] = HomeView.loadWidgetOrder()
     @State private var editMode: EditMode = .inactive
 
@@ -87,40 +88,58 @@ struct HomeView: View {
     }
 
     var body: some View {
-        List {
-            // Header (not draggable)
-            Section {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(greeting)
-                        .font(.system(.largeTitle, weight: .bold))
-                        .foregroundStyle(HBTheme.textPrimary)
-                    Text(Date(), format: .dateTime.weekday(.wide).month(.wide).day())
-                        .font(HBTheme.subtitleFont)
-                        .foregroundStyle(HBTheme.textSecondary)
+        ZStack(alignment: .bottomTrailing) {
+            List {
+                // Header (not draggable)
+                Section {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(greeting)
+                            .font(.system(.largeTitle, weight: .bold))
+                            .foregroundStyle(HBTheme.textPrimary)
+                        Text(Date(), format: .dateTime.weekday(.wide).month(.wide).day())
+                            .font(HBTheme.subtitleFont)
+                            .foregroundStyle(HBTheme.textSecondary)
+                    }
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 4, trailing: 16))
                 }
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 4, trailing: 16))
-            }
 
-            // Widgets (draggable)
-            Section {
-                ForEach(widgetOrder) { type in
-                    widgetView(for: type)
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                }
-                .onMove { source, destination in
-                    widgetOrder.move(fromOffsets: source, toOffset: destination)
-                    saveWidgetOrder()
+                // Widgets (draggable)
+                Section {
+                    ForEach(widgetOrder) { type in
+                        widgetView(for: type)
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                    }
+                    .onMove { source, destination in
+                        widgetOrder.move(fromOffsets: source, toOffset: destination)
+                        saveWidgetOrder()
+                    }
                 }
             }
+            .listStyle(.plain)
+            .environment(\.editMode, $editMode)
+            .background(HBTheme.secondaryBackground)
+            .scrollContentBackground(.hidden)
+
+            // Floating add button
+            Button {
+                showNewTask = true
+                Haptic.lightTap()
+            } label: {
+                Image(systemName: "plus")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 56, height: 56)
+                    .background(HBTheme.accent)
+                    .clipShape(Circle())
+                    .shadow(color: HBTheme.accent.opacity(0.3), radius: 8, y: 4)
+            }
+            .padding(.trailing, 20)
+            .padding(.bottom, 20)
         }
-        .listStyle(.plain)
-        .environment(\.editMode, $editMode)
-        .background(HBTheme.secondaryBackground)
-        .scrollContentBackground(.hidden)
         .navigationTitle("Home")
         .task { await loadWeather() }
         .toolbar {
@@ -136,6 +155,12 @@ struct HomeView: View {
         }
         .sheet(item: $editingTaskId) { taskId in
             TaskDetailView(taskId: taskId, context: context)
+        }
+        .sheet(isPresented: $showNewTask) {
+            TaskDetailView(taskId: nil, context: context)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
         }
     }
 
