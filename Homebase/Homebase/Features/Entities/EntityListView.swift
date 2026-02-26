@@ -209,24 +209,12 @@ struct EntityDetailView: View {
     @Query private var allTasks: [HBTask]
     @Environment(\.modelContext) private var context
     @Environment(SyncCoordinator.self) private var sync
+    @Environment(EntityCache.self) private var entityCache
     @State private var editingTaskId: String?
     @State private var searchText = ""
 
     private var entityName: String {
-        switch entityType {
-        case .area(let id):
-            let d = FetchDescriptor<HBArea>(predicate: #Predicate { $0.id == id })
-            return (try? context.fetch(d))?.first?.name ?? "Area"
-        case .category(let id):
-            let d = FetchDescriptor<HBCategory>(predicate: #Predicate { $0.id == id })
-            return (try? context.fetch(d))?.first?.name ?? "Category"
-        case .label(let id):
-            let d = FetchDescriptor<HBLabel>(predicate: #Predicate { $0.id == id })
-            return (try? context.fetch(d))?.first?.name ?? "Label"
-        case .person(let id):
-            let d = FetchDescriptor<HBPerson>(predicate: #Predicate { $0.id == id })
-            return (try? context.fetch(d))?.first?.name ?? "Person"
-        }
+        entityCache.entityName(for: entityType)
     }
 
     private var relatedTasks: [HBTask] {

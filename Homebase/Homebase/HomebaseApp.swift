@@ -5,6 +5,7 @@ import SwiftData
 struct HomebaseApp: App {
     let container: ModelContainer
     @State private var syncCoordinator: SyncCoordinator
+    @State private var entityCache = EntityCache()
 
     init() {
         let schema = Schema([
@@ -17,7 +18,27 @@ struct HomebaseApp: App {
             HBTombstone.self
         ])
         let config = ModelConfiguration("Homebase", isStoredInMemoryOnly: false)
-        let c = try! ModelContainer(for: schema, configurations: [config])
+
+        // Step 12: Graceful recovery instead of try!
+        let c: ModelContainer
+        do {
+            c = try ModelContainer(for: schema, configurations: [config])
+        } catch {
+            // Delete store files and recreate — data recovers from cloud sync
+            let url = config.url
+            let fm = FileManager.default
+            for suffix in ["", "-wal", "-shm"] {
+                try? fm.removeItem(at: url.appendingPathExtension(suffix.isEmpty ? "" : String(suffix.dropFirst())))
+            }
+            // Also try removing the actual store file variants
+            let storeDir = url.deletingLastPathComponent()
+            if let files = try? fm.contentsOfDirectory(at: storeDir, includingPropertiesForKeys: nil) {
+                for file in files where file.lastPathComponent.hasPrefix("Homebase") {
+                    try? fm.removeItem(at: file)
+                }
+            }
+            c = try! ModelContainer(for: schema, configurations: [config])
+        }
         self.container = c
         self._syncCoordinator = State(initialValue: SyncCoordinator(container: c))
     }
@@ -26,7 +47,11 @@ struct HomebaseApp: App {
         WindowGroup {
             ContentView()
                 .environment(syncCoordinator)
-                .onAppear { syncCoordinator.initialSync() }
+                .environment(entityCache)
+                .onAppear {
+                    entityCache.loadIfNeeded(from: container.mainContext)
+                    syncCoordinator.initialSync()
+                }
         }
         .modelContainer(container)
     }

@@ -3,12 +3,25 @@ import SwiftData
 
 struct SidebarView: View {
     @Bindable var router: NavigationRouter
+    // Step 12: Filter query for badge counting — exclude notes and completed
+    @Query(filter: #Predicate<HBTask> { !$0.isNote && !$0.completed }) private var activeTasks: [HBTask]
     @Query private var tasks: [HBTask]
 
     var body: some View {
         List(selection: $router.selectedPerspective) {
+            // Step 6: Split into main and library sections
             Section {
-                ForEach(PerspectiveType.allCases) { perspective in
+                ForEach(PerspectiveType.mainCases, id: \.self) { perspective in
+                    PerspectiveRow(
+                        perspective: perspective,
+                        count: badgeCount(for: perspective)
+                    )
+                    .tag(perspective)
+                }
+            }
+
+            Section("Library") {
+                ForEach(PerspectiveType.libraryCases, id: \.self) { perspective in
                     PerspectiveRow(
                         perspective: perspective,
                         count: badgeCount(for: perspective)
@@ -39,21 +52,27 @@ struct SidebarView: View {
         .navigationTitle("Homebase")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button { router.showSearch = true } label: {
+                Button {
+                    Haptic.selection()
+                    router.showSearch = true
+                } label: {
                     Image(systemName: "magnifyingglass")
                 }
             }
+        }
+        .onChange(of: router.selectedPerspective) { _, _ in
+            Haptic.selection()
         }
     }
 
     private func badgeCount(for perspective: PerspectiveType) -> Int {
         switch perspective {
         case .inbox:
-            tasks.filter { !$0.isNote && !$0.completed && $0.status == "inbox" }.count
+            activeTasks.filter { $0.areaId == nil }.count
         case .today:
-            tasks.filter { !$0.isNote && !$0.completed && $0.today }.count
+            activeTasks.filter { $0.today }.count
         case .flagged:
-            tasks.filter { !$0.isNote && !$0.completed && $0.flagged }.count
+            activeTasks.filter { $0.flagged }.count
         default: 0
         }
     }

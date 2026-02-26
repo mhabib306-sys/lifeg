@@ -1,6 +1,8 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - Step 9: Task Editor Redesign
+
 struct TaskDetailView: View {
     let taskId: String?
     let context: ModelContext
@@ -45,140 +47,253 @@ struct TaskDetailView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    // 1. Large title TextField
                     TextField("Title", text: $title)
-                        .font(.title3)
+                        .font(HBTheme.editorTitleFont)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
+                        .padding(.bottom, 4)
+
+                    // 2. Notes TextField
                     TextField("Notes", text: $notes, axis: .vertical)
+                        .font(.body)
+                        .foregroundStyle(HBTheme.textSecondary)
                         .lineLimit(3...10)
-                }
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 16)
 
-                if !isNote {
-                    Section {
-                        Toggle(isOn: $today) {
-                            Label("Today", systemImage: "star.fill")
-                                .foregroundStyle(today ? HBTheme.today : HBTheme.textPrimary)
-                        }
-                        Toggle(isOn: $flagged) {
-                            Label("Flagged", systemImage: "flag.fill")
-                                .foregroundStyle(flagged ? HBTheme.flagged : HBTheme.textPrimary)
-                        }
-                        Toggle(isOn: Binding(
-                            get: { status == "someday" },
-                            set: { status = $0 ? "someday" : "anytime" }
-                        )) {
-                            Label("Someday", systemImage: "archivebox")
-                                .foregroundStyle(status == "someday" ? HBTheme.someday : HBTheme.textPrimary)
-                        }
-                    }
-                }
+                    Divider().padding(.horizontal, 20)
 
-                Section("Organization") {
-                    Picker("Area", selection: $selectedAreaId) {
-                        Text("None").tag(String?.none)
-                        ForEach(allAreas, id: \.id) { area in
-                            HStack {
-                                Circle().fill(Color(hex: area.color)).frame(width: 8, height: 8)
-                                Text(area.name)
+                    if !isNote {
+                        // 3. Status chips
+                        StatusChipBar(status: $status, today: $today)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 12)
+
+                        Divider().padding(.horizontal, 20)
+
+                        // 4. Metadata rows
+                        VStack(spacing: 0) {
+                            // Flagged toggle
+                            MetadataRow(
+                                icon: "flag.fill",
+                                label: "Flagged",
+                                iconColor: flagged ? HBTheme.flagged : HBTheme.textTertiary
+                            ) {
+                                Toggle("", isOn: $flagged)
+                                    .labelsHidden()
                             }
-                            .tag(Optional(area.id))
-                        }
-                    }
-                    .onChange(of: selectedAreaId) { _, newValue in
-                        if let catId = selectedCategoryId {
-                            let catBelongs = allCategories.contains { $0.id == catId && $0.areaId == (newValue ?? "") }
-                            if !catBelongs { selectedCategoryId = nil }
-                        }
-                    }
 
-                    let filteredCategories = allCategories.filter { $0.areaId == (selectedAreaId ?? "") }
-                    Picker("Category", selection: $selectedCategoryId) {
-                        Text("None").tag(String?.none)
-                        ForEach(filteredCategories, id: \.id) { cat in
-                            Text(cat.name).tag(Optional(cat.id))
-                        }
-                    }
-                    .disabled(selectedAreaId == nil)
-
-                    DisclosureGroup("Labels (\(selectedLabels.count))") {
-                        ForEach(allLabels, id: \.id) { label in
-                            Button {
-                                if selectedLabels.contains(label.id) {
-                                    selectedLabels.remove(label.id)
-                                } else {
-                                    selectedLabels.insert(label.id)
+                            // Due date
+                            MetadataRow(
+                                icon: "calendar",
+                                label: "Due Date",
+                                iconColor: dueDate != nil ? HBTheme.accent : HBTheme.textTertiary
+                            ) {
+                                if let date = dueDate {
+                                    Text(date, style: .date)
+                                        .font(.subheadline)
+                                        .foregroundStyle(HBTheme.accent)
                                 }
-                            } label: {
-                                HStack {
-                                    Circle().fill(Color(hex: label.color)).frame(width: 8, height: 8)
-                                    Text(label.name)
-                                        .foregroundStyle(HBTheme.textPrimary)
-                                    Spacer()
-                                    if selectedLabels.contains(label.id) {
-                                        Image(systemName: "checkmark")
-                                            .foregroundStyle(HBTheme.accent)
+                                Button(dueDate == nil ? "Add" : "Remove") {
+                                    if dueDate == nil {
+                                        dueDate = Date()
+                                        showDuePicker = true
+                                    } else {
+                                        dueDate = nil
+                                        showDuePicker = false
                                     }
                                 }
-                            }
-                        }
-                    }
-
-                    DisclosureGroup("People (\(selectedPeople.count))") {
-                        ForEach(allPeople, id: \.id) { person in
-                            Button {
-                                if selectedPeople.contains(person.id) {
-                                    selectedPeople.remove(person.id)
-                                } else {
-                                    selectedPeople.insert(person.id)
-                                }
-                            } label: {
-                                HStack {
-                                    Image(systemName: "person.circle.fill")
-                                        .foregroundStyle(HBTheme.textTertiary)
-                                    Text(person.name)
-                                        .foregroundStyle(HBTheme.textPrimary)
-                                    Spacer()
-                                    if selectedPeople.contains(person.id) {
-                                        Image(systemName: "checkmark")
-                                            .foregroundStyle(HBTheme.accent)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if !isNote {
-                    Section("Dates") {
-                        DatePickerRow(label: "Due", date: $dueDate, isExpanded: $showDuePicker)
-                        DatePickerRow(label: "Defer", date: $deferDate, isExpanded: $showDeferPicker)
-                    }
-                }
-
-                // Child notes section — shown when editing an existing note
-                if isNote && taskId != nil {
-                    Section {
-                        ForEach(childNotes, id: \.id) { child in
-                            ChildNoteRow(note: child, onEdit: { editingChildId = child.id })
-                        }
-
-                        Button {
-                            addChildNote()
-                        } label: {
-                            Label("Add Sub-note", systemImage: "plus")
+                                .font(.subheadline)
                                 .foregroundStyle(HBTheme.accent)
+                            }
+                            if showDuePicker, dueDate != nil {
+                                DatePicker("", selection: Binding(
+                                    get: { dueDate ?? Date() },
+                                    set: { dueDate = $0 }
+                                ), displayedComponents: .date)
+                                .datePickerStyle(.graphical)
+                                .padding(.horizontal, 20)
+                            }
+
+                            // Defer date
+                            MetadataRow(
+                                icon: "clock",
+                                label: "Defer Until",
+                                iconColor: deferDate != nil ? HBTheme.accent : HBTheme.textTertiary
+                            ) {
+                                if let date = deferDate {
+                                    Text(date, style: .date)
+                                        .font(.subheadline)
+                                        .foregroundStyle(HBTheme.accent)
+                                }
+                                Button(deferDate == nil ? "Add" : "Remove") {
+                                    if deferDate == nil {
+                                        deferDate = Date()
+                                        showDeferPicker = true
+                                    } else {
+                                        deferDate = nil
+                                        showDeferPicker = false
+                                    }
+                                }
+                                .font(.subheadline)
+                                .foregroundStyle(HBTheme.accent)
+                            }
+                            if showDeferPicker, deferDate != nil {
+                                DatePicker("", selection: Binding(
+                                    get: { deferDate ?? Date() },
+                                    set: { deferDate = $0 }
+                                ), displayedComponents: .date)
+                                .datePickerStyle(.graphical)
+                                .padding(.horizontal, 20)
+                            }
                         }
-                    } header: {
-                        HStack {
-                            Text("Sub-notes")
-                            Spacer()
-                            Text("\(childNotes.count)")
-                                .font(HBTheme.badgeFont)
-                                .foregroundStyle(HBTheme.textTertiary)
+
+                        Divider().padding(.horizontal, 20)
+                    }
+
+                    // Organization section
+                    VStack(spacing: 0) {
+                        // Area picker
+                        MetadataRow(
+                            icon: "folder",
+                            label: "Area",
+                            iconColor: selectedAreaId != nil ? HBTheme.accent : HBTheme.textTertiary
+                        ) {
+                            Picker("", selection: $selectedAreaId) {
+                                Text("None").tag(String?.none)
+                                ForEach(allAreas, id: \.id) { area in
+                                    HStack {
+                                        Circle().fill(Color(hex: area.color)).frame(width: 8, height: 8)
+                                        Text(area.name)
+                                    }
+                                    .tag(Optional(area.id))
+                                }
+                            }
+                            .labelsHidden()
+                            .onChange(of: selectedAreaId) { _, newValue in
+                                if let catId = selectedCategoryId {
+                                    let catBelongs = allCategories.contains { $0.id == catId && $0.areaId == (newValue ?? "") }
+                                    if !catBelongs { selectedCategoryId = nil }
+                                }
+                            }
+                        }
+
+                        // Category picker
+                        let filteredCategories = allCategories.filter { $0.areaId == (selectedAreaId ?? "") }
+                        MetadataRow(
+                            icon: "tray",
+                            label: "Category",
+                            iconColor: selectedCategoryId != nil ? HBTheme.accent : HBTheme.textTertiary
+                        ) {
+                            Picker("", selection: $selectedCategoryId) {
+                                Text("None").tag(String?.none)
+                                ForEach(filteredCategories, id: \.id) { cat in
+                                    Text(cat.name).tag(Optional(cat.id))
+                                }
+                            }
+                            .labelsHidden()
+                            .disabled(selectedAreaId == nil)
+                        }
+
+                        // Labels summary
+                        MetadataRow(
+                            icon: "tag",
+                            label: "Labels",
+                            iconColor: !selectedLabels.isEmpty ? HBTheme.accent : HBTheme.textTertiary
+                        ) {
+                            DisclosureGroup("\(selectedLabels.count) selected") {
+                                ForEach(allLabels, id: \.id) { label in
+                                    Button {
+                                        if selectedLabels.contains(label.id) {
+                                            selectedLabels.remove(label.id)
+                                        } else {
+                                            selectedLabels.insert(label.id)
+                                        }
+                                    } label: {
+                                        HStack {
+                                            Circle().fill(Color(hex: label.color)).frame(width: 8, height: 8)
+                                            Text(label.name).foregroundStyle(HBTheme.textPrimary)
+                                            Spacer()
+                                            if selectedLabels.contains(label.id) {
+                                                Image(systemName: "checkmark").foregroundStyle(HBTheme.accent)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            .font(.subheadline)
+                        }
+
+                        // People summary
+                        MetadataRow(
+                            icon: "person.2",
+                            label: "People",
+                            iconColor: !selectedPeople.isEmpty ? HBTheme.accent : HBTheme.textTertiary
+                        ) {
+                            DisclosureGroup("\(selectedPeople.count) selected") {
+                                ForEach(allPeople, id: \.id) { person in
+                                    Button {
+                                        if selectedPeople.contains(person.id) {
+                                            selectedPeople.remove(person.id)
+                                        } else {
+                                            selectedPeople.insert(person.id)
+                                        }
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "person.circle.fill").foregroundStyle(HBTheme.textTertiary)
+                                            Text(person.name).foregroundStyle(HBTheme.textPrimary)
+                                            Spacer()
+                                            if selectedPeople.contains(person.id) {
+                                                Image(systemName: "checkmark").foregroundStyle(HBTheme.accent)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            .font(.subheadline)
+                        }
+                    }
+
+                    // Child notes section — shown when editing an existing note
+                    if isNote && taskId != nil {
+                        Divider().padding(.horizontal, 20)
+
+                        VStack(alignment: .leading, spacing: 0) {
+                            HStack {
+                                Text("Sub-notes")
+                                    .font(.subheadline.weight(.medium))
+                                    .foregroundStyle(HBTheme.textSecondary)
+                                Spacer()
+                                Text("\(childNotes.count)")
+                                    .font(HBTheme.badgeFont)
+                                    .foregroundStyle(HBTheme.textTertiary)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 12)
+
+                            ForEach(childNotes, id: \.id) { child in
+                                ChildNoteRow(note: child, onEdit: { editingChildId = child.id })
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 6)
+                            }
+
+                            Button {
+                                addChildNote()
+                            } label: {
+                                Label("Add Sub-note", systemImage: "plus")
+                                    .foregroundStyle(HBTheme.accent)
+                                    .font(.subheadline)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 12)
                         }
                     }
                 }
             }
+            .background(HBTheme.background)
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -186,8 +301,13 @@ struct TaskDetailView: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { save(); dismiss() }
-                        .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
+                    Button("Save") {
+                        save()
+                        Haptic.lightTap()
+                        dismiss()
+                    }
+                    .fontWeight(.semibold)
+                    .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
             .onAppear { loadExisting() }
@@ -256,6 +376,102 @@ struct TaskDetailView: View {
         context.insert(child)
         sync.engine.markDirty()
         editingChildId = child.id
+    }
+}
+
+// MARK: - Status Chip Bar (Step 9)
+
+private struct StatusChipBar: View {
+    @Binding var status: String
+    @Binding var today: Bool
+
+    var body: some View {
+        HStack(spacing: 8) {
+            StatusChip(
+                icon: "star.fill",
+                label: "Today",
+                isSelected: today,
+                color: HBTheme.today
+            ) {
+                today.toggle()
+            }
+
+            StatusChip(
+                icon: "square.stack",
+                label: "Anytime",
+                isSelected: status == "anytime" && !today,
+                color: HBTheme.anytime
+            ) {
+                status = "anytime"
+                today = false
+            }
+
+            StatusChip(
+                icon: "archivebox",
+                label: "Someday",
+                isSelected: status == "someday",
+                color: HBTheme.someday
+            ) {
+                status = "someday"
+                today = false
+            }
+        }
+    }
+}
+
+private struct StatusChip: View {
+    let icon: String
+    let label: String
+    let isSelected: Bool
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 11))
+                Text(label)
+                    .font(.subheadline.weight(.medium))
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(
+                Capsule()
+                    .fill(isSelected ? color.opacity(0.15) : Color.clear)
+            )
+            .overlay(
+                Capsule()
+                    .strokeBorder(isSelected ? color : HBTheme.separator, lineWidth: 1)
+            )
+            .foregroundStyle(isSelected ? color : HBTheme.textSecondary)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Metadata Row (Step 9)
+
+private struct MetadataRow<Trailing: View>: View {
+    let icon: String
+    let label: String
+    var iconColor: Color = HBTheme.textTertiary
+    @ViewBuilder let trailing: () -> Trailing
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 16))
+                .foregroundStyle(iconColor)
+                .frame(width: 24)
+            Text(label)
+                .font(.body)
+                .foregroundStyle(HBTheme.textPrimary)
+            Spacer()
+            trailing()
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
     }
 }
 

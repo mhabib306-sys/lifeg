@@ -2,6 +2,8 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var router = NavigationRouter()
+    @Environment(SyncCoordinator.self) private var sync
+    @Environment(EntityCache.self) private var entityCache
 
     var body: some View {
         NavigationSplitView {
@@ -23,6 +25,10 @@ struct ContentView: View {
         }
         .sheet(isPresented: $router.showSearch) {
             GlobalSearchView(isPresented: $router.showSearch)
+        }
+        .onAppear {
+            // Wire entityCache into SyncCoordinator for post-sync reload
+            sync.entityCache = entityCache
         }
     }
 }

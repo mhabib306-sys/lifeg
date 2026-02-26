@@ -46,6 +46,15 @@ enum PerspectiveType: String, CaseIterable, Identifiable {
         case .notes: HBTheme.accent
         }
     }
+
+    // Step 6: Split into main and library sections
+    static var mainCases: [PerspectiveType] {
+        [.home, .inbox, .today, .flagged, .anytime]
+    }
+
+    static var libraryCases: [PerspectiveType] {
+        [.someday, .upcoming, .logbook, .notes]
+    }
 }
 
 @Observable
