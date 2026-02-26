@@ -104,16 +104,17 @@ struct TaskRowView: View {
 
             Spacer()
         }
-        .padding(.vertical, 10)
+        .padding(.vertical, isEditing ? 14 : 10)
+        .padding(.horizontal, isEditing ? 6 : 0)
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 10)
                 .fill(isEditing ? HBTheme.editingBackground : .clear)
         )
         .shadow(
             color: isEditing ? HBTheme.editingShadow : .clear,
-            radius: isEditing ? 4 : 0,
+            radius: isEditing ? 8 : 0,
             x: 0,
-            y: isEditing ? 1 : 0
+            y: isEditing ? 2 : 0
         )
         .animation(HBTheme.springDefault, value: isEditing)
     }

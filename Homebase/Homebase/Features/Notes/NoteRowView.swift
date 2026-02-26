@@ -84,16 +84,17 @@ struct NoteRowView: View {
                     .foregroundStyle(HBTheme.textTertiary)
             }
         }
-        .padding(.vertical, 6)
+        .padding(.vertical, isEditing ? 10 : 6)
+        .padding(.horizontal, isEditing ? 6 : 0)
         .background(
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: 10)
                 .fill(isEditing ? HBTheme.editingBackground : .clear)
         )
         .shadow(
             color: isEditing ? HBTheme.editingShadow : .clear,
-            radius: isEditing ? 4 : 0,
+            radius: isEditing ? 8 : 0,
             x: 0,
-            y: isEditing ? 1 : 0
+            y: isEditing ? 2 : 0
         )
         .animation(HBTheme.springDefault, value: isEditing)
         .padding(.leading, CGFloat(note.indent) * 16)

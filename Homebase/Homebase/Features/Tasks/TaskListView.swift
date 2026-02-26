@@ -197,10 +197,10 @@ private struct QuickAddRow: View {
                     HStack(spacing: 10) {
                         Image(systemName: "plus")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(HBTheme.textTertiary)
+                            .foregroundStyle(HBTheme.accent)
                         Text("New To-Do")
                             .font(HBTheme.titleFont)
-                            .foregroundStyle(HBTheme.textTertiary)
+                            .foregroundStyle(HBTheme.accent)
                     }
                 }
                 .buttonStyle(ThingsPressStyle())
@@ -208,16 +208,17 @@ private struct QuickAddRow: View {
 
             Spacer()
         }
-        .padding(.vertical, 10)
+        .padding(.vertical, isActive ? 14 : 10)
+        .padding(.horizontal, isActive ? 6 : 0)
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 10)
                 .fill(isActive ? HBTheme.editingBackground : .clear)
         )
         .shadow(
             color: isActive ? HBTheme.editingShadow : .clear,
-            radius: isActive ? 4 : 0,
+            radius: isActive ? 8 : 0,
             x: 0,
-            y: isActive ? 1 : 0
+            y: isActive ? 2 : 0
         )
         .animation(HBTheme.springDefault, value: isActive)
     }
