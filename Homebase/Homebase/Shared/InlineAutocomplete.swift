@@ -257,7 +257,9 @@ struct InlineAutocompleteField: View {
                 }
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
-                        ShortcutKeyboardBar(text: $text)
+                        ShortcutKeyboardBar { trigger in
+                            insertTriggerText(trigger)
+                        }
                     }
                 }
 
@@ -386,6 +388,15 @@ struct InlineAutocompleteField: View {
         Haptic.lightTap()
     }
 
+    private func insertTriggerText(_ trigger: String) {
+        if !text.isEmpty && !text.hasSuffix(" ") {
+            text += " "
+        }
+        text += trigger
+        // Explicitly detect trigger since onChange may not fire from toolbar
+        activeTrigger = detectTrigger(in: text)
+    }
+
     private func iconForTrigger(_ type: TriggerType) -> String {
         switch type {
         case .area: "folder"
@@ -400,7 +411,7 @@ struct InlineAutocompleteField: View {
 // MARK: - Keyboard Shortcut Bar
 
 struct ShortcutKeyboardBar: View {
-    @Binding var text: String
+    var onInsert: (String) -> Void
 
     private let shortcuts: [(label: String, icon: String, trigger: String)] = [
         ("#", "folder", "#"),
@@ -414,7 +425,7 @@ struct ShortcutKeyboardBar: View {
         HStack(spacing: 0) {
             ForEach(shortcuts, id: \.trigger) { shortcut in
                 Button {
-                    insertTrigger(shortcut.trigger)
+                    onInsert(shortcut.trigger)
                     Haptic.selection()
                 } label: {
                     HStack(spacing: 4) {
@@ -435,13 +446,5 @@ struct ShortcutKeyboardBar: View {
                 }
             }
         }
-    }
-
-    private func insertTrigger(_ trigger: String) {
-        // Add a space before the trigger if needed
-        if !text.isEmpty && !text.hasSuffix(" ") {
-            text += " "
-        }
-        text += trigger
     }
 }
