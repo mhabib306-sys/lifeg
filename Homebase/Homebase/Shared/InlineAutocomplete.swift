@@ -242,7 +242,7 @@ struct InlineAutocompleteField: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            TextField(placeholder, text: $text)
+            TextField(placeholder, text: $text, axis: .vertical)
                 .font(font)
                 .focused($isFocused)
                 .onAppear {
