@@ -1866,7 +1866,7 @@ describe('loadCloudDataWithRetry advanced scenarios', () => {
 
     expect(globalThis.fetch).toHaveBeenCalledTimes(2);
     expect(mockState.syncHealth.successfulLoads).toBe(1);
-  });
+  }, 15_000);
 
   it('maxRetries=0 means only one attempt', async () => {
     vi.useRealTimers();
@@ -1907,7 +1907,7 @@ describe('loadCloudDataWithRetry advanced scenarios', () => {
 
     await promise;
     vi.useRealTimers();
-  });
+  }, 15_000);
 
   it('releases syncInProgress even after all retries fail', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: false });

@@ -16,10 +16,21 @@ struct HomebaseApp: App {
             HBPerspective.self,
             HBTombstone.self
         ])
-        let config = ModelConfiguration("Homebase", isStoredInMemoryOnly: false)
-        let c = try! ModelContainer(for: schema, configurations: [config])
-        self.container = c
-        self._syncCoordinator = State(initialValue: SyncCoordinator(container: c))
+
+        let container: ModelContainer
+        do {
+            let config = ModelConfiguration("Homebase", isStoredInMemoryOnly: false)
+            container = try ModelContainer(for: schema, configurations: [config])
+        } catch {
+            // If persistent store fails, fall back to in-memory
+            print("[Homebase] ModelContainer failed: \(error). Falling back to in-memory store.")
+            container = try! ModelContainer(for: schema, configurations: [
+                ModelConfiguration("Homebase", isStoredInMemoryOnly: true)
+            ])
+        }
+
+        self.container = container
+        self._syncCoordinator = State(initialValue: SyncCoordinator(container: container))
     }
 
     var body: some Scene {
