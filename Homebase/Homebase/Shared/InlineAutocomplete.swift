@@ -249,8 +249,7 @@ struct InlineAutocompleteField: View {
                 .onAppear {
                     originalText = text
                     if autoFocus {
-                        // Syncs with spring animation ramp-up
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                             isFocused = true
                         }
                     }

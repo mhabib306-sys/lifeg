@@ -7,36 +7,36 @@ enum HBTheme {
     static let secondaryBackground = Color(hex: "#F7F6F3")  // Warm tint
     static let sidebar = Color(hex: "#F2F1ED")               // Warmer
 
-    static let textPrimary = Color(hex: "#1A1A1A")           // Darker
+    static let textPrimary = Color(hex: "#1D1D1F")           // Things 3 near-black
     static let textSecondary = Color(hex: "#8E8E93")         // iOS system gray
     static let textTertiary = Color(hex: "#AEAEB2")          // iOS system gray 3
 
-    static let accent = Color(hex: "#357EDD")                // Things warmer blue
+    static let accent = Color(hex: "#3D7FE3")                // Things 3 blue
     static let today = Color(hex: "#FFCC00")                 // Pure gold star
     static let flagged = Color(hex: "#FF9F0A")               // Slightly warmer
 
-    static let inbox = Color(hex: "#4A90D9")                 // Things inbox blue
-    static let anytime = Color(hex: "#6EC8FA")
-    static let someday = Color(hex: "#C3A978")
-    static let logbook = Color(hex: "#7DC67B")
-    static let upcoming = Color(hex: "#EA4E3D")
+    static let inbox = Color(hex: "#5FA1F5")                 // Things 3 inbox blue
+    static let anytime = Color(hex: "#48C5D0")               // Things 3 teal
+    static let someday = Color(hex: "#A1886F")               // Things 3 warm brown
+    static let logbook = Color(hex: "#74B358")               // Things 3 green
+    static let upcoming = Color(hex: "#E35D54")              // Things 3 red
 
     static let separator = Color(hex: "#E5E5EA")
     static let checkboxBorder = Color(hex: "#C7C7CC")
-    static let checkboxFill = Color(hex: "#357EDD")          // Match accent
+    static let checkboxFill = Color(hex: "#3D7FE3")          // Match accent
 
     // Editing state
-    static let editingBackground = Color(hex: "#F7F6F3")     // Warm gray, matches secondaryBackground
-    static let editingShadow = Color.black.opacity(0.06)
+    static let editingBackground = Color(hex: "#F5F3EE")     // Things 3 warm editing bg
+    static let editingShadow = Color.black.opacity(0.08)
 
     // Canonical spring animations
     static let springDefault: Animation = .spring(response: 0.35, dampingFraction: 0.8)
-    static let springSnappy: Animation = .spring(response: 0.25, dampingFraction: 0.7)
-    static let springGentle: Animation = .spring(response: 0.45, dampingFraction: 0.85)
+    static let springSnappy: Animation = .spring(response: 0.25, dampingFraction: 0.85)
+    static let springGentle: Animation = .spring(response: 0.35, dampingFraction: 0.85)
 
     // Typography — upgraded
     static let titleFont = Font.system(.body, weight: .regular)
-    static let subtitleFont = Font.system(.footnote, weight: .regular)
+    static let subtitleFont = Font.system(.caption, weight: .regular)
     static let headerFont = Font.system(.title2, weight: .bold)
     static let badgeFont = Font.system(.caption2, weight: .medium)
     static let sidebarFont = Font.system(.body, weight: .medium)

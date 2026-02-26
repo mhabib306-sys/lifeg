@@ -14,14 +14,14 @@ struct TaskRowView: View {
     @State private var didSetup = false
 
     var body: some View {
-        HStack(alignment: .top, spacing: 14) {
+        HStack(alignment: .top, spacing: 12) {
             ThingsCheckbox(
                 isCompleted: task.completed,
                 accentColor: HBTheme.checkboxFill
             ) {
                 toggleCompletion()
             }
-            .padding(.top, 2)
+            .padding(.top, 1)
 
             VStack(alignment: .leading, spacing: 2) {
                 if isEditing {
@@ -44,37 +44,27 @@ struct TaskRowView: View {
                                 dueDate: task.dueDate
                             )
                             didSetup = true
-                            Haptic.editStart()
                         }
                     }
                     .onDisappear { didSetup = false }
                 } else {
-                    // Title text — tappable to enter edit mode
                     Text(task.title)
                         .font(HBTheme.titleFont)
                         .foregroundStyle(task.completed ? HBTheme.textTertiary : HBTheme.textPrimary)
                         .strikethrough(task.completed, color: HBTheme.textTertiary.opacity(0.5))
-                        .opacity(task.completed ? 0.6 : 1.0)
+                        .opacity(task.completed ? 0.4 : 1.0)
                         .contentShape(Rectangle())
                         .onTapGesture { onStartEditing?() }
                 }
 
-                // Things 3-style metadata: colored dots for labels, compact dates
+                // Things 3-style metadata: date, flag, colored dots, area, people
                 if !isEditing && !task.completed {
                     let cache = sync.entityCache
-                    HStack(spacing: 5) {
-                        if let areaId = task.areaId, let area = cache.areas[areaId] {
-                            Text(area.name)
+                    HStack(spacing: 6) {
+                        if let due = task.dueDate {
+                            Text(formatCompactDate(due))
                                 .font(HBTheme.subtitleFont)
-                                .foregroundStyle(HBTheme.textTertiary)
-                        }
-
-                        ForEach(Array(task.labels.prefix(3)), id: \.self) { labelId in
-                            if let label = cache.labels[labelId] {
-                                Circle()
-                                    .fill(Color(hex: label.color))
-                                    .frame(width: 8, height: 8)
-                            }
+                                .foregroundStyle(due < Date() ? .red : HBTheme.textSecondary)
                         }
 
                         if task.flagged {
@@ -83,10 +73,18 @@ struct TaskRowView: View {
                                 .foregroundStyle(HBTheme.flagged)
                         }
 
-                        if let due = task.dueDate {
-                            Text(formatCompactDate(due))
+                        ForEach(Array(task.labels.prefix(3)), id: \.self) { labelId in
+                            if let label = cache.labels[labelId] {
+                                Circle()
+                                    .fill(Color(hex: label.color))
+                                    .frame(width: 6, height: 6)
+                            }
+                        }
+
+                        if let areaId = task.areaId, let area = cache.areas[areaId] {
+                            Text(area.name)
                                 .font(HBTheme.subtitleFont)
-                                .foregroundStyle(due < Date() ? .red : HBTheme.textSecondary)
+                                .foregroundStyle(HBTheme.textTertiary)
                         }
 
                         ForEach(Array(task.people.prefix(2)), id: \.self) { personId in
@@ -106,16 +104,16 @@ struct TaskRowView: View {
 
             Spacer()
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 10)
         .background(
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: 12)
                 .fill(isEditing ? HBTheme.editingBackground : .clear)
         )
         .shadow(
             color: isEditing ? HBTheme.editingShadow : .clear,
-            radius: isEditing ? 6 : 0,
+            radius: isEditing ? 4 : 0,
             x: 0,
-            y: isEditing ? 2 : 0
+            y: isEditing ? 1 : 0
         )
         .animation(HBTheme.springDefault, value: isEditing)
     }
@@ -152,7 +150,6 @@ struct TaskRowView: View {
         }
         task.touch()
         sync.engine.markDirty()
-        Haptic.lightTap()
         onEditDone?()
     }
 
@@ -175,7 +172,6 @@ struct TaskRowView: View {
             deferDate: task.deferDate,
             dueDate: task.dueDate
         )
-        Haptic.editCancel()
         onEditCancel?()
     }
 }

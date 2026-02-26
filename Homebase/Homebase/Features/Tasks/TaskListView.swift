@@ -24,7 +24,8 @@ struct TaskListView: View {
                 EmptyStateView(
                     icon: perspective.emptyIcon,
                     title: perspective.emptyTitle,
-                    subtitle: perspective.emptySubtitle
+                    subtitle: perspective.emptySubtitle,
+                    color: perspective.color
                 )
                 .transition(.opacity.combined(with: .scale(scale: 0.95)))
             } else {
@@ -94,6 +95,8 @@ struct TaskListView: View {
                             .tint(HBTheme.flagged)
                         }
                         .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
                     }
                     .onMove { source, destination in
                         withAnimation(HBTheme.springGentle) {
@@ -102,8 +105,12 @@ struct TaskListView: View {
                     }
 
                     QuickAddRow(perspective: perspective)
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
                 .scrollDismissesKeyboard(.interactively)
                 .transition(.opacity)
                 .animation(HBTheme.springGentle, value: filteredTasks.map(\.id))
@@ -119,9 +126,6 @@ struct TaskListView: View {
                 } label: {
                     Image(systemName: "plus")
                 }
-            }
-            ToolbarItem(placement: .topBarLeading) {
-                EditButton()
             }
         }
         .sheet(item: $router.presentedSheet) { sheet in
@@ -157,12 +161,12 @@ private struct QuickAddRow: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        HStack(alignment: .top, spacing: 14) {
+        HStack(alignment: .top, spacing: 12) {
             if isActive {
                 Circle()
-                    .strokeBorder(HBTheme.checkboxBorder, lineWidth: 2)
-                    .frame(width: 24, height: 24)
-                    .padding(.top, 2)
+                    .strokeBorder(HBTheme.checkboxBorder, lineWidth: 1.5)
+                    .frame(width: 22, height: 22)
+                    .padding(.top, 1)
 
                 InlineAutocompleteField(
                     text: $text,
@@ -182,7 +186,6 @@ private struct QuickAddRow: View {
                             metadata = TaskInlineMetadata()
                             isActive = false
                         }
-                        Haptic.editCancel()
                     }
                 )
             } else {
@@ -190,13 +193,12 @@ private struct QuickAddRow: View {
                     withAnimation(HBTheme.springDefault) {
                         isActive = true
                     }
-                    Haptic.editStart()
                 } label: {
                     HStack(spacing: 10) {
                         Image(systemName: "plus")
                             .font(.system(size: 14, weight: .medium))
                             .foregroundStyle(HBTheme.textTertiary)
-                        Text("New Task")
+                        Text("New To-Do")
                             .font(HBTheme.titleFont)
                             .foregroundStyle(HBTheme.textTertiary)
                     }
@@ -206,19 +208,18 @@ private struct QuickAddRow: View {
 
             Spacer()
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 10)
         .background(
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: 12)
                 .fill(isActive ? HBTheme.editingBackground : .clear)
         )
         .shadow(
             color: isActive ? HBTheme.editingShadow : .clear,
-            radius: isActive ? 6 : 0,
+            radius: isActive ? 4 : 0,
             x: 0,
-            y: isActive ? 2 : 0
+            y: isActive ? 1 : 0
         )
         .animation(HBTheme.springDefault, value: isActive)
-        .listRowSeparator(.hidden)
     }
 
     private var hasMetadata: Bool {
@@ -250,7 +251,6 @@ private struct QuickAddRow: View {
 
         text = ""
         metadata = TaskInlineMetadata()
-        // Keep field focused for rapid multi-task entry
     }
 
     private var defaultStatus: String {

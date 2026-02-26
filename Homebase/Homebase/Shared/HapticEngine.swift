@@ -1,6 +1,6 @@
 import UIKit
 
-// MARK: - Step 5: Haptic Feedback Engine
+// MARK: - Haptic Feedback Engine (Things 3 minimal style)
 
 @MainActor
 enum Haptic {
@@ -11,9 +11,9 @@ enum Haptic {
     }
 
     static func checkboxTap() {
-        let generator = UIImpactFeedbackGenerator(style: .medium)
+        let generator = UIImpactFeedbackGenerator(style: .light)
         generator.prepare()
-        generator.impactOccurred(intensity: 0.7)
+        generator.impactOccurred()
     }
 
     static func selection() {
@@ -25,18 +25,10 @@ enum Haptic {
     static func lightTap() {
         let generator = UIImpactFeedbackGenerator(style: .light)
         generator.prepare()
-        generator.impactOccurred()
-    }
-
-    static func editStart() {
-        let generator = UIImpactFeedbackGenerator(style: .soft)
-        generator.prepare()
         generator.impactOccurred(intensity: 0.5)
     }
 
-    static func editCancel() {
-        let generator = UIImpactFeedbackGenerator(style: .rigid)
-        generator.prepare()
-        generator.impactOccurred(intensity: 0.3)
-    }
+    // No-ops: Things 3 doesn't haptic on edit start/cancel
+    static func editStart() {}
+    static func editCancel() {}
 }

@@ -28,16 +28,18 @@ struct ContentView: View {
             if showFAB {
                 FloatingAddButton {
                     router.presentedSheet = .taskEditor(nil)
-                    Haptic.lightTap()
                 }
                 .padding(.trailing, 20)
                 .padding(.bottom, 28)
-                .transition(.scale(scale: 0.6).combined(with: .opacity))
+                .transition(.scale(scale: 0.85).combined(with: .opacity))
             }
         }
         .animation(HBTheme.springSnappy, value: showFAB)
         .sheet(isPresented: $router.showSearch) {
             GlobalSearchView(isPresented: $router.showSearch)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
         }
     }
 

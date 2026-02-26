@@ -127,7 +127,6 @@ struct HomeView: View {
             // Floating add button
             Button {
                 showNewTask = true
-                Haptic.lightTap()
             } label: {
                 Image(systemName: "plus")
                     .font(.system(size: 22, weight: .semibold))
@@ -137,6 +136,7 @@ struct HomeView: View {
                     .clipShape(Circle())
                     .shadow(color: HBTheme.accent.opacity(0.3), radius: 8, y: 4)
             }
+            .buttonStyle(ThingsPressStyle())
             .padding(.trailing, 20)
             .padding(.bottom, 20)
         }
@@ -159,6 +159,9 @@ struct HomeView: View {
         }
         .sheet(item: $editingTaskId) { taskId in
             TaskDetailView(taskId: taskId, context: context)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
         }
         .sheet(isPresented: $showNewTask) {
             TaskDetailView(taskId: nil, context: context)
@@ -566,7 +569,6 @@ private struct WidgetTaskRow: View {
                     accentColor: HBTheme.checkboxFill,
                     onToggle: onComplete
                 )
-                .scaleEffect(0.75)
             } else {
                 Circle()
                     .fill(HBTheme.textTertiary.opacity(0.3))

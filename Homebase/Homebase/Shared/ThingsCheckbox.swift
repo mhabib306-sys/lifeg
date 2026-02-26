@@ -1,42 +1,31 @@
 import SwiftUI
 
-// MARK: - Step 3: Things 3 Checkbox Component
+// MARK: - Things 3 Checkbox Component
 
 struct ThingsCheckbox: View {
     let isCompleted: Bool
     var accentColor: Color = HBTheme.checkboxFill
     let onToggle: () -> Void
 
-    @State private var animateCheck = false
-
     var body: some View {
         Button {
             onToggle()
-            if !isCompleted {
-                // Trigger spring pop animation
-                withAnimation(HBTheme.springSnappy) {
-                    animateCheck = true
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    animateCheck = false
-                }
-            }
-            Haptic.checkboxTap()
         } label: {
             Circle()
-                .strokeBorder(isCompleted ? accentColor : HBTheme.checkboxBorder, lineWidth: 2)
+                .strokeBorder(isCompleted ? accentColor : HBTheme.checkboxBorder, lineWidth: 1.5)
                 .background(Circle().fill(isCompleted ? accentColor : .clear))
-                .frame(width: 24, height: 24)
+                .frame(width: 22, height: 22)
                 .overlay {
                     if isCompleted {
                         Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .heavy))
+                            .font(.system(size: 11, weight: .heavy))
                             .foregroundStyle(.white)
-                            .transition(.scale.combined(with: .opacity))
+                            .transition(.scale(scale: 0.3).combined(with: .opacity))
                     }
                 }
-                .scaleEffect(animateCheck ? 1.15 : 1.0)
         }
         .buttonStyle(.plain)
+        .frame(width: 44, height: 44)
+        .contentShape(Circle())
     }
 }

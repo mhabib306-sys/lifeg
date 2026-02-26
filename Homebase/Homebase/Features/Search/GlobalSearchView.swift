@@ -17,7 +17,7 @@ struct GlobalSearchView: View {
 
     private var matchingTasks: [HBTask] {
         guard !trimmed.isEmpty else { return [] }
-        return allTasks.filter { !$0.isNote && $0.title.lowercased().contains(trimmed) }
+        return allTasks.filter { !$0.isNote && ($0.title.lowercased().contains(trimmed) || $0.notes.lowercased().contains(trimmed)) }
             .sorted { lhs, rhs in
                 if lhs.completed != rhs.completed { return !lhs.completed }
                 return lhs.order < rhs.order
@@ -171,6 +171,9 @@ struct GlobalSearchView: View {
             }
             .sheet(item: $editingTaskId) { taskId in
                 TaskDetailView(taskId: taskId, context: context)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
+                    .presentationCornerRadius(20)
             }
             .onAppear { isFocused = true }
         }
@@ -181,28 +184,45 @@ struct GlobalSearchView: View {
 
 private struct SearchTaskRow: View {
     let task: HBTask
+    @Environment(SyncCoordinator.self) private var sync
 
     var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: task.completed ? "checkmark.circle.fill" : "circle")
-                .font(.system(size: 16))
-                .foregroundStyle(task.completed ? HBTheme.logbook : HBTheme.checkboxBorder)
+        HStack(spacing: 12) {
+            Circle()
+                .strokeBorder(task.completed ? HBTheme.logbook : HBTheme.checkboxBorder, lineWidth: 1.5)
+                .background(Circle().fill(task.completed ? HBTheme.logbook : .clear))
+                .frame(width: 22, height: 22)
+                .overlay {
+                    if task.completed {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 11, weight: .heavy))
+                            .foregroundStyle(.white)
+                    }
+                }
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(task.title)
                     .font(HBTheme.titleFont)
                     .foregroundStyle(task.completed ? HBTheme.textTertiary : HBTheme.textPrimary)
-                    .strikethrough(task.completed)
+                    .strikethrough(task.completed, color: HBTheme.textTertiary.opacity(0.5))
+                    .opacity(task.completed ? 0.4 : 1.0)
 
                 HStack(spacing: 6) {
                     if task.flagged {
                         Image(systemName: "flag.fill")
-                            .font(.system(size: 9))
+                            .font(.system(size: 10))
                             .foregroundStyle(HBTheme.flagged)
                     }
-                    Text(task.status.capitalized)
-                        .font(HBTheme.badgeFont)
-                        .foregroundStyle(HBTheme.textTertiary)
+
+                    if let areaId = task.areaId, let area = sync.entityCache.areas[areaId] {
+                        Text(area.name)
+                            .font(HBTheme.subtitleFont)
+                            .foregroundStyle(HBTheme.textTertiary)
+                    } else {
+                        Text(task.status.capitalized)
+                            .font(HBTheme.subtitleFont)
+                            .foregroundStyle(HBTheme.textTertiary)
+                    }
                 }
             }
 

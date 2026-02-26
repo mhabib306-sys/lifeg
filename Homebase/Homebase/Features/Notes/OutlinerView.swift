@@ -32,7 +32,6 @@ struct OutlinerView: View {
                         withAnimation(HBTheme.springDefault) {
                             editingNoteId = note.id
                         }
-                        Haptic.editStart()
                     },
                     onEditDone: {
                         withAnimation(HBTheme.springDefault) {
@@ -52,28 +51,28 @@ struct OutlinerView: View {
                 .swipeActions(edge: .leading) {
                     Button {
                         indentNote(note)
-                        Haptic.lightTap()
                     } label: { Label("Indent", systemImage: "arrow.right") }
                         .tint(.blue)
                 }
                 .swipeActions(edge: .trailing) {
                     Button {
                         outdentNote(note)
-                        Haptic.lightTap()
                     } label: { Label("Outdent", systemImage: "arrow.left") }
                         .tint(.orange)
                     Button(role: .destructive) {
                         deleteNote(note)
-                        Haptic.editCancel()
                     } label: { Label("Delete", systemImage: "trash") }
                 }
+                .listRowSeparator(.hidden)
             }
             .onMove { source, destination in
-                moveNote(from: source, to: destination)
-                Haptic.selection()
+                withAnimation(HBTheme.springGentle) {
+                    moveNote(from: source, to: destination)
+                }
             }
         }
         .listStyle(.plain)
+        .scrollContentBackground(.hidden)
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle(currentTitle)
         .environment(\.editMode, $editMode)
@@ -81,14 +80,10 @@ struct OutlinerView: View {
             ToolbarItem(placement: .primaryAction) {
                 Button { addNote() } label: { Image(systemName: "plus") }
             }
-            ToolbarItem(placement: .topBarLeading) {
-                EditButton()
-            }
             if !breadcrumb.isEmpty {
                 ToolbarItem(placement: .navigation) {
                     Button {
                         breadcrumb.removeLast()
-                        Haptic.selection()
                     } label: {
                         Image(systemName: "chevron.left")
                     }
@@ -113,8 +108,6 @@ struct OutlinerView: View {
         note.order = visibleNotes.count
         context.insert(note)
         sync.engine.markDirty()
-        Haptic.lightTap()
-        // Start editing the new note with animation
         withAnimation(HBTheme.springDefault) {
             editingNoteId = note.id
         }
@@ -131,7 +124,7 @@ struct OutlinerView: View {
     }
 
     private func indentNote(_ note: HBTask) {
-        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+        withAnimation(HBTheme.springDefault) {
             var notes = allNotes
             OutlinerEngine.indent(note: note, allNotes: &notes)
             sync.engine.markDirty()
@@ -139,7 +132,7 @@ struct OutlinerView: View {
     }
 
     private func outdentNote(_ note: HBTask) {
-        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+        withAnimation(HBTheme.springDefault) {
             var notes = allNotes
             OutlinerEngine.outdent(note: note, allNotes: &notes)
             sync.engine.markDirty()
@@ -147,7 +140,7 @@ struct OutlinerView: View {
     }
 
     private func deleteNote(_ note: HBTask) {
-        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+        withAnimation(HBTheme.springDefault) {
             var notes = allNotes
             OutlinerEngine.deleteNote(note, allNotes: &notes)
             sync.engine.markDirty()

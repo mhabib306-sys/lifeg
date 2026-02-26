@@ -50,7 +50,6 @@ struct SidebarView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
-                    Haptic.selection()
                     router.showSearch = true
                 } label: {
                     Image(systemName: "magnifyingglass")

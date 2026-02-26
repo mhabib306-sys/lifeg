@@ -1,6 +1,6 @@
 import SwiftUI
 
-// Step 6: Sidebar Redesign — Things 3 style icon badges
+// Things 3 style icon badges
 
 struct PerspectiveRow: View {
     let perspective: PerspectiveType
@@ -8,13 +8,12 @@ struct PerspectiveRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Icon in colored rounded rectangle
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: 6)
                 .fill(perspective.color)
-                .frame(width: 32, height: 32)
+                .frame(width: 28, height: 28)
                 .overlay {
                     Image(systemName: perspective.icon)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(.white)
                 }
 
@@ -30,6 +29,6 @@ struct PerspectiveRow: View {
                     .foregroundStyle(HBTheme.textTertiary)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 2)
     }
 }

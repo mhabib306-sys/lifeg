@@ -299,14 +299,12 @@ struct TaskDetailView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
-                        Haptic.editCancel()
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         save()
-                        Haptic.lightTap()
                         dismiss()
                     }
                     .fontWeight(.semibold)
@@ -324,6 +322,9 @@ struct TaskDetailView: View {
             }
             .sheet(item: $editingChildId) { childId in
                 TaskDetailView(taskId: childId, context: context)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
+                    .presentationCornerRadius(20)
             }
         }
     }
@@ -408,7 +409,6 @@ struct TaskDetailView: View {
         child.order = childNotes.count
         context.insert(child)
         sync.engine.markDirty()
-        Haptic.lightTap()
         editingChildId = child.id
     }
 }

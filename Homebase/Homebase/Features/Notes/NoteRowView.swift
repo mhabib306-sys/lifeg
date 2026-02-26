@@ -52,7 +52,6 @@ struct NoteRowView: View {
                                 dueDate: note.dueDate
                             )
                             didSetup = true
-                            Haptic.editStart()
                         }
                     }
                     .onDisappear { didSetup = false }
@@ -64,16 +63,16 @@ struct NoteRowView: View {
                         .onTapGesture { onStartEditing?() }
                 }
 
-                if let subtitle = sync.entityCache.subtitle(for: note) {
-                    Text(subtitle)
-                        .font(HBTheme.subtitleFont)
-                        .foregroundStyle(HBTheme.textTertiary)
-                        .lineLimit(1)
-                        .transition(.opacity.combined(with: .move(edge: .top)))
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            if !isEditing { onStartEditing?() }
-                        }
+                if !isEditing {
+                    if let subtitle = sync.entityCache.subtitle(for: note) {
+                        Text(subtitle)
+                            .font(HBTheme.subtitleFont)
+                            .foregroundStyle(HBTheme.textTertiary)
+                            .lineLimit(1)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                            .contentShape(Rectangle())
+                            .onTapGesture { onStartEditing?() }
+                    }
                 }
             }
 
@@ -94,7 +93,7 @@ struct NoteRowView: View {
             color: isEditing ? HBTheme.editingShadow : .clear,
             radius: isEditing ? 4 : 0,
             x: 0,
-            y: isEditing ? 2 : 0
+            y: isEditing ? 1 : 0
         )
         .animation(HBTheme.springDefault, value: isEditing)
         .padding(.leading, CGFloat(note.indent) * 16)
@@ -112,7 +111,6 @@ struct NoteRowView: View {
         note.dueDate = editMetadata.dueDate
         note.touch()
         sync.engine.markDirty()
-        Haptic.lightTap()
         onEditDone?()
     }
 
@@ -125,7 +123,6 @@ struct NoteRowView: View {
             deferDate: note.deferDate,
             dueDate: note.dueDate
         )
-        Haptic.editCancel()
         onEditCancel?()
     }
 }

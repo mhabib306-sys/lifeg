@@ -279,11 +279,14 @@ struct EntityDetailView: View {
                             .onTapGesture { editingTaskId = task.id }
                             .swipeActions(edge: .leading) {
                                 Button {
-                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                                        task.markCompleted()
-                                        sync.engine.markDirty()
+                                    Haptic.checkboxTap()
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                                        withAnimation(HBTheme.springGentle) {
+                                            task.markCompleted()
+                                            sync.engine.markDirty()
+                                        }
+                                        Haptic.taskCompleted()
                                     }
-                                    Haptic.taskCompleted()
                                 } label: {
                                     Label("Complete", systemImage: "checkmark")
                                 }
@@ -328,22 +331,28 @@ struct EntityDetailView: View {
                 }
             }
         }
-        .listStyle(.insetGrouped)
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
         .navigationTitle(entityName)
         .searchable(text: $searchText, prompt: "Search in \(entityName)...")
         .toolbar {
             Button {
                 showNewTask = true
-                Haptic.lightTap()
             } label: {
                 Image(systemName: "plus")
             }
         }
         .sheet(isPresented: $showNewTask) {
             TaskDetailView(taskId: nil, context: context, linkedEntity: entityType)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
         }
         .sheet(item: $editingTaskId) { taskId in
             TaskDetailView(taskId: taskId, context: context)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
         }
     }
 }

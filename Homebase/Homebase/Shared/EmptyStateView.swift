@@ -1,24 +1,27 @@
 import SwiftUI
 
-// MARK: - Step 8: Empty States
+// MARK: - Empty States (Things 3 style)
 
 struct EmptyStateView: View {
     let icon: String
     let title: String
     let subtitle: String
+    var color: Color = HBTheme.textTertiary
 
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 48, weight: .thin))
-                .foregroundStyle(HBTheme.textTertiary)
+                .foregroundStyle(color.opacity(0.6))
             Text(title)
                 .font(.system(.title3, weight: .medium))
                 .foregroundStyle(HBTheme.textSecondary)
-            Text(subtitle)
-                .font(.footnote)
-                .foregroundStyle(HBTheme.textTertiary)
-                .multilineTextAlignment(.center)
+            if !subtitle.isEmpty {
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(HBTheme.textTertiary)
+                    .multilineTextAlignment(.center)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(40)
@@ -29,15 +32,15 @@ struct EmptyStateView: View {
 extension PerspectiveType {
     var emptyIcon: String {
         switch self {
-        case .inbox: "tray"
-        case .today: "star"
-        case .flagged: "flag"
-        case .anytime: "square.stack"
-        case .someday: "archivebox"
+        case .inbox: "tray.fill"
+        case .today: "star.fill"
+        case .flagged: "flag.fill"
+        case .anytime: "square.stack.fill"
+        case .someday: "archivebox.fill"
         case .upcoming: "calendar"
-        case .logbook: "book.closed"
-        case .notes: "doc.text"
-        case .home: "house"
+        case .logbook: "book.closed.fill"
+        case .notes: "doc.text.fill"
+        case .home: "house.fill"
         }
     }
 
@@ -57,15 +60,15 @@ extension PerspectiveType {
 
     var emptySubtitle: String {
         switch self {
-        case .inbox: "Your inbox is clear."
-        case .today: "Nothing scheduled for today."
-        case .flagged: "Flag tasks to see them here."
-        case .anytime: "All tasks are done or scheduled."
-        case .someday: "Add tasks you might do someday."
-        case .upcoming: "No tasks with future dates."
-        case .logbook: "Completed tasks appear here."
+        case .inbox: ""
+        case .today: ""
+        case .flagged: ""
+        case .anytime: ""
+        case .someday: ""
+        case .upcoming: ""
+        case .logbook: ""
         case .notes: "Create notes to get started."
-        case .home: "Your home base."
+        case .home: ""
         }
     }
 }
