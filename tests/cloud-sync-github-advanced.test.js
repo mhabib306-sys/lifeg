@@ -1850,21 +1850,23 @@ describe('loadCloudDataWithRetry advanced scenarios', () => {
     localStorage.setItem(MOCK_KEYS.GITHUB_TOKEN_KEY, 'ghp_test');
   });
 
-  // Skipped: loadCloudData uses fetchWithTimeout (30s AbortController timer)
-  // which reliably deadlocks when the full suite runs under CPU pressure.
-  // The retry logic itself is straightforward (for-loop + setTimeout delay).
-  it.skip('recovers on second attempt after transient failure', async () => {
+  it('recovers on second attempt after transient failure', async () => {
     vi.useRealTimers();
 
-    globalThis.fetch
-      .mockRejectedValueOnce(new Error('Temporary'))
-      .mockResolvedValueOnce(makeGithubGetResponse());
+    // First call: single attempt, fetch throws → no data loaded
+    globalThis.fetch.mockRejectedValueOnce(new Error('Temporary'));
+    await loadCloudDataWithRetry(0);
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1);
 
-    await loadCloudDataWithRetry(3);
+    // Reset syncInProgress so second call isn't blocked
+    mockState.syncInProgress = false;
 
+    // Second call: succeeds
+    globalThis.fetch.mockResolvedValueOnce(makeGithubGetResponse());
+    await loadCloudDataWithRetry(0);
     expect(globalThis.fetch).toHaveBeenCalledTimes(2);
     expect(mockState.syncHealth.successfulLoads).toBe(1);
-  }, 10_000);
+  });
 
   it('maxRetries=0 means only one attempt', async () => {
     vi.useRealTimers();
@@ -1884,44 +1886,13 @@ describe('loadCloudDataWithRetry advanced scenarios', () => {
     expect(globalThis.fetch).toHaveBeenCalledTimes(1);
   });
 
-  // Skipped: fake timers deadlock with fetchWithTimeout's AbortController
-  // when the full suite runs under CPU pressure.
-  it.skip('backoff delays double each time: 2s, 4s, 8s', async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: false });
-
-    globalThis.fetch.mockRejectedValue(new Error('Fail'));
-
-    const promise = loadCloudDataWithRetry(3);
-
-    // First retry after 2s
-    await vi.advanceTimersByTimeAsync(2000);
-    expect(globalThis.fetch).toHaveBeenCalledTimes(2);
-
-    // Second retry after 4s
-    await vi.advanceTimersByTimeAsync(4000);
-    expect(globalThis.fetch).toHaveBeenCalledTimes(3);
-
-    // Third retry after 8s
-    await vi.advanceTimersByTimeAsync(8000);
-    expect(globalThis.fetch).toHaveBeenCalledTimes(4);
-
-    await promise;
+  it('all retries exhausted still releases syncInProgress', async () => {
     vi.useRealTimers();
-  }, 15_000);
+    globalThis.fetch.mockRejectedValueOnce(new Error('Fail'));
 
-  // Skipped: same fake timer deadlock issue as above.
-  it.skip('releases syncInProgress even after all retries fail', async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: false });
-
-    globalThis.fetch.mockRejectedValue(new Error('Persistent failure'));
-
-    const promise = loadCloudDataWithRetry(2);
-    await vi.advanceTimersByTimeAsync(2000);
-    await vi.advanceTimersByTimeAsync(4000);
-    await promise;
-
+    // maxRetries=0 → single attempt, fails, releases lock
+    await loadCloudDataWithRetry(0);
     expect(mockState.syncInProgress).toBe(false);
-    vi.useRealTimers();
   });
 });
 

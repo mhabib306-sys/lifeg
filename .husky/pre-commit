@@ -1,2 +1,47 @@
-npm test
-npm run lint
+#!/bin/sh
+
+# Smart pre-commit: only run checks relevant to the changed files.
+# Cuts commit time from ~4 minutes (full suite) to seconds for most changes.
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR)
+
+# --- Detect what changed ---
+JS_CHANGED=$(echo "$STAGED" | grep -E '\.(js|css|html)$' || true)
+SRC_CHANGED=$(echo "$STAGED" | grep -E '^src/' || true)
+TEST_CHANGED=$(echo "$STAGED" | grep -E '^tests/' || true)
+
+# --- Tests: only when JS/test files changed ---
+if [ -n "$JS_CHANGED" ] || [ -n "$TEST_CHANGED" ]; then
+  # If src/ files changed, run only related tests (fast)
+  # If test files changed, run those specific test files
+  # Fall back to full suite only if we can't determine related files
+  RELATED_FILES=""
+
+  if [ -n "$SRC_CHANGED" ]; then
+    RELATED_FILES="$SRC_CHANGED"
+  fi
+  if [ -n "$TEST_CHANGED" ]; then
+    RELATED_FILES="$RELATED_FILES $TEST_CHANGED"
+  fi
+
+  RELATED_FILES=$(echo "$RELATED_FILES" | xargs)
+
+  if [ -n "$RELATED_FILES" ]; then
+    echo "[pre-commit] Running related tests for: $(echo "$RELATED_FILES" | tr '\n' ' ')"
+    npx vitest related $RELATED_FILES --run
+  else
+    echo "[pre-commit] Running full test suite"
+    npm test
+  fi
+fi
+
+# --- Lint: only when src/ files changed ---
+if [ -n "$SRC_CHANGED" ]; then
+  echo "[pre-commit] Linting changed source files"
+  npm run lint
+fi
+
+# --- Swift-only, docs-only, config-only changes: no checks needed ---
+if [ -z "$JS_CHANGED" ] && [ -z "$TEST_CHANGED" ]; then
+  echo "[pre-commit] No JS/CSS/HTML changes — skipping tests and lint"
+fi
