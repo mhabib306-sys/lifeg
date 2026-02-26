@@ -93,8 +93,7 @@ struct TaskListView: View {
                             }
                             .tint(HBTheme.flagged)
                         }
-                        .listRowSeparatorTint(HBTheme.separator)
-                        .alignmentGuide(.listRowSeparatorLeading) { d in d[.leading] + 50 }
+                        .listRowSeparator(.hidden)
                     }
                     .onMove { source, destination in
                         withAnimation(HBTheme.springGentle) {
@@ -168,7 +167,7 @@ private struct QuickAddRow: View {
                 InlineAutocompleteField(
                     text: $text,
                     metadata: $metadata,
-                    placeholder: "New Task — type # @ & ! for shortcuts",
+                    placeholder: "New To-Do",
                     onSubmit: { submitTask() },
                     onBlur: {
                         if text.trimmingCharacters(in: .whitespaces).isEmpty && !hasMetadata {

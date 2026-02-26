@@ -59,40 +59,48 @@ struct TaskRowView: View {
                         .onTapGesture { onStartEditing?() }
                 }
 
-                if !task.completed {
-                    HStack(spacing: 6) {
+                // Things 3-style metadata: colored dots for labels, compact dates
+                if !isEditing && !task.completed {
+                    let cache = sync.entityCache
+                    HStack(spacing: 5) {
+                        if let areaId = task.areaId, let area = cache.areas[areaId] {
+                            Text(area.name)
+                                .font(HBTheme.subtitleFont)
+                                .foregroundStyle(HBTheme.textTertiary)
+                        }
+
+                        ForEach(Array(task.labels.prefix(3)), id: \.self) { labelId in
+                            if let label = cache.labels[labelId] {
+                                Circle()
+                                    .fill(Color(hex: label.color))
+                                    .frame(width: 8, height: 8)
+                            }
+                        }
+
                         if task.flagged {
                             Image(systemName: "flag.fill")
                                 .font(.system(size: 10))
                                 .foregroundStyle(HBTheme.flagged)
                         }
+
                         if let due = task.dueDate {
-                            HStack(spacing: 2) {
-                                Image(systemName: "calendar")
-                                    .font(.system(size: 9))
-                                Text(due, style: .date)
-                                    .font(HBTheme.subtitleFont)
-                            }
-                            .foregroundStyle(due < Date() ? .red : HBTheme.textSecondary)
+                            Text(formatCompactDate(due))
+                                .font(HBTheme.subtitleFont)
+                                .foregroundStyle(due < Date() ? .red : HBTheme.textSecondary)
                         }
-                        if let subtitle = sync.entityCache.subtitle(for: task) {
-                            if task.flagged || task.dueDate != nil {
-                                Text("\u{00B7}")
+
+                        ForEach(Array(task.people.prefix(2)), id: \.self) { personId in
+                            if let person = cache.people[personId] {
+                                Text("@\(person.name)")
                                     .font(HBTheme.subtitleFont)
                                     .foregroundStyle(HBTheme.textTertiary)
+                                    .lineLimit(1)
                             }
-                            Text(subtitle)
-                                .font(HBTheme.subtitleFont)
-                                .foregroundStyle(HBTheme.textTertiary)
-                                .lineLimit(1)
                         }
                     }
                     .transition(.opacity.combined(with: .move(edge: .top)))
-                    // Subtitle row also tappable when not editing
                     .contentShape(Rectangle())
-                    .onTapGesture {
-                        if !isEditing { onStartEditing?() }
-                    }
+                    .onTapGesture { onStartEditing?() }
                 }
             }
 
@@ -146,6 +154,16 @@ struct TaskRowView: View {
         sync.engine.markDirty()
         Haptic.lightTap()
         onEditDone?()
+    }
+
+    private func formatCompactDate(_ date: Date) -> String {
+        let cal = Calendar.current
+        if cal.isDateInToday(date) { return "Today" }
+        if cal.isDateInTomorrow(date) { return "Tomorrow" }
+        if cal.isDateInYesterday(date) { return "Yesterday" }
+        let fmt = DateFormatter()
+        fmt.dateFormat = "MMM d"
+        return fmt.string(from: date)
     }
 
     private func cancelEdit() {
