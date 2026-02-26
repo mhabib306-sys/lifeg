@@ -57,6 +57,7 @@
 		F983DF2599775D77357F74B2 /* TaskFilterEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C8B61C3AF7B78514170977 /* TaskFilterEngineTests.swift */; };
 		FA0255D6EAE71EA545238727 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89A14733E271942B7B51205B /* Assets.xcassets */; };
 		FAED1CDADB9CBD16CD93A4EC /* OutlinerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC94B8C36157ABB233D34CB6 /* OutlinerEngine.swift */; };
+		B2D8F4A5C63E917B7A1D0E4F /* InlineAutocomplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C7E9F3B42D815A6E0F3C8D /* InlineAutocomplete.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +124,7 @@
 		F70AFE81BC3726E44FEFADB3 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		FDC77707F37DC2F64B6CBF41 /* SyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncEngine.swift; sourceTree = "<group>"; };
 		FFFE99B6E6426EF8317CC6CE /* MergeEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergeEngineTests.swift; sourceTree = "<group>"; };
+		A1C7E9F3B42D815A6E0F3C8D /* InlineAutocomplete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineAutocomplete.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -133,6 +135,7 @@
 				481A22D7BB6E8D1EC13DF7DB /* EmptyStateView.swift */,
 				241BDDC8061D60819670DA09 /* EntityCache.swift */,
 				24B07C09A085336B80C30E29 /* HapticEngine.swift */,
+				A1C7E9F3B42D815A6E0F3C8D /* InlineAutocomplete.swift */,
 				F70AFE81BC3726E44FEFADB3 /* KeychainHelper.swift */,
 				C39574779594028DE6EDF845 /* Theme.swift */,
 				D34DEF2D738B296ED123335E /* ThingsButtonStyle.swift */,
@@ -423,6 +426,7 @@
 				4ABDB5B9F0A3BC5BB4F55F04 /* HBTask.swift in Sources */,
 				F4E5E71C56F3E5D103B202A1 /* HBTombstone.swift in Sources */,
 				0D90852E8FDC2FD4CF4C35DF /* HapticEngine.swift in Sources */,
+				B2D8F4A5C63E917B7A1D0E4F /* InlineAutocomplete.swift in Sources */,
 				5CF3D92C7F2D599920CD4974 /* HomeView.swift in Sources */,
 				95EBE291215A5C56CDDF2633 /* HomebaseApp.swift in Sources */,
 				97730D326857534665A2E21F /* KeychainHelper.swift in Sources */,
