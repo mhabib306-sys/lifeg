@@ -27,18 +27,32 @@ struct SettingsView: View {
                     .autocapitalization(.none)
 
                 Button("Save & Apply") {
-                    KeychainHelper.save(key: "githubToken", value: token)
-                    UserDefaults.standard.set(owner, forKey: "githubOwner")
-                    UserDefaults.standard.set(repo, forKey: "githubRepo")
+                    let trimmedToken = token.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let trimmedOwner = owner.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let trimmedRepo = repo.trimmingCharacters(in: .whitespacesAndNewlines)
+                    KeychainHelper.save(key: "githubToken", value: trimmedToken)
+                    UserDefaults.standard.set(trimmedOwner, forKey: "githubOwner")
+                    UserDefaults.standard.set(trimmedRepo, forKey: "githubRepo")
+                    token = trimmedToken
+                    owner = trimmedOwner
+                    repo = trimmedRepo
                     sync.reloadCredentials()
                     saveConfirmed = true
+                    // Trigger immediate sync to validate credentials
+                    Task { await sync.engine.pull() }
                 }
                 .disabled(token.isEmpty || owner.isEmpty || repo.isEmpty)
 
                 if saveConfirmed {
-                    Text("Saved and applied.")
-                        .font(HBTheme.subtitleFont)
-                        .foregroundStyle(HBTheme.logbook)
+                    if let error = sync.engine.lastError {
+                        Text(error)
+                            .font(HBTheme.subtitleFont)
+                            .foregroundStyle(.red)
+                    } else {
+                        Text("Saved and connected.")
+                            .font(HBTheme.subtitleFont)
+                            .foregroundStyle(HBTheme.logbook)
+                    }
                 }
             }
 

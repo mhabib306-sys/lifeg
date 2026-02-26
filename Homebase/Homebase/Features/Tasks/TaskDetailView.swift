@@ -10,7 +10,6 @@ struct TaskDetailView: View {
     @Environment(SyncCoordinator.self) private var sync
     @State private var title = ""
     @State private var notes = ""
-    @State private var status = "inbox"
     @State private var today = false
     @State private var flagged = false
     @State private var dueDate: Date?
@@ -67,15 +66,18 @@ struct TaskDetailView: View {
                     Divider().padding(.horizontal, 20)
 
                     if !isNote {
-                        // 3. Status chips
-                        StatusChipBar(status: $status, today: $today)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 12)
-
-                        Divider().padding(.horizontal, 20)
-
-                        // 4. Metadata rows
+                        // 3. Metadata rows
                         VStack(spacing: 0) {
+                            // Today toggle
+                            MetadataRow(
+                                icon: "star.fill",
+                                label: "Today",
+                                iconColor: today ? HBTheme.today : HBTheme.textTertiary
+                            ) {
+                                Toggle("", isOn: $today)
+                                    .labelsHidden()
+                            }
+
                             // Flagged toggle
                             MetadataRow(
                                 icon: "flag.fill",
@@ -326,7 +328,6 @@ struct TaskDetailView: View {
         guard let task = existingTask else { return }
         title = task.title
         notes = task.notes
-        status = task.status
         today = task.today
         flagged = task.flagged
         dueDate = task.dueDate
@@ -337,7 +338,15 @@ struct TaskDetailView: View {
         selectedPeople = Set(task.people)
     }
 
+    /// Status is derived: area assigned → "anytime", otherwise → "inbox"
+    /// (matches the web app where status is set contextually)
+    private var computedStatus: String {
+        if let task = existingTask, task.status == "someday" { return "someday" }
+        return selectedAreaId != nil ? "anytime" : "inbox"
+    }
+
     private func save() {
+        let status = computedStatus
         if let task = existingTask {
             task.title = title
             task.notes = notes
@@ -379,78 +388,7 @@ struct TaskDetailView: View {
     }
 }
 
-// MARK: - Status Chip Bar (Step 9)
-
-private struct StatusChipBar: View {
-    @Binding var status: String
-    @Binding var today: Bool
-
-    var body: some View {
-        HStack(spacing: 8) {
-            StatusChip(
-                icon: "star.fill",
-                label: "Today",
-                isSelected: today,
-                color: HBTheme.today
-            ) {
-                today.toggle()
-            }
-
-            StatusChip(
-                icon: "square.stack",
-                label: "Anytime",
-                isSelected: status == "anytime" && !today,
-                color: HBTheme.anytime
-            ) {
-                status = "anytime"
-                today = false
-            }
-
-            StatusChip(
-                icon: "archivebox",
-                label: "Someday",
-                isSelected: status == "someday",
-                color: HBTheme.someday
-            ) {
-                status = "someday"
-                today = false
-            }
-        }
-    }
-}
-
-private struct StatusChip: View {
-    let icon: String
-    let label: String
-    let isSelected: Bool
-    let color: Color
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.system(size: 11))
-                Text(label)
-                    .font(.subheadline.weight(.medium))
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(
-                Capsule()
-                    .fill(isSelected ? color.opacity(0.15) : Color.clear)
-            )
-            .overlay(
-                Capsule()
-                    .strokeBorder(isSelected ? color : HBTheme.separator, lineWidth: 1)
-            )
-            .foregroundStyle(isSelected ? color : HBTheme.textSecondary)
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-// MARK: - Metadata Row (Step 9)
+// MARK: - Metadata Row
 
 private struct MetadataRow<Trailing: View>: View {
     let icon: String

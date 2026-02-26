@@ -4,6 +4,7 @@ enum GitHubAPIError: Error, Equatable, LocalizedError {
     case rateLimited
     case conflict           // 409 — SHA mismatch
     case unauthorized       // 401
+    case notFound           // 404 — file/repo doesn't exist or no access
     case networkError(String)
     case decodingError(String)
 
@@ -12,6 +13,7 @@ enum GitHubAPIError: Error, Equatable, LocalizedError {
         case .rateLimited: "GitHub rate limited (403)"
         case .conflict: "SHA conflict (409) — retry"
         case .unauthorized: "Unauthorized (401) — check token"
+        case .notFound: "Not found (404) — check owner/repo name and token permissions"
         case .networkError(let msg): "Network: \(msg)"
         case .decodingError(let msg): "Decode: \(msg)"
         }
@@ -56,6 +58,7 @@ final class GitHubAPI: Sendable {
         case 200: break
         case 401: throw GitHubAPIError.unauthorized
         case 403: throw GitHubAPIError.rateLimited
+        case 404: throw GitHubAPIError.notFound
         default: throw GitHubAPIError.networkError("HTTP \(status)")
         }
 
@@ -114,18 +117,18 @@ final class GitHubAPI: Sendable {
         return GitHubFile(sha: sha, content: content)
     }
 
-    func putFile(path: String, content: Data, sha: String, message: String) async throws -> String {
+    func putFile(path: String, content: Data, sha: String?, message: String) async throws -> String {
         var request = URLRequest(url: URL(string: "\(baseURL)/repos/\(owner)/\(repo)/contents/\(path)")!)
         request.httpMethod = "PUT"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("application/vnd.github.v3+json", forHTTPHeaderField: "Accept")
         request.timeoutInterval = 30
 
-        let body: [String: Any] = [
+        var body: [String: Any] = [
             "message": message,
-            "content": content.base64EncodedString(),
-            "sha": sha
+            "content": content.base64EncodedString()
         ]
+        if let sha { body["sha"] = sha }
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, response) = try await session.data(for: request)
