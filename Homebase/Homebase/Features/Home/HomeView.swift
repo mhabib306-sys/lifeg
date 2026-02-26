@@ -57,11 +57,10 @@ struct HomeView: View {
     }
 
     private var todayTasks: [HBTask] {
-        let now = Date()
-        let todayEnd = Calendar.current.startOfDay(for: now).addingTimeInterval(86400)
+        let todayEnd = Calendar.current.startOfDay(for: Date()).addingTimeInterval(86400)
         return allTasks.filter { task in
             !task.isNote && !task.completed &&
-            (task.today || (task.dueDate != nil && task.dueDate! <= todayEnd))
+            (task.today || (task.dueDate.map { $0 <= todayEnd } ?? false))
         }.sorted { $0.order < $1.order }
     }
 
@@ -83,7 +82,7 @@ struct HomeView: View {
     private var completedTodayCount: Int {
         let start = Calendar.current.startOfDay(for: Date())
         return allTasks.filter { task in
-            task.completed && task.completedAt != nil && task.completedAt! >= start
+            task.completed && (task.completedAt.map { $0 >= start } ?? false)
         }.count
     }
 
@@ -160,8 +159,11 @@ struct HomeView: View {
                 TodayContent(
                     tasks: todayTasks,
                     onComplete: { task in
-                        task.markCompleted()
-                        sync.engine.markDirty()
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                            task.markCompleted()
+                            sync.engine.markDirty()
+                        }
+                        Haptic.taskCompleted()
                     },
                     onTap: { task in editingTaskId = task.id }
                 )

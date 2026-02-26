@@ -8,7 +8,17 @@ struct SidebarView: View {
     var body: some View {
         List(selection: $router.selectedPerspective) {
             Section {
-                ForEach(PerspectiveType.allCases) { perspective in
+                ForEach(PerspectiveType.mainCases, id: \.self) { perspective in
+                    PerspectiveRow(
+                        perspective: perspective,
+                        count: badgeCount(for: perspective)
+                    )
+                    .tag(perspective)
+                }
+            }
+
+            Section("Library") {
+                ForEach(PerspectiveType.libraryCases, id: \.self) { perspective in
                     PerspectiveRow(
                         perspective: perspective,
                         count: badgeCount(for: perspective)
@@ -50,11 +60,15 @@ struct SidebarView: View {
     }
 
     private func badgeCount(for perspective: PerspectiveType) -> Int {
+        let todayEnd = Calendar.current.startOfDay(for: Date()).addingTimeInterval(86400)
         switch perspective {
         case .inbox:
-            tasks.filter { !$0.isNote && !$0.completed && $0.areaId == nil }.count
+            tasks.filter { !$0.isNote && !$0.completed && $0.status == "inbox" }.count
         case .today:
-            tasks.filter { !$0.isNote && !$0.completed && $0.today }.count
+            tasks.filter { task in
+                !task.isNote && !task.completed &&
+                (task.today || (task.dueDate.map { $0 <= todayEnd } ?? false))
+            }.count
         case .flagged:
             tasks.filter { !$0.isNote && !$0.completed && $0.flagged }.count
         default: 0

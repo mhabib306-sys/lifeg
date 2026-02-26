@@ -21,6 +21,7 @@ struct TaskDetailView: View {
     @State private var selectedLabels: Set<String> = []
     @State private var selectedPeople: Set<String> = []
     @State private var editingChildId: String?
+    @FocusState private var titleFocused: Bool
 
     @Query(sort: \HBArea.order) private var allAreas: [HBArea]
     @Query(sort: \HBCategory.order) private var allCategories: [HBCategory]
@@ -51,6 +52,7 @@ struct TaskDetailView: View {
                     // 1. Large title TextField
                     TextField("Title", text: $title)
                         .font(HBTheme.editorTitleFont)
+                        .focused($titleFocused)
                         .padding(.horizontal, 20)
                         .padding(.top, 16)
                         .padding(.bottom, 4)
@@ -312,7 +314,14 @@ struct TaskDetailView: View {
                     .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
-            .onAppear { loadExisting() }
+            .onAppear {
+                loadExisting()
+                if taskId == nil {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        titleFocused = true
+                    }
+                }
+            }
             .sheet(item: $editingChildId) { childId in
                 TaskDetailView(taskId: childId, context: context)
             }
@@ -460,7 +469,10 @@ private struct ChildNoteRow: View {
     }
 
     private func commitEdit() {
-        note.title = editText
+        let trimmed = editText.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty {
+            note.title = trimmed
+        }
         note.touch()
         sync.engine.markDirty()
         isEditing = false

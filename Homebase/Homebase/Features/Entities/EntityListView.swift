@@ -34,7 +34,11 @@ struct AreaListView: View {
             }
             .onDelete { indexSet in
                 let items = filtered
-                for i in indexSet { context.delete(items[i]) }
+                for i in indexSet {
+                    context.insert(HBTombstone(collection: "taskCategories", entityId: items[i].id))
+                    context.delete(items[i])
+                }
+                sync.entityCache.invalidate()
                 sync.engine.markDirty()
             }
         }
@@ -79,7 +83,11 @@ struct LabelListView: View {
             }
             .onDelete { indexSet in
                 let items = filtered
-                for i in indexSet { context.delete(items[i]) }
+                for i in indexSet {
+                    context.insert(HBTombstone(collection: "taskLabels", entityId: items[i].id))
+                    context.delete(items[i])
+                }
+                sync.entityCache.invalidate()
                 sync.engine.markDirty()
             }
         }
@@ -134,7 +142,11 @@ struct PersonListView: View {
             }
             .onDelete { indexSet in
                 let items = filtered
-                for i in indexSet { context.delete(items[i]) }
+                for i in indexSet {
+                    context.insert(HBTombstone(collection: "taskPeople", entityId: items[i].id))
+                    context.delete(items[i])
+                }
+                sync.entityCache.invalidate()
                 sync.engine.markDirty()
             }
         }
@@ -178,7 +190,11 @@ struct CategoryListView: View {
             }
             .onDelete { indexSet in
                 let items = filtered
-                for i in indexSet { context.delete(items[i]) }
+                for i in indexSet {
+                    context.insert(HBTombstone(collection: "categories", entityId: items[i].id))
+                    context.delete(items[i])
+                }
+                sync.entityCache.invalidate()
                 sync.engine.markDirty()
             }
         }
@@ -262,8 +278,11 @@ struct EntityDetailView: View {
                             .onTapGesture { editingTaskId = task.id }
                             .swipeActions(edge: .leading) {
                                 Button {
-                                    task.markCompleted()
-                                    sync.engine.markDirty()
+                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                        task.markCompleted()
+                                        sync.engine.markDirty()
+                                    }
+                                    Haptic.taskCompleted()
                                 } label: {
                                     Label("Complete", systemImage: "checkmark")
                                 }

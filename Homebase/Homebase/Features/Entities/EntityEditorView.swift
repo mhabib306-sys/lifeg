@@ -26,6 +26,7 @@ struct AreaEditorView: View {
                     Button("Save") {
                         let area = HBArea(name: name, color: color)
                         context.insert(area)
+                        sync.entityCache.invalidate()
                         sync.engine.markDirty()
                         dismiss()
                     }
@@ -61,6 +62,7 @@ struct LabelEditorView: View {
                     Button("Save") {
                         let label = HBLabel(name: name, color: color)
                         context.insert(label)
+                        sync.entityCache.invalidate()
                         sync.engine.markDirty()
                         dismiss()
                     }
@@ -99,6 +101,7 @@ struct PersonEditorView: View {
                     Button("Save") {
                         let person = HBPerson(name: name, email: email)
                         context.insert(person)
+                        sync.entityCache.invalidate()
                         sync.engine.markDirty()
                         dismiss()
                     }
@@ -115,14 +118,24 @@ struct CategoryEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
     @Environment(SyncCoordinator.self) private var sync
+    @Query(sort: \HBArea.order) private var areas: [HBArea]
     @State private var name = ""
-    @State private var areaId = ""
+    @State private var selectedAreaId: String?
 
     var body: some View {
         NavigationStack {
             Form {
                 TextField("Name", text: $name)
-                TextField("Area ID", text: $areaId)
+                Picker("Area", selection: $selectedAreaId) {
+                    Text("None").tag(String?.none)
+                    ForEach(areas, id: \.id) { area in
+                        HStack {
+                            Circle().fill(Color(hex: area.color)).frame(width: 8, height: 8)
+                            Text(area.name)
+                        }
+                        .tag(Optional(area.id))
+                    }
+                }
             }
             .navigationTitle("New Category")
             .navigationBarTitleDisplayMode(.inline)
@@ -132,8 +145,9 @@ struct CategoryEditorView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        let cat = HBCategory(name: name, areaId: areaId)
+                        let cat = HBCategory(name: name, areaId: selectedAreaId ?? "")
                         context.insert(cat)
+                        sync.entityCache.invalidate()
                         sync.engine.markDirty()
                         dismiss()
                     }

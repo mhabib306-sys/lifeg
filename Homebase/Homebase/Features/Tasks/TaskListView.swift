@@ -11,8 +11,11 @@ struct TaskListView: View {
     @State private var editingTaskId: String?
 
     private var filteredTasks: [HBTask] {
-        TaskFilterEngine.filter(allTasks, for: perspective)
-            .sorted { $0.order < $1.order }
+        let filtered = TaskFilterEngine.filter(allTasks, for: perspective)
+        if perspective == .logbook {
+            return filtered.sorted { ($0.completedAt ?? .distantPast) > ($1.completedAt ?? .distantPast) }
+        }
+        return filtered.sorted { $0.order < $1.order }
     }
 
     var body: some View {
@@ -42,7 +45,8 @@ struct TaskListView: View {
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            // Things 3 style: tap to inline edit
+                            // Things 3 style: tap to inline edit (skip when in reorder mode)
+                            guard editMode == .inactive else { return }
                             if editingTaskId != task.id {
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                                     editingTaskId = task.id
@@ -62,6 +66,14 @@ struct TaskListView: View {
                             .tint(HBTheme.logbook)
                         }
                         .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                context.insert(HBTombstone(collection: "tasks", entityId: task.id))
+                                context.delete(task)
+                                sync.engine.markDirty()
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+
                             Button {
                                 router.presentedSheet = .taskEditor(task.id)
                             } label: {

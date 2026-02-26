@@ -79,6 +79,11 @@ enum MergeEngine {
 
     // MARK: - Helpers
 
+    /// Compare two ISO timestamps: returns >0 if a is newer, <0 if b is newer, 0 if equal
+    static func compareTimestamps(_ a: String?, _ b: String?) -> TimeInterval {
+        timestamp(a).timeIntervalSince(timestamp(b))
+    }
+
     nonisolated(unsafe) private static let isoFormatter: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
         f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]

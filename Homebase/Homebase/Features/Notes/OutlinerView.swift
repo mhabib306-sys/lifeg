@@ -114,20 +114,26 @@ struct OutlinerView: View {
     }
 
     private func indentNote(_ note: HBTask) {
-        var notes = allNotes
-        OutlinerEngine.indent(note: note, allNotes: &notes)
-        sync.engine.markDirty()
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+            var notes = allNotes
+            OutlinerEngine.indent(note: note, allNotes: &notes)
+            sync.engine.markDirty()
+        }
     }
 
     private func outdentNote(_ note: HBTask) {
-        var notes = allNotes
-        OutlinerEngine.outdent(note: note, allNotes: &notes)
-        sync.engine.markDirty()
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+            var notes = allNotes
+            OutlinerEngine.outdent(note: note, allNotes: &notes)
+            sync.engine.markDirty()
+        }
     }
 
     private func deleteNote(_ note: HBTask) {
-        var notes = allNotes
-        OutlinerEngine.deleteNote(note, allNotes: &notes)
-        sync.engine.markDirty()
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+            var notes = allNotes
+            OutlinerEngine.deleteNote(note, allNotes: &notes)
+            sync.engine.markDirty()
+        }
     }
 }

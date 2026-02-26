@@ -117,11 +117,16 @@ final class SyncEngine {
             let mergedPeople: [EntityDTO]
             let mergedPerspectives: [EntityDTO]
             let mergedTaskTombstones: [String: String]
+            let mergedEntityTombstones: [String: [String: String]]
 
             if let cloud = cloudPayload {
                 mergedTaskTombstones = MergeEngine.mergeTombstones(
                     local: localTombstones.tasks,
                     cloud: cloud.deletedTaskTombstones
+                )
+                mergedEntityTombstones = mergeEntityTombstones(
+                    local: localTombstones.entities,
+                    cloud: cloud.deletedEntityTombstones
                 )
                 mergedTasks = MergeEngine.mergeTasks(
                     local: localTasks, cloud: cloud.tasks,
@@ -129,23 +134,23 @@ final class SyncEngine {
                 )
                 mergedAreas = MergeEngine.mergeEntities(
                     local: localAreas, cloud: cloud.areas,
-                    tombstones: cloud.deletedEntityTombstones["taskCategories"] ?? [:]
+                    tombstones: mergedEntityTombstones["taskCategories"] ?? [:]
                 )
                 mergedCategories = MergeEngine.mergeEntities(
                     local: localCategories, cloud: cloud.categories,
-                    tombstones: cloud.deletedEntityTombstones["categories"] ?? [:]
+                    tombstones: mergedEntityTombstones["categories"] ?? [:]
                 )
                 mergedLabels = MergeEngine.mergeEntities(
                     local: localLabels, cloud: cloud.labels,
-                    tombstones: cloud.deletedEntityTombstones["taskLabels"] ?? [:]
+                    tombstones: mergedEntityTombstones["taskLabels"] ?? [:]
                 )
                 mergedPeople = MergeEngine.mergeEntities(
                     local: localPeople, cloud: cloud.people,
-                    tombstones: cloud.deletedEntityTombstones["taskPeople"] ?? [:]
+                    tombstones: mergedEntityTombstones["taskPeople"] ?? [:]
                 )
                 mergedPerspectives = MergeEngine.mergeEntities(
                     local: localPerspectives, cloud: cloud.perspectives,
-                    tombstones: cloud.deletedEntityTombstones["customPerspectives"] ?? [:]
+                    tombstones: mergedEntityTombstones["customPerspectives"] ?? [:]
                 )
             } else {
                 // No cloud data — local is the source of truth
@@ -156,6 +161,7 @@ final class SyncEngine {
                 mergedPeople = localPeople
                 mergedPerspectives = localPerspectives
                 mergedTaskTombstones = localTombstones.tasks
+                mergedEntityTombstones = localTombstones.entities
             }
 
             // 4. Import merged state back to local
@@ -184,6 +190,7 @@ final class SyncEngine {
             payload.people = mergedPeople
             payload.perspectives = mergedPerspectives
             payload.deletedTaskTombstones = mergedTaskTombstones
+            payload.deletedEntityTombstones = mergedEntityTombstones
             payload.sequence = sequence
             payload.lastUpdated = ISO8601DateFormatter().string(from: Date())
 
@@ -410,12 +417,135 @@ final class SyncEngine {
         for dto in dtos { context.insert(HBPerspective.from(dto: dto)) }
     }
 
+    // MARK: - Entity Tombstone Merge
+
+    private func mergeEntityTombstones(local: [String: [String: String]], cloud: [String: [String: String]]) -> [String: [String: String]] {
+        var merged = local
+        for (collection, cloudTombs) in cloud {
+            var bucket = merged[collection] ?? [:]
+            for (id, ts) in cloudTombs {
+                if let existing = bucket[id] {
+                    if MergeEngine.compareTimestamps(ts, existing) > 0 { bucket[id] = ts }
+                } else {
+                    bucket[id] = ts
+                }
+            }
+            merged[collection] = bucket
+        }
+        // Prune expired (180 days)
+        let cutoff = Date().addingTimeInterval(-180 * 86400)
+        let isoFmt = ISO8601DateFormatter()
+        isoFmt.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        for (collection, tombs) in merged {
+            merged[collection] = tombs.filter { _, ts in
+                guard let d = isoFmt.date(from: ts) else { return false }
+                return d > cutoff
+            }
+        }
+        return merged
+    }
+
     // MARK: - Retry
 
     private func retryWithBackoff(attempt: Int = 0) async {
-        guard attempt < 6 else { return }
+        guard attempt < 6 else {
+            lastError = "Conflict persisted after 6 retries"
+            return
+        }
         let delay = min(pow(2.0, Double(attempt)), 60.0)
         try? await Task.sleep(for: .seconds(delay))
-        await push()
+        // Re-run push logic inline to pass incremented attempt on next conflict
+        guard let api else { return }
+        guard isDirty else { return }
+        isSyncing = true
+        defer { isSyncing = false }
+
+        do {
+            let context = container.mainContext
+            var cloudFile: GitHubFile?
+            var cloudPayload: CloudPayload?
+            do {
+                let file = try await api.fetchFile(path: "data.json")
+                cloudFile = file
+                cloudPayload = try PayloadCoder.decode(file.content)
+            } catch GitHubAPIError.notFound {
+                try await api.verifyRepo()
+            }
+
+            let localTasks = exportTasks(from: context)
+            let localAreas = exportAreas(from: context)
+            let localCategories = exportCategories(from: context)
+            let localLabels = exportLabels(from: context)
+            let localPeople = exportPeople(from: context)
+            let localPerspectives = exportPerspectives(from: context)
+            let localTombstones = exportTombstones(from: context)
+
+            let mergedTasks: [TaskDTO]
+            let mergedAreas: [EntityDTO]
+            let mergedCategories: [EntityDTO]
+            let mergedLabels: [EntityDTO]
+            let mergedPeople: [EntityDTO]
+            let mergedPerspectives: [EntityDTO]
+            let mergedTaskTombstones: [String: String]
+            let mergedEntityTombstones: [String: [String: String]]
+
+            if let cloud = cloudPayload {
+                mergedTaskTombstones = MergeEngine.mergeTombstones(local: localTombstones.tasks, cloud: cloud.deletedTaskTombstones)
+                mergedEntityTombstones = mergeEntityTombstones(local: localTombstones.entities, cloud: cloud.deletedEntityTombstones)
+                mergedTasks = MergeEngine.mergeTasks(local: localTasks, cloud: cloud.tasks, tombstones: mergedTaskTombstones)
+                mergedAreas = MergeEngine.mergeEntities(local: localAreas, cloud: cloud.areas, tombstones: mergedEntityTombstones["taskCategories"] ?? [:])
+                mergedCategories = MergeEngine.mergeEntities(local: localCategories, cloud: cloud.categories, tombstones: mergedEntityTombstones["categories"] ?? [:])
+                mergedLabels = MergeEngine.mergeEntities(local: localLabels, cloud: cloud.labels, tombstones: mergedEntityTombstones["taskLabels"] ?? [:])
+                mergedPeople = MergeEngine.mergeEntities(local: localPeople, cloud: cloud.people, tombstones: mergedEntityTombstones["taskPeople"] ?? [:])
+                mergedPerspectives = MergeEngine.mergeEntities(local: localPerspectives, cloud: cloud.perspectives, tombstones: mergedEntityTombstones["customPerspectives"] ?? [:])
+            } else {
+                mergedTasks = localTasks
+                mergedAreas = localAreas
+                mergedCategories = localCategories
+                mergedLabels = localLabels
+                mergedPeople = localPeople
+                mergedPerspectives = localPerspectives
+                mergedTaskTombstones = localTombstones.tasks
+                mergedEntityTombstones = localTombstones.entities
+            }
+
+            importTasks(mergedTasks, into: context)
+            importAreas(mergedAreas, into: context)
+            importCategories(mergedCategories, into: context)
+            importLabels(mergedLabels, into: context)
+            importPeople(mergedPeople, into: context)
+            importPerspectives(mergedPerspectives, into: context)
+            try context.save()
+            onDataImported?()
+
+            sequence += 1
+            var payload = cloudPayload ?? CloudPayload(
+                schemaVersion: 1, sequence: 0, checksum: "", lastUpdated: "",
+                tasks: [], areas: [], categories: [], labels: [], people: [],
+                perspectives: [], deletedTaskTombstones: [:],
+                deletedEntityTombstones: [:], passthrough: [:]
+            )
+            payload.tasks = mergedTasks
+            payload.areas = mergedAreas
+            payload.categories = mergedCategories
+            payload.labels = mergedLabels
+            payload.people = mergedPeople
+            payload.perspectives = mergedPerspectives
+            payload.deletedTaskTombstones = mergedTaskTombstones
+            payload.deletedEntityTombstones = mergedEntityTombstones
+            payload.sequence = sequence
+            payload.lastUpdated = ISO8601DateFormatter().string(from: Date())
+
+            let encoded = try PayloadCoder.encode(payload)
+            _ = try await api.putFile(path: "data.json", content: encoded, sha: cloudFile?.sha, message: "iOS sync")
+
+            clearDirty()
+            lastError = nil
+            lastSyncInfo = "Pushed \(mergedTasks.count) tasks (retry #\(attempt + 1))"
+        } catch GitHubAPIError.conflict {
+            await retryWithBackoff(attempt: attempt + 1)
+        } catch {
+            lastError = error.localizedDescription
+        }
     }
 }

@@ -11,8 +11,8 @@ enum TaskFilterEngine {
 
             switch perspective {
             case .inbox:
-                // Tasks without an area assigned
-                return !task.completed && task.areaId == nil
+                // Tasks with inbox status (matches web app source-of-truth)
+                return !task.completed && task.status == "inbox"
             case .today:
                 // Tasks flagged as Today OR due today/overdue
                 guard !task.completed else { return false }

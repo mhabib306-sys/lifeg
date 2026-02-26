@@ -18,7 +18,10 @@ struct GlobalSearchView: View {
     private var matchingTasks: [HBTask] {
         guard !trimmed.isEmpty else { return [] }
         return allTasks.filter { !$0.isNote && $0.title.lowercased().contains(trimmed) }
-            .sorted { !$0.completed && $1.completed }
+            .sorted { lhs, rhs in
+                if lhs.completed != rhs.completed { return !lhs.completed }
+                return lhs.order < rhs.order
+            }
     }
 
     private var matchingNotes: [HBTask] {
