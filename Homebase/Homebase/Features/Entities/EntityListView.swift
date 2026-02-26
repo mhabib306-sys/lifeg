@@ -49,6 +49,9 @@ struct AreaListView: View {
         }
         .sheet(isPresented: $showEditor) {
             AreaEditorView()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
         }
     }
 }
@@ -98,6 +101,9 @@ struct LabelListView: View {
         }
         .sheet(isPresented: $showEditor) {
             LabelEditorView()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
         }
     }
 }
@@ -157,6 +163,9 @@ struct PersonListView: View {
         }
         .sheet(isPresented: $showEditor) {
             PersonEditorView()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
         }
     }
 }
@@ -205,6 +214,9 @@ struct CategoryListView: View {
         }
         .sheet(isPresented: $showEditor) {
             CategoryEditorView()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
         }
     }
 }
@@ -228,6 +240,7 @@ struct EntityDetailView: View {
     @State private var editingTaskId: String?
     @State private var showNewTask = false
     @State private var searchText = ""
+    @State private var showCompleted = false
 
     private var entityName: String {
         sync.entityCache.entityName(for: entityType)
@@ -261,18 +274,8 @@ struct EntityDetailView: View {
 
     var body: some View {
         List {
-            Section {
-                HStack(spacing: 20) {
-                    StatBadge(icon: "checklist", label: "Tasks", count: relatedTasks.filter { !$0.completed }.count, color: HBTheme.accent)
-                    StatBadge(icon: "doc.text", label: "Notes", count: relatedNotes.count, color: HBTheme.anytime)
-                    StatBadge(icon: "checkmark.circle", label: "Done", count: relatedTasks.filter { $0.completed }.count, color: HBTheme.logbook)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-            }
-
             if !incompleteTasks.isEmpty {
-                Section("Tasks") {
+                Section {
                     ForEach(incompleteTasks.sorted { $0.order < $1.order }, id: \.id) { task in
                         TaskRowView(task: task)
                             .contentShape(Rectangle())
@@ -292,6 +295,34 @@ struct EntityDetailView: View {
                                 }
                                 .tint(HBTheme.logbook)
                             }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    context.insert(HBTombstone(collection: "tasks", entityId: task.id))
+                                    context.delete(task)
+                                    sync.engine.markDirty()
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+
+                                Button {
+                                    editingTaskId = task.id
+                                } label: {
+                                    Label("Details", systemImage: "info.circle")
+                                }
+                                .tint(HBTheme.accent)
+
+                                Button {
+                                    task.flagged.toggle()
+                                    task.touch()
+                                    sync.engine.markDirty()
+                                } label: {
+                                    Label("Flag", systemImage: "flag.fill")
+                                }
+                                .tint(HBTheme.flagged)
+                            }
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
                     }
                 }
             }
@@ -308,16 +339,27 @@ struct EntityDetailView: View {
                         }
                         .contentShape(Rectangle())
                         .onTapGesture { editingTaskId = note.id }
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
                     }
                 }
             }
 
             if !completedTasks.isEmpty {
-                Section("Completed (\(completedTasks.count))") {
-                    ForEach(completedTasks.sorted(by: { ($0.completedAt ?? .distantPast) > ($1.completedAt ?? .distantPast) }), id: \.id) { task in
-                        TaskRowView(task: task)
-                            .contentShape(Rectangle())
-                            .onTapGesture { editingTaskId = task.id }
+                Section {
+                    DisclosureGroup(isExpanded: $showCompleted) {
+                        ForEach(completedTasks.sorted(by: { ($0.completedAt ?? .distantPast) > ($1.completedAt ?? .distantPast) }), id: \.id) { task in
+                            TaskRowView(task: task)
+                                .contentShape(Rectangle())
+                                .onTapGesture { editingTaskId = task.id }
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color.clear)
+                                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                        }
+                    } label: {
+                        Text("Completed (\(completedTasks.count))")
+                            .font(HBTheme.subtitleFont)
+                            .foregroundStyle(HBTheme.textSecondary)
                     }
                 }
             }
@@ -357,23 +399,3 @@ struct EntityDetailView: View {
     }
 }
 
-private struct StatBadge: View {
-    let icon: String
-    let label: String
-    let count: Int
-    let color: Color
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Image(systemName: icon)
-                .font(.system(size: 16))
-                .foregroundStyle(color)
-            Text("\(count)")
-                .font(.system(.title3, weight: .semibold))
-                .foregroundStyle(HBTheme.textPrimary)
-            Text(label)
-                .font(HBTheme.badgeFont)
-                .foregroundStyle(HBTheme.textSecondary)
-        }
-    }
-}

@@ -291,7 +291,7 @@ struct InlineAutocompleteField: View {
             // Suggestions overlay
             if let trigger = activeTrigger {
                 suggestionsView(for: trigger)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
             }
         }
         .animation(HBTheme.springDefault, value: activeTrigger != nil)

@@ -191,9 +191,14 @@ struct HomeView: View {
                 TodayContent(
                     tasks: todayTasks,
                     onComplete: { task in
-                        task.markCompleted()
-                        sync.engine.markDirty()
-                        Haptic.taskCompleted()
+                        Haptic.checkboxTap()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                            withAnimation(HBTheme.springGentle) {
+                                task.markCompleted()
+                                sync.engine.markDirty()
+                            }
+                            Haptic.taskCompleted()
+                        }
                     },
                     onTap: { task in editingTaskId = task.id }
                 )
@@ -203,9 +208,14 @@ struct HomeView: View {
                 NextContent(
                     tasks: Array(nextTasks.prefix(5)),
                     onComplete: { task in
-                        task.markCompleted()
-                        sync.engine.markDirty()
-                        Haptic.taskCompleted()
+                        Haptic.checkboxTap()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                            withAnimation(HBTheme.springGentle) {
+                                task.markCompleted()
+                                sync.engine.markDirty()
+                            }
+                            Haptic.taskCompleted()
+                        }
                     },
                     onTap: { task in editingTaskId = task.id }
                 )

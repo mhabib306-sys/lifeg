@@ -67,7 +67,7 @@ struct TaskDetailView: View {
                     TextField("Notes", text: $notes, axis: .vertical)
                         .font(.body)
                         .foregroundStyle(HBTheme.textSecondary)
-                        .lineLimit(3...10)
+                        .lineLimit(3...)
                         .padding(.horizontal, 20)
                         .padding(.bottom, 16)
 
@@ -114,7 +114,7 @@ struct TaskDetailView: View {
                                     get: { dueDate ?? Date() },
                                     set: { dueDate = $0 }
                                 ), displayedComponents: .date)
-                                .datePickerStyle(.graphical)
+                                .datePickerStyle(.compact)
                                 .padding(.horizontal, 20)
                             }
 
@@ -146,7 +146,7 @@ struct TaskDetailView: View {
                                     get: { deferDate ?? Date() },
                                     set: { deferDate = $0 }
                                 ), displayedComponents: .date)
-                                .datePickerStyle(.graphical)
+                                .datePickerStyle(.compact)
                                 .padding(.horizontal, 20)
                             }
                         }
@@ -519,7 +519,7 @@ struct DatePickerRow: View {
             }
             if isExpanded, date != nil {
                 DatePicker("", selection: Binding(get: { date ?? Date() }, set: { date = $0 }), displayedComponents: .date)
-                    .datePickerStyle(.graphical)
+                    .datePickerStyle(.compact)
             }
         }
     }

@@ -204,29 +204,65 @@ private struct SearchTaskRow: View {
                 Text(task.title)
                     .font(HBTheme.titleFont)
                     .foregroundStyle(task.completed ? HBTheme.textTertiary : HBTheme.textPrimary)
-                    .strikethrough(task.completed, color: HBTheme.textTertiary.opacity(0.5))
+                    .strikethrough(task.completed, color: HBTheme.textTertiary)
                     .opacity(task.completed ? 0.4 : 1.0)
 
-                HStack(spacing: 6) {
-                    if task.flagged {
-                        Image(systemName: "flag.fill")
-                            .font(.system(size: 10))
-                            .foregroundStyle(HBTheme.flagged)
-                    }
+                if !task.completed {
+                    let cache = sync.entityCache
+                    HStack(spacing: 6) {
+                        if let due = task.dueDate {
+                            Text(formatCompactDate(due))
+                                .font(HBTheme.subtitleFont)
+                                .foregroundStyle(due < Date() ? .red : HBTheme.textSecondary)
+                        }
 
-                    if let areaId = task.areaId, let area = sync.entityCache.areas[areaId] {
-                        Text(area.name)
-                            .font(HBTheme.subtitleFont)
-                            .foregroundStyle(HBTheme.textTertiary)
-                    } else {
-                        Text(task.status.capitalized)
-                            .font(HBTheme.subtitleFont)
-                            .foregroundStyle(HBTheme.textTertiary)
+                        if task.flagged {
+                            Image(systemName: "flag.fill")
+                                .font(.system(size: 10))
+                                .foregroundStyle(HBTheme.flagged)
+                        }
+
+                        ForEach(Array(task.labels.prefix(3)), id: \.self) { labelId in
+                            if let label = cache.labels[labelId] {
+                                Circle()
+                                    .fill(Color(hex: label.color))
+                                    .frame(width: 6, height: 6)
+                            }
+                        }
+
+                        if let areaId = task.areaId, let area = cache.areas[areaId] {
+                            Text(area.name)
+                                .font(HBTheme.subtitleFont)
+                                .foregroundStyle(HBTheme.textTertiary)
+                        } else {
+                            Text(task.status.capitalized)
+                                .font(HBTheme.subtitleFont)
+                                .foregroundStyle(HBTheme.textTertiary)
+                        }
+
+                        ForEach(Array(task.people.prefix(2)), id: \.self) { personId in
+                            if let person = cache.people[personId] {
+                                Text("@\(person.name)")
+                                    .font(HBTheme.subtitleFont)
+                                    .foregroundStyle(HBTheme.textTertiary)
+                                    .lineLimit(1)
+                            }
+                        }
                     }
                 }
             }
 
             Spacer()
         }
+    }
+
+    private func formatCompactDate(_ date: Date) -> String {
+        let cal = Calendar.current
+        if cal.isDateInToday(date) { return "Today" }
+        if cal.isDateInTomorrow(date) { return "Tomorrow" }
+        if cal.isDateInYesterday(date) { return "Yesterday" }
+        let fmt = DateFormatter()
+        fmt.dateFormat = "MMM d"
+        return fmt.string(from: date)
     }
 }

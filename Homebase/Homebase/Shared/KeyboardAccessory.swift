@@ -95,6 +95,10 @@ private struct ShortcutKeysInjector: UIViewRepresentable {
         uiView.updateHandler(onInsert)
     }
 
+    static func dismantleUIView(_ uiView: InjectorView, coordinator: ()) {
+        uiView.cleanup()
+    }
+
     final class InjectorView: UIView {
         private var onInsert: (String) -> Void
         private var accessory: ShortcutKeysInputView?
@@ -110,6 +114,19 @@ private struct ShortcutKeysInjector: UIViewRepresentable {
         func updateHandler(_ handler: @escaping (String) -> Void) {
             onInsert = handler
             accessory?.onInsert = handler
+        }
+
+        func cleanup() {
+            guard let acc = accessory else { return }
+            // Remove accessory from the text input to prevent leaks
+            if let tf = findNearestTextInput() as? UITextField, tf.inputAccessoryView === acc {
+                tf.inputAccessoryView = nil
+                tf.reloadInputViews()
+            } else if let tv = findNearestTextInput() as? UITextView, tv.inputAccessoryView === acc {
+                tv.inputAccessoryView = nil
+                tv.reloadInputViews()
+            }
+            accessory = nil
         }
 
         override func didMoveToWindow() {

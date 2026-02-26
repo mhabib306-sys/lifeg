@@ -247,7 +247,6 @@ private struct QuickAddRow: View {
 
         context.insert(task)
         sync.engine.markDirty()
-        Haptic.lightTap()
 
         text = ""
         metadata = TaskInlineMetadata()

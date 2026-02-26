@@ -51,7 +51,7 @@ struct TaskRowView: View {
                     Text(task.title)
                         .font(HBTheme.titleFont)
                         .foregroundStyle(task.completed ? HBTheme.textTertiary : HBTheme.textPrimary)
-                        .strikethrough(task.completed, color: HBTheme.textTertiary.opacity(0.5))
+                        .strikethrough(task.completed, color: HBTheme.textTertiary)
                         .opacity(task.completed ? 0.4 : 1.0)
                         .contentShape(Rectangle())
                         .onTapGesture { onStartEditing?() }
@@ -122,7 +122,6 @@ struct TaskRowView: View {
         if task.completed {
             task.markIncomplete()
             sync.engine.markDirty()
-            Haptic.checkboxTap()
         } else {
             Haptic.checkboxTap()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
