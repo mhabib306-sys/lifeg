@@ -8,17 +8,7 @@ struct SidebarView: View {
     var body: some View {
         List(selection: $router.selectedPerspective) {
             Section {
-                ForEach(PerspectiveType.mainCases, id: \.self) { perspective in
-                    PerspectiveRow(
-                        perspective: perspective,
-                        count: badgeCount(for: perspective)
-                    )
-                    .tag(perspective)
-                }
-            }
-
-            Section("Library") {
-                ForEach(PerspectiveType.libraryCases, id: \.self) { perspective in
+                ForEach(PerspectiveType.allCases) { perspective in
                     PerspectiveRow(
                         perspective: perspective,
                         count: badgeCount(for: perspective)
@@ -56,9 +46,6 @@ struct SidebarView: View {
                     Image(systemName: "magnifyingglass")
                 }
             }
-        }
-        .onChange(of: router.selectedPerspective) { _, _ in
-            Haptic.selection()
         }
     }
 

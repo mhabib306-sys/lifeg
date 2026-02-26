@@ -209,12 +209,11 @@ struct EntityDetailView: View {
     @Query private var allTasks: [HBTask]
     @Environment(\.modelContext) private var context
     @Environment(SyncCoordinator.self) private var sync
-    @Environment(EntityCache.self) private var entityCache
     @State private var editingTaskId: String?
     @State private var searchText = ""
 
     private var entityName: String {
-        entityCache.entityName(for: entityType)
+        sync.entityCache.entityName(for: entityType)
     }
 
     private var relatedTasks: [HBTask] {

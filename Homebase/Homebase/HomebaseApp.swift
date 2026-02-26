@@ -5,7 +5,6 @@ import SwiftData
 struct HomebaseApp: App {
     let container: ModelContainer
     @State private var syncCoordinator: SyncCoordinator
-    @State private var entityCache = EntityCache()
 
     init() {
         let schema = Schema([
@@ -27,9 +26,8 @@ struct HomebaseApp: App {
         WindowGroup {
             ContentView()
                 .environment(syncCoordinator)
-                .environment(entityCache)
                 .onAppear {
-                    entityCache.loadIfNeeded(from: container.mainContext)
+                    syncCoordinator.entityCache.loadIfNeeded(from: container.mainContext)
                     syncCoordinator.initialSync()
                 }
         }

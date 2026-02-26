@@ -3,7 +3,6 @@ import SwiftData
 
 struct TaskRowView: View {
     let task: HBTask
-    @Environment(EntityCache.self) private var entityCache
     @Environment(SyncCoordinator.self) private var sync
     @State private var isEditing = false
     @State private var editText = ""
@@ -12,7 +11,6 @@ struct TaskRowView: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
-            // Step 3: ThingsCheckbox with 2pt top offset for baseline alignment
             ThingsCheckbox(
                 isCompleted: task.completed,
                 accentColor: HBTheme.checkboxFill
@@ -48,7 +46,6 @@ struct TaskRowView: View {
                         .opacity(task.completed ? 0.6 : 1.0)
                 }
 
-                // Step 4: Metadata hidden on completed tasks
                 if !task.completed {
                     HStack(spacing: 6) {
                         if task.today {
@@ -70,8 +67,7 @@ struct TaskRowView: View {
                             }
                             .foregroundStyle(due < Date() ? .red : HBTheme.textSecondary)
                         }
-                        // Entity subtitle inline with metadata
-                        if let subtitle = entityCache.subtitle(for: task) {
+                        if let subtitle = sync.entityCache.subtitle(for: task) {
                             if task.today || task.flagged || task.dueDate != nil {
                                 Text("·")
                                     .font(HBTheme.subtitleFont)
@@ -91,14 +87,11 @@ struct TaskRowView: View {
         .padding(.vertical, 8)
     }
 
-    // Step 7: Completion animation with delay
     private func toggleCompletion() {
         if task.completed {
-            // Uncomplete: immediate
             task.markIncomplete()
             sync.engine.markDirty()
         } else {
-            // Complete: checkbox spring plays → 0.6s delay → animate out
             pendingCompletion = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {

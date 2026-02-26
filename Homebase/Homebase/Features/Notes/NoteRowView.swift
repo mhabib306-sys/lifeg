@@ -5,7 +5,7 @@ struct NoteRowView: View {
     let note: HBTask
     let childCount: Int
     let onZoomIn: () -> Void
-    @Environment(EntityCache.self) private var entityCache
+    @Environment(SyncCoordinator.self) private var sync
     @State private var isEditing = false
     @State private var editText = ""
 
@@ -30,6 +30,7 @@ struct NoteRowView: View {
                     TextField("Note", text: $editText, onCommit: {
                         note.title = editText
                         note.touch()
+                        sync.engine.markDirty()
                         isEditing = false
                     })
                     .font(HBTheme.titleFont)
@@ -40,7 +41,7 @@ struct NoteRowView: View {
                         .onTapGesture { editText = note.title; isEditing = true }
                 }
 
-                if let subtitle = entityCache.subtitle(for: note) {
+                if let subtitle = sync.entityCache.subtitle(for: note) {
                     Text(subtitle)
                         .font(HBTheme.subtitleFont)
                         .foregroundStyle(HBTheme.textTertiary)

@@ -5,8 +5,8 @@ import Observation
 @MainActor @Observable
 final class SyncCoordinator {
     let engine: SyncEngine
+    let entityCache = EntityCache()
     private var lifecycleObservers: [Any] = []
-    var entityCache: EntityCache?
 
     init(container: ModelContainer) {
         let api = Self.buildAPI()
@@ -56,12 +56,7 @@ final class SyncCoordinator {
             } else {
                 await engine.pull()
             }
-            // Reload entity cache after sync
-            entityCache?.reload(from: engine.container.mainContext)
+            entityCache.reload(from: engine.container.mainContext)
         }
-    }
-
-    func reloadEntityCache() {
-        entityCache?.reload(from: engine.container.mainContext)
     }
 }
