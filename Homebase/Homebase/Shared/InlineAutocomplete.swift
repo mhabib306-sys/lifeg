@@ -226,6 +226,7 @@ struct InlineAutocompleteField: View {
     @Binding var metadata: TaskInlineMetadata
     var placeholder: String = "New Task"
     var font: Font = HBTheme.titleFont
+    var autoFocus: Bool = true
     var onSubmit: () -> Void
     var onBlur: (() -> Void)?
 
@@ -238,12 +239,19 @@ struct InlineAutocompleteField: View {
             TextField(placeholder, text: $text)
                 .font(font)
                 .focused($isFocused)
+                .onAppear {
+                    if autoFocus {
+                        // Delay to let SwiftUI finish layout
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            isFocused = true
+                        }
+                    }
+                }
                 .onChange(of: text) { _, newValue in
                     activeTrigger = detectTrigger(in: newValue)
                 }
                 .onSubmit {
                     if activeTrigger != nil {
-                        // If autocomplete is showing, don't submit — clear it
                         activeTrigger = nil
                     } else {
                         onSubmit()
