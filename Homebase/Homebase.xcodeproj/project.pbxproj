@@ -17,6 +17,7 @@
 		27AD6348D049693B325713A5 /* TaskListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D8308E2E9EF0E9DA9FCAA1 /* TaskListView.swift */; };
 		33D76C9F8A7FA4C58ABD5327 /* HBPerspectiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AA5185E1BD8CCE0E319586 /* HBPerspectiveTests.swift */; };
 		374BDD145C71CB529073D19D /* SyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C30E3AE1CEED59B5CC1191B /* SyncCoordinator.swift */; };
+		43D0FF4D1D80D58319D77EDA /* InlineAutocomplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D684FF5AAE77984501DBC3 /* InlineAutocomplete.swift */; };
 		46354803F3EB39F41400BA46 /* GlobalSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC238266F075906669534387 /* GlobalSearchView.swift */; };
 		4ABDB5B9F0A3BC5BB4F55F04 /* HBTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305AC40E1E1F7465C12255F9 /* HBTask.swift */; };
 		4D32610947347DDE43B1EDA9 /* TaskRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F5F1D5F530D22397D6C9F1 /* TaskRowView.swift */; };
@@ -57,7 +58,6 @@
 		F983DF2599775D77357F74B2 /* TaskFilterEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C8B61C3AF7B78514170977 /* TaskFilterEngineTests.swift */; };
 		FA0255D6EAE71EA545238727 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89A14733E271942B7B51205B /* Assets.xcassets */; };
 		FAED1CDADB9CBD16CD93A4EC /* OutlinerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC94B8C36157ABB233D34CB6 /* OutlinerEngine.swift */; };
-		B2D8F4A5C63E917B7A1D0E4F /* InlineAutocomplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C7E9F3B42D815A6E0F3C8D /* InlineAutocomplete.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +86,7 @@
 		33B27012D00FA6BA4B795A4F /* TaskDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailView.swift; sourceTree = "<group>"; };
 		4168A7A9B220A6B7492E636D /* OutlinerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlinerView.swift; sourceTree = "<group>"; };
 		4181C79E65ABF90D7D9662F4 /* NoteRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteRowView.swift; sourceTree = "<group>"; };
+		43D684FF5AAE77984501DBC3 /* InlineAutocomplete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineAutocomplete.swift; sourceTree = "<group>"; };
 		481A22D7BB6E8D1EC13DF7DB /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		4B988C260739BED562ABDF49 /* HBTaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HBTaskTests.swift; sourceTree = "<group>"; };
 		5B56DF833529A4DB663BF04E /* HomebaseTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = HomebaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -124,7 +125,6 @@
 		F70AFE81BC3726E44FEFADB3 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		FDC77707F37DC2F64B6CBF41 /* SyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncEngine.swift; sourceTree = "<group>"; };
 		FFFE99B6E6426EF8317CC6CE /* MergeEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergeEngineTests.swift; sourceTree = "<group>"; };
-		A1C7E9F3B42D815A6E0F3C8D /* InlineAutocomplete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineAutocomplete.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -135,7 +135,7 @@
 				481A22D7BB6E8D1EC13DF7DB /* EmptyStateView.swift */,
 				241BDDC8061D60819670DA09 /* EntityCache.swift */,
 				24B07C09A085336B80C30E29 /* HapticEngine.swift */,
-				A1C7E9F3B42D815A6E0F3C8D /* InlineAutocomplete.swift */,
+				43D684FF5AAE77984501DBC3 /* InlineAutocomplete.swift */,
 				F70AFE81BC3726E44FEFADB3 /* KeychainHelper.swift */,
 				C39574779594028DE6EDF845 /* Theme.swift */,
 				D34DEF2D738B296ED123335E /* ThingsButtonStyle.swift */,
@@ -426,9 +426,9 @@
 				4ABDB5B9F0A3BC5BB4F55F04 /* HBTask.swift in Sources */,
 				F4E5E71C56F3E5D103B202A1 /* HBTombstone.swift in Sources */,
 				0D90852E8FDC2FD4CF4C35DF /* HapticEngine.swift in Sources */,
-				B2D8F4A5C63E917B7A1D0E4F /* InlineAutocomplete.swift in Sources */,
 				5CF3D92C7F2D599920CD4974 /* HomeView.swift in Sources */,
 				95EBE291215A5C56CDDF2633 /* HomebaseApp.swift in Sources */,
+				43D0FF4D1D80D58319D77EDA /* InlineAutocomplete.swift in Sources */,
 				97730D326857534665A2E21F /* KeychainHelper.swift in Sources */,
 				844C128A39187A81AF2B85C4 /* MergeEngine.swift in Sources */,
 				DB6A65E79E680A9076413DC4 /* MockURLSession.swift in Sources */,
@@ -564,14 +564,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				INFOPLIST_FILE = Homebase/Info.plist;
 				INFOPLIST_GENERATION_MODE = GeneratedFile;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.homebase.app;
 				SDKROOT = iphoneos;
 				SUPPORTED_INTERFACE_ORIENTATIONS = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortraitUpsideDown";
@@ -586,14 +586,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				INFOPLIST_FILE = Homebase/Info.plist;
 				INFOPLIST_GENERATION_MODE = GeneratedFile;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.homebase.app;
 				SDKROOT = iphoneos;
 				SUPPORTED_INTERFACE_ORIENTATIONS = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortraitUpsideDown";

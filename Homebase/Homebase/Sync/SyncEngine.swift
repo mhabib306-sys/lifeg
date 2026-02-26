@@ -81,128 +81,164 @@ final class SyncEngine {
         print("[Sync] push() starting...")
 
         do {
-            let context = container.mainContext
-
-            // 1. Try to fetch cloud file (may not exist yet)
-            var cloudFile: GitHubFile?
-            var cloudPayload: CloudPayload?
+            // 1. Fetch cloud file (network I/O — already async)
+            var cloudFileContent: Data? = nil
+            var cloudFileSha: String? = nil
             do {
                 let file = try await api.fetchFile(path: "data.json")
-                cloudFile = file
-                cloudPayload = try PayloadCoder.decode(file.content)
-                print("[Sync] Fetched cloud: \(cloudPayload?.tasks.count ?? 0) tasks")
+                cloudFileContent = file.content
+                cloudFileSha = file.sha
+                print("[Sync] Fetched cloud file")
             } catch GitHubAPIError.notFound {
-                // Verify the repo itself is accessible
                 try await api.verifyRepo()
                 print("[Sync] data.json not found — will create on first push")
-                cloudFile = nil
-                cloudPayload = nil
             }
 
-            // 2. Export local state
-            let localTasks = exportTasks(from: context)
-            let localAreas = exportAreas(from: context)
-            let localCategories = exportCategories(from: context)
-            let localLabels = exportLabels(from: context)
-            let localPeople = exportPeople(from: context)
-            let localPerspectives = exportPerspectives(from: context)
-            let localTombstones = exportTombstones(from: context)
-            print("[Sync] Local: \(localTasks.count) tasks, \(localAreas.count) areas")
+            // 2. Heavy work on background thread (decode, export, merge, import, encode)
+            let container = self.container
+            let currentSequence = self.sequence
+            let (encodedPayload, taskCount, newSequence) = try await Task.detached(priority: .userInitiated) {
+                let context = ModelContext(container)
 
-            // 3. Merge with cloud (or use local-only if no cloud data)
-            let mergedTasks: [TaskDTO]
-            let mergedAreas: [EntityDTO]
-            let mergedCategories: [EntityDTO]
-            let mergedLabels: [EntityDTO]
-            let mergedPeople: [EntityDTO]
-            let mergedPerspectives: [EntityDTO]
-            let mergedTaskTombstones: [String: String]
-            let mergedEntityTombstones: [String: [String: String]]
+                // Decode cloud (CPU-heavy JSON parsing — off main thread)
+                let cloudPayload: CloudPayload? = if let content = cloudFileContent {
+                    try PayloadCoder.decode(content)
+                } else {
+                    nil
+                }
 
-            if let cloud = cloudPayload {
-                mergedTaskTombstones = MergeEngine.mergeTombstones(
-                    local: localTombstones.tasks,
-                    cloud: cloud.deletedTaskTombstones
-                )
-                mergedEntityTombstones = mergeEntityTombstones(
-                    local: localTombstones.entities,
-                    cloud: cloud.deletedEntityTombstones
-                )
-                mergedTasks = MergeEngine.mergeTasks(
-                    local: localTasks, cloud: cloud.tasks,
-                    tombstones: mergedTaskTombstones
-                )
-                mergedAreas = MergeEngine.mergeEntities(
-                    local: localAreas, cloud: cloud.areas,
-                    tombstones: mergedEntityTombstones["taskCategories"] ?? [:]
-                )
-                mergedCategories = MergeEngine.mergeEntities(
-                    local: localCategories, cloud: cloud.categories,
-                    tombstones: mergedEntityTombstones["categories"] ?? [:]
-                )
-                mergedLabels = MergeEngine.mergeEntities(
-                    local: localLabels, cloud: cloud.labels,
-                    tombstones: mergedEntityTombstones["taskLabels"] ?? [:]
-                )
-                mergedPeople = MergeEngine.mergeEntities(
-                    local: localPeople, cloud: cloud.people,
-                    tombstones: mergedEntityTombstones["taskPeople"] ?? [:]
-                )
-                mergedPerspectives = MergeEngine.mergeEntities(
-                    local: localPerspectives, cloud: cloud.perspectives,
-                    tombstones: mergedEntityTombstones["customPerspectives"] ?? [:]
-                )
-            } else {
-                // No cloud data — local is the source of truth
-                mergedTasks = localTasks
-                mergedAreas = localAreas
-                mergedCategories = localCategories
-                mergedLabels = localLabels
-                mergedPeople = localPeople
-                mergedPerspectives = localPerspectives
-                mergedTaskTombstones = localTombstones.tasks
-                mergedEntityTombstones = localTombstones.entities
-            }
+                // Export local state (DB reads — off main thread)
+                let existingTasks = (try? context.fetch(FetchDescriptor<HBTask>())) ?? []
+                let localTasks = existingTasks.map { $0.toDTO() }
 
-            // 4. Import merged state back to local
-            importTasks(mergedTasks, into: context)
-            importAreas(mergedAreas, into: context)
-            importCategories(mergedCategories, into: context)
-            importLabels(mergedLabels, into: context)
-            importPeople(mergedPeople, into: context)
-            importPerspectives(mergedPerspectives, into: context)
-            try context.save()
+                let existingAreas = (try? context.fetch(FetchDescriptor<HBArea>())) ?? []
+                let localAreas = existingAreas.map { $0.toDTO() }
+
+                let existingCategories = (try? context.fetch(FetchDescriptor<HBCategory>())) ?? []
+                let localCategories = existingCategories.map { $0.toDTO() }
+
+                let existingLabels = (try? context.fetch(FetchDescriptor<HBLabel>())) ?? []
+                let localLabels = existingLabels.map { $0.toDTO() }
+
+                let existingPeople = (try? context.fetch(FetchDescriptor<HBPerson>())) ?? []
+                let localPeople = existingPeople.map { $0.toDTO() }
+
+                let existingPerspectives = (try? context.fetch(FetchDescriptor<HBPerspective>())) ?? []
+                let localPerspectives = existingPerspectives.map { $0.toDTO() }
+
+                let existingTombstones = (try? context.fetch(FetchDescriptor<HBTombstone>())) ?? []
+                let isoFmt = ISO8601DateFormatter()
+                isoFmt.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+                var localTaskTombstones: [String: String] = [:]
+                var localEntityTombstones: [String: [String: String]] = [:]
+                for tomb in existingTombstones {
+                    let dateStr = isoFmt.string(from: tomb.deletedAt)
+                    if tomb.collection == "tasks" {
+                        localTaskTombstones[tomb.entityId] = dateStr
+                    } else {
+                        localEntityTombstones[tomb.collection, default: [:]][tomb.entityId] = dateStr
+                    }
+                }
+
+                // Merge (CPU-heavy — off main thread)
+                let mergedTasks: [TaskDTO]
+                let mergedAreas: [EntityDTO]
+                let mergedCategories: [EntityDTO]
+                let mergedLabels: [EntityDTO]
+                let mergedPeople: [EntityDTO]
+                let mergedPerspectives: [EntityDTO]
+                let mergedTaskTombstones: [String: String]
+
+                if let cloud = cloudPayload {
+                    mergedTaskTombstones = MergeEngine.mergeTombstones(
+                        local: localTaskTombstones, cloud: cloud.deletedTaskTombstones
+                    )
+                    mergedTasks = MergeEngine.mergeTasks(
+                        local: localTasks, cloud: cloud.tasks, tombstones: mergedTaskTombstones
+                    )
+                    mergedAreas = MergeEngine.mergeEntities(
+                        local: localAreas, cloud: cloud.areas,
+                        tombstones: cloud.deletedEntityTombstones["taskCategories"] ?? [:]
+                    )
+                    mergedCategories = MergeEngine.mergeEntities(
+                        local: localCategories, cloud: cloud.categories,
+                        tombstones: cloud.deletedEntityTombstones["categories"] ?? [:]
+                    )
+                    mergedLabels = MergeEngine.mergeEntities(
+                        local: localLabels, cloud: cloud.labels,
+                        tombstones: cloud.deletedEntityTombstones["taskLabels"] ?? [:]
+                    )
+                    mergedPeople = MergeEngine.mergeEntities(
+                        local: localPeople, cloud: cloud.people,
+                        tombstones: cloud.deletedEntityTombstones["taskPeople"] ?? [:]
+                    )
+                    mergedPerspectives = MergeEngine.mergeEntities(
+                        local: localPerspectives, cloud: cloud.perspectives,
+                        tombstones: cloud.deletedEntityTombstones["customPerspectives"] ?? [:]
+                    )
+                } else {
+                    mergedTasks = localTasks
+                    mergedAreas = localAreas
+                    mergedCategories = localCategories
+                    mergedLabels = localLabels
+                    mergedPeople = localPeople
+                    mergedPerspectives = localPerspectives
+                    mergedTaskTombstones = localTaskTombstones
+                }
+
+                // Import merged state (DB writes — off main thread)
+                for task in existingTasks { context.delete(task) }
+                for dto in mergedTasks { context.insert(HBTask.from(dto: dto)) }
+
+                for area in existingAreas { context.delete(area) }
+                for dto in mergedAreas { context.insert(HBArea.from(dto: dto)) }
+
+                for cat in existingCategories { context.delete(cat) }
+                for dto in mergedCategories { context.insert(HBCategory.from(dto: dto)) }
+
+                for label in existingLabels { context.delete(label) }
+                for dto in mergedLabels { context.insert(HBLabel.from(dto: dto)) }
+
+                for person in existingPeople { context.delete(person) }
+                for dto in mergedPeople { context.insert(HBPerson.from(dto: dto)) }
+
+                for persp in existingPerspectives { context.delete(persp) }
+                for dto in mergedPerspectives { context.insert(HBPerspective.from(dto: dto)) }
+
+                try context.save()
+
+                // Encode payload (CPU-heavy SHA256 + JSON — off main thread)
+                let seq = currentSequence + 1
+                var payload = cloudPayload ?? CloudPayload(
+                    schemaVersion: 1, sequence: 0, checksum: "", lastUpdated: "",
+                    tasks: [], areas: [], categories: [], labels: [], people: [],
+                    perspectives: [], deletedTaskTombstones: [:],
+                    deletedEntityTombstones: [:], passthrough: [:]
+                )
+                payload.tasks = mergedTasks
+                payload.areas = mergedAreas
+                payload.categories = mergedCategories
+                payload.labels = mergedLabels
+                payload.people = mergedPeople
+                payload.perspectives = mergedPerspectives
+                payload.deletedTaskTombstones = mergedTaskTombstones
+                payload.sequence = seq
+                payload.lastUpdated = ISO8601DateFormatter().string(from: Date())
+
+                let encoded = try PayloadCoder.encode(payload)
+                return (encoded, mergedTasks.count, seq)
+            }.value
+
+            // 3. Back on main: reload cache, upload, update state
             onDataImported?()
-            print("[Sync] Imported \(mergedTasks.count) merged tasks")
 
-            // 5. Build payload
-            sequence += 1
-            var payload = cloudPayload ?? CloudPayload(
-                schemaVersion: 1, sequence: 0, checksum: "", lastUpdated: "",
-                tasks: [], areas: [], categories: [], labels: [], people: [],
-                perspectives: [], deletedTaskTombstones: [:],
-                deletedEntityTombstones: [:], passthrough: [:]
-            )
-            payload.tasks = mergedTasks
-            payload.areas = mergedAreas
-            payload.categories = mergedCategories
-            payload.labels = mergedLabels
-            payload.people = mergedPeople
-            payload.perspectives = mergedPerspectives
-            payload.deletedTaskTombstones = mergedTaskTombstones
-            payload.deletedEntityTombstones = mergedEntityTombstones
-            payload.sequence = sequence
-            payload.lastUpdated = ISO8601DateFormatter().string(from: Date())
+            _ = try await api.putFile(path: "data.json", content: encodedPayload, sha: cloudFileSha, message: "iOS sync")
 
-            // 6. Encode and push (sha=nil creates the file for the first time)
-            let encoded = try PayloadCoder.encode(payload)
-            _ = try await api.putFile(path: "data.json", content: encoded, sha: cloudFile?.sha, message: "iOS sync")
-
-            // 7. Success
+            sequence = newSequence
             clearDirty()
             lastError = nil
-            lastSyncInfo = "Pushed \(mergedTasks.count) tasks"
-            print("[Sync] push() success — \(mergedTasks.count) tasks pushed")
+            lastSyncInfo = "Pushed \(taskCount) tasks"
+            print("[Sync] push() success — \(taskCount) tasks pushed")
         } catch GitHubAPIError.conflict {
             lastError = "Conflict — retrying"
             await retryWithBackoff()
@@ -227,16 +263,15 @@ final class SyncEngine {
         print("[Sync] pull() starting...")
 
         do {
-            let file: GitHubFile
+            // 1. Fetch cloud file (network I/O — already async)
+            let fileContent: Data
             do {
-                file = try await api.fetchFile(path: "data.json")
+                let file = try await api.fetchFile(path: "data.json")
+                fileContent = file.content
                 print("[Sync] Fetched data.json (\(file.content.count) bytes)")
             } catch GitHubAPIError.notFound {
-                // 404 could mean file missing OR repo missing/bad creds.
-                // Verify the repo is accessible.
                 do {
                     try await api.verifyRepo()
-                    // Repo exists, file just doesn't exist yet
                     lastError = nil
                     lastSyncInfo = "Cloud empty — no data.json yet"
                     print("[Sync] pull() — data.json not found, repo accessible")
@@ -252,68 +287,95 @@ final class SyncEngine {
                 return
             }
 
-            let cloudPayload: CloudPayload
-            do {
-                cloudPayload = try PayloadCoder.decode(file.content)
-                print("[Sync] Decoded: \(cloudPayload.tasks.count) tasks, \(cloudPayload.areas.count) areas, \(cloudPayload.labels.count) labels")
-            } catch {
-                lastError = "Decode: \(error.localizedDescription)"
-                print("[Sync] pull() decode error: \(error)")
-                return
-            }
+            // 2. Heavy work on background thread (decode, export, merge, import)
+            let container = self.container
+            let (taskCount, areaCount) = try await Task.detached(priority: .userInitiated) {
+                let context = ModelContext(container)
 
-            let context = container.mainContext
-            let localTasks = exportTasks(from: context)
-            let localAreas = exportAreas(from: context)
-            let localCategories = exportCategories(from: context)
-            let localLabels = exportLabels(from: context)
-            let localPeople = exportPeople(from: context)
-            let localPerspectives = exportPerspectives(from: context)
+                // Decode (CPU-heavy JSON parsing — off main thread)
+                let cloudPayload = try PayloadCoder.decode(fileContent)
 
-            let mergedTasks = MergeEngine.mergeTasks(
-                local: localTasks,
-                cloud: cloudPayload.tasks,
-                tombstones: cloudPayload.deletedTaskTombstones
-            )
-            let mergedAreas = MergeEngine.mergeEntities(
-                local: localAreas, cloud: cloudPayload.areas,
-                tombstones: cloudPayload.deletedEntityTombstones["taskCategories"] ?? [:]
-            )
-            let mergedCategories = MergeEngine.mergeEntities(
-                local: localCategories, cloud: cloudPayload.categories,
-                tombstones: cloudPayload.deletedEntityTombstones["categories"] ?? [:]
-            )
-            let mergedLabels = MergeEngine.mergeEntities(
-                local: localLabels, cloud: cloudPayload.labels,
-                tombstones: cloudPayload.deletedEntityTombstones["taskLabels"] ?? [:]
-            )
-            let mergedPeople = MergeEngine.mergeEntities(
-                local: localPeople, cloud: cloudPayload.people,
-                tombstones: cloudPayload.deletedEntityTombstones["taskPeople"] ?? [:]
-            )
-            let mergedPerspectives = MergeEngine.mergeEntities(
-                local: localPerspectives, cloud: cloudPayload.perspectives,
-                tombstones: cloudPayload.deletedEntityTombstones["customPerspectives"] ?? [:]
-            )
+                // Export local state (DB reads — off main thread via background context)
+                let existingTasks = (try? context.fetch(FetchDescriptor<HBTask>())) ?? []
+                let localTasks = existingTasks.map { $0.toDTO() }
 
-            importTasks(mergedTasks, into: context)
-            importAreas(mergedAreas, into: context)
-            importCategories(mergedCategories, into: context)
-            importLabels(mergedLabels, into: context)
-            importPeople(mergedPeople, into: context)
-            importPerspectives(mergedPerspectives, into: context)
-            try context.save()
+                let existingAreas = (try? context.fetch(FetchDescriptor<HBArea>())) ?? []
+                let localAreas = existingAreas.map { $0.toDTO() }
+
+                let existingCategories = (try? context.fetch(FetchDescriptor<HBCategory>())) ?? []
+                let localCategories = existingCategories.map { $0.toDTO() }
+
+                let existingLabels = (try? context.fetch(FetchDescriptor<HBLabel>())) ?? []
+                let localLabels = existingLabels.map { $0.toDTO() }
+
+                let existingPeople = (try? context.fetch(FetchDescriptor<HBPerson>())) ?? []
+                let localPeople = existingPeople.map { $0.toDTO() }
+
+                let existingPerspectives = (try? context.fetch(FetchDescriptor<HBPerspective>())) ?? []
+                let localPerspectives = existingPerspectives.map { $0.toDTO() }
+
+                // Merge (CPU-heavy — off main thread)
+                let mergedTasks = MergeEngine.mergeTasks(
+                    local: localTasks, cloud: cloudPayload.tasks,
+                    tombstones: cloudPayload.deletedTaskTombstones
+                )
+                let mergedAreas = MergeEngine.mergeEntities(
+                    local: localAreas, cloud: cloudPayload.areas,
+                    tombstones: cloudPayload.deletedEntityTombstones["taskCategories"] ?? [:]
+                )
+                let mergedCategories = MergeEngine.mergeEntities(
+                    local: localCategories, cloud: cloudPayload.categories,
+                    tombstones: cloudPayload.deletedEntityTombstones["categories"] ?? [:]
+                )
+                let mergedLabels = MergeEngine.mergeEntities(
+                    local: localLabels, cloud: cloudPayload.labels,
+                    tombstones: cloudPayload.deletedEntityTombstones["taskLabels"] ?? [:]
+                )
+                let mergedPeople = MergeEngine.mergeEntities(
+                    local: localPeople, cloud: cloudPayload.people,
+                    tombstones: cloudPayload.deletedEntityTombstones["taskPeople"] ?? [:]
+                )
+                let mergedPerspectives = MergeEngine.mergeEntities(
+                    local: localPerspectives, cloud: cloudPayload.perspectives,
+                    tombstones: cloudPayload.deletedEntityTombstones["customPerspectives"] ?? [:]
+                )
+
+                // Import merged state (DB writes — off main thread via background context)
+                for task in existingTasks { context.delete(task) }
+                for dto in mergedTasks { context.insert(HBTask.from(dto: dto)) }
+
+                for area in existingAreas { context.delete(area) }
+                for dto in mergedAreas { context.insert(HBArea.from(dto: dto)) }
+
+                for cat in existingCategories { context.delete(cat) }
+                for dto in mergedCategories { context.insert(HBCategory.from(dto: dto)) }
+
+                for label in existingLabels { context.delete(label) }
+                for dto in mergedLabels { context.insert(HBLabel.from(dto: dto)) }
+
+                for person in existingPeople { context.delete(person) }
+                for dto in mergedPeople { context.insert(HBPerson.from(dto: dto)) }
+
+                for persp in existingPerspectives { context.delete(persp) }
+                for dto in mergedPerspectives { context.insert(HBPerspective.from(dto: dto)) }
+
+                // Save propagates changes to mainContext via the shared container
+                try context.save()
+                return (mergedTasks.count, mergedAreas.count)
+            }.value
+
+            // 3. Back on main: reload entity cache and update state
             onDataImported?()
             lastError = nil
-            lastSyncInfo = "Pulled \(mergedTasks.count) tasks, \(mergedAreas.count) areas"
-            print("[Sync] pull() success — \(mergedTasks.count) tasks, \(mergedAreas.count) areas imported")
+            lastSyncInfo = "Pulled \(taskCount) tasks, \(areaCount) areas"
+            print("[Sync] pull() success — \(taskCount) tasks, \(areaCount) areas imported")
         } catch {
             lastError = "Pull: \(error.localizedDescription)"
             print("[Sync] pull() error: \(error)")
         }
     }
 
-    // MARK: - Export helpers
+    // MARK: - Export helpers (kept for external callers)
 
     func exportTasks(from context: ModelContext) -> [TaskDTO] {
         let descriptor = FetchDescriptor<HBTask>()
@@ -322,56 +384,48 @@ final class SyncEngine {
     }
 
     private func exportAreas(from context: ModelContext) -> [EntityDTO] {
-        let descriptor = FetchDescriptor<HBArea>()
-        let items = (try? context.fetch(descriptor)) ?? []
-        return items.map { $0.toDTO() }
+        let existing = (try? context.fetch(FetchDescriptor<HBArea>())) ?? []
+        return existing.map { $0.toDTO() }
     }
 
     private func exportCategories(from context: ModelContext) -> [EntityDTO] {
-        let descriptor = FetchDescriptor<HBCategory>()
-        let items = (try? context.fetch(descriptor)) ?? []
-        return items.map { $0.toDTO() }
+        let existing = (try? context.fetch(FetchDescriptor<HBCategory>())) ?? []
+        return existing.map { $0.toDTO() }
     }
 
     private func exportLabels(from context: ModelContext) -> [EntityDTO] {
-        let descriptor = FetchDescriptor<HBLabel>()
-        let items = (try? context.fetch(descriptor)) ?? []
-        return items.map { $0.toDTO() }
+        let existing = (try? context.fetch(FetchDescriptor<HBLabel>())) ?? []
+        return existing.map { $0.toDTO() }
     }
 
     private func exportPeople(from context: ModelContext) -> [EntityDTO] {
-        let descriptor = FetchDescriptor<HBPerson>()
-        let items = (try? context.fetch(descriptor)) ?? []
-        return items.map { $0.toDTO() }
+        let existing = (try? context.fetch(FetchDescriptor<HBPerson>())) ?? []
+        return existing.map { $0.toDTO() }
     }
 
     private func exportPerspectives(from context: ModelContext) -> [EntityDTO] {
-        let descriptor = FetchDescriptor<HBPerspective>()
-        let items = (try? context.fetch(descriptor)) ?? []
-        return items.map { $0.toDTO() }
+        let existing = (try? context.fetch(FetchDescriptor<HBPerspective>())) ?? []
+        return existing.map { $0.toDTO() }
     }
 
     private func exportTombstones(from context: ModelContext) -> (tasks: [String: String], entities: [String: [String: String]]) {
-        let descriptor = FetchDescriptor<HBTombstone>()
-        let tombstones = (try? context.fetch(descriptor)) ?? []
-        let isoFormatter = ISO8601DateFormatter()
-        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
-        var taskTombstones: [String: String] = [:]
-        var entityTombstones: [String: [String: String]] = [:]
-
-        for tomb in tombstones {
-            let dateStr = isoFormatter.string(from: tomb.deletedAt)
+        let existing = (try? context.fetch(FetchDescriptor<HBTombstone>())) ?? []
+        let isoFmt = ISO8601DateFormatter()
+        isoFmt.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        var tasks: [String: String] = [:]
+        var entities: [String: [String: String]] = [:]
+        for tomb in existing {
+            let dateStr = isoFmt.string(from: tomb.deletedAt)
             if tomb.collection == "tasks" {
-                taskTombstones[tomb.entityId] = dateStr
+                tasks[tomb.entityId] = dateStr
             } else {
-                entityTombstones[tomb.collection, default: [:]][tomb.entityId] = dateStr
+                entities[tomb.collection, default: [:]][tomb.entityId] = dateStr
             }
         }
-        return (taskTombstones, entityTombstones)
+        return (tasks, entities)
     }
 
-    // MARK: - Import helpers
+    // MARK: - Import helpers (kept for external callers)
 
     func importTasks(_ dtos: [TaskDTO], into context: ModelContext) {
         let descriptor = FetchDescriptor<HBTask>()

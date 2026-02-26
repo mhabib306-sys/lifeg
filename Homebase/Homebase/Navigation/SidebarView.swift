@@ -63,15 +63,15 @@ struct SidebarView: View {
         let todayEnd = Calendar.current.startOfDay(for: Date()).addingTimeInterval(86400)
         switch perspective {
         case .inbox:
-            tasks.filter { !$0.isNote && !$0.completed && $0.status == "inbox" }.count
+            return tasks.filter { !$0.isNote && !$0.completed && $0.status == "inbox" }.count
         case .today:
-            tasks.filter { task in
+            return tasks.filter { task in
                 !task.isNote && !task.completed &&
-                (task.today || (task.dueDate.map { $0 <= todayEnd } ?? false))
+                (task.dueDate != nil && task.dueDate! <= todayEnd)
             }.count
         case .flagged:
-            tasks.filter { !$0.isNote && !$0.completed && $0.flagged }.count
-        default: 0
+            return tasks.filter { !$0.isNote && !$0.completed && $0.flagged }.count
+        default: return 0
         }
     }
 }

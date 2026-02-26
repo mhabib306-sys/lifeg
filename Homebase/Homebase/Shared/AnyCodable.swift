@@ -1,7 +1,7 @@
 import Foundation
 
 /// Type-erased Codable wrapper for preserving arbitrary JSON values during round-trip encoding.
-struct AnyCodable: Codable, Equatable {
+struct AnyCodable: Codable, Equatable, @unchecked Sendable {
     let value: Any
 
     init(_ value: Any) {

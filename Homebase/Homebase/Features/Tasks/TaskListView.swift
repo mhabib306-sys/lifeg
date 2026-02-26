@@ -26,40 +26,43 @@ struct TaskListView: View {
                     title: perspective.emptyTitle,
                     subtitle: perspective.emptySubtitle
                 )
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
             } else {
                 List {
                     ForEach(filteredTasks, id: \.id) { task in
                         TaskRowView(
                             task: task,
                             isEditing: editingTaskId == task.id,
+                            onStartEditing: {
+                                withAnimation(HBTheme.springDefault) {
+                                    editingTaskId = task.id
+                                }
+                            },
                             onEditDone: {
-                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                                    editingTaskId = nil
+                                withAnimation(HBTheme.springDefault) {
+                                    if editingTaskId == task.id {
+                                        editingTaskId = nil
+                                    }
                                 }
                             },
                             onEditCancel: {
-                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                                    editingTaskId = nil
+                                withAnimation(HBTheme.springDefault) {
+                                    if editingTaskId == task.id {
+                                        editingTaskId = nil
+                                    }
                                 }
                             }
                         )
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            // Things 3 style: tap to inline edit (skip when in reorder mode)
-                            guard editMode == .inactive else { return }
-                            if editingTaskId != task.id {
-                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                                    editingTaskId = task.id
-                                }
-                            }
-                        }
                         .swipeActions(edge: .leading) {
                             Button {
-                                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                                    task.markCompleted()
-                                    sync.engine.markDirty()
+                                Haptic.checkboxTap()
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                                    withAnimation(HBTheme.springGentle) {
+                                        task.markCompleted()
+                                        sync.engine.markDirty()
+                                    }
+                                    Haptic.taskCompleted()
                                 }
-                                Haptic.taskCompleted()
                             } label: {
                                 Label("Complete", systemImage: "checkmark")
                             }
@@ -94,7 +97,7 @@ struct TaskListView: View {
                         .alignmentGuide(.listRowSeparatorLeading) { d in d[.leading] + 50 }
                     }
                     .onMove { source, destination in
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                        withAnimation(HBTheme.springGentle) {
                             moveTask(from: source, to: destination)
                         }
                     }
@@ -103,9 +106,11 @@ struct TaskListView: View {
                 }
                 .listStyle(.plain)
                 .scrollDismissesKeyboard(.interactively)
-                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: filteredTasks.map(\.id))
+                .transition(.opacity)
+                .animation(HBTheme.springGentle, value: filteredTasks.map(\.id))
             }
         }
+        .animation(HBTheme.springDefault, value: filteredTasks.isEmpty)
         .navigationTitle(perspective.displayName)
         .environment(\.editMode, $editMode)
         .toolbar {
@@ -167,13 +172,13 @@ private struct QuickAddRow: View {
                     onSubmit: { submitTask() },
                     onBlur: {
                         if text.trimmingCharacters(in: .whitespaces).isEmpty && !hasMetadata {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            withAnimation(HBTheme.springDefault) {
                                 isActive = false
                             }
                         }
                     },
                     onCancel: {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                        withAnimation(HBTheme.springDefault) {
                             text = ""
                             metadata = TaskInlineMetadata()
                             isActive = false
@@ -183,7 +188,7 @@ private struct QuickAddRow: View {
                 )
             } else {
                 Button {
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                    withAnimation(HBTheme.springDefault) {
                         isActive = true
                     }
                     Haptic.editStart()
@@ -197,7 +202,7 @@ private struct QuickAddRow: View {
                             .foregroundStyle(HBTheme.textTertiary)
                     }
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ThingsPressStyle())
             }
 
             Spacer()
@@ -213,7 +218,7 @@ private struct QuickAddRow: View {
             x: 0,
             y: isActive ? 2 : 0
         )
-        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: isActive)
+        .animation(HBTheme.springDefault, value: isActive)
         .listRowSeparator(.hidden)
     }
 
@@ -231,7 +236,7 @@ private struct QuickAddRow: View {
 
         let status = metadata.areaId != nil ? "anytime" : defaultStatus
         let task = HBTask(title: trimmed, status: status)
-        if perspective == .today { task.today = true }
+        if perspective == .today { task.dueDate = Calendar.current.startOfDay(for: Date()) }
         if perspective == .flagged { task.flagged = true }
 
         task.areaId = metadata.areaId
@@ -246,6 +251,7 @@ private struct QuickAddRow: View {
 
         text = ""
         metadata = TaskInlineMetadata()
+        // Keep field focused for rapid multi-task entry
     }
 
     private var defaultStatus: String {

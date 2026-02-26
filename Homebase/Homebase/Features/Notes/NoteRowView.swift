@@ -6,6 +6,7 @@ struct NoteRowView: View {
     let childCount: Int
     let onZoomIn: () -> Void
     var isEditing: Bool = false
+    var onStartEditing: (() -> Void)?
     var onEditDone: (() -> Void)?
     var onEditCancel: (() -> Void)?
 
@@ -40,7 +41,6 @@ struct NoteRowView: View {
                         onBlur: { commitEdit() },
                         onCancel: { cancelEdit() }
                     )
-                    .transition(.opacity)
                     .onAppear {
                         if !didSetup {
                             editText = note.title
@@ -60,15 +60,20 @@ struct NoteRowView: View {
                     Text(note.title.isEmpty ? "Untitled" : note.title)
                         .font(HBTheme.titleFont)
                         .foregroundStyle(note.title.isEmpty ? HBTheme.textTertiary : HBTheme.textPrimary)
-                        .transition(.opacity)
+                        .contentShape(Rectangle())
+                        .onTapGesture { onStartEditing?() }
                 }
 
-                if !isEditing, let subtitle = sync.entityCache.subtitle(for: note) {
+                if let subtitle = sync.entityCache.subtitle(for: note) {
                     Text(subtitle)
                         .font(HBTheme.subtitleFont)
                         .foregroundStyle(HBTheme.textTertiary)
                         .lineLimit(1)
                         .transition(.opacity.combined(with: .move(edge: .top)))
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            if !isEditing { onStartEditing?() }
+                        }
                 }
             }
 
@@ -91,7 +96,7 @@ struct NoteRowView: View {
             x: 0,
             y: isEditing ? 2 : 0
         )
-        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: isEditing)
+        .animation(HBTheme.springDefault, value: isEditing)
         .padding(.leading, CGFloat(note.indent) * 16)
     }
 
@@ -107,6 +112,7 @@ struct NoteRowView: View {
         note.dueDate = editMetadata.dueDate
         note.touch()
         sync.engine.markDirty()
+        Haptic.lightTap()
         onEditDone?()
     }
 

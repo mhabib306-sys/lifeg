@@ -14,7 +14,7 @@ struct ThingsCheckbox: View {
             onToggle()
             if !isCompleted {
                 // Trigger spring pop animation
-                withAnimation(.spring(response: 0.25, dampingFraction: 0.5)) {
+                withAnimation(HBTheme.springSnappy) {
                     animateCheck = true
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {

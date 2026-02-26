@@ -4,7 +4,7 @@ import SwiftData
 // MARK: - Widget Type
 
 enum WidgetType: String, Codable, CaseIterable, Identifiable {
-    case weather, stats, today, next
+    case stats, today, next, weather
     var id: String { rawValue }
 
     var title: String {
@@ -61,7 +61,7 @@ struct HomeView: View {
         let todayEnd = Calendar.current.startOfDay(for: Date()).addingTimeInterval(86400)
         return allTasks.filter { task in
             !task.isNote && !task.completed &&
-            (task.today || (task.dueDate.map { $0 <= todayEnd } ?? false))
+            (task.dueDate != nil && task.dueDate! <= todayEnd)
         }.sorted { $0.order < $1.order }
     }
 
@@ -72,7 +72,7 @@ struct HomeView: View {
             guard !task.isNote && !task.completed && task.status == "anytime" else { return false }
             if let defer_ = task.deferDate, defer_ > now { return false }
             if let due = task.dueDate, due > todayEnd { return false }
-            return !task.today
+            return true
         }.sorted { $0.order < $1.order }
     }
 
@@ -141,7 +141,11 @@ struct HomeView: View {
             .padding(.bottom, 20)
         }
         .navigationTitle("Home")
-        .task { await loadWeather() }
+        .task {
+            if widgetOrder.contains(.weather) {
+                await loadWeather()
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -184,10 +188,8 @@ struct HomeView: View {
                 TodayContent(
                     tasks: todayTasks,
                     onComplete: { task in
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                            task.markCompleted()
-                            sync.engine.markDirty()
-                        }
+                        task.markCompleted()
+                        sync.engine.markDirty()
                         Haptic.taskCompleted()
                     },
                     onTap: { task in editingTaskId = task.id }
@@ -197,6 +199,11 @@ struct HomeView: View {
             WidgetCard(title: type.title, icon: type.icon, color: type.color) {
                 NextContent(
                     tasks: Array(nextTasks.prefix(5)),
+                    onComplete: { task in
+                        task.markCompleted()
+                        sync.engine.markDirty()
+                        Haptic.taskCompleted()
+                    },
                     onTap: { task in editingTaskId = task.id }
                 )
             }
@@ -205,11 +212,14 @@ struct HomeView: View {
 
     // MARK: - Widget Order Persistence
 
+    /// Default widgets exclude weather (slow network call on launch)
+    private static let defaultWidgets: [WidgetType] = [.stats, .today, .next]
+
     private static func loadWidgetOrder() -> [WidgetType] {
         guard let data = UserDefaults.standard.data(forKey: "hb_widget_order"),
               let order = try? JSONDecoder().decode([WidgetType].self, from: data),
-              Set(order) == Set(WidgetType.allCases) else {
-            return WidgetType.allCases
+              !order.isEmpty else {
+            return defaultWidgets
         }
         return order
     }
@@ -517,6 +527,7 @@ private struct TodayContent: View {
 
 private struct NextContent: View {
     let tasks: [HBTask]
+    let onComplete: (HBTask) -> Void
     let onTap: (HBTask) -> Void
 
     var body: some View {
@@ -529,7 +540,7 @@ private struct NextContent: View {
         } else {
             VStack(spacing: 0) {
                 ForEach(tasks, id: \.id) { task in
-                    WidgetTaskRow(task: task, onComplete: nil)
+                    WidgetTaskRow(task: task, onComplete: { onComplete(task) })
                         .contentShape(Rectangle())
                         .onTapGesture { onTap(task) }
                     if task.id != tasks.last?.id {
@@ -550,12 +561,12 @@ private struct WidgetTaskRow: View {
     var body: some View {
         HStack(spacing: 10) {
             if let onComplete {
-                Button(action: onComplete) {
-                    Circle()
-                        .strokeBorder(HBTheme.checkboxBorder, lineWidth: 1.5)
-                        .frame(width: 18, height: 18)
-                }
-                .buttonStyle(.plain)
+                ThingsCheckbox(
+                    isCompleted: false,
+                    accentColor: HBTheme.checkboxFill,
+                    onToggle: onComplete
+                )
+                .scaleEffect(0.75)
             } else {
                 Circle()
                     .fill(HBTheme.textTertiary.opacity(0.3))

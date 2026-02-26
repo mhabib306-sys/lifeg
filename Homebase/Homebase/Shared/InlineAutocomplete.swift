@@ -239,6 +239,7 @@ struct InlineAutocompleteField: View {
     @FocusState private var isFocused: Bool
     @State private var activeTrigger: TriggerMatch?
     @State private var originalText: String = ""
+    @State private var isCancelling = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -265,30 +266,33 @@ struct InlineAutocompleteField: View {
                     }
                 }
                 .onChange(of: isFocused) { _, focused in
-                    if !focused {
+                    if !focused && !isCancelling {
                         activeTrigger = nil
                         onBlur?()
                     }
+                    if !focused { isCancelling = false }
                 }
                 .onKeyPress(.escape) {
+                    isCancelling = true
                     text = originalText
                     activeTrigger = nil
                     isFocused = false
                     onCancel?()
                     return .handled
                 }
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        ShortcutKeyboardBar { trigger in
-                            insertTriggerText(trigger)
-                        }
-                    }
+
+            // Inline shortcut keys (replaces keyboard toolbar)
+            if isFocused {
+                InlineShortcutKeys { trigger in
+                    insertTriggerText(trigger)
                 }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
 
             MetadataChipsView(metadata: metadata, cache: sync.entityCache)
-                .animation(.spring(response: 0.35, dampingFraction: 0.8), value: metadata.areaId)
-                .animation(.spring(response: 0.35, dampingFraction: 0.8), value: metadata.labels)
-                .animation(.spring(response: 0.35, dampingFraction: 0.8), value: metadata.people)
+                .animation(HBTheme.springDefault, value: metadata.areaId)
+                .animation(HBTheme.springDefault, value: metadata.labels)
+                .animation(HBTheme.springDefault, value: metadata.people)
 
             // Suggestions overlay
             if let trigger = activeTrigger {
@@ -296,7 +300,8 @@ struct InlineAutocompleteField: View {
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: activeTrigger != nil)
+        .animation(HBTheme.springDefault, value: activeTrigger != nil)
+        .animation(HBTheme.springSnappy, value: isFocused)
     }
 
     @ViewBuilder
@@ -437,7 +442,7 @@ struct InlineAutocompleteField: View {
 
 // MARK: - Keyboard Accessory Bar (Todoist-style)
 
-struct ShortcutKeyboardBar: View {
+struct InlineShortcutKeys: View {
     var onInsert: (String) -> Void
 
     private let shortcuts: [(icon: String, trigger: String, color: Color)] = [
@@ -449,7 +454,7 @@ struct ShortcutKeyboardBar: View {
     ]
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 6) {
             ForEach(shortcuts, id: \.trigger) { shortcut in
                 Button {
                     onInsert(shortcut.trigger)

@@ -29,6 +29,11 @@ enum HBTheme {
     static let editingBackground = Color(hex: "#F7F6F3")     // Warm gray, matches secondaryBackground
     static let editingShadow = Color.black.opacity(0.06)
 
+    // Canonical spring animations
+    static let springDefault: Animation = .spring(response: 0.35, dampingFraction: 0.8)
+    static let springSnappy: Animation = .spring(response: 0.25, dampingFraction: 0.7)
+    static let springGentle: Animation = .spring(response: 0.45, dampingFraction: 0.85)
+
     // Typography — upgraded
     static let titleFont = Font.system(.body, weight: .regular)
     static let subtitleFont = Font.system(.footnote, weight: .regular)

@@ -4,13 +4,13 @@ import SwiftData
 struct TaskRowView: View {
     let task: HBTask
     var isEditing: Bool = false
+    var onStartEditing: (() -> Void)?
     var onEditDone: (() -> Void)?
     var onEditCancel: (() -> Void)?
 
     @Environment(SyncCoordinator.self) private var sync
     @State private var editText = ""
     @State private var editMetadata = TaskInlineMetadata()
-    @State private var pendingCompletion = false
     @State private var didSetup = false
 
     var body: some View {
@@ -33,7 +33,6 @@ struct TaskRowView: View {
                         onBlur: { commitEdit() },
                         onCancel: { cancelEdit() }
                     )
-                    .transition(.opacity)
                     .onAppear {
                         if !didSetup {
                             editText = task.title
@@ -50,21 +49,18 @@ struct TaskRowView: View {
                     }
                     .onDisappear { didSetup = false }
                 } else {
+                    // Title text — tappable to enter edit mode
                     Text(task.title)
                         .font(HBTheme.titleFont)
                         .foregroundStyle(task.completed ? HBTheme.textTertiary : HBTheme.textPrimary)
                         .strikethrough(task.completed, color: HBTheme.textTertiary.opacity(0.5))
                         .opacity(task.completed ? 0.6 : 1.0)
-                        .transition(.opacity)
+                        .contentShape(Rectangle())
+                        .onTapGesture { onStartEditing?() }
                 }
 
-                if !task.completed && !isEditing {
+                if !task.completed {
                     HStack(spacing: 6) {
-                        if task.today {
-                            Image(systemName: "star.fill")
-                                .font(.system(size: 10))
-                                .foregroundStyle(HBTheme.today)
-                        }
                         if task.flagged {
                             Image(systemName: "flag.fill")
                                 .font(.system(size: 10))
@@ -80,7 +76,7 @@ struct TaskRowView: View {
                             .foregroundStyle(due < Date() ? .red : HBTheme.textSecondary)
                         }
                         if let subtitle = sync.entityCache.subtitle(for: task) {
-                            if task.today || task.flagged || task.dueDate != nil {
+                            if task.flagged || task.dueDate != nil {
                                 Text("\u{00B7}")
                                     .font(HBTheme.subtitleFont)
                                     .foregroundStyle(HBTheme.textTertiary)
@@ -92,6 +88,11 @@ struct TaskRowView: View {
                         }
                     }
                     .transition(.opacity.combined(with: .move(edge: .top)))
+                    // Subtitle row also tappable when not editing
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        if !isEditing { onStartEditing?() }
+                    }
                 }
             }
 
@@ -108,22 +109,22 @@ struct TaskRowView: View {
             x: 0,
             y: isEditing ? 2 : 0
         )
-        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: isEditing)
+        .animation(HBTheme.springDefault, value: isEditing)
     }
 
     private func toggleCompletion() {
         if task.completed {
             task.markIncomplete()
             sync.engine.markDirty()
+            Haptic.checkboxTap()
         } else {
-            pendingCompletion = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+            Haptic.checkboxTap()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                withAnimation(HBTheme.springGentle) {
                     task.markCompleted()
                     sync.engine.markDirty()
                 }
                 Haptic.taskCompleted()
-                pendingCompletion = false
             }
         }
     }
@@ -143,6 +144,7 @@ struct TaskRowView: View {
         }
         task.touch()
         sync.engine.markDirty()
+        Haptic.lightTap()
         onEditDone?()
     }
 

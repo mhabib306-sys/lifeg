@@ -10,7 +10,6 @@ struct TaskDetailView: View {
     @Environment(SyncCoordinator.self) private var sync
     @State private var title = ""
     @State private var notes = ""
-    @State private var today = false
     @State private var flagged = false
     @State private var dueDate: Date?
     @State private var deferDate: Date?
@@ -55,7 +54,7 @@ struct TaskDetailView: View {
                         .focused($titleFocused)
                         .toolbar {
                             ToolbarItemGroup(placement: .keyboard) {
-                                ShortcutKeyboardBar { trigger in
+                                InlineShortcutKeys { trigger in
                                     title += trigger
                                 }
                             }
@@ -77,16 +76,6 @@ struct TaskDetailView: View {
                     if !isNote {
                         // 3. Metadata rows
                         VStack(spacing: 0) {
-                            // Today toggle
-                            MetadataRow(
-                                icon: "star.fill",
-                                label: "Today",
-                                iconColor: today ? HBTheme.today : HBTheme.textTertiary
-                            ) {
-                                Toggle("", isOn: $today)
-                                    .labelsHidden()
-                            }
-
                             // Flagged toggle
                             MetadataRow(
                                 icon: "flag.fill",
@@ -309,7 +298,10 @@ struct TaskDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") {
+                        Haptic.editCancel()
+                        dismiss()
+                    }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
@@ -344,7 +336,6 @@ struct TaskDetailView: View {
         guard let task = existingTask else { return }
         title = task.title
         notes = task.notes
-        today = task.today
         flagged = task.flagged
         dueDate = task.dueDate
         deferDate = task.deferDate
@@ -367,7 +358,6 @@ struct TaskDetailView: View {
             task.title = title
             task.notes = notes
             task.status = status
-            task.today = today
             task.flagged = flagged
             task.dueDate = dueDate
             task.deferDate = deferDate
@@ -379,7 +369,6 @@ struct TaskDetailView: View {
         } else {
             let task = HBTask(title: title, status: status)
             task.notes = notes
-            task.today = today
             task.flagged = flagged
             task.dueDate = dueDate
             task.deferDate = deferDate
@@ -400,6 +389,7 @@ struct TaskDetailView: View {
         child.order = childNotes.count
         context.insert(child)
         sync.engine.markDirty()
+        Haptic.lightTap()
         editingChildId = child.id
     }
 }

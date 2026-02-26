@@ -14,9 +14,8 @@ enum TaskFilterEngine {
                 // Tasks with inbox status (matches web app source-of-truth)
                 return !task.completed && task.status == "inbox"
             case .today:
-                // Tasks flagged as Today OR due today/overdue
+                // Tasks due today or overdue (purely date-driven)
                 guard !task.completed else { return false }
-                if task.today { return true }
                 if let due = task.dueDate, due <= todayEnd { return true }
                 return false
             case .flagged:

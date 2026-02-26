@@ -195,11 +195,6 @@ private struct SearchTaskRow: View {
                     .strikethrough(task.completed)
 
                 HStack(spacing: 6) {
-                    if task.today {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 9))
-                            .foregroundStyle(HBTheme.today)
-                    }
                     if task.flagged {
                         Image(systemName: "flag.fill")
                             .font(.system(size: 9))

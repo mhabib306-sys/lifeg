@@ -4,6 +4,14 @@ struct ContentView: View {
     @State private var router = NavigationRouter()
     @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
 
+    private var showFAB: Bool {
+        guard let p = router.selectedPerspective else { return false }
+        switch p {
+        case .home, .logbook, .notes: return false
+        default: return true
+        }
+    }
+
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             SidebarView(router: router)
@@ -16,6 +24,18 @@ struct ContentView: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
+        .overlay(alignment: .bottomTrailing) {
+            if showFAB {
+                FloatingAddButton {
+                    router.presentedSheet = .taskEditor(nil)
+                    Haptic.lightTap()
+                }
+                .padding(.trailing, 20)
+                .padding(.bottom, 28)
+                .transition(.scale(scale: 0.6).combined(with: .opacity))
+            }
+        }
+        .animation(HBTheme.springSnappy, value: showFAB)
         .sheet(isPresented: $router.showSearch) {
             GlobalSearchView(isPresented: $router.showSearch)
         }
@@ -31,5 +51,26 @@ struct ContentView: View {
         default:
             TaskListView(perspective: perspective, router: router)
         }
+    }
+}
+
+// MARK: - Floating Add Button (Things 3 style)
+
+private struct FloatingAddButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "plus")
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 56, height: 56)
+                .background(
+                    Circle()
+                        .fill(HBTheme.accent)
+                        .shadow(color: HBTheme.accent.opacity(0.35), radius: 8, y: 4)
+                )
+        }
+        .buttonStyle(ThingsPressStyle())
     }
 }

@@ -22,6 +22,7 @@ struct EmptyStateView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(40)
+        .transition(.opacity.combined(with: .scale(scale: 0.95)))
     }
 }
 
