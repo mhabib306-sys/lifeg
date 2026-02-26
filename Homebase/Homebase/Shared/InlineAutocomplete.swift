@@ -255,6 +255,11 @@ struct InlineAutocompleteField: View {
                         onBlur?()
                     }
                 }
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        ShortcutKeyboardBar(text: $text)
+                    }
+                }
 
             MetadataChipsView(metadata: metadata, cache: sync.entityCache)
 
@@ -389,6 +394,55 @@ struct InlineAutocompleteField: View {
         case .deferDate: "clock"
         case .dueDate: "calendar"
         }
+    }
+}
+
+// MARK: - Keyboard Shortcut Bar
+
+struct ShortcutKeyboardBar: View {
+    @Binding var text: String
+
+    private let shortcuts: [(label: String, icon: String, trigger: String)] = [
+        ("#", "folder", "#"),
+        ("@", "tag", "@"),
+        ("&", "person", "&"),
+        ("!", "clock", "!"),
+        ("!!", "calendar", "!!"),
+    ]
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(shortcuts, id: \.trigger) { shortcut in
+                Button {
+                    insertTrigger(shortcut.trigger)
+                    Haptic.selection()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: shortcut.icon)
+                            .font(.system(size: 12))
+                        Text(shortcut.label)
+                            .font(.system(size: 15, weight: .semibold, design: .monospaced))
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color(.systemGray5))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+                .buttonStyle(.plain)
+
+                if shortcut.trigger != shortcuts.last?.trigger {
+                    Spacer()
+                }
+            }
+        }
+    }
+
+    private func insertTrigger(_ trigger: String) {
+        // Add a space before the trigger if needed
+        if !text.isEmpty && !text.hasSuffix(" ") {
+            text += " "
+        }
+        text += trigger
     }
 }
 
