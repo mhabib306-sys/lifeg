@@ -280,14 +280,9 @@ struct InlineAutocompleteField: View {
                     onCancel?()
                     return .handled
                 }
-
-            // Inline shortcut keys (replaces keyboard toolbar)
-            if isFocused {
-                InlineShortcutKeys { trigger in
+                .shortcutKeysAccessory { trigger in
                     insertTriggerText(trigger)
                 }
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            }
 
             MetadataChipsView(metadata: metadata, cache: sync.entityCache)
                 .animation(HBTheme.springDefault, value: metadata.areaId)
@@ -440,34 +435,3 @@ struct InlineAutocompleteField: View {
     }
 }
 
-// MARK: - Keyboard Accessory Bar (Todoist-style)
-
-struct InlineShortcutKeys: View {
-    var onInsert: (String) -> Void
-
-    private let shortcuts: [(icon: String, trigger: String, color: Color)] = [
-        ("folder",  "#",  HBTheme.accent),
-        ("tag",     "@",  .purple),
-        ("person",  "&",  .cyan),
-        ("clock",   "!",  .orange),
-        ("calendar","!!", .red),
-    ]
-
-    var body: some View {
-        HStack(spacing: 6) {
-            ForEach(shortcuts, id: \.trigger) { shortcut in
-                Button {
-                    onInsert(shortcut.trigger)
-                    Haptic.selection()
-                } label: {
-                    Image(systemName: shortcut.icon)
-                        .font(.system(size: 18))
-                        .foregroundStyle(shortcut.color.opacity(0.85))
-                        .frame(maxWidth: .infinity, minHeight: 44)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-            }
-        }
-    }
-}

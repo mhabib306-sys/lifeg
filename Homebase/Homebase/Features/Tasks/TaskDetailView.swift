@@ -6,6 +6,7 @@ import SwiftData
 struct TaskDetailView: View {
     let taskId: String?
     let context: ModelContext
+    var linkedEntity: EntityType? = nil
     @Environment(\.dismiss) private var dismiss
     @Environment(SyncCoordinator.self) private var sync
     @State private var title = ""
@@ -52,12 +53,11 @@ struct TaskDetailView: View {
                     TextField("Title", text: $title)
                         .font(HBTheme.editorTitleFont)
                         .focused($titleFocused)
-                        .toolbar {
-                            ToolbarItemGroup(placement: .keyboard) {
-                                InlineShortcutKeys { trigger in
-                                    title += trigger
-                                }
+                        .shortcutKeysAccessory { trigger in
+                            if !title.isEmpty && !title.hasSuffix(" ") {
+                                title += " "
                             }
+                            title += trigger
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 16)
@@ -316,6 +316,7 @@ struct TaskDetailView: View {
             .onAppear {
                 loadExisting()
                 if taskId == nil {
+                    applyLinkedEntity()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         titleFocused = true
                     }
@@ -379,6 +380,24 @@ struct TaskDetailView: View {
             context.insert(task)
         }
         sync.engine.markDirty()
+    }
+
+    private func applyLinkedEntity() {
+        guard let entity = linkedEntity else { return }
+        switch entity {
+        case .area(let id):
+            selectedAreaId = id
+        case .category(let id):
+            selectedCategoryId = id
+            if let cat = allCategories.first(where: { $0.id == id }) {
+                let areaId = cat.areaId
+                if !areaId.isEmpty { selectedAreaId = areaId }
+            }
+        case .label(let id):
+            selectedLabels.insert(id)
+        case .person(let id):
+            selectedPeople.insert(id)
+        }
     }
 
     private func addChildNote() {

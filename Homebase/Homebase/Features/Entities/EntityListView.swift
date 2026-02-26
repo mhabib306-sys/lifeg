@@ -226,6 +226,7 @@ struct EntityDetailView: View {
     @Environment(\.modelContext) private var context
     @Environment(SyncCoordinator.self) private var sync
     @State private var editingTaskId: String?
+    @State private var showNewTask = false
     @State private var searchText = ""
 
     private var entityName: String {
@@ -330,6 +331,17 @@ struct EntityDetailView: View {
         .listStyle(.insetGrouped)
         .navigationTitle(entityName)
         .searchable(text: $searchText, prompt: "Search in \(entityName)...")
+        .toolbar {
+            Button {
+                showNewTask = true
+                Haptic.lightTap()
+            } label: {
+                Image(systemName: "plus")
+            }
+        }
+        .sheet(isPresented: $showNewTask) {
+            TaskDetailView(taskId: nil, context: context, linkedEntity: entityType)
+        }
         .sheet(item: $editingTaskId) { taskId in
             TaskDetailView(taskId: taskId, context: context)
         }
