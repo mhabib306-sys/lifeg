@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Data Types
 
-struct TaskInlineMetadata {
+struct TaskInlineMetadata: Equatable {
     var areaId: String?
     var labels: [String] = []
     var people: [String] = []
@@ -170,6 +170,10 @@ struct MetadataChipsView: View {
                         .background(chip.color.opacity(0.15))
                         .foregroundStyle(chip.color)
                         .clipShape(RoundedRectangle(cornerRadius: 4))
+                        .transition(.asymmetric(
+                            insertion: .opacity.combined(with: .scale(scale: 0.8)).combined(with: .offset(y: 4)),
+                            removal: .opacity.combined(with: .scale(scale: 0.9))
+                        ))
                     }
                 }
             }
@@ -229,10 +233,12 @@ struct InlineAutocompleteField: View {
     var autoFocus: Bool = true
     var onSubmit: () -> Void
     var onBlur: (() -> Void)?
+    var onCancel: (() -> Void)?
 
     @Environment(SyncCoordinator.self) private var sync
     @FocusState private var isFocused: Bool
     @State private var activeTrigger: TriggerMatch?
+    @State private var originalText: String = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -240,9 +246,10 @@ struct InlineAutocompleteField: View {
                 .font(font)
                 .focused($isFocused)
                 .onAppear {
+                    originalText = text
                     if autoFocus {
-                        // Delay to let SwiftUI finish layout
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        // Syncs with spring animation ramp-up
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                             isFocused = true
                         }
                     }
@@ -263,6 +270,13 @@ struct InlineAutocompleteField: View {
                         onBlur?()
                     }
                 }
+                .onKeyPress(.escape) {
+                    text = originalText
+                    activeTrigger = nil
+                    isFocused = false
+                    onCancel?()
+                    return .handled
+                }
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
                         ShortcutKeyboardBar { trigger in
@@ -272,12 +286,17 @@ struct InlineAutocompleteField: View {
                 }
 
             MetadataChipsView(metadata: metadata, cache: sync.entityCache)
+                .animation(.spring(response: 0.35, dampingFraction: 0.8), value: metadata.areaId)
+                .animation(.spring(response: 0.35, dampingFraction: 0.8), value: metadata.labels)
+                .animation(.spring(response: 0.35, dampingFraction: 0.8), value: metadata.people)
 
             // Suggestions overlay
             if let trigger = activeTrigger {
                 suggestionsView(for: trigger)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: activeTrigger != nil)
     }
 
     @ViewBuilder

@@ -28,12 +28,23 @@ struct OutlinerView: View {
                     childCount: OutlinerEngine.children(of: note.id, in: allNotes).count,
                     onZoomIn: { breadcrumb.append(note.id) },
                     isEditing: editingNoteId == note.id,
-                    onEditDone: { editingNoteId = nil }
+                    onEditDone: {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            editingNoteId = nil
+                        }
+                    },
+                    onEditCancel: {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            editingNoteId = nil
+                        }
+                    }
                 )
                 .contentShape(Rectangle())
                 .onTapGesture {
                     if editingNoteId != note.id {
-                        editingNoteId = note.id
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            editingNoteId = note.id
+                        }
                     }
                 }
                 .swipeActions(edge: .leading) {
@@ -51,6 +62,7 @@ struct OutlinerView: View {
             }
         }
         .listStyle(.plain)
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle(currentTitle)
         .environment(\.editMode, $editMode)
         .toolbar {
@@ -85,8 +97,10 @@ struct OutlinerView: View {
         note.order = visibleNotes.count
         context.insert(note)
         sync.engine.markDirty()
-        // Start editing the new note
-        editingNoteId = note.id
+        // Start editing the new note with animation
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+            editingNoteId = note.id
+        }
     }
 
     private func moveNote(from source: IndexSet, to destination: Int) {

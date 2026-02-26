@@ -5,6 +5,7 @@ struct TaskRowView: View {
     let task: HBTask
     var isEditing: Bool = false
     var onEditDone: (() -> Void)?
+    var onEditCancel: (() -> Void)?
 
     @Environment(SyncCoordinator.self) private var sync
     @State private var editText = ""
@@ -29,8 +30,10 @@ struct TaskRowView: View {
                         metadata: $editMetadata,
                         placeholder: "Task title",
                         onSubmit: { commitEdit() },
-                        onBlur: { commitEdit() }
+                        onBlur: { commitEdit() },
+                        onCancel: { cancelEdit() }
                     )
+                    .transition(.opacity)
                     .onAppear {
                         if !didSetup {
                             editText = task.title
@@ -42,6 +45,7 @@ struct TaskRowView: View {
                                 dueDate: task.dueDate
                             )
                             didSetup = true
+                            Haptic.editStart()
                         }
                     }
                     .onDisappear { didSetup = false }
@@ -51,6 +55,7 @@ struct TaskRowView: View {
                         .foregroundStyle(task.completed ? HBTheme.textTertiary : HBTheme.textPrimary)
                         .strikethrough(task.completed, color: HBTheme.textTertiary.opacity(0.5))
                         .opacity(task.completed ? 0.6 : 1.0)
+                        .transition(.opacity)
                 }
 
                 if !task.completed && !isEditing {
@@ -86,12 +91,25 @@ struct TaskRowView: View {
                                 .lineLimit(1)
                         }
                     }
+                    .transition(.opacity.combined(with: .move(edge: .top)))
                 }
             }
 
             Spacer()
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, isEditing ? 12 : 8)
+        .padding(.horizontal, isEditing ? 4 : 0)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(isEditing ? HBTheme.editingBackground : .clear)
+        )
+        .shadow(
+            color: isEditing ? HBTheme.editingShadow : .clear,
+            radius: isEditing ? 6 : 0,
+            x: 0,
+            y: isEditing ? 2 : 0
+        )
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: isEditing)
     }
 
     private func toggleCompletion() {
@@ -127,5 +145,18 @@ struct TaskRowView: View {
         task.touch()
         sync.engine.markDirty()
         onEditDone?()
+    }
+
+    private func cancelEdit() {
+        editText = task.title
+        editMetadata = TaskInlineMetadata(
+            areaId: task.areaId,
+            labels: task.labels,
+            people: task.people,
+            deferDate: task.deferDate,
+            dueDate: task.dueDate
+        )
+        Haptic.editCancel()
+        onEditCancel?()
     }
 }

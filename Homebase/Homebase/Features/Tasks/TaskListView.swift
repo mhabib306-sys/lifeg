@@ -26,14 +26,27 @@ struct TaskListView: View {
             } else {
                 List {
                     ForEach(filteredTasks, id: \.id) { task in
-                        TaskRowView(task: task, isEditing: editingTaskId == task.id) {
-                            editingTaskId = nil
-                        }
+                        TaskRowView(
+                            task: task,
+                            isEditing: editingTaskId == task.id,
+                            onEditDone: {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                    editingTaskId = nil
+                                }
+                            },
+                            onEditCancel: {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                    editingTaskId = nil
+                                }
+                            }
+                        )
                         .contentShape(Rectangle())
                         .onTapGesture {
                             // Things 3 style: tap to inline edit
                             if editingTaskId != task.id {
-                                editingTaskId = task.id
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                    editingTaskId = task.id
+                                }
                             }
                         }
                         .swipeActions(edge: .leading) {
@@ -77,6 +90,7 @@ struct TaskListView: View {
                     QuickAddRow(perspective: perspective)
                 }
                 .listStyle(.plain)
+                .scrollDismissesKeyboard(.interactively)
                 .animation(.spring(response: 0.4, dampingFraction: 0.8), value: filteredTasks.map(\.id))
             }
         }
@@ -141,13 +155,26 @@ private struct QuickAddRow: View {
                     onSubmit: { submitTask() },
                     onBlur: {
                         if text.trimmingCharacters(in: .whitespaces).isEmpty && !hasMetadata {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                isActive = false
+                            }
+                        }
+                    },
+                    onCancel: {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            text = ""
+                            metadata = TaskInlineMetadata()
                             isActive = false
                         }
+                        Haptic.editCancel()
                     }
                 )
             } else {
                 Button {
-                    isActive = true
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                        isActive = true
+                    }
+                    Haptic.editStart()
                 } label: {
                     HStack(spacing: 10) {
                         Image(systemName: "plus")
@@ -163,7 +190,19 @@ private struct QuickAddRow: View {
 
             Spacer()
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, isActive ? 12 : 8)
+        .padding(.horizontal, isActive ? 4 : 0)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(isActive ? HBTheme.editingBackground : .clear)
+        )
+        .shadow(
+            color: isActive ? HBTheme.editingShadow : .clear,
+            radius: isActive ? 6 : 0,
+            x: 0,
+            y: isActive ? 2 : 0
+        )
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: isActive)
         .listRowSeparator(.hidden)
     }
 

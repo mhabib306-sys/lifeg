@@ -25,6 +25,10 @@ enum HBTheme {
     static let checkboxBorder = Color(hex: "#C7C7CC")
     static let checkboxFill = Color(hex: "#357EDD")          // Match accent
 
+    // Editing state
+    static let editingBackground = Color(hex: "#F7F6F3")     // Warm gray, matches secondaryBackground
+    static let editingShadow = Color.black.opacity(0.06)
+
     // Typography — upgraded
     static let titleFont = Font.system(.body, weight: .regular)
     static let subtitleFont = Font.system(.footnote, weight: .regular)

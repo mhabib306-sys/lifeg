@@ -27,4 +27,16 @@ enum Haptic {
         generator.prepare()
         generator.impactOccurred()
     }
+
+    static func editStart() {
+        let generator = UIImpactFeedbackGenerator(style: .soft)
+        generator.prepare()
+        generator.impactOccurred(intensity: 0.5)
+    }
+
+    static func editCancel() {
+        let generator = UIImpactFeedbackGenerator(style: .rigid)
+        generator.prepare()
+        generator.impactOccurred(intensity: 0.3)
+    }
 }

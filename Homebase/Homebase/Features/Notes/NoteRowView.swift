@@ -7,6 +7,7 @@ struct NoteRowView: View {
     let onZoomIn: () -> Void
     var isEditing: Bool = false
     var onEditDone: (() -> Void)?
+    var onEditCancel: (() -> Void)?
 
     @Environment(SyncCoordinator.self) private var sync
     @State private var editText = ""
@@ -36,8 +37,10 @@ struct NoteRowView: View {
                         metadata: $editMetadata,
                         placeholder: "Note",
                         onSubmit: { commitEdit() },
-                        onBlur: { commitEdit() }
+                        onBlur: { commitEdit() },
+                        onCancel: { cancelEdit() }
                     )
+                    .transition(.opacity)
                     .onAppear {
                         if !didSetup {
                             editText = note.title
@@ -49,6 +52,7 @@ struct NoteRowView: View {
                                 dueDate: note.dueDate
                             )
                             didSetup = true
+                            Haptic.editStart()
                         }
                     }
                     .onDisappear { didSetup = false }
@@ -56,13 +60,15 @@ struct NoteRowView: View {
                     Text(note.title.isEmpty ? "Untitled" : note.title)
                         .font(HBTheme.titleFont)
                         .foregroundStyle(note.title.isEmpty ? HBTheme.textTertiary : HBTheme.textPrimary)
+                        .transition(.opacity)
                 }
 
-                if let subtitle = sync.entityCache.subtitle(for: note) {
+                if !isEditing, let subtitle = sync.entityCache.subtitle(for: note) {
                     Text(subtitle)
                         .font(HBTheme.subtitleFont)
                         .foregroundStyle(HBTheme.textTertiary)
                         .lineLimit(1)
+                        .transition(.opacity.combined(with: .move(edge: .top)))
                 }
             }
 
@@ -74,6 +80,19 @@ struct NoteRowView: View {
                     .foregroundStyle(HBTheme.textTertiary)
             }
         }
+        .padding(.vertical, isEditing ? 10 : 6)
+        .padding(.horizontal, isEditing ? 4 : 0)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(isEditing ? HBTheme.editingBackground : .clear)
+        )
+        .shadow(
+            color: isEditing ? HBTheme.editingShadow : .clear,
+            radius: isEditing ? 4 : 0,
+            x: 0,
+            y: isEditing ? 2 : 0
+        )
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: isEditing)
         .padding(.leading, CGFloat(note.indent) * 16)
     }
 
@@ -90,5 +109,18 @@ struct NoteRowView: View {
         note.touch()
         sync.engine.markDirty()
         onEditDone?()
+    }
+
+    private func cancelEdit() {
+        editText = note.title
+        editMetadata = TaskInlineMetadata(
+            areaId: note.areaId,
+            labels: note.labels,
+            people: note.people,
+            deferDate: note.deferDate,
+            dueDate: note.dueDate
+        )
+        Haptic.editCancel()
+        onEditCancel?()
     }
 }
