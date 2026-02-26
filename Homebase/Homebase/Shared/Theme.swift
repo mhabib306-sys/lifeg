@@ -23,7 +23,7 @@ enum HBTheme {
 
     static let separator = Color(hex: "#E5E5EA")
     static let checkboxBorder = Color(hex: "#C7C7CC")
-    static let checkboxFill = Color(hex: "#3D7FE3")          // Match accent
+    static let checkboxFill = Color(hex: "#74B358")          // Things 3 green (matches logbook)
 
     // Editing state
     static let editingBackground = Color(hex: "#F5F3EE")     // Things 3 warm editing bg

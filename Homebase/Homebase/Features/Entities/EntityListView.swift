@@ -42,6 +42,8 @@ struct AreaListView: View {
                 sync.engine.markDirty()
             }
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
         .navigationTitle("Areas")
         .searchable(text: $searchText, prompt: "Search areas...")
         .toolbar {
@@ -94,6 +96,8 @@ struct LabelListView: View {
                 sync.engine.markDirty()
             }
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
         .navigationTitle("Labels")
         .searchable(text: $searchText, prompt: "Search labels...")
         .toolbar {
@@ -156,6 +160,8 @@ struct PersonListView: View {
                 sync.engine.markDirty()
             }
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
         .navigationTitle("People")
         .searchable(text: $searchText, prompt: "Search people...")
         .toolbar {
@@ -207,6 +213,8 @@ struct CategoryListView: View {
                 sync.engine.markDirty()
             }
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
         .navigationTitle("Categories")
         .searchable(text: $searchText, prompt: "Search categories...")
         .toolbar {
@@ -281,19 +289,29 @@ struct EntityDetailView: View {
                             .contentShape(Rectangle())
                             .onTapGesture { editingTaskId = task.id }
                             .swipeActions(edge: .leading) {
-                                Button {
-                                    Haptic.checkboxTap()
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                                        withAnimation(HBTheme.springGentle) {
-                                            task.markCompleted()
-                                            sync.engine.markDirty()
-                                        }
-                                        Haptic.taskCompleted()
+                                if task.completed {
+                                    Button {
+                                        task.markIncomplete()
+                                        sync.engine.markDirty()
+                                    } label: {
+                                        Label("Uncomplete", systemImage: "arrow.uturn.backward")
                                     }
-                                } label: {
-                                    Label("Complete", systemImage: "checkmark")
+                                    .tint(HBTheme.textSecondary)
+                                } else {
+                                    Button {
+                                        Haptic.checkboxTap()
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                                            withAnimation(HBTheme.springGentle) {
+                                                task.markCompleted()
+                                                sync.engine.markDirty()
+                                            }
+                                            Haptic.taskCompleted()
+                                        }
+                                    } label: {
+                                        Label("Complete", systemImage: "checkmark")
+                                    }
+                                    .tint(HBTheme.logbook)
                                 }
-                                .tint(HBTheme.logbook)
                             }
                             .swipeActions(edge: .trailing) {
                                 Button(role: .destructive) {
@@ -341,6 +359,7 @@ struct EntityDetailView: View {
                         .onTapGesture { editingTaskId = note.id }
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
                     }
                 }
             }
@@ -375,6 +394,7 @@ struct EntityDetailView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle(entityName)
         .searchable(text: $searchText, prompt: "Search in \(entityName)...")
         .toolbar {

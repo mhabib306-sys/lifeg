@@ -171,7 +171,7 @@ struct MetadataChipsView: View {
                         .foregroundStyle(chip.color)
                         .clipShape(RoundedRectangle(cornerRadius: 4))
                         .transition(.asymmetric(
-                            insertion: .opacity.combined(with: .scale(scale: 0.8)).combined(with: .offset(y: 4)),
+                            insertion: .opacity.combined(with: .scale(scale: 0.6)),
                             removal: .opacity.combined(with: .scale(scale: 0.9))
                         ))
                     }
@@ -249,7 +249,7 @@ struct InlineAutocompleteField: View {
                 .onAppear {
                     originalText = text
                     if autoFocus {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                             isFocused = true
                         }
                     }
@@ -291,7 +291,7 @@ struct InlineAutocompleteField: View {
             // Suggestions overlay
             if let trigger = activeTrigger {
                 suggestionsView(for: trigger)
-                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                    .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
         .animation(HBTheme.springDefault, value: activeTrigger != nil)
@@ -334,6 +334,7 @@ struct InlineAutocompleteField: View {
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 8)
+                        .frame(minHeight: 44)
                     }
                     .buttonStyle(.plain)
 
@@ -361,6 +362,7 @@ struct InlineAutocompleteField: View {
         switch trigger.type {
         case .area:
             return cache.areas.values
+                .filter { $0.id != metadata.areaId }
                 .filter { query.isEmpty || $0.name.lowercased().contains(query) }
                 .sorted { $0.order < $1.order }
                 .prefix(6)

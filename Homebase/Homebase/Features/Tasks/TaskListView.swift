@@ -55,19 +55,29 @@ struct TaskListView: View {
                             }
                         )
                         .swipeActions(edge: .leading) {
-                            Button {
-                                Haptic.checkboxTap()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                                    withAnimation(HBTheme.springGentle) {
-                                        task.markCompleted()
-                                        sync.engine.markDirty()
-                                    }
-                                    Haptic.taskCompleted()
+                            if task.completed {
+                                Button {
+                                    task.markIncomplete()
+                                    sync.engine.markDirty()
+                                } label: {
+                                    Label("Uncomplete", systemImage: "arrow.uturn.backward")
                                 }
-                            } label: {
-                                Label("Complete", systemImage: "checkmark")
+                                .tint(HBTheme.textSecondary)
+                            } else {
+                                Button {
+                                    Haptic.checkboxTap()
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                                        withAnimation(HBTheme.springGentle) {
+                                            task.markCompleted()
+                                            sync.engine.markDirty()
+                                        }
+                                        Haptic.taskCompleted()
+                                    }
+                                } label: {
+                                    Label("Complete", systemImage: "checkmark")
+                                }
+                                .tint(HBTheme.logbook)
                             }
-                            .tint(HBTheme.logbook)
                         }
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
@@ -158,7 +168,6 @@ private struct QuickAddRow: View {
     @State private var isActive = false
     @State private var text = ""
     @State private var metadata = TaskInlineMetadata()
-    @FocusState private var isFocused: Bool
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -174,10 +183,12 @@ private struct QuickAddRow: View {
                     placeholder: "New To-Do",
                     onSubmit: { submitTask() },
                     onBlur: {
-                        if text.trimmingCharacters(in: .whitespaces).isEmpty && !hasMetadata {
-                            withAnimation(HBTheme.springDefault) {
-                                isActive = false
-                            }
+                        let trimmed = text.trimmingCharacters(in: .whitespaces)
+                        if !trimmed.isEmpty || hasMetadata {
+                            submitTask()
+                        }
+                        withAnimation(HBTheme.springDefault) {
+                            isActive = false
                         }
                     },
                     onCancel: {
@@ -201,12 +212,13 @@ private struct QuickAddRow: View {
                         Text("New To-Do")
                             .font(HBTheme.titleFont)
                             .foregroundStyle(HBTheme.accent)
+                        Spacer()
                     }
                 }
                 .buttonStyle(ThingsPressStyle())
             }
 
-            Spacer()
+            if isActive { Spacer() }
         }
         .padding(.vertical, isActive ? 14 : 10)
         .padding(.horizontal, isActive ? 6 : 0)
@@ -230,10 +242,7 @@ private struct QuickAddRow: View {
 
     private func submitTask() {
         let trimmed = text.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else {
-            if !hasMetadata { isActive = false }
-            return
-        }
+        guard !trimmed.isEmpty else { return }
 
         let status = metadata.areaId != nil ? "anytime" : defaultStatus
         let task = HBTask(title: trimmed, status: status)

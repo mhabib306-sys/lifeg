@@ -62,9 +62,10 @@ struct TaskRowView: View {
                     let cache = sync.entityCache
                     HStack(spacing: 6) {
                         if let due = task.dueDate {
+                            let isOverdue = Calendar.current.compare(due, to: Date(), toGranularity: .day) == .orderedAscending
                             Text(formatCompactDate(due))
                                 .font(HBTheme.subtitleFont)
-                                .foregroundStyle(due < Date() ? .red : HBTheme.textSecondary)
+                                .foregroundStyle(isOverdue ? .red : HBTheme.textSecondary)
                         }
 
                         if task.flagged {

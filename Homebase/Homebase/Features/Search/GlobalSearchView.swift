@@ -11,7 +11,6 @@ struct GlobalSearchView: View {
     @Environment(\.modelContext) private var context
     @State private var query = ""
     @State private var editingTaskId: String?
-    @FocusState private var isFocused: Bool
 
     private var trimmed: String { query.trimmingCharacters(in: .whitespaces).lowercased() }
 
@@ -175,7 +174,6 @@ struct GlobalSearchView: View {
                     .presentationDragIndicator(.visible)
                     .presentationCornerRadius(20)
             }
-            .onAppear { isFocused = true }
         }
     }
 }
@@ -188,17 +186,25 @@ private struct SearchTaskRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Circle()
-                .strokeBorder(task.completed ? HBTheme.logbook : HBTheme.checkboxBorder, lineWidth: 1.5)
-                .background(Circle().fill(task.completed ? HBTheme.logbook : .clear))
-                .frame(width: 22, height: 22)
-                .overlay {
-                    if task.completed {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 11, weight: .heavy))
-                            .foregroundStyle(.white)
+            ThingsCheckbox(
+                isCompleted: task.completed,
+                accentColor: HBTheme.checkboxFill
+            ) {
+                if task.completed {
+                    task.markIncomplete()
+                    sync.engine.markDirty()
+                } else {
+                    Haptic.checkboxTap()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        withAnimation(HBTheme.springGentle) {
+                            task.markCompleted()
+                            sync.engine.markDirty()
+                        }
+                        Haptic.taskCompleted()
                     }
                 }
+            }
+            .padding(.top, 1)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(task.title)
@@ -211,9 +217,10 @@ private struct SearchTaskRow: View {
                     let cache = sync.entityCache
                     HStack(spacing: 6) {
                         if let due = task.dueDate {
+                            let isOverdue = Calendar.current.compare(due, to: Date(), toGranularity: .day) == .orderedAscending
                             Text(formatCompactDate(due))
                                 .font(HBTheme.subtitleFont)
-                                .foregroundStyle(due < Date() ? .red : HBTheme.textSecondary)
+                                .foregroundStyle(isOverdue ? .red : HBTheme.textSecondary)
                         }
 
                         if task.flagged {
@@ -232,10 +239,6 @@ private struct SearchTaskRow: View {
 
                         if let areaId = task.areaId, let area = cache.areas[areaId] {
                             Text(area.name)
-                                .font(HBTheme.subtitleFont)
-                                .foregroundStyle(HBTheme.textTertiary)
-                        } else {
-                            Text(task.status.capitalized)
                                 .font(HBTheme.subtitleFont)
                                 .foregroundStyle(HBTheme.textTertiary)
                         }

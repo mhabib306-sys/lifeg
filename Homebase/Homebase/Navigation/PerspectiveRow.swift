@@ -24,9 +24,14 @@ struct PerspectiveRow: View {
 
             if count > 0 {
                 Text("\(count)")
-                    .font(.system(.subheadline, weight: .regular))
+                    .font(.system(.caption, weight: .medium))
                     .monospacedDigit()
-                    .foregroundStyle(HBTheme.textTertiary)
+                    .foregroundStyle(HBTheme.textSecondary)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 2)
+                    .background(
+                        Capsule().fill(Color(.systemFill))
+                    )
             }
         }
         .padding(.vertical, 2)
